@@ -5,7 +5,7 @@ Below you will find basic setup and deployment instructions for the NC Traffic
 Stops project. To begin you should have the following applications installed on
 your local development system:
 
-- Python 3.4
+- Python 3.8
 - NodeJS >= 4.2
 - `pip >= 8 or so <http://www.pip-installer.org/>`_
 - `virtualenv >= 1.10 <http://www.virtualenv.org/>`_
@@ -43,9 +43,9 @@ To setup your local environment you should create a virtualenv and install the
 necessary requirements::
 
     $ which python3.4  # make sure you have Python 3.4 installed
-    $ mkvirtualenv --python=`which python3.4` opendatapolicing
+    $ mkvirtualenv --python=`which python3.8` opendatapolicing
     (opendatapolicing)$ pip install -U pip
-    (opendatapolicing)$ pip install -r requirements/dev.txt
+    (opendatapolicing)$ make setup
     (opendatapolicing)$ npm install
 
 If ``npm install`` fails, make sure you're using ``npm`` from a reasonable version
