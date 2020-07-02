@@ -59,7 +59,7 @@ SEARCH_BASIS_CHOICES = (('ER',   'Erratic/Suspicious Behavior'),
 class Stop(CachingMixin, models.Model):
     stop_id = models.PositiveIntegerField(primary_key=True)
     agency_description = models.CharField(max_length=100)
-    agency = models.ForeignKey('Agency', null=True, related_name='stops')
+    agency = models.ForeignKey('Agency', null=True, related_name='stops', on_delete=models.CASCADE)
     date = models.DateTimeField(db_index=True)
     purpose = models.PositiveSmallIntegerField(choices=PURPOSE_CHOICES)
     action = models.PositiveSmallIntegerField(choices=ACTION_CHOICES)
@@ -79,7 +79,7 @@ class Stop(CachingMixin, models.Model):
 
 class Person(CachingMixin, models.Model):
     person_id = models.IntegerField(primary_key=True)
-    stop = models.ForeignKey(Stop)
+    stop = models.ForeignKey(Stop, on_delete=models.CASCADE)
     type = models.CharField(max_length=2, choices=PERSON_TYPE_CHOICES)
     age = models.PositiveSmallIntegerField()
     gender = models.CharField(max_length=2, choices=GENDER_CHOICES)
@@ -91,8 +91,8 @@ class Person(CachingMixin, models.Model):
 
 class Search(CachingMixin, models.Model):
     search_id = models.IntegerField(primary_key=True)
-    stop = models.ForeignKey(Stop)
-    person = models.ForeignKey(Person)
+    stop = models.ForeignKey(Stop, on_delete=models.CASCADE)
+    person = models.ForeignKey(Person, on_delete=models.CASCADE)
     type = models.PositiveSmallIntegerField(choices=SEARCH_TYPE_CHOICES)
     vehicle_search = models.BooleanField(default=False)
     driver_search = models.BooleanField(default=False)
@@ -107,9 +107,9 @@ class Search(CachingMixin, models.Model):
 
 class Contraband(CachingMixin, models.Model):
     contraband_id = models.IntegerField(primary_key=True)
-    search = models.ForeignKey(Search)
-    person = models.ForeignKey(Person)
-    stop = models.ForeignKey(Stop)
+    search = models.ForeignKey(Search, on_delete=models.CASCADE)
+    person = models.ForeignKey(Person, on_delete=models.CASCADE)
+    stop = models.ForeignKey(Stop, on_delete=models.CASCADE)
     ounces = models.FloatField(default=0, null=True)
     pounds = models.FloatField(default=0, null=True)
     pints = models.FloatField(default=0, null=True)
@@ -126,9 +126,9 @@ class Contraband(CachingMixin, models.Model):
 
 class SearchBasis(CachingMixin, models.Model):
     search_basis_id = models.IntegerField(primary_key=True)
-    search = models.ForeignKey(Search)
-    person = models.ForeignKey(Person)
-    stop = models.ForeignKey(Stop)
+    search = models.ForeignKey(Search, on_delete=models.CASCADE)
+    person = models.ForeignKey(Person, on_delete=models.CASCADE)
+    stop = models.ForeignKey(Stop, on_delete=models.CASCADE)
     basis = models.CharField(max_length=4, choices=SEARCH_BASIS_CHOICES)
 
     objects = CachingManager()

@@ -9,6 +9,9 @@ INSTALLED_APPS += (
     'django_extensions',
 )
 
+if "debug_toolbar.middleware.DebugToolbarMiddleware" not in MIDDLEWARE:
+    MIDDLEWARE.insert(0, "debug_toolbar.middleware.DebugToolbarMiddleware")
+
 INTERNAL_IPS = ('127.0.0.1', )
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -20,7 +23,7 @@ CELERY_EAGER_PROPAGATES_EXCEPTIONS = True
 
 CACHES = {
     'default': {
-        'BACKEND': 'caching.backends.locmem.LocMemCache',
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
     },
 }
 

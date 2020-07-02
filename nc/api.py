@@ -3,7 +3,7 @@ from django.db import connections
 from django.db.models import Count, Q
 
 from rest_framework import viewsets
-from rest_framework.decorators import detail_route
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework_extensions.cache.decorators import cache_response
 from rest_framework_extensions.key_constructor import bits
@@ -56,10 +56,10 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
 
     def query(self, results, group_by, filter_=None):
         # date trunc on year, respecting NC time zone
-        year_sql, year_params = connections[Stop.objects.db].ops.datetime_trunc_sql(
+        year_sql = connections[Stop.objects.db].ops.datetime_trunc_sql(
             'year', 'date', settings.NC_TIME_ZONE,
         )
-        qs = Stop.objects.extra(select={'year': year_sql}, select_params=year_params)
+        qs = Stop.objects.extra(select={'year': year_sql})
         # filter down stops by agency only those who were drivers
         qs = qs.filter(agency=self.get_object(), person__type='D')
         # filter down by officer if supplied
@@ -99,14 +99,14 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
 
             results.add(**data)
 
-    @detail_route(methods=['get'])
+    @action(detail=True, methods=['get'])
     @cache_response(key_func=query_cache_key_func)
     def stops(self, request, pk=None):
         results = GroupedData(by='year', defaults=GROUP_DEFAULTS)
         self.query(results, group_by=('year', 'person__race', 'person__ethnicity'))
         return Response(results.flatten())
 
-    @detail_route(methods=['get'])
+    @action(detail=True, methods=['get'])
     @cache_response(key_func=query_cache_key_func)
     def stops_by_reason(self, request, pk=None):
         response = {}
@@ -121,7 +121,7 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
         response['searches'] = results.flatten()
         return Response(response)
 
-    @detail_route(methods=['get'])
+    @action(detail=True, methods=['get'])
     @cache_response(key_func=query_cache_key_func)
     def use_of_force(self, request, pk=None):
         results = GroupedData(by='year', defaults=GROUP_DEFAULTS)
@@ -129,7 +129,7 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
         self.query(results, group_by=('year', 'person__race', 'person__ethnicity'), filter_=q)
         return Response(results.flatten())
 
-    @detail_route(methods=['get'])
+    @action(detail=True, methods=['get'])
     @cache_response(key_func=query_cache_key_func)
     def searches(self, request, pk=None):
         results = GroupedData(by='year', defaults=GROUP_DEFAULTS)
@@ -137,7 +137,7 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
         self.query(results, group_by=('year', 'person__race', 'person__ethnicity'), filter_=q)
         return Response(results.flatten())
 
-    @detail_route(methods=['get'])
+    @action(detail=True, methods=['get'])
     @cache_response(key_func=query_cache_key_func)
     def searches_by_type(self, request, pk=None):
         results = GroupedData(by=('search_type', 'year'), defaults=GROUP_DEFAULTS)
@@ -154,7 +154,7 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
         )
         return Response(results.flatten())
 
-    @detail_route(methods=['get'])
+    @action(detail=True, methods=['get'])
     @cache_response(key_func=query_cache_key_func)
     def contraband_hit_rate(self, request, pk=None):
         response = {}

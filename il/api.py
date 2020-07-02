@@ -1,7 +1,7 @@
 from django.db.models import Count, Q
 
 from rest_framework import viewsets
-from rest_framework.decorators import detail_route
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework_extensions.cache.decorators import cache_response
 from rest_framework_extensions.key_constructor.constructors import DefaultObjectKeyConstructor
@@ -41,14 +41,14 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
                 data[ethnicity] = stop['count']
             results.add(**data)
 
-    @detail_route(methods=['get'])
+    @action(detail=True, methods=['get'])
     @cache_response(key_func=query_cache_key_func)
     def stops(self, request, pk=None):
         results = GroupedData(by='year', defaults=GROUP_DEFAULTS)
         self.query(results, group_by=('year', 'ethnicity'))
         return Response(results.flatten())
 
-    @detail_route(methods=['get'])
+    @action(detail=True, methods=['get'])
     @cache_response(key_func=query_cache_key_func)
     def stops_by_reason(self, request, pk=None):
         response = {}
@@ -63,7 +63,7 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
         response['searches'] = results.flatten()
         return Response(response)
 
-    @detail_route(methods=['get'])
+    @action(detail=True, methods=['get'])
     @cache_response(key_func=query_cache_key_func)
     def searches(self, request, pk=None):
         results = GroupedData(by='year', defaults=GROUP_DEFAULTS)
@@ -71,7 +71,7 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
         self.query(results, group_by=('year', 'ethnicity'), filter_=q)
         return Response(results.flatten())
 
-    @detail_route(methods=['get'])
+    @action(detail=True, methods=['get'])
     @cache_response(key_func=query_cache_key_func)
     def contraband_hit_rate(self, request, pk=None):
         response = {}

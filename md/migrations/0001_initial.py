@@ -39,7 +39,7 @@ class Migration(migrations.Migration):
                 ('search_reason', models.CharField(blank=True, max_length=16, choices=[('incarrest', 'incarrest'), ('cons', 'cons'), ('other', 'other'), ('prob', 'prob'), ('k9', 'k9'), ('exigent', 'exigent')])),
                 ('disposition', models.CharField(blank=True, max_length=8, choices=[('contra', 'Contraband'), ('both', 'Both'), ('prop', 'Property')])),
                 ('outcome', models.CharField(blank=True, max_length=8, choices=[('sero', 'sero'), ('warn', 'Warning'), ('cit', 'Citation'), ('arr', 'Arrest')])),
-                ('agency', models.ForeignKey(related_name='stops', null=True, to='md.Agency')),
+                ('agency', models.ForeignKey(related_name='stops', null=True, to='md.Agency', on_delete=models.CASCADE)),
             ],
             options={
             },

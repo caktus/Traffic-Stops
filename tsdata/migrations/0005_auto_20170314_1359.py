@@ -36,7 +36,7 @@ class Migration(migrations.Migration):
                 ('agency_id', models.PositiveIntegerField(default=0)),
                 ('stops', models.PositiveIntegerField(default=0)),
                 ('name', models.CharField(max_length=255, default='')),
-                ('state_facts', models.ForeignKey(to='tsdata.StateFacts')),
+                ('state_facts', models.ForeignKey(to='tsdata.StateFacts', on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ['state_facts__state_key', 'rank'],

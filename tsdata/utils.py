@@ -9,7 +9,6 @@ import zipfile
 from collections import OrderedDict
 
 from django.conf import settings
-import memcache
 
 
 logger = logging.getLogger(__name__)
@@ -160,6 +159,7 @@ class GroupedData(object):
 
 
 def flush_memcached():
+    import memcache
     if hasattr(settings, 'CACHES'):
         caches = getattr(settings, 'CACHES')
         if ('default' in caches and

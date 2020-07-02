@@ -34,7 +34,7 @@ class Migration(migrations.Migration):
                 ('gender', models.CharField(max_length=1, choices=[('M', 'Male'), ('F', 'Female'), ('U', 'Unknown')])),
                 ('ethnicity', models.CharField(max_length=20, choices=[('W', 'White'), ('B', 'Black'), ('H', 'Hispanic'), ('U', 'Unknown')])),
                 ('agency_description', models.CharField(max_length=100)),
-                ('agency', models.ForeignKey(null=True, to='il.Agency', related_name='stops')),
+                ('agency', models.ForeignKey(null=True, to='il.Agency', related_name='stops', on_delete=models.CASCADE)),
             ],
             bases=(caching.base.CachingMixin, models.Model),
         ),

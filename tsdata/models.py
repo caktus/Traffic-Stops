@@ -53,7 +53,7 @@ class Dataset(models.Model):
 
 
 class Import(models.Model):
-    dataset = models.ForeignKey(Dataset)
+    dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE)
     date_started = models.DateTimeField(auto_now_add=True)
     date_finished = models.DateTimeField(null=True)
     successful = models.BooleanField(default=False)
@@ -112,7 +112,7 @@ class StateFacts(models.Model):
 
 
 class TopAgencyFacts(models.Model):
-    state_facts = models.ForeignKey(StateFacts)
+    state_facts = models.ForeignKey(StateFacts, on_delete=models.CASCADE)
     rank = models.SmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
     agency_id = models.PositiveIntegerField(default=0)
     stops = models.PositiveIntegerField(default=0)

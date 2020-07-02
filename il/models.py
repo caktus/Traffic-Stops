@@ -51,7 +51,7 @@ class Stop(CachingMixin, models.Model):
     seized = models.CharField(max_length=1, choices=SEIZED_CHOICES)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
     ethnicity = models.CharField(max_length=20, choices=ETHNICITY_CHOICES)
-    agency = models.ForeignKey('Agency', null=True, related_name='stops')
+    agency = models.ForeignKey('Agency', null=True, related_name='stops', on_delete=models.CASCADE)
     agency_description = models.CharField(max_length=100)
 
     objects = CachingManager()

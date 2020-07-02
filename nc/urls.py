@@ -5,7 +5,7 @@ from nc import api
 
 
 router = DefaultRouter()
-router.register(r'agency', api.AgencyViewSet, base_name="agency-api")
+router.register(r'agency', api.AgencyViewSet, basename="agency-api")
 
 
 urlpatterns = [  # noqa

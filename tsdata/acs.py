@@ -11,7 +11,7 @@
 
 import census
 import pandas as pd
-from us import states
+# from us import states
 
 from django.conf import settings
 from django.db import transaction

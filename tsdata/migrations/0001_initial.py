@@ -29,7 +29,7 @@ class Migration(migrations.Migration):
                 ('date_started', models.DateTimeField(auto_now_add=True)),
                 ('date_finished', models.DateTimeField(null=True)),
                 ('successful', models.BooleanField(default=False)),
-                ('dataset', models.ForeignKey(to='tsdata.Dataset')),
+                ('dataset', models.ForeignKey(to='tsdata.Dataset', on_delete=models.CASCADE)),
             ],
         ),
     ]
