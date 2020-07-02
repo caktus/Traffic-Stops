@@ -1,91 +1,111 @@
 # Settings for live deployed environments: vagrant, staging, production, etc
 from .base import *  # noqa
 
-os.environ.setdefault('CACHE_HOST', '127.0.0.1:11211')
-os.environ.setdefault('BROKER_HOST', '127.0.0.1:5672')
+# This is NOT a complete production settings file. For more, see:
+# See https://docs.djangoproject.com/en/dev/howto/deployment/checklist/
 
-ENVIRONMENT = os.environ['ENVIRONMENT']
+#### Critical settings
 
-SECRET_KEY = os.environ['SECRET_KEY']
+SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
 
-DEBUG = False
+### Environment-specific settings
 
-DATABASES['default']['NAME'] = 'traffic_stops_%s' % ENVIRONMENT.lower()
-DATABASES['default']['USER'] = 'traffic_stops_%s' % ENVIRONMENT.lower()
-DATABASES['default']['HOST'] = os.environ.get('DB_HOST', '')
-DATABASES['default']['PORT'] = os.environ.get('DB_PORT', '')
-DATABASES['default']['PASSWORD'] = os.environ.get('DB_PASSWORD', '')
-DATABASES['traffic_stops_il']['NAME'] = 'traffic_stops_il_%s' % ENVIRONMENT.lower()
-DATABASES['traffic_stops_il']['USER'] = 'traffic_stops_%s' % ENVIRONMENT.lower()
-DATABASES['traffic_stops_il']['HOST'] = os.environ.get('DB_HOST', '')
-DATABASES['traffic_stops_il']['PORT'] = os.environ.get('DB_PORT', '')
-DATABASES['traffic_stops_il']['PASSWORD'] = os.environ.get('DB_PASSWORD', '')
-DATABASES['traffic_stops_md']['NAME'] = 'traffic_stops_md_%s' % ENVIRONMENT.lower()
-DATABASES['traffic_stops_md']['USER'] = 'traffic_stops_%s' % ENVIRONMENT.lower()
-DATABASES['traffic_stops_md']['HOST'] = os.environ.get('DB_HOST', '')
-DATABASES['traffic_stops_md']['PORT'] = os.environ.get('DB_PORT', '')
-DATABASES['traffic_stops_md']['PASSWORD'] = os.environ.get('DB_PASSWORD', '')
-DATABASES['traffic_stops_nc']['NAME'] = 'traffic_stops_nc_%s' % ENVIRONMENT.lower()
-DATABASES['traffic_stops_nc']['USER'] = 'traffic_stops_%s' % ENVIRONMENT.lower()
-DATABASES['traffic_stops_nc']['HOST'] = os.environ.get('DB_HOST', '')
-DATABASES['traffic_stops_nc']['PORT'] = os.environ.get('DB_PORT', '')
-DATABASES['traffic_stops_nc']['PASSWORD'] = os.environ.get('DB_PASSWORD', '')
-DATABASE_ETL_USER = 'etl'
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost").split(":")
 
-WEBSERVER_ROOT = '/var/www/traffic_stops/'
+# Disable Django's own staticfiles handling in favour of WhiteNoise, for
+# greater consistency between gunicorn and `./manage.py runserver`. See:
+# http://whitenoise.evans.io/en/stable/django.html#using-whitenoise-in-development
+INSTALLED_APPS.remove("django.contrib.staticfiles")
+INSTALLED_APPS.extend(
+    ["whitenoise.runserver_nostatic", "django.contrib.staticfiles",]
+)
 
-PUBLIC_ROOT = os.path.join(WEBSERVER_ROOT, 'public')
+MIDDLEWARE.remove("django.middleware.security.SecurityMiddleware")
+MIDDLEWARE = [
+    "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+] + MIDDLEWARE
 
-STATIC_ROOT = os.path.join(PUBLIC_ROOT, 'static')
+STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
 
-MEDIA_ROOT = os.path.join(PUBLIC_ROOT, 'media')
+EMAIL_HOST = os.getenv("EMAIL_HOST", "localhost")
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", False)
+EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL", False)
+# use TLS or SSL, not both:
+assert not (EMAIL_USE_TLS and EMAIL_USE_SSL)
+if EMAIL_USE_TLS:
+    default_smtp_port = 587
+elif EMAIL_USE_SSL:
+    default_smtp_port = 465
+else:
+    default_smtp_port = 25
+EMAIL_PORT = os.getenv("EMAIL_PORT", default_smtp_port)
+EMAIL_SUBJECT_PREFIX = "[odp %s] " % ENVIRONMENT.title()
+DEFAULT_FROM_EMAIL = f"noreply@{os.getenv('DOMAIN', os.environ)}"
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
-LOGGING['handlers']['file']['filename'] = os.path.join(
-    WEBSERVER_ROOT, 'log', 'traffic_stops.log')
+### HTTPS
 
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = os.getenv("SESSION_COOKIE_SECURE", "True") == "True"
+
+### Performance optimizations
+
+CACHE_HOST = os.getenv("CACHE_HOST", "cache:11211")
 CACHES = {
-    'default': {
-        # Check tsdata.utils.flush_memcached when changing this.
-        'BACKEND': 'caching.backends.memcached.MemcachedCache',
-        'LOCATION': '%(CACHE_HOST)s' % os.environ,
+    "default": {
+        "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
+        "LOCATION": CACHE_HOST,
     }
 }
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 
+# Use template caching on deployed servers
+for backend in TEMPLATES:
+    if backend["BACKEND"] == "django.template.backends.django.DjangoTemplates":
+        default_loaders = ["django.template.loaders.filesystem.Loader"]
+        if backend.get("APP_DIRS", False):
+            default_loaders.append("django.template.loaders.app_directories.Loader")
+            # Django gets annoyed if you both set APP_DIRS True and specify your own loaders
+            backend["APP_DIRS"] = False
+        loaders = backend["OPTIONS"].get("loaders", default_loaders)
+        for loader in loaders:
+            if len(loader) == 2 and loader[0] == "django.template.loaders.cached.Loader":
+                # We're already caching our templates
+                break
+        else:
+            backend["OPTIONS"]["loaders"] = [("django.template.loaders.cached.Loader", loaders)]
+
+### ADMINS and MANAGERS
 ADMINS = (
     ('ODP Team', 'odp-team@caktusgroup.com'),
 )
 MANAGERS = ADMINS
 
-SERVER_EMAIL = 'no-reply@opendatapolicingnc.com'
-DEFAULT_FROM_EMAIL = 'no-reply@opendatapolicingnc.com'
+### 3rd-party applications
 
-EMAIL_SUBJECT_PREFIX = '[Traffic_Stops %s] ' % ENVIRONMENT.title()
+SENTRY_DSN = os.getenv("SENTRY_DSN")
+if SENTRY_DSN:
+    import sentry_sdk
+    from sentry_sdk.integrations.django import DjangoIntegration
 
-CSRF_COOKIE_SECURE = True
+    sentry_sdk.init(
+        dsn=SENTRY_DSN, integrations=[DjangoIntegration()], environment=ENVIRONMENT,
+    )
 
-SESSION_COOKIE_SECURE = True
-
-SESSION_COOKIE_HTTPONLY = True
-
-ALLOWED_HOSTS = [os.environ['DOMAIN']]
+DATABASE_ETL_USER = 'etl'
 
 # Uncomment if using celery worker configuration
 CELERY_SEND_TASK_ERROR_EMAILS = True
-BROKER_URL = 'amqp://traffic_stops_%(ENVIRONMENT)s:%(BROKER_PASSWORD)s@%(BROKER_HOST)s/traffic_stops_%(ENVIRONMENT)s' % os.environ  # noqa
-
-LOGGING['handlers']['file']['filename'] = '/var/www/traffic_stops/log/traffic_stops.log'
+# BROKER_URL = 'amqp://traffic_stops_%(ENVIRONMENT)s:%(BROKER_PASSWORD)s@%(BROKER_HOST)s/traffic_stops_%(ENVIRONMENT)s' % os.environ  # noqa
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': []
 }
 
 NC_AUTO_IMPORT_DIRECTORY = '/var/www/traffic_stops/NC-automated-import'
-
-# Environment overrides
-# These should be kept to an absolute minimum
-if ENVIRONMENT.upper() == 'LOCAL':
-    # Don't send emails from the Vagrant boxes
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 if ENVIRONMENT.upper() == 'PRODUCTION':
     CELERYBEAT_SCHEDULE['automatic-nc-import']['schedule'] = \

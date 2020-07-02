@@ -26,8 +26,8 @@ services:
       - ~/.ssh:/root/.ssh
     ports:
       - "8003:8000"
-    depends_on:
-      - db
+    # depends_on:
+    #   - db
 
 volumes:
   pgdata:

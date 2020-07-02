@@ -1,45 +1,90 @@
-FROM python:3.4
-ENV PYTHONUNBUFFERED 1
+FROM node:10-alpine as static_files
 
-# Install packages for postgres, python dev for some project packages, and rsync for some fabric commands:
-RUN apt-get update && \
-  apt-get install -y \
-    binutils \
-    postgresql-client \
-    rsync \
-    gdal-bin
-
-# Fabric for deploys:
-RUN pip install -U pip
-RUN pip install PyYAML fabric3 paramiko pycrypto ecdsa
-
-RUN mkdir /code
 WORKDIR /code
+ENV PATH /code/node_modules/.bin:$PATH
+COPY package.json package-lock.json gulpfile.js /code/
+RUN npm install --silent
+COPY . /code/
+RUN npm run build
 
-ADD requirements /code/requirements
-RUN pip install -r requirements/dev.txt
+FROM python:3.8-slim as base
 
-# nvm environment variables
-ENV NVM_DIR /usr/local/nvm
-RUN mkdir -p $NVM_DIR
-ENV NODE_VERSION 6.14.4
+# Create a group and user to run our app
+ARG APP_USER=appuser
+RUN groupadd -r ${APP_USER} && useradd --no-log-init -r -g ${APP_USER} ${APP_USER}
 
-# install nvm
-# https://github.com/creationix/nvm#install-script
-RUN wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
+# Install packages needed to run your application (not build deps):
+#   mime-support -- for mime types when serving static files
+#   postgresql-client -- for running database commands
+# We need to recreate the /usr/share/man/man{1..8} directories first because
+# they were clobbered by a parent image.
+RUN set -ex \
+    && RUN_DEPS=" \
+    libpcre3 \
+    mime-support \
+    postgresql-client \
+    vim \
+    gdal-bin \
+    " \
+    && seq 1 8 | xargs -I{} mkdir -p /usr/share/man/man{} \
+    && apt-get update && apt-get install -y --no-install-recommends $RUN_DEPS \
+    && rm -rf /var/lib/apt/lists/*
 
-# install node and npm
-RUN . $NVM_DIR/nvm.sh \
-    && nvm install $NODE_VERSION \
-    && nvm alias default $NODE_VERSION \
-    && nvm use default
+# Copy in your requirements file
+# ADD requirements.txt /requirements.txt
 
-# add node and npm to path so the commands are available
-ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
-ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
+# OR, if you're using a directory for your requirements, copy everything (comment out the above and uncomment this if so):
+ADD requirements /requirements
 
-# confirm installation
-RUN node -v
-RUN npm -v
+# Install build deps, then run `pip install`, then remove unneeded build deps all in a single step.
+# Correct the path to your production requirements file, if needed.
+RUN set -ex \
+    && BUILD_DEPS=" \
+    build-essential \
+    libpcre3-dev \
+    libpq-dev \
+    " \
+    && apt-get update && apt-get install -y --no-install-recommends $BUILD_DEPS \
+    && pip install -U -q pip-tools \
+    && pip-sync requirements/base/base.txt requirements/deploy/deploy.txt \
+    \
+    && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $BUILD_DEPS \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN npm install -g gulp
+# Copy your application code to the container (make sure you create a .dockerignore file if any large files or directories should be excluded)
+RUN mkdir /code/
+WORKDIR /code/
+ADD . /code/
+
+COPY --from=static_files /code/traffic_stops/static /code/traffic_stops/static
+COPY --from=static_files /code/node_modules/bootstrap /code/node_modules/bootstrap
+
+# uWSGI will listen on this port
+EXPOSE 8000
+
+# Add any static environment variables needed by Django or your settings file here:
+ENV DJANGO_SETTINGS_MODULE=traffic_stops.settings.deploy
+
+# Call collectstatic (customize the following line with the minimal environment variables needed for manage.py to run):
+RUN DATABASE_URL='' ENVIRONMENT='' DJANGO_SECRET_KEY='dummy' DOMAIN='' python manage.py collectstatic --noinput
+
+# Tell uWSGI where to find your wsgi file (change this):
+ENV UWSGI_WSGI_FILE=traffic_stops/wsgi.py
+
+# Base uWSGI configuration (you shouldn't need to change these):
+ENV UWSGI_HTTP=:8000 UWSGI_MASTER=1 UWSGI_HTTP_AUTO_CHUNKED=1 UWSGI_HTTP_KEEPALIVE=1 UWSGI_LAZY_APPS=1 UWSGI_WSGI_ENV_BEHAVIOR=holy
+
+# Number of uWSGI workers and threads per worker (customize as needed):
+ENV UWSGI_WORKERS=2 UWSGI_THREADS=4
+
+# uWSGI static file serving configuration (customize or comment out if not needed):
+ENV UWSGI_STATIC_MAP="/static/=/code/static/" UWSGI_STATIC_EXPIRES_URI="/static/.*\.[a-f0-9]{12,}\.(css|js|png|jpg|jpeg|gif|ico|woff|ttf|otf|svg|scss|map|txt) 315360000"
+
+# Change to a non-root user
+USER ${APP_USER}:${APP_USER}
+
+# Uncomment after creating your docker-entrypoint.sh
+ENTRYPOINT ["/code/docker-entrypoint.sh"]
+
+# Start uWSGI
+CMD ["newrelic-admin", "run-program", "uwsgi", "--single-interpreter", "--enable-threads", "--show-config"]

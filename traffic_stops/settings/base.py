@@ -3,10 +3,14 @@ import os
 
 from celery.schedules import crontab
 
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
-PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, os.pardir))
+PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(PROJECT_DIR)
 
-DEBUG = True
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
+
+DEBUG = os.getenv("DJANGO_DEBUG", "False") == "True"
+ENVIRONMENT = os.getenv("ENVIRONMENT", "dev")
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
@@ -47,6 +51,39 @@ DATABASES = {
     },
 }
 
+if os.getenv("DATABASE_URL"):
+    import dj_database_url
+
+    db_from_env = dj_database_url.config(
+        env='DATABASE_URL',
+        conn_max_age=500,
+        ssl_require=os.getenv("DATABASE_SSL", False),
+    )
+    DATABASES["default"].update(db_from_env)
+
+    if os.getenv("DATABASE_URL_NC"):
+        db_from_env = dj_database_url.config(
+            env='DATABASE_URL_NC',
+            conn_max_age=500,
+            ssl_require=os.getenv("DATABASE_SSL", False),
+        )
+        DATABASES["traffic_stops_nc"].update(db_from_env)
+    if os.getenv("DATABASE_URL_MD"):
+        db_from_env = dj_database_url.config(
+            env='DATABASE_URL_MD',
+            conn_max_age=500,
+            ssl_require=os.getenv("DATABASE_SSL", False),
+        )
+        DATABASES["traffic_stops_md"].update(db_from_env)
+    if os.getenv("DATABASE_URL_IL"):
+        db_from_env = dj_database_url.config(
+            env='DATABASE_URL_IL',
+            conn_max_age=500,
+            ssl_require=os.getenv("DATABASE_SSL", False),
+        )
+        DATABASES["traffic_stops_il"].update(db_from_env)
+
+
 DATABASE_ROUTERS = ['traffic_stops.routers.StateDatasetRouter']
 DATABASE_ETL_USER = ''
 
@@ -78,62 +115,58 @@ STATE_CONFIG = {
     NC_KEY: StateConfig(tz_name=NC_TIME_ZONE),
 }
 
-# Language code for this installation. All choices can be found here:
-# http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'en-us'
+# Internationalization
+# https://docs.djangoproject.com/en/3.0/topics/i18n/
 
-# If you set this to False, Django will make some optimizations so as not
-# to load the internationalization machinery.
+LANGUAGE_CODE = "en-us"
+
+TIME_ZONE = "UTC"
+
 USE_I18N = True
 
-# If you set this to False, Django will not format dates, numbers and
-# calendars according to the current locale.
 USE_L10N = True
 
-# If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = True
 
-# Absolute filesystem path to the directory that will hold user-uploaded files.
-# Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'public', 'media')
 
-# URL that handles the media served from MEDIA_ROOT. Make sure to use a
-# trailing slash.
-# Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
-MEDIA_URL = '/media/'
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-# Absolute path to the directory static files should be collected to.
-# Don't put anything in this directory yourself; store your static files
-# in apps' "static/" subdirectories and in STATICFILES_DIRS.
-# Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = os.path.join(PROJECT_ROOT, 'public', 'static')
+STATICFILES_FINDERS = [
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+]
 
-# URL prefix for static files.
-# Example: "http://media.lawrence.com/static/"
-STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(PROJECT_DIR, "static"),
+    os.path.join(BASE_DIR, 'node_modules/bootstrap'),
+]
 
-# Additional locations of static files
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
-    os.path.join(PROJECT_ROOT, 'node_modules/bootstrap'),
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATIC_URL = "/static/"
+
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_URL = "/media/"
+MEDIA_STORAGE_BUCKET_NAME = os.getenv("MEDIA_STORAGE_BUCKET_NAME", "")
+MEDIA_LOCATION = os.getenv("MEDIA_LOCATION", "")
+MEDIA_S3_CUSTOM_DOMAIN = os.getenv("MEDIA_S3_CUSTOM_DOMAIN", "")
+DEFAULT_FILE_STORAGE = os.getenv(
+    "DEFAULT_FILE_STORAGE", "django.core.files.storage.FileSystemStorage"
 )
-
-# List of finder classes that know how to find static files in
-# various locations.
-STATICFILES_FINDERS = (
-    'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-)
-
-# Make this unique, and don't share it with anybody.
-SECRET_KEY = os.environ.get('SECRET_KEY', '0qakm1)=inee683)p)0#lt2o#=@*dy5uw4_nm-1z5gqpy8idbk')
+AWS_DEFAULT_ACL = os.getenv("AWS_DEFAULT_ACL")
+AWS_S3_SIGNATURE_VERSION = os.getenv("AWS_S3_SIGNATURE_VERSION", "s3v4")
+AWS_S3_REGION_NAME = os.getenv("AWS_S3_REGION_NAME", "us-east-1")
+# See https://github.com/wagtail/wagtail/pull/4495#issuecomment-387434521
+AWS_S3_FILE_OVERWRITE = False
+AWS_QUERYSTRING_AUTH = os.getenv("AWS_QUERYSTRING_AUTH", "True") == "True"
+# If not set, boto3 internally looks up IAM credentials
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            os.path.join(BASE_DIR, 'templates'),
-        ],
+        "DIRS": [os.path.join(PROJECT_DIR, "templates"),],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -171,7 +204,7 @@ FIXTURE_DIRS = (
     os.path.join(BASE_DIR, 'fixtures'),
 )
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -191,108 +224,30 @@ INSTALLED_APPS = (
     'nc',
     'md',
     'il',
-)
+]
 
-# A sample logging configuration. The only tangible logging
-# performed by this configuration is to send an email to
-# the site admins on every HTTP 500 error when DEBUG=False.
-# See http://docs.djangoproject.com/en/dev/topics/logging for
-# more details on how to customize your logging configuration.
-SYSLOG_PATH = None
-for path in ("/dev/log", "/var/run/syslog"):
-    if os.path.exists(path):
-        SYSLOG_PATH = path
+
+# Logging
 
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'filters': {
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse'
-        }
+    "version": 1,
+    "disable_existing_loggers": False,
+    "filters": {"require_debug_false": {"()": "django.utils.log.RequireDebugFalse"}},
+    "formatters": {"basic": {"format": "%(asctime)s %(name)-20s %(levelname)-8s %(message)s",},},
+    "handlers": {
+        "mail_admins": {
+            "level": "ERROR",
+            "filters": ["require_debug_false"],
+            "class": "django.utils.log.AdminEmailHandler",
+        },
+        "console": {"level": "DEBUG", "class": "logging.StreamHandler", "formatter": "basic",},
     },
-    'formatters': {
-        'basic': {
-            'format': '%(asctime)s %(name)-20s %(levelname)-8s %(message)s',
-        },
-        'papertrail': {
-            'format': 'django %(asctime)s %(name)s %(levelname)s: %(message)s',
-        },
+    "loggers": {
+        "django.request": {"handlers": ["mail_admins"], "level": "ERROR", "propagate": True,},
+        "django.security": {"handlers": ["mail_admins"], "level": "ERROR", "propagate": True,},
+        "apps": {"level": "DEBUG", "handlers": ["console"], "propagate": False,},
     },
-    'handlers': {
-        'mail_admins': {
-            'level': 'ERROR',
-            'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler'
-        },
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'basic',
-        },
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'formatter': 'basic',
-            'filename': os.path.join(PROJECT_ROOT, 'traffic_stops.log'),
-            'maxBytes': 10 * 1024 * 1024,  # 10 MB
-            'backupCount': 10,
-        },
-        'syslog': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.SysLogHandler',
-            'address': SYSLOG_PATH,
-            'facility': 'local6',
-            'filters': ['require_debug_false'],
-            'formatter': 'papertrail',
-        },
-    },
-    'root': {
-        'handlers': ['file', 'syslog'],
-        'level': 'INFO',
-    },
-    'loggers': {
-        'django.request': {
-            'handlers': ['file', 'mail_admins', 'syslog'],
-            'level': 'ERROR',
-            'propagate': True,
-        },
-        'django.security': {
-            'handlers': ['mail_admins', 'syslog'],
-            'level': 'ERROR',
-            'propagate': True,
-        },
-        'traffic_stops': {
-            'handlers': ['file', 'syslog'],
-            'level': 'INFO',
-            'propagate': False,
-        },
-        'tsdata': {
-            'handlers': ['file', 'syslog'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'nc': {
-            'handlers': ['file', 'syslog'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'md': {
-            'handlers': ['file', 'syslog'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'caching': {
-            'handlers': ['file', 'syslog'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'caching.invalidation': {
-            'handlers': ['file', 'syslog'],
-            'level': 'INFO',
-            'propagate': False,
-        },
-    }
+    "root": {"handlers": ["console",], "level": "INFO",},
 }
 
 CELERYBEAT_SCHEDULE = {
@@ -306,20 +261,14 @@ CELERYBEAT_SCHEDULE = {
 # If using Celery, tell it to obey our logging configuration.
 CELERYD_HIJACK_ROOT_LOGGER = False
 
-# https://docs.djangoproject.com/en/1.9/topics/auth/passwords/#password-validation
+# Password validation
+# https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
+
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
 ]
 
 # Make things more secure by default. Run "python manage.py check --deploy"
