@@ -40,3 +40,4 @@ ildata/
 .idea/
 coverage/
 npm-debug.log
+.python-version
