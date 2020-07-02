@@ -1,0 +1,12 @@
+# test.in
+-c ../dev/dev.txt
+
+pyyaml
+black
+isort
+pytest
+pytest-cov
+factory_boy
+pytest-django
+coverage
+pre-commit

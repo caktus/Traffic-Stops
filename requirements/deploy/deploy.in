@@ -1,0 +1,6 @@
+# Deploy.in
+-c ../base/base.txt
+python3-memcached
+newrelic
+sentry-sdk
+uwsgi

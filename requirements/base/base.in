@@ -1,0 +1,20 @@
+# base requirements.in
+django<3.0
+celery
+census
+dealer
+django-bootstrap3
+django-cache-machine
+django-click
+django-dotenv
+django-el-pagination
+django-extensions
+django-memoize
+django-selectable
+djangorestframework
+dj-database-url
+drf-extensions
+pandas
+psycopg2-binary
+requests
+six

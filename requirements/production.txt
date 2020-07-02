@@ -1,2 +1,0 @@
--r base.txt
-newrelic==2.60.0.46

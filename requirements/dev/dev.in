@@ -1,0 +1,19 @@
+# Dev requirements
+-c ../base/base.txt
+-c ../test/test.txt
+
+# deploy
+-e git+https://github.com/caktus/invoke-kubesae@0.0.3#egg=invoke-kubesae
+troposphere
+
+# AWS tools
+awscli
+openshift
+kubernetes-validate
+
+django-debug-toolbar
+
+# For better debugging
+ipython
+appnope
+pudb
