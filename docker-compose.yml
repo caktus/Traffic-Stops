@@ -7,6 +7,8 @@ services:
       POSTGRES_DB: traffic_stops
       DATABASE_URL: postgres://postgres@127.0.0.1:5432/traffic_stops
     image: postgres:12-alpine
+    ports:
+      - "54344:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./docker-entrypoint.postgres.sql:/docker-entrypoint-initdb.d/init.sql
