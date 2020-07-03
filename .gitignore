@@ -41,3 +41,4 @@ ildata/
 coverage/
 npm-debug.log
 .python-version
+env-local.sh
