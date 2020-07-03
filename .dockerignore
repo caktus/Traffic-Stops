@@ -7,3 +7,4 @@ jgdc.yml
 Dockerfile
 setup.cfg
 node_modules
+*.dump
