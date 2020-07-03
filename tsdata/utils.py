@@ -159,7 +159,6 @@ class GroupedData(object):
 
 
 def flush_memcached():
-    import memcache
     if hasattr(settings, 'CACHES'):
         caches = getattr(settings, 'CACHES')
         if ('default' in caches and
@@ -167,6 +166,7 @@ def flush_memcached():
                 'LOCATION' in caches['default'] and
                 'MemcachedCache' in caches['default']['BACKEND']):
             logger.info('Flushing memcached')
+            import memcache
             mc = memcache.Client([caches['default']['LOCATION']])
             mc.flush_all()
             return True

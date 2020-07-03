@@ -2,21 +2,25 @@ import sys
 
 from traffic_stops.settings.base import *  # noqa
 
+# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-INSTALLED_APPS += (
-    'debug_toolbar',
-    'django_extensions',
-)
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = "m-u!e0jum^(+nt1+6@31+jl_zwc6yltugtv7%!2k(6l!c@=0n@"
 
-if "debug_toolbar.middleware.DebugToolbarMiddleware" not in MIDDLEWARE:
-    MIDDLEWARE.insert(0, "debug_toolbar.middleware.DebugToolbarMiddleware")
+INSTALLED_APPS += [
+    'django_extensions',
+]
+
+if os.getenv("DEBUG_TOOLBAR", "True") == "True":
+    INSTALLED_APPS += [
+        "debug_toolbar",
+    ]
+    MIDDLEWARE += ["debug_toolbar.middleware.DebugToolbarMiddleware"]
 
 INTERNAL_IPS = ('127.0.0.1', )
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-SOUTH_TESTS_MIGRATE = True
 
 CELERY_ALWAYS_EAGER = True
 CELERY_EAGER_PROPAGATES_EXCEPTIONS = True
@@ -26,7 +30,6 @@ CACHES = {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
     },
 }
-
 
 NC_AUTO_IMPORT_MONITORS = ('nc-monitor@example.com',)
 

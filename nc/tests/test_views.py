@@ -1,10 +1,10 @@
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.test import TestCase
 from nc.tests import factories
 
 
 class ViewTests(TestCase):
-    multi_db = True
+    databases = '__all__'
 
     def test_home(self):
         response = self.client.get(reverse('nc:home'))

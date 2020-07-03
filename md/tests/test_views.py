@@ -1,11 +1,11 @@
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.test import TestCase, RequestFactory
 from md.tests import factories
 from .. import views
 
 
 class ViewTests(TestCase):
-    multi_db = True
+    databases = '__all__'
 
     def test_home(self):
         response = self.client.get(reverse('md:home'))
@@ -63,6 +63,8 @@ class ViewTests(TestCase):
 
 
 class TestSearchView(TestCase):
+    databases = '__all__'
+
     def test_search_good_data(self):
         factory = RequestFactory()
         request = factory.get(reverse('md:stops-search'), data={

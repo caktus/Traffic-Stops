@@ -1,7 +1,7 @@
 import datetime
 
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 import pytz
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -12,7 +12,7 @@ from tsdata.tests.factories import CensusProfileFactory
 
 
 class AgencyTests(APITestCase):
-    multi_db = True
+    databases = '__all__'
 
     def test_agency_census_data(self):
         """

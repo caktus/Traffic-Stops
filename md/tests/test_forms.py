@@ -4,6 +4,7 @@ from .. import forms
 
 
 class TestSearchForm(TestCase):
+    databases = '__all__'
 
     def test_agency_required(self):
         search_form = forms.SearchForm(data={})

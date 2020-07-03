@@ -31,10 +31,10 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
 
     def query(self, results, group_by, filter_=None):
         # date trunc on year, respecting MD time zone
-        year_sql, year_params = connections[Stop.objects.db].ops.datetime_trunc_sql(
+        year_sql = connections[Stop.objects.db].ops.datetime_trunc_sql(
             'year', 'date', settings.MD_TIME_ZONE,
         )
-        qs = Stop.objects.extra(select={'year': year_sql}, select_params=year_params)
+        qs = Stop.objects.extra(select={'year': year_sql})
         qs = qs.filter(agency=self.get_object())
         # filter down by officer if supplied
         officer = self.request.query_params.get('officer', None)

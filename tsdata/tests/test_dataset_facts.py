@@ -8,7 +8,7 @@ from tsdata.dataset_facts import compute_dataset_facts
 
 class TestDatasetFacts(TestCase):
 
-    multi_db = True
+    databases = '__all__'
 
     def setUp(self):
         super().setUp()

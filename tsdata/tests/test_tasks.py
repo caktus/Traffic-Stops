@@ -18,6 +18,8 @@ from tsdata.tests.factories import DatasetFactory
 
 @override_settings(COMPLIANCE_REPORT_LIST=('compliance@example.com',))
 class ComplianceReportTests(TestCase):
+    databases = '__all__'
+
     def test_not_north_carolina(self):
         for i in range(3):
             ILAgencyFactory()

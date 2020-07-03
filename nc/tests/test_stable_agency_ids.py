@@ -10,7 +10,7 @@ from nc.data.importer import update_nc_agencies
 
 
 class StableAgencyTests(TestCase):
-    multi_db = True
+    databases = '__all__'
 
     def setUp(self):
         self.destination_td = tempfile.TemporaryDirectory()

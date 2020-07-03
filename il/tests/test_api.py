@@ -1,6 +1,6 @@
 import random
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -14,7 +14,7 @@ KNOWN_PURPOSE_CHOICES = [c for c in PURPOSE_CHOICES if c[0] != UNKNOWN_PURPOSE]
 
 
 class AgencyTests(APITestCase):
-    multi_db = True
+    databases = '__all__'
 
     def test_agency_census_data(self):
         """

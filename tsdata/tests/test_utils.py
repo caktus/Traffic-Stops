@@ -12,7 +12,7 @@ from tsdata.utils import (
 
 class TestUtils(TestCase):
 
-    multi_db = True
+    databases = '__all__'
 
     @staticmethod
     def make_test_zip(zip_path):
