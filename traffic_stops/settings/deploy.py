@@ -53,11 +53,14 @@ SESSION_COOKIE_SECURE = os.getenv("SESSION_COOKIE_SECURE", "True") == "True"
 
 ### Performance optimizations
 
-CACHE_HOST = os.getenv("CACHE_HOST", "cache:11211")
+CACHE_HOST = os.getenv("CACHE_HOST", "redis://redis:6379/1")
 CACHES = {
     "default": {
-        "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
+        "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": CACHE_HOST,
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
     }
 }
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
