@@ -3,8 +3,13 @@
 -c ../test/test.txt
 
 # deploy
--e git+https://github.com/caktus/invoke-kubesae@0.0.3#egg=invoke-kubesae
+-e git+https://github.com/caktus/invoke-kubesae@0.0.5#egg=invoke-kubesae
 troposphere
+
+# docs
+sphinx
+sphinx-autobuild
+rstcheck
 
 # AWS tools
 awscli

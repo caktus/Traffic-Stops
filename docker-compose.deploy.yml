@@ -16,10 +16,7 @@ services:
       EMAIL_HOST: mailhog
       EMAIL_PORT: 1025
       SESSION_COOKIE_SECURE: "False"
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-      # target: deploy
+    image: opendatapolicing_app:latest
     command: ["uwsgi", "--show-config"]
     links:
       - db:db
