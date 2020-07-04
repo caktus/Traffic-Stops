@@ -2,25 +2,41 @@ version: '3.4'
 
 services:
   app:
-    environment:
-      DJANGO_SETTINGS_MODULE: traffic_stops.settings.deploy
-      DATABASE_URL: postgres://postgres@db:5432/traffic_stops
-      DATABASE_URL_NC: postgres://postgres@db:5432/traffic_stops_nc
-      DATABASE_URL_MD: postgres://postgres@db:5432/traffic_stops_md
-      DATABASE_URL_IL: postgres://postgres@db:5432/traffic_stops_il
-      ENVIRONMENT: local
-      DJANGO_SECRET_KEY: insecure-dev-key
-      DJANGO_MANAGEPY_MIGRATE: "on"
-      DOMAIN: localhost
-      EMAIL_HOST: mailhog
-      EMAIL_PORT: 1025
-      SESSION_COOKIE_SECURE: "False"
     image: opendatapolicing_app:latest
     command: ["uwsgi", "--show-config"]
+    environment:
+      DJANGO_MANAGEPY_MIGRATE: "on"
+    env_file:
+      - .docker.env
     links:
       - db:db
+    depends_on:
+      - redis
+      - mailhog
     ports:
       - "8000:8000"
+  worker:
+    image: opendatapolicing_app:latest
+    command: ["celery", "--app=traffic_stops", "worker", "-l", "info"]
+    env_file:
+      - .docker.env
+    links:
+      - db:db
+    depends_on:
+      - app
+      - redis
+      - mailhog
+  beat:
+    image: opendatapolicing_app:latest
+    command: ["celery", "--app=traffic_stops", "beat", "--pidfile=/tmp/celerybeat.pid", "--schedule=/tmp/celerybeat-schedule", "-l", "info"]
+    env_file:
+      - .docker.env
+    links:
+      - db:db
+    depends_on:
+      - app
+      - redis
+      - mailhog
   redis:
     image: redis:5-alpine
   mailhog:

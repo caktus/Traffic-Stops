@@ -100,9 +100,7 @@ if SENTRY_DSN:
 
 DATABASE_ETL_USER = 'etl'
 
-# Uncomment if using celery worker configuration
-CELERY_SEND_TASK_ERROR_EMAILS = True
-# BROKER_URL = 'amqp://traffic_stops_%(ENVIRONMENT)s:%(BROKER_PASSWORD)s@%(BROKER_HOST)s/traffic_stops_%(ENVIRONMENT)s' % os.environ  # noqa
+BROKER_URL = os.getenv("BROKER_URL", "redis://redis:6379/0")
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': []

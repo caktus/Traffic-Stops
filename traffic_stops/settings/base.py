@@ -252,6 +252,7 @@ LOGGING = {
         "md": {"handlers": ["console"], "level": "DEBUG", "propagate": False,},
         "caching": {"handlers": ["console"], "level": "DEBUG", "propagate": False,},
         "caching.invalidation": {"handlers": ["console"], "level": "INFO", "propagate": False,},
+        "celery": {"level": "INFO", "handlers": ["console"], "propagate": False,},
     },
     "root": {"handlers": ["console",], "level": "INFO",},
 }

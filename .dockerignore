@@ -8,4 +8,5 @@ Dockerfile
 setup.cfg
 node_modules
 *.dump
-.env
+*.env
+.git
