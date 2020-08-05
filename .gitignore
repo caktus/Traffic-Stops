@@ -44,3 +44,4 @@ npm-debug.log
 env-local.sh
 *.dump
 .envrc
+.vscode
