@@ -6,47 +6,44 @@ Stops project. To begin you should have the following applications installed on
 your local development system:
 
 - Python 3.8
-- NodeJS >= 4.2
+- NodeJS >= 10.21.0
 - `pip >= 8 or so <http://www.pip-installer.org/>`_
 - `virtualenv >= 1.10 <http://www.virtualenv.org/>`_
 - `virtualenvwrapper >= 3.0 <http://pypi.python.org/pypi/virtualenvwrapper>`_
-- Postgres >= 9.3
-- git >= 1.7
-
-If you need Python 3.4 installed, you can use this PPA::
-
-    sudo add-apt-repository ppa:fkrull/deadsnakes
-    sudo apt-get update
-    sudo apt-get install python3.4-dev
-
-(If you build Python 3.4 yourself on Ubuntu, ensure that the `libbz2-dev`
-package is installed first.)
-
-The tool that we use to deploy code is called `Fabric
-<http://docs.fabfile.org/>`_, which is not yet Python3 compatible. So,
-we need to install that globally in our Python2 environment::
-
-    sudo pip install fabric==1.10.0
-
-For a working ``fab encrypt`` you'll need more modules in a Python 2
-environment.  Create a new virtualenv for that and use ``requirements/fab.txt``.
-
-The deployment uses SSH with agent forwarding so you'll need to enable agent
-forwarding if it is not already by adding ``ForwardAgent yes`` to your SSH
-config.
+- Postgres >= 12
 
 
 Getting Started
 ---------------
 
+Run PostgreSQL in Docker::
+
+    docker-compose up -d
+
+This will create a PostgreSQL server with multiple databases (see
+``docker-entrypoint.postgres.sql``).
+
+To use ``psql`` locally, make sure you have the following env variables loaded
+(like with `direnv <https://github.com/direnv/direnv>`_::
+
+    export DJANGO_SETTINGS_MODULE=traffic_stops.settings.local
+    export PGHOST=127.0.0.1
+    export PGPORT=54344
+    export PGUSER=postgres
+    export PGDATABASE=traffic_stops
+    export DATABASE_URL=postgres://127.0.0.1:54344/traffic_stops
+    export DATABASE_URL_NC=postgres://127.0.0.1:54344/traffic_stops_nc
+    export DATABASE_URL_MD=postgres://127.0.0.1:54344/traffic_stops_md
+    export DATABASE_URL_IL=postgres://127.0.0.1:54344/traffic_stops_il
+
 To setup your local environment you should create a virtualenv and install the
 necessary requirements::
 
-    $ which python3.4  # make sure you have Python 3.4 installed
-    $ mkvirtualenv --python=`which python3.8` opendatapolicing
-    (opendatapolicing)$ pip install -U pip
-    (opendatapolicing)$ make setup
-    (opendatapolicing)$ npm install
+    $ which python3.8  # make sure you have Python 3.8 installed
+    $ mkvirtualenv --python=`which python3.8` traffic-stops
+    (traffic-stops)$ pip install -U pip
+    (traffic-stops)$ make setup
+    (traffic-stops)$ npm install
 
 If ``npm install`` fails, make sure you're using ``npm`` from a reasonable version
 of NodeJS, as documented at the top of this document.
@@ -56,21 +53,17 @@ Next, we'll set up our local environment variables. We use `django-dotenv
 located in a file name ``.env`` in the top level directory of the project. The only variable we need
 to start is ``DJANGO_SETTINGS_MODULE``::
 
-    (opendatapolicing)$ cp traffic_stops/settings/local.example.py traffic_stops/settings/local.py
-    (opendatapolicing)$ echo "DJANGO_SETTINGS_MODULE=traffic_stops.settings.local" > .env
+    (traffic-stops)$ cp traffic_stops/settings/local.example.py traffic_stops/settings/local.py
+    (traffic-stops)$ echo "DJANGO_SETTINGS_MODULE=traffic_stops.settings.local" > .env
 
 Exit the virtualenv and reactivate it to activate the settings just changed::
 
-    (opendatapolicing)$ deactivate
-    (opendatapolicing)$ workon opendatapolicing
+    (traffic-stops)$ deactivate
+    (traffic-stops)$ workon traffic-stops
 
-Create the Postgres database and run the initial syncdb/migrate::
+Migrate the project databases::
 
-    (opendatapolicing)$ createdb -E UTF-8 traffic_stops
-    (opendatapolicing)$ createdb -E UTF-8 traffic_stops_nc
-    (opendatapolicing)$ createdb -E UTF-8 traffic_stops_md
-    (opendatapolicing)$ createdb -E UTF-8 traffic_stops_il
-    (opendatapolicing)$ ./migrate_all_dbs.sh
+    (traffic-stops)$ ./migrate_all_dbs.sh
 
 
 Development
@@ -78,14 +71,15 @@ Development
 
 You should be able to run the development server via the configured ``dev`` script::
 
-    (opendatapolicing)$ npm run dev
+    (traffic-stops)$ npm run dev
 
 Or, on a custom port and address::
 
-    (opendatapolicing)$ npm run dev -- --address=0.0.0.0 --port=8020
+    (traffic-stops)$ npm run dev -- --address=0.0.0.0 --port=8020
 
 Any changes made to Python, Javascript or Less files will be detected and rebuilt transparently as
 long as the development server is running.
+
 
 When running migrations
 -----------------------
