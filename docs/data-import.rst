@@ -27,22 +27,9 @@ To load an existing database dump on S3, run:
 
 .. code-block:: bash
 
-    dropdb traffic_stops_nc
-    createdb -E UTF-8 traffic_stops_nc
-    wget https://s3-us-west-2.amazonaws.com/openpolicingdata/traffic_stops_nc_2018_01_08.dump.zip
-    unzip traffic_stops_nc_2018_01_08.dump.zip
-    pg_restore -Ox -d traffic_stops_nc traffic_stops_nc_2018_01_08.dump
-
-Browse https://s3-us-west-2.amazonaws.com/openpolicingdata/ to see what dumps
-are available.
-
-To create a new database dump, run:
-
-.. code-block:: bash
-
-    ssh dev.opendatapolicingnc.com 'sudo -u postgres pg_dump -Fc traffic_stops_nc_staging' > traffic_stops_nc.dump
-
-That can be loaded with the ``pg_restore`` command shown above.
+    dropdb traffic_stops_nc && createdb -E UTF-8 traffic_stops_nc
+    aws s3 cp s3://taffic-stops/traffic_stops_nc.dump .
+    pg_restore -Ox -d traffic_stops_nc traffic_stops_nc.dump
 
 
 Raw NC Data (slower)
