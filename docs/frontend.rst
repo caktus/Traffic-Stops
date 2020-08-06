@@ -4,7 +4,7 @@ Organization of the front-end
 Overview
 --------
 
-The front-end code for the graphs on the Open Data Policing site is broken down into three groups.
+The front-end code for the graphs on the Traffic Stops site is broken down into three groups.
 
 - base: classes that define the shared functionality of all components. These include:
     - ``DataHandlerBase``: the Model subclass that handles talking to the API

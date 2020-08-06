@@ -44,7 +44,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'Open Data Policing'
+project = 'Traffic Stops'
 copyright = '2020, Forward Justice'
 
 # The version info for the project you're documenting, acts as replacement for

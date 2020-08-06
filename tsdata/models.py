@@ -5,8 +5,6 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 
 STATE_CHOICES = (
     (settings.NC_KEY, 'North Carolina'),
-    (settings.MD_KEY, 'Maryland'),
-    (settings.IL_KEY, 'Illinois'),
 )
 
 STATUS_CHOICES = (
@@ -39,13 +37,9 @@ class Dataset(models.Model):
     def agency_model(self):
         """Return the appropriate Agency model for this Dataset's state.
         """
-        from il.models import Agency as ILAgency
-        from md.models import Agency as MDAgency
         from nc.models import Agency as NCAgency
 
         agencies = {
-            settings.IL_KEY: ILAgency,
-            settings.MD_KEY: MDAgency,
             settings.NC_KEY: NCAgency,
         }
 

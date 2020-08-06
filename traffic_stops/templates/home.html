@@ -9,8 +9,8 @@
 <div class="state-picker">
     <div class="container">
       <div class="row">
-        <h1 class='title'>Open Data Policing</h1>
-        <p class='tagline'>Search all known North Carolina, Maryland, and Illinois traffic stops</p>
+        <h1 class='title'>Traffic Stops</h1>
+        <p class='tagline'>Search all known North Carolina traffic stops</p>
       </div>
       <div class="row">
         <div class="col-sm-4">
@@ -19,17 +19,6 @@
           <p class='stop-count'>{{ nc.total_stops_millions }}+ million stops</p>
           <a href="{% url 'nc:home' %}" class="btn btn-default nc">Search NC</a>
         </div>
-        <div class="col-sm-4">
-          <!-- <h2>Maryland</h2> -->
-          <img src="{% static "svg/noun_19618_cc-white.svg" %}" class="state md">
-          <p class='stop-count'>2+ million stops</p>
-          <a href="{% url 'md:home' %}" class="btn btn-default md">Search MD</a>
-        </div>
-        <div class="col-sm-4">
-          <!-- <h2>Illinois</h2> -->
-          <img src="{% static "svg/noun_648290_cc.svg" %}" class="state il">
-          <p class='stop-count'>23+ million stops</p>
-          <a href="{% url 'il:home' %}" class="btn btn-default">Search IL</a>
         </div>
       </div>
     </div>
@@ -93,23 +82,22 @@
   <div class="container">
     <div class="row">
       <div class="col-sm-6 justify">
-        <h3>About Open Data Policing</h3>
+        <h3>About Traffic Stops</h3>
         <p>
-          Open Data Policing is a first-of-its-kind platform that aims to make
+          Traffic Stops is a first-of-its-kind platform that aims to make
             real the recommendation of the President’s Task Force on 21st
             Century Policing to make stop, search, and use-of-force
             “data...publicly available to ensure transparency.”  The site currently
             aggregates, visualizes, and publishes public records related to all
-            known traffic stops to have occurred in North Carolina since 2002, in
-            Maryland since 2013, and in Illinois since 2005.  Data is collected in all states pursuant
+            known traffic stops to have occurred in North Carolina since 2002.  Data is collected in all states pursuant
             to mandatory data collection statutes and reported monthly to the NC
-            State Bureau of Investigation, Maryland State Police, and Illinois State Police.
+            State Bureau of Investigation.
             The platform does not alter or manipulate raw data.  Where data sets
             are incomplete or missing, it is because they have not been reported
             to the state agency from which the site derives its records.
             Although the site permits users to identify the career enforcement
             patterns of individual officers associated with known traffic stops,
-            <b>Open Data Policing does not have access to, nor does it publish,
+            <b>Traffic Stops does not have access to, nor does it publish,
                 the names or drivers, passengers, or officers involved in
                 traffic stops.</b>
         </p>
