@@ -2,6 +2,7 @@
 django<3.0
 celery
 census
+us
 dealer
 django-bootstrap3
 django-cache-machine

@@ -84,7 +84,7 @@ def unzip_data(destination, url=None, zip_path=None):
         archive = zipfile.ZipFile(zip_path)
         logger.debug("Extracting archive into {}".format(destination))
         archive.extractall(path=destination)
-        logger.debug("Extraction complete".format(destination))
+        logger.debug("Extraction complete")
 
 
 def download_and_unzip_data(url, destination, prefix='state-'):

@@ -35,7 +35,7 @@ def import_dataset(dataset_id):
     ]
     try:
         state_import(dataset.url, destination=dataset.destination)
-    except:
+    except Exception:
         run.date_finished = timezone.now()
         run.save()
         raise

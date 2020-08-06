@@ -25,14 +25,6 @@ DATABASES = {
         'HOST': '',
         'PORT': '',
     },
-    'traffic_stops_il': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'traffic_stops_il',
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': '',
-        'PORT': '',
-    },
     'traffic_stops_nc': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'traffic_stops_nc',
@@ -40,15 +32,7 @@ DATABASES = {
         'PASSWORD': '',
         'HOST': '',
         'PORT': '',
-    },
-    'traffic_stops_md': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'traffic_stops_md',
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': '',
-        'PORT': '',
-    },
+    }
 }
 
 if os.getenv("DATABASE_URL"):
@@ -68,20 +52,6 @@ if os.getenv("DATABASE_URL"):
             ssl_require=os.getenv("DATABASE_SSL", False),
         )
         DATABASES["traffic_stops_nc"].update(db_from_env)
-    if os.getenv("DATABASE_URL_MD"):
-        db_from_env = dj_database_url.config(
-            env='DATABASE_URL_MD',
-            conn_max_age=500,
-            ssl_require=os.getenv("DATABASE_SSL", False),
-        )
-        DATABASES["traffic_stops_md"].update(db_from_env)
-    if os.getenv("DATABASE_URL_IL"):
-        db_from_env = dj_database_url.config(
-            env='DATABASE_URL_IL',
-            conn_max_age=500,
-            ssl_require=os.getenv("DATABASE_SSL", False),
-        )
-        DATABASES["traffic_stops_il"].update(db_from_env)
 
 
 DATABASE_ROUTERS = ['traffic_stops.routers.StateDatasetRouter']
@@ -95,12 +65,8 @@ DATABASE_ETL_USER = ''
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
 TIME_ZONE = 'America/New_York'
-IL_TIME_ZONE = 'America/Chicago'
-MD_TIME_ZONE = 'America/New_York'
 NC_TIME_ZONE = 'America/New_York'
 
-IL_KEY = 'il'
-MD_KEY = 'md'
 NC_KEY = 'nc'
 
 
@@ -110,8 +76,6 @@ class StateConfig:
 
 
 STATE_CONFIG = {
-    IL_KEY: StateConfig(tz_name=IL_TIME_ZONE),
-    MD_KEY: StateConfig(tz_name=MD_TIME_ZONE),
     NC_KEY: StateConfig(tz_name=NC_TIME_ZONE),
 }
 
@@ -247,7 +211,6 @@ LOGGING = {
         "traffic_stops": {"handlers": ["console"], "level": "INFO", "propagate": False,},
         "tsdata": {"handlers": ["console"], "level": "DEBUG", "propagate": False,},
         "nc": {"handlers": ["console"], "level": "DEBUG", "propagate": False,},
-        "md": {"handlers": ["console"], "level": "DEBUG", "propagate": False,},
         "caching": {"handlers": ["console"], "level": "DEBUG", "propagate": False,},
         "caching.invalidation": {"handlers": ["console"], "level": "INFO", "propagate": False,},
         "celery": {"level": "INFO", "handlers": ["console"], "propagate": False,},
