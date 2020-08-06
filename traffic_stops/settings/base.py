@@ -222,8 +222,6 @@ INSTALLED_APPS = [
     # Custom apps
     'tsdata',
     'nc',
-    'md',
-    'il',
 ]
 
 

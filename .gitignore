@@ -45,3 +45,4 @@ env-local.sh
 *.dump
 .envrc
 .vscode
+jgdc.yml

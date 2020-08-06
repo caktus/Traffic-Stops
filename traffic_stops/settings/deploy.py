@@ -114,4 +114,4 @@ if ENVIRONMENT.upper() == 'PRODUCTION':
 
     # List of email addresses that receive the report of non-compliance of
     # traffic stop reporting.
-    COMPLIANCE_REPORT_LIST = ('Ianmance@southerncoalition.org',)
+    COMPLIANCE_REPORT_LIST = ('wcarpenter@forwardjustice.org',)
