@@ -7,7 +7,7 @@
 -e git+https://github.com/caktus/invoke-kubesae@0.0.5#egg=invoke-kubesae  # via -r requirements/dev/dev.in
 alabaster==0.7.12         # via sphinx
 ansible==2.9.6            # via invoke-kubesae
-appnope==0.1.0            # via -r requirements/dev/dev.in, ipython
+appnope==0.1.0            # via -r requirements/dev/dev.in
 argh==0.26.2              # via sphinx-autobuild
 attrs==19.3.0             # via -c requirements/dev/../test/test.txt, jsonschema
 awscli==1.18.58           # via -r requirements/dev/dev.in

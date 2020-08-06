@@ -11,12 +11,9 @@ admin.autodiscover()
 
 
 urlpatterns = [  # noqa
-    url(r'^$', HomeView.as_view(), name='home'),
+    url(r'^', include(('nc.urls', 'nc'), namespace='nc'), name='home'),
     url(r'^admin/', admin.site.urls),
     url(r'^selectable/', include('selectable.urls')),
-    url(r'^il/', include(('il.urls', 'il'), namespace='il')),
-    url(r'^md/', include(('md.urls', 'md'), namespace='md')),
-    url(r'^nc/', include(('nc.urls', 'nc'), namespace='nc')),
     url(r'^about$', About.as_view(), name='about'),
     url(r'^update-session/', UpdateSession.as_view(), name='update_session'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

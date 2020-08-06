@@ -2,7 +2,7 @@ import re
 
 from django.utils.deprecation import MiddlewareMixin
 
-STATES = ('nc', 'md', 'il')
+STATES = ('nc')
 pattern = re.compile(r"^/(\w{2})/")
 
 

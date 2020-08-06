@@ -9,8 +9,6 @@ from django.core.mail import send_mail, EmailMessage
 from django.db.models import Max, Q
 from django.utils import timezone
 
-from il.data.importer import run as il_run
-from md.data.importer import run as md_run
 from nc.data.importer import run as nc_run
 from traffic_stops.celery import app
 from tsdata.models import Dataset, Import
@@ -19,8 +17,6 @@ from tsdata.models import Dataset, Import
 logger = get_task_logger(__name__)
 
 RUN_MAP = {
-    settings.IL_KEY: il_run,
-    settings.MD_KEY: md_run,
     settings.NC_KEY: nc_run,
 }
 
