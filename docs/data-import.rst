@@ -28,7 +28,7 @@ To load an existing database dump on S3, run:
 .. code-block:: bash
 
     dropdb traffic_stops_nc && createdb -E UTF-8 traffic_stops_nc
-    aws s3 cp s3://taffic-stops/traffic_stops_nc.dump .
+    aws s3 cp s3://traffic-stops/traffic_stops_nc.dump .
     pg_restore -Ox -d traffic_stops_nc traffic_stops_nc.dump
 
 
