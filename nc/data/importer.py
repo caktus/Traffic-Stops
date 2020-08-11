@@ -4,6 +4,7 @@ import glob
 import logging
 import os
 import sys
+from pathlib import Path
 
 from django.conf import settings
 from django.core.mail import EmailMessage
@@ -271,9 +272,38 @@ def update_nc_agencies(nc_csv_path, destination):
 
 def copy_from(destination, nc_csv_path):
     """Execute copy.sql to COPY csv data files into PostgreSQL database"""
+    # cmd_base = ['psql', '-d', 'traffic_stops_nc', '-c']
+    # call(cmd_base + ['BEGIN;'])
+
+    # CLEAN_DATABASE = """
+    #     TRUNCATE "nc_stop" RESTART IDENTITY CASCADE;
+    #     TRUNCATE "nc_person" RESTART IDENTITY CASCADE;
+    #     TRUNCATE "nc_search" RESTART IDENTITY CASCADE;
+    #     TRUNCATE "nc_searchbasis" RESTART IDENTITY CASCADE;
+    #     TRUNCATE "nc_contraband" RESTART IDENTITY CASCADE;
+    #     TRUNCATE "nc_agency" RESTART IDENTITY CASCADE;
+    # """
+    # cmd = ['psql', '-d', 'traffic_stops_nc', '-c', CLEAN_DATABASE]
+    # call(cmd_base + [CLEAN_DATABASE])
+
+    # NC_SQL_COPY = {
+    #     "Stop.csv": "\copy nc_stop (stop_id, agency_description, date, purpose, action, driver_arrest, passenger_arrest, encounter_force, engage_force, officer_injury, driver_injury, passenger_injury, officer_id, stop_location, stop_city) FROM '{}' WITH  DELIMITER ',' NULL AS '' CSV HEADER FORCE NOT NULL officer_id, stop_city, stop_location",
+    #     "PERSON.csv": "\copy nc_person (person_id, stop_id, type, age, gender, ethnicity, race) FROM '{}' WITH DELIMITER ',' NULL AS '' CSV HEADER FORCE NOT NULL ethnicity, gender, race",
+    #     "Search.csv": "\copy nc_search (search_id, stop_id, person_id, type, vehicle_search, driver_search, passenger_search, property_search, vehicle_siezed, personal_property_siezed, other_property_sized) FROM '{}' WITH DELIMITER ',' NULL AS '' CSV HEADER",
+    #     "Contraband.csv": "\copy nc_contraband (contraband_id, search_id, person_id, stop_id, ounces, pounds, pints, gallons, dosages, grams, kilos, money, weapons, dollar_amount) FROM '{}' WITH DELIMITER ',' CSV HEADER",
+    #     "SearchBasis.csv": "\copy nc_searchbasis (search_basis_id, search_id, person_id, stop_id, basis) FROM '{}' WITH DELIMITER ',' CSV HEADER",
+    #     "NC_agencies.csv": "\copy  nc_agency (id, name, census_profile_id) from '{}' WITH DELIMITER ',' CSV HEADER FORCE NOT NULL census_profile_id"
+    # }
+
+    # path = Path(destination)
+    # for p in path.glob("*.csv"):
+    #     if p.name in NC_SQL_COPY.keys():
+    #         logger.info("Copying {}".format(p.name))
+    #         cmd = ['psql', '-d', 'traffic_stops_nc', '-c', NC_SQL_COPY[p.name].format(p.absolute())]
+    #         call(cmd)
     sql_file = os.path.join(os.path.dirname(__file__), 'copy.sql')
     cmd = ['psql',
-           '-v', 'data_dir={}'.format(destination),
+           '-v', 'data_dir={}'.format('/tmp'),
            '-v', 'nc_time_zone={}'.format(settings.NC_TIME_ZONE),
            '-v', 'nc_csv_table={}'.format(nc_csv_path),
            '-f', sql_file,

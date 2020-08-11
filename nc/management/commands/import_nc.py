@@ -8,7 +8,8 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('--dest', default=None)
-        parser.add_argument('--url', default=DEFAULT_URL)
+        parser.add_argument('--url', default=None)
+        parser.add_argument('--zip-path', default=None)
         parser.add_argument('--min-stop-id', default=None)
         parser.add_argument('--max-stop-id', default=None)
         parser.add_argument('--noprime', '-n', action='store_true', dest='no_prime',
@@ -18,7 +19,7 @@ class Command(BaseCommand):
         min_stop_id = int(options['min_stop_id']) if options['min_stop_id'] else None
         max_stop_id = int(options['max_stop_id']) if options['max_stop_id'] else None
         importer.run(
-            options['url'], options['dest'],
+            options['url'], options['dest'], options['zip_path'],
             min_stop_id=min_stop_id,
             max_stop_id=max_stop_id,
             prime_cache=not options['no_prime'],
