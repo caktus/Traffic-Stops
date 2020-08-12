@@ -5,7 +5,7 @@ from django.conf import settings
 from django.db import migrations, models
 
 
-STATE_KEYS = (settings.IL_KEY, settings.MD_KEY, settings.NC_KEY)
+STATE_KEYS = (settings.NC_KEY,)
 
 
 def create_state_facts(apps, schema_editor):

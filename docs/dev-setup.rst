@@ -33,8 +33,6 @@ To use ``psql`` locally, make sure you have the following env variables loaded
     export PGDATABASE=traffic_stops
     export DATABASE_URL=postgres://127.0.0.1:54344/traffic_stops
     export DATABASE_URL_NC=postgres://127.0.0.1:54344/traffic_stops_nc
-    export DATABASE_URL_MD=postgres://127.0.0.1:54344/traffic_stops_md
-    export DATABASE_URL_IL=postgres://127.0.0.1:54344/traffic_stops_il
 
 To setup your local environment you should create a virtualenv and install the
 necessary requirements::
@@ -108,8 +106,6 @@ For basic setup, run the following commands::
   docker-compose build web  # build the container (can take a while)
   docker-compose run --rm web createdb -E UTF-8 traffic_stops
   docker-compose run --rm web createdb -E UTF-8 traffic_stops_nc
-  docker-compose run --rm web createdb -E UTF-8 traffic_stops_md
-  docker-compose run --rm web createdb -E UTF-8 traffic_stops_il
   docker-compose run --rm web ./migrate_all_dbs.sh
 
 Run ``npm install`` inside the ``web`` container (you'll need to do this for any update to

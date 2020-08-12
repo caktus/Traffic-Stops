@@ -11,7 +11,7 @@
 
 import census
 import pandas as pd
-# from us import states
+from us import states
 
 from django.conf import settings
 from django.db import transaction
@@ -48,8 +48,6 @@ OTHER_RACE_VARS = {
 
 RACE_VARIABLES = {
     settings.NC_KEY.upper(): NC_RACE_VARS,
-    settings.IL_KEY.upper(): OTHER_RACE_VARS,
-    settings.MD_KEY.upper(): OTHER_RACE_VARS,
 }
 
 
@@ -71,7 +69,7 @@ class ACS(object):
         self.variables = ['NAME', 'GEO_ID'] + list(self.race_variables.keys())
 
     def call_api(self):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     def get(self):
         # load response (list of dicts) into pandas

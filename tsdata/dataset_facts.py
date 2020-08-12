@@ -34,7 +34,7 @@ def compute_dataset_facts(
 
     :param Agency: the state's Agency model (class)
     :param Stop: the state's Stop model (class)
-    :param state_key: one of settings.IL_KEY, settings.MD_KEY, etc.
+    :param state_key: one of settings.NC_KEY
     :param Search: the state's Search model (class), if it has one
     :param override_start_date: text to use instead of the computed start date
       (NC has little data for 2000-2001 and pretends for display purposes that

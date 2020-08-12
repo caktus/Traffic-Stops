@@ -14,12 +14,12 @@ NC Traffic Stops
 
 NC Traffic Stops is a website to monitor and identify racial profiling
 practices by North Carolina law enforcement agencies. This project is lead by
-the `Southern Coalition for Social Justice`_, a Durham-based civil rights
-organization.
+`Forward Justice`_, a nonpartisan law, policy, and strategy center dedicated to advancing racial, 
+social, and economic justice in the U.S. South.
 
 Please see the `production documentation`_ and `development documentation`_
 for more information.
 
 .. _production documentation: http://nc-traffic-stops.readthedocs.org/en/latest/
 .. _development documentation: http://nc-traffic-stops.readthedocs.org/en/dev/
-.. _Southern Coalition for Social Justice: http://www.scsj.org/
+.. _Forward Justice: https://forwardjustice.org/

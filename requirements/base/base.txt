@@ -26,6 +26,7 @@ djangorestframework==3.11.0  # via -r requirements/base/base.in, drf-extensions
 drf-extensions==0.6.0     # via -r requirements/base/base.in
 future==0.18.2            # via celery, census
 idna==2.10                # via requests
+jellyfish==0.6.1          # via us
 kombu==4.6.11             # via celery
 numpy==1.19.0             # via pandas
 pandas==1.0.5             # via -r requirements/base/base.in
@@ -36,5 +37,6 @@ requests==2.24.0          # via -r requirements/base/base.in, census
 six==1.15.0               # via -r requirements/base/base.in, django-click, django-extensions, python-dateutil
 sqlparse==0.3.1           # via django
 urllib3==1.25.9           # via requests
+us==2.0.2                 # via -r requirements/base/base.in
 vine==1.3.0               # via amqp, celery
 whitenoise==5.1.0         # via -r requirements/base/base.in

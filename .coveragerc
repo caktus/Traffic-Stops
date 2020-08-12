@@ -1,6 +1,6 @@
 [run]
 branch = true
-source = traffic_stops,tsdata,il,md,nc
+source = traffic_stops,tsdata,nc
 omit = */tests/*, */migrations/*, */admin.py, */management/*, */data/analyzer.py, md/data/scanner.py, traffic_stops/settings/*, traffic_stops/wsgi.py
 
 [report]
