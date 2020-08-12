@@ -30,7 +30,6 @@ Contents:
    server-setup
    provisioning
    api
-   vagrant
 
 
 Indices and tables

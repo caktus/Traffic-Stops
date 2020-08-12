@@ -1,4 +1,4 @@
-# Settings for live deployed environments: vagrant, staging, production, etc
+# Settings for live deployed environments: staging, production, etc
 from .base import *  # noqa
 
 # This is NOT a complete production settings file. For more, see:
