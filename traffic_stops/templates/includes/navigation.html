@@ -13,6 +13,8 @@
     </div>
     <div class="navbar-collapse collapse">
       <ul class="nav navbar-nav navbar-right">
+        <li><a href='{% url "nc:agency-list" %}'>Agencies</a></li>
+        <li><a href='{% url "nc:stops-search" %}'>Find a stop</a></li>
         <li><a href="{% url "about" %}">About</a></li>
         {% if user.is_authenticated %}
             {% if user.is_staff %}

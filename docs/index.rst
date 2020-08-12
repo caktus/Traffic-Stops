@@ -9,6 +9,11 @@ Welcome to NC Traffic Stop's documentation!
 Traffic Stops is a project of `Forward Justice`_.
 `Caktus Group`_,
 
+The site’s original development team consisted of Colin Copeland, CTO of
+`Caktus Group`_, and volunteer developers Andy Shapiro and Dylan Young of
+Durham, NC. A special thanks to Tom Meehan for assisting with analyzing US
+census data.
+
 This is the developer documentation.
 
 .. _Forward Justice: https://forwardjustice.org/
