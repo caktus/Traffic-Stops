@@ -274,25 +274,31 @@ def update_nc_agencies(nc_csv_path, destination):
 
 def copy_from(destination, nc_csv_path):
     """Populates the NC database from csv files."""
+    try:
+        logger.info("Connecting to database")
+        conn = psycopg2.connect(
+            database="traffic_stops_nc",
+            user=os.environ.get("PGUSER"),
+            host=os.environ.get("PGHOST"),
+            port=os.environ.get("PGPORT")
+        )
 
-    conn = psycopg2.connect(
-        database="traffic_stops_nc",
-        user=os.environ.get("PGUSER"),
-        host=os.environ.get("PGHOST"),
-        port=os.environ.get("PGPORT")
-    )
-
-    with conn:
-        with conn.cursor() as cur:
-            cur.execute(copy_nc.SET_TIMEZONE)
-            cur.execute(copy_nc.CLEAN_DATABASE)
-            path = Path(destination)
-            for p in path.glob("*.csv"):
-                if p.name in copy_nc.NC_COPY_INSTRUCTIONS.keys():
-                    with p.open() as fh:
-                        logger.info(f"INSERTING {p.name} into the database")
-                        cur.copy_expert(copy_nc.NC_COPY_INSTRUCTIONS[p.name], fh)
-            cur.execute(copy_nc.FINALIZE_COPY)
+        with conn:
+            with conn.cursor() as cur:
+                logger.info(f"Set the timezone to {settings.NC_TIME_ZONE}")
+                cur.execute(copy_nc.SET_TIMEZONE)
+                logger.info("Truncating tables")
+                cur.execute(copy_nc.CLEAN_DATABASE)
+                path = Path(destination)
+                for p in path.glob("*.csv"):
+                    if p.name in copy_nc.NC_COPY_INSTRUCTIONS.keys():
+                        with p.open() as fh:
+                            logger.info(f"INSERTING {p.name} into the database")
+                            cur.copy_expert(copy_nc.NC_COPY_INSTRUCTIONS[p.name], fh)
+                logger.info("Finalizing import")
+                cur.execute(copy_nc.FINALIZE_COPY)
+    except psycopg2.Error as e:
+        logger.error(f"ERROR: Import failed: {e}")
 
     # Remove all stops and related objects that are before 1 Jan 2002, when everyone
     # started reporting consistently.  Don't clear out the NC State Highway Patrol
@@ -309,6 +315,7 @@ def copy_from(destination, nc_csv_path):
     #   Search (-> Person, Stop),
     #   Person (-> Stop),
     #   Stop
+    logger.info("Removing pre-2002 data")
     SearchBasis.objects.exclude(stop__agency=agency).filter(stop__date__lt=begin_dt).delete()
     Contraband.objects.exclude(stop__agency=agency).filter(stop__date__lt=begin_dt).delete()
     Search.objects.exclude(stop__agency=agency).filter(stop__date__lt=begin_dt).delete()
