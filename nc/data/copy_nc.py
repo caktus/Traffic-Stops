@@ -1,6 +1,6 @@
 from django.conf import settings
 
-SET_TIMEZONE = f"SET TIMEZONE='{settings.NC_TIME_ZONE}'"
+SET_TIMEZONE = f"SET TIMEZONE='{settings.NC_TIME_ZONE}'" # noqa
 
 CLEAN_DATABASE = """
     TRUNCATE "nc_stop" RESTART IDENTITY CASCADE;
@@ -9,7 +9,7 @@ CLEAN_DATABASE = """
     TRUNCATE "nc_searchbasis" RESTART IDENTITY CASCADE;
     TRUNCATE "nc_contraband" RESTART IDENTITY CASCADE;
     TRUNCATE "nc_agency" RESTART IDENTITY CASCADE;
-"""
+""" # noqa
 
 # NC_COPY_INSTRUCTIONS: 
 # KEY: Filename that will be found on the file system.
@@ -22,7 +22,7 @@ NC_COPY_INSTRUCTIONS = {
     "Contraband.csv": "COPY nc_contraband (contraband_id, search_id, person_id, stop_id, ounces, pounds, pints, gallons, dosages, grams, kilos, money, weapons, dollar_amount) FROM STDIN WITH DELIMITER ',' CSV HEADER",
     "SearchBasis.csv": "COPY nc_searchbasis (search_basis_id, search_id, person_id, stop_id, basis) FROM STDIN WITH DELIMITER ',' CSV HEADER",
     "NC_agencies.csv": "COPY  nc_agency (id, name, census_profile_id) FROM STDIN WITH DELIMITER ',' CSV HEADER FORCE NOT NULL census_profile_id"
-}
+} # noqa
 
 FINALIZE_COPY = """
     UPDATE nc_stop SET agency_id = nc_agency.id FROM nc_agency WHERE nc_stop.agency_description = nc_agency.name;
@@ -64,4 +64,4 @@ FINALIZE_COPY = """
 
     ANALYZE;
     COMMIT;
-"""
+""" # noqa
