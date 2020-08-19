@@ -15,6 +15,8 @@ rstcheck
 awscli
 openshift
 kubernetes-validate
+boto
+boto3==1.13.8
 
 django-debug-toolbar
 
