@@ -93,9 +93,11 @@ SENTRY_DSN = os.getenv("SENTRY_DSN")
 if SENTRY_DSN:
     import sentry_sdk
     from sentry_sdk.integrations.django import DjangoIntegration
+    from sentry_sdk.integrations.celery import CeleryIntegration
+    from sentry_sdk.integrations.redis import RedisIntegration
 
     sentry_sdk.init(
-        dsn=SENTRY_DSN, integrations=[DjangoIntegration()], environment=ENVIRONMENT,
+        dsn=SENTRY_DSN, integrations=[DjangoIntegration(), CeleryIntegration(), RedisIntegration()], environment=ENVIRONMENT,
     )
 
 DATABASE_ETL_USER = 'etl'
