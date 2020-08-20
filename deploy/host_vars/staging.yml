@@ -96,7 +96,7 @@ k8s_environment_variables:
         MEDIA_LOCATION: "{{ env_media_location }}"
         # *** Email
         # 'ses-smtp-user.20200820-123301-trafficstops' user in Caktus main AWS account
-        EMAIL_HOST: "email-smtp.us-east-1.amazonaws.com"
+        EMAIL_HOST: "email-smtp.us-east-2.amazonaws.com"
         EMAIL_HOST_USER: AKIARUIVHKXTUGJ5E4IE
         EMAIL_HOST_PASSWORD: !vault |
           $ANSIBLE_VAULT;1.1;AES256
