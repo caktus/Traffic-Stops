@@ -77,6 +77,7 @@ k8s_environment_variables:
         ALLOWED_HOSTS: "{{ k8s_domain_names[0] }}"
         ENVIRONMENT: "{{ env_name }}"
         CACHE_HOST: "{{ env_cache_host }}"
+        BROKER_URL: "{{ env_broker_url }}"
         # *** Uploaded media
         DEFAULT_FILE_STORAGE: "{{ env_default_file_storage }}"
         MEDIA_STORAGE_BUCKET_NAME: "{{ env_media_storage_bucket_name }}"

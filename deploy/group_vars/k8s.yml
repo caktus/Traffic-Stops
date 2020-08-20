@@ -34,8 +34,9 @@ k8s_collectstatic_enabled: false
 # Shared environment variables:
 env_database_url: "postgres://{{ app_name }}_{{ env_name }}:{{ database_password }}@{{ DatabaseAddress }}:5432/{{ app_name }}_{{ env_name }}"
 env_database_url_nc: "postgres://{{ app_name }}_{{ env_name }}:{{ database_password }}@{{ DatabaseAddress }}:5432/{{ app_name }}_{{ env_name }}_nc"
-env_django_settings: "trafficstops.settings.deploy"
-env_cache_host: memcached:11211
+env_django_settings: "traffic_stops.settings.deploy"
+env_broker_url: redis://redis:6379/0
+env_cache_host: redis://redis:6379/1
 env_default_file_storage: "{{ app_name }}.storages.MediaBoto3Storage"
 env_media_storage_bucket_name: "{{ app_name }}-{{ env_name }}-assets"
 env_aws_default_acl: public-read
@@ -54,6 +55,7 @@ env_sentry_dsn: https://8567ec420cf04ce3b7f4b82d5fff70f7@o168020.ingest.sentry.i
 
 # Auxillary pod configuration:
 k8s_memcached_enabled: true
+k8s_redis_enabled: true
 
 # S3 bucket configuration:
 k8s_s3_region: "{{ aws_region }}"
