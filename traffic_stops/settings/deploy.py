@@ -42,7 +42,7 @@ elif EMAIL_USE_SSL:
 else:
     default_smtp_port = 25
 EMAIL_PORT = os.getenv("EMAIL_PORT", default_smtp_port)
-EMAIL_SUBJECT_PREFIX = "[odp %s] " % ENVIRONMENT.title()
+EMAIL_SUBJECT_PREFIX = "[trafficstops %s] " % ENVIRONMENT.title()
 DEFAULT_FROM_EMAIL = f"noreply@{os.getenv('DOMAIN', os.environ)}"
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
@@ -83,7 +83,7 @@ for backend in TEMPLATES:
 
 ### ADMINS and MANAGERS
 ADMINS = (
-    ('ODP Team', 'odp-team@caktusgroup.com'),
+    ('trafficstops team', 'forwardjustice-team@caktusgroup.com'),
 )
 MANAGERS = ADMINS
 
