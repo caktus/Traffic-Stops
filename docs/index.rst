@@ -27,8 +27,6 @@ Contents:
 
    dev-setup
    data-import
-   server-setup
-   provisioning
    api
 
 
