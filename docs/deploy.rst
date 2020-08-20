@@ -55,6 +55,34 @@ Create EKS cluster CloudFormation stack
     inv aws.configure-eks-kubeconfig
 
 
+Create PostgreSQL database
+---------------------------------------
+
+1. Launch a temporary debian pod within the cluster::
+
+    inv pod.debian
+
+2. Install ``postgresql-client`` and connect to the RDS PostgreSQL cluster as
+   the admin user::
+
+    apt update
+    apt install postgresql-client
+    export DATABASE_URL=...
+    psql $DATABASE_URL
+
+3. Create environment-specific databases, e.g.::
+
+```sql
+    CREATE ROLE trafficstops_staging WITH LOGIN NOSUPERUSER INHERIT CREATEDB NOCREATEROLE NOREPLICATION PASSWORD '<password>';
+    CREATE DATABASE trafficstops_staging;
+    GRANT CONNECT ON DATABASE trafficstops_staging TO trafficstops_staging;
+    GRANT ALL PRIVILEGES ON DATABASE trafficstops_staging TO trafficstops_staging;
+    CREATE DATABASE trafficstops_nc_staging;
+    GRANT CONNECT ON DATABASE trafficstops_nc_staging TO trafficstops_staging;
+    GRANT ALL PRIVILEGES ON DATABASE trafficstops_nc_staging TO trafficstops_staging;
+```
+
+
 Configure cluster for deploying web applications
 ------------------------------------------------
 
@@ -69,3 +97,22 @@ Configure cluster for deploying web applications
 3. Configure cluster::
 
     inv playbook -n deploy-cluster.yml
+
+
+Deploy application
+------------------------------------------------
+
+1. Edit variables in ``deploy/group_vars/k8s.yml`` and
+   ``deploy/group_vars/staging.yml`` for needs of project.
+
+2. Log into Docker registry::
+
+    inv aws.docker-login
+
+3. Build and push image::
+
+    inv image.push
+
+4. Deploy::
+
+    inv staging deploy --tag=...

@@ -44,7 +44,7 @@ ns.configure(
         },
         "cluster": "trafficstops-stack-cluster",
         "container_name": "app",
-        "repository": "",
+        "repository": "606178775542.dkr.ecr.us-east-2.amazonaws.com/traff-appli-gvyudgfsjhrz",
         "run": {
             "echo": True,
             "pty": True,
