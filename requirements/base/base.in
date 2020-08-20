@@ -15,7 +15,6 @@ django-selectable
 djangorestframework
 dj-database-url
 drf-extensions
-pandas
 psycopg2-binary
 requests
 six
