@@ -65,7 +65,7 @@ Create PostgreSQL database
 2. Install ``postgresql-client`` and connect to the RDS PostgreSQL cluster as
    the admin user::
 
-    apt update -y && apt install postgresql-client -y
+    apt update && apt install postgresql-client -y
     export DATABASE_URL=...
     psql $DATABASE_URL
 
