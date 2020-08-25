@@ -1,5 +1,6 @@
 from datetime import date
-from ftplib import FTP
+from ftplib import FTP_TLS
+import ssl
 import logging
 import os
 import tempfile
@@ -13,6 +14,12 @@ logger = logging.getLogger(__name__)
 def show_ftp_listing(s):
     logger.debug(s)
 
+def ftps_connect(host):
+    ftps = FTP_TLS() 
+    ftps.ssl_version = ssl.PROTOCOL_SSLv23 
+    ftps.connect(host) 
+    ftps.login(os.environ.get('NC_FTP_USER'), os.environ.get('NC_FTP_PASSWORD')) 
+    return ftps
 
 def nc_download_and_unzip_data(destination, prefix='state-'):
     """Download and unzip data into destination directory"""
@@ -31,26 +38,20 @@ def nc_download_and_unzip_data(destination, prefix='state-'):
         logger.debug("{} exists, skipping download".format(zip_filename))
     else:
         logger.debug("Downloading data to {}".format(zip_filename))
-        nc_data_site = 'sbi1.jus.state.nc.us'
-        nc_data_user = os.environ.get('NC_FTP_USER')
-        nc_data_password = os.environ.get('NC_FTP_PASSWORD')
+        nc_data_site = os.environ.get('NC_FTP_HOST')
         nc_data_file = 'STOPS_Extract.zip'
         nc_data_directory = '/TSTOPextract'
-
-        # Note: NC documents show FileZilla set up to use explicit FTP over TLS
-        #       if available (like FTP_TLS), but the server doesn't currently
-        #       support it.
-        ftp = FTP(nc_data_site)
-        ftp.login(nc_data_user, nc_data_password)
-        ftp.cwd(nc_data_directory)
+        ftps = ftps_connect(nc_data_site)
+        ftps.prot_p()
+        ftps.cwd(nc_data_directory)
         logger.debug('Files available at %s:', nc_data_site)
-        listing = ftp.retrlines('LIST', show_ftp_listing)
+        listing = ftps.retrlines('LIST', show_ftp_listing)
         line = listing.split('\n')[0]
         if not line.startswith('226 '):  # server's "Transfer complete" message
             raise ValueError('Expected 226 response from ftp server, got %r' % listing)
         logger.info('Downloading "%s"...', nc_data_file)
         with open(zip_filename, 'wb') as f:
-            ftp.retrbinary('RETR %s' % nc_data_file, f.write)
+            ftps.retrbinary('RETR %s' % nc_data_file, f.write)
         logger.info('File written to "%s"' % zip_filename)
 
     unzip_data(destination, zip_path=zip_filename)
