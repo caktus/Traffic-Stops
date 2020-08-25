@@ -47,298 +47,383 @@
 {% endblock census-display %}
 
 {% block stop-display %}
-  <div class="row">
-    <div class="col-md-12 headline">
-      <h2>Traffic Stops <a class="anchor-offset" id="stop-percentage"></a></h2>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-md-12">
-      <h3>Traffic Stops (percentage by race/ethnic composition)</h3>
-
-      <p class="help-block">
-        {% comment %}
-          Display one description for the officer statistics, and another one for the department statistics
-        {% endcomment %}
-        {% if officer_id %}
-          These graphs reflect the race/ethnic composition of drivers stopped by
-          this officer since the officer began reporting their data to the state.
-        {% else %}
-          These graphs reflect the race/ethnic composition of drivers stopped by
-          law enforcement officers in the jurisdiction since the department began
-          reporting its data to the state.
-        {% endif %}
-      </p>
+<div class=" chart-row">
+  <div class="brand-lines"></div>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12 headline">
+        <h2>Traffic Stops <a class="anchor-offset" id="stop-percentage"></a></h2>
+      </div>
     </div>
 
-    <div class="col-md-4">
-      <div class="pie-chart-container">
-        <svg id="stop_race_pie"></svg>
+    <div class="row">
+      <div class="col-md-12">
+        <h3>Traffic Stops (percentage by race/ethnic composition)</h3>
+
+        <p class="help-block">
+          {% comment %}
+            Display one description for the officer statistics, and another one for the department statistics
+          {% endcomment %}
+          {% if officer_id %}
+            These graphs reflect the race/ethnic composition of drivers stopped by
+            this officer since the officer began reporting their data to the state.
+          {% else %}
+            These graphs reflect the race/ethnic composition of drivers stopped by
+            law enforcement officers in the jurisdiction since the department began
+            reporting its data to the state.
+          {% endif %}
+        </p>
       </div>
 
-      <p class="graph-help-block">
-        Adjusting the drop down menu will display the race/ethnic composition
-        breakdown of stops on a year-by-year basis.
-        Some percentages may be based on low levels of observation.
-      </p>
-      <p class="graph-help-block">
-        * Non-hispanic
-      </p>
-    </div>
-
-    <div id="stop_div" class="col-md-8 line-chart-container">
-      <h4 class="graph-label">
-        Longitudinal view of annual traffic stops
-      </h4>
-
-      <div role="tabpanel">
-
-        <!-- Nav tabs -->
-        <ul class="nav nav-tabs" role="tablist">
-          <li role="presentation" class="active">
-            <a href="#stop_race_line_div" aria-controls="stop_race_line_div" role="tab" data-toggle="tab">Chart</a></li>
-          <li role="presentation">
-            <a href="#stop_race_data" aria-controls="stop_race_data" role="tab" data-toggle="tab">Data</a></li>
-        </ul>
-
-        <!-- Tab panes -->
-        <div class="tab-content">
-          <div role="tabpanel" class="tab-pane active" id="stop_race_line_div">
-            <svg id="stop_race_line"></svg>
-          </div>
-          <div role="tabpanel" class="tab-pane" id="stop_race_data">
-          </div>
+      <div class="col-md-4">
+        <div class="pie-chart-container">
+          <svg id="stop_race_pie"></svg>
         </div>
 
+        <p class="graph-help-block">
+          Adjusting the drop down menu will display the race/ethnic composition
+          breakdown of stops on a year-by-year basis.
+          Some percentages may be based on low levels of observation.
+        </p>
+        <p class="graph-help-block">
+          * Non-hispanic
+        </p>
       </div>
 
-      <p class="graph-help-block">
-        Drag the cursor over the graph to see the race/ethnic composition breakdown
-        for any given year. Some percentages may be based on low levels of observation.
-        Click the "Data" tab to review the actual raw counts
-        from the NC Department of Justice.
-      </p>
-      <p class="graph-help-block">
-        * Non-hispanic
-      </p>
+      <div id="stop_div" class="col-md-8 line-chart-container">
+        <h4 class="graph-label">
+          Longitudinal view of annual traffic stops
+        </h4>
+
+        <div role="tabpanel">
+
+          <!-- Nav tabs -->
+          <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active">
+              <a href="#stop_race_line_div" aria-controls="stop_race_line_div" role="tab" data-toggle="tab">Chart</a></li>
+            <li role="presentation">
+              <a href="#stop_race_data" aria-controls="stop_race_data" role="tab" data-toggle="tab">Data</a></li>
+          </ul>
+
+          <!-- Tab panes -->
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="stop_race_line_div">
+              <svg id="stop_race_line"></svg>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="stop_race_data">
+            </div>
+          </div>
+
+        </div>
+
+        <p class="graph-help-block">
+          Drag the cursor over the graph to see the race/ethnic composition breakdown
+          for any given year. Some percentages may be based on low levels of observation.
+          Click the "Data" tab to review the actual raw counts
+          from the NC Department of Justice.
+        </p>
+        <p class="graph-help-block">
+          * Non-hispanic
+        </p>
+      </div>
     </div>
   </div>
+</div>
 {% endblock stop-display %}
 
 {% block search-count-display %}
-<div class="row">
-  <div class="col-md-12">
-  <h3>{% if officer_id %}Officer{% else %}Departmental{% endif %} Search Count</h3>
+<div class=" chart-row">
+  <div class="brand-lines"></div>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h3>{% if officer_id %}Officer{% else %}Departmental{% endif %} Search Count</h3>
 
-  <p class="help-block">
-    This graph displays the number of searches broken down by search
-    type and ethnicity. Adjusting the drop down menu will display the
-    individual search counts relative to ethnic groups on a year-by-year basis.
-  </p>
-</div>
+        <p class="help-block">
+          This graph displays the number of searches broken down by search
+          type and ethnicity. Adjusting the drop down menu will display the
+          individual search counts relative to ethnic groups on a year-by-year basis.
+        </p>
+      </div>
 
-  <div class="col-md-10">
-    <div role="tabpanel">
-      <!-- Nav tabs -->
-      <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" class="active">
-          <a href="#st_line_div" role="tab" data-toggle="tab">Chart</a></li>
-        <li role="presentation">
-          <a href="#st_data" role="tab" data-toggle="tab">Data</a></li>
-      </ul>
+      <div class="col-md-10">
+        <div role="tabpanel">
+          <!-- Nav tabs -->
+          <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active">
+              <a href="#st_line_div" role="tab" data-toggle="tab">Chart</a></li>
+            <li role="presentation">
+              <a href="#st_data" role="tab" data-toggle="tab">Data</a></li>
+          </ul>
 
-      <!-- Tab panes -->
-      <div class="tab-content">
-        <div role="tabpanel" class="tab-pane active" id="st_line_div">
-          <svg id="st_line"></svg>
+          <!-- Tab panes -->
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="st_line_div">
+              <svg id="st_line"></svg>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="st_data">
+            </div>
+          </div>
         </div>
-        <div role="tabpanel" class="tab-pane" id="st_data">
-        </div>
+
+        <p class="graph-help-block">
+          Drag the cursor over the graph to see the racial breakdown for any
+          given year. Some percentages may be based on low levels of observation.
+          Click the “Data” tab to review the raw stop data.
+        </p>
       </div>
     </div>
-
-    <p class="graph-help-block">
-      Drag the cursor over the graph to see the racial breakdown for any
-      given year. Some percentages may be based on low levels of observation.
-      Click the “Data” tab to review the raw stop data.
-    </p>
   </div>
 </div>
 {% endblock search-count-display %}
 
 {% block stop-count-display %}
-  <div class="row">
-    <div class="col-md-12">
-    <h3>Departmental Stop Count</h3>
+<div class=" chart-row">
+  <div class="brand-lines"></div>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h3>Departmental Stop Count</h3>
 
-    <p class="help-block">
-      This graph displays the number of traffic stops broken down by stop
-      purpose and ethnicity. Adjusting the drop down menu will display the
-      individual stop counts relative to ethnic groups on a year-by-year basis.
-    </p>
-  </div>
-
-    <div class="col-md-10">
-      <div role="tabpanel">
-        <!-- Nav tabs -->
-        <ul class="nav nav-tabs" role="tablist">
-          <li role="presentation" class="active">
-            <a href="#srr_line_div" role="tab" data-toggle="tab">Chart</a></li>
-          <li role="presentation">
-            <a href="#srr_data" role="tab" data-toggle="tab">Data</a></li>
-        </ul>
-
-        <!-- Tab panes -->
-        <div class="tab-content">
-          <div role="tabpanel" class="tab-pane active" id="srr_line_div">
-            <svg id="srr_line"></svg>
-          </div>
-          <div role="tabpanel" class="tab-pane" id="srr_data">
-          </div>
-        </div>
+        <p class="help-block">
+          This graph displays the number of traffic stops broken down by stop
+          purpose and ethnicity. Adjusting the drop down menu will display the
+          individual stop counts relative to ethnic groups on a year-by-year basis.
+        </p>
       </div>
 
-      <p class="graph-help-block">
-        Drag the cursor over the graph to see the racial breakdown for any
-        given year. Some percentages may be based on low levels of observation.
-        Click the “Data” tab to review the raw stop data.
-      </p>
+      <div class="col-md-10">
+        <div role="tabpanel">
+          <!-- Nav tabs -->
+          <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active">
+              <a href="#srr_line_div" role="tab" data-toggle="tab">Chart</a></li>
+            <li role="presentation">
+              <a href="#srr_data" role="tab" data-toggle="tab">Data</a></li>
+          </ul>
+
+          <!-- Tab panes -->
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="srr_line_div">
+              <svg id="srr_line"></svg>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="srr_data">
+            </div>
+          </div>
+        </div>
+
+        <p class="graph-help-block">
+          Drag the cursor over the graph to see the racial breakdown for any
+          given year. Some percentages may be based on low levels of observation.
+          Click the “Data” tab to review the raw stop data.
+        </p>
+      </div>
     </div>
   </div>
+</div>
 {% endblock stop-count-display %}
 
 {% block search-rate-display %}
-  <div class="row">
-    <div class="col-md-12 headline">
-      <h2>{% if officer_id %}Officer{% else %}Departmental{% endif %} Search Rate<a class="anchor-offset" id="search-percentage-dept"></a></h2>
+<div class=" chart-row">
+  <div class="brand-lines"></div>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12 headline">
+        <h2>{% if officer_id %}Officer{% else %}Departmental{% endif %} Search Rate<a class="anchor-offset" id="search-percentage-dept"></a></h2>
+      </div>
     </div>
-  </div>
+    <div class="row">
+      <div class="col-md-12">
+        <h3>
+          {% comment %}
+            Display one title for the officer statistics, and another one for the department statistics
+          {% endcomment %}
+          {% if officer_id %}
+            Officer Search Rate For Vehicle Stops
+          {% else %}
+            Average Departmental Search Rate For Vehicle Stops
+          {% endif %}
+        </h3>
 
-  <div class="row">
-    <div class="col-md-12">
-      <h3>
-        {% comment %}
-          Display one title for the officer statistics, and another one for the department statistics
-        {% endcomment %}
-        {% if officer_id %}
-          Officer Search Rate For Vehicle Stops
-        {% else %}
-          Average Departmental Search Rate For Vehicle Stops
-        {% endif %}
-      </h3>
-
-      <p class="help-block">
-        {% comment %}
-          Display one description for the officer statistics, and another one for the department statistics
-        {% endcomment %}
-        {% if officer_id %}
-          This graph is a longitudinal representation of the officer's search rate
-          for vehicle stops since they began reporting their data to the state.
-          The black line represents the overall search rate for all motorists.
-        {% else %}
-          This graph is a longitudinal representation of the average departmental
-          search rate for vehicle stops since the department began reporting its
-          data to the state.  The black line represents the
-          overall search rate for all motorists.
-        {% endif %}
-      </p>
-    </div>
-
-    <div class="col-md-10">
-      <div role="tabpanel">
-        <!-- Nav tabs -->
-        <ul class="nav nav-tabs" role="tablist">
-          <li role="presentation" class="active">
-            <a href="#stop_search_line_div" role="tab" data-toggle="tab">Chart</a></li>
-          <li role="presentation">
-            <a href="#stop_search_data" role="tab" data-toggle="tab">Data</a></li>
-        </ul>
-
-        <!-- Tab panes -->
-        <div class="tab-content">
-          <div role="tabpanel" class="tab-pane active" id="stop_search_line_div">
-            <svg id="stop_search_line"></svg>
-          </div>
-          <div role="tabpanel" class="tab-pane" id="stop_search_data">
-          </div>
-        </div>
+        <p class="help-block">
+          {% comment %}
+            Display one description for the officer statistics, and another one for the department statistics
+          {% endcomment %}
+          {% if officer_id %}
+            This graph is a longitudinal representation of the officer's search rate
+            for vehicle stops since they began reporting their data to the state.
+            The grey line represents the overall search rate for all motorists.
+          {% else %}
+            This graph is a longitudinal representation of the average departmental
+            search rate for vehicle stops since the department began reporting its
+            data to the state.  The grey line represents the
+            overall search rate for all motorists.
+          {% endif %}
+        </p>
       </div>
 
-      <p class="graph-help-block">
-        Drag the cursor over the graph to see the race/ethnic composition
-        breakdown for any given year.
-        Some percentages may be based on low levels of observation.
-        Click the "Data" tab to review the actual stop/search counts from the
-        NC Department of Justice.
-      </p>
-      <p class="graph-help-block">
-        * Non-hispanic
-      </p>
-    </div>
-  </div>
-{% endblock search-rate-display %}
+      <div class="col-md-10">
+        <div role="tabpanel">
+          <!-- Nav tabs -->
+          <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active">
+              <a href="#stop_search_line_div" role="tab" data-toggle="tab">Chart</a></li>
+            <li role="presentation">
+              <a href="#stop_search_data" role="tab" data-toggle="tab">Data</a></li>
+          </ul>
 
-{% block search-display %}
-  <div class="row">
-    <div class="col-md-12">
-      <h3>Search Data by Race/Ethnic Composition</h3>
-
-      <p class="help-block">
-        {% comment %}
-          Display one description for the officer statistics, and another one for the department statistics
-        {% endcomment %}
-        {% if officer_id %}
-          These graphs reflect the race/ethnic composition of drivers searched
-          by this officer since they began reporting their data to the state.
-        {% else %}
-          These graphs reflect the race/ethnic composition of drivers searched
-          by law enforcement officers in the jurisdiction since the department
-          began reporting its data to the state.
-        {% endif %}
-      </p>
-    </div>
-
-    <div class="col-md-4">
-      <div class="pie-chart-container">
-        <svg id="search_race_pie"></svg>
-      </div>
-
-      <p class="graph-help-block">
-        Adjusting the drop down menu will display the race/ethnic composition
-        breakdown of stops on a year-by-year basis.
-        Some percentages may be based on low levels of observation.
-      </p>
-      <p class="graph-help-block">
-        * Non-hispanic
-      </p>
-    </div>
-
-    <div id="search_div" class="col-md-8 line-chart-container">
-      <h4 class="graph-label">Longitudinal view of annual percent of search by race/ethnic composition</h4>
-
-      <div role="tabpanel">
-
-        <!-- Nav tabs -->
-        <ul class="nav nav-tabs" role="tablist">
-          <li role="presentation" class="active">
-            <a href="#search_race_line_div" aria-controls="search_race_line_div" role="tab" data-toggle="tab">Chart</a></li>
-          <li role="presentation">
-            <a href="#search_race_data" aria-controls="stop_race_data" role="tab" data-toggle="tab">Data</a></li>
-        </ul>
-
-        <!-- Tab panes -->
-        <div class="tab-content">
-          <div role="tabpanel" class="tab-pane active" id="search_race_line_div">
-            <svg id="search_race_line"></svg>
-          </div>
-          <div role="tabpanel" class="tab-pane" id="search_race_data">
+          <!-- Tab panes -->
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="stop_search_line_div">
+              <svg id="stop_search_line"></svg>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="stop_search_data">
+            </div>
           </div>
         </div>
 
         <p class="graph-help-block">
           Drag the cursor over the graph to see the race/ethnic composition
           breakdown for any given year.
+          Some percentages may be based on low levels of observation.
+          Click the "Data" tab to review the actual stop/search counts from the
+          NC Department of Justice.
+        </p>
+        <p class="graph-help-block">
+          * Non-hispanic
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock search-rate-display %}
+
+{% block search-display %}
+<div class=" chart-row">
+  <div class="brand-lines"></div>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h3>Search Data by Race/Ethnic Composition</h3>
+
+        <p class="help-block">
+          {% comment %}
+            Display one description for the officer statistics, and another one for the department statistics
+          {% endcomment %}
+          {% if officer_id %}
+            These graphs reflect the race/ethnic composition of drivers searched
+            by this officer since they began reporting their data to the state.
+          {% else %}
+            These graphs reflect the race/ethnic composition of drivers searched
+            by law enforcement officers in the jurisdiction since the department
+            began reporting its data to the state.
+          {% endif %}
+        </p>
+      </div>
+
+      <div class="col-md-4">
+        <div class="pie-chart-container">
+          <svg id="search_race_pie"></svg>
+        </div>
+
+        <p class="graph-help-block">
+          Adjusting the drop down menu will display the race/ethnic composition
+          breakdown of stops on a year-by-year basis.
+          Some percentages may be based on low levels of observation.
+        </p>
+        <p class="graph-help-block">
+          * Non-hispanic
+        </p>
+      </div>
+
+      <div id="search_div" class="col-md-8 line-chart-container">
+        <h4 class="graph-label">Longitudinal view of annual percent of search by race/ethnic composition</h4>
+
+        <div role="tabpanel">
+
+          <!-- Nav tabs -->
+          <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active">
+              <a href="#search_race_line_div" aria-controls="search_race_line_div" role="tab" data-toggle="tab">Chart</a></li>
+            <li role="presentation">
+              <a href="#search_race_data" aria-controls="stop_race_data" role="tab" data-toggle="tab">Data</a></li>
+          </ul>
+
+          <!-- Tab panes -->
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="search_race_line_div">
+              <svg id="search_race_line"></svg>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="search_race_data">
+            </div>
+          </div>
+
+          <p class="graph-help-block">
+            Drag the cursor over the graph to see the race/ethnic composition
+            breakdown for any given year.
+            Some percentages may be based on low levels of observation.
+            Click the "Data" tab to review the actual raw counts from the
+            NC Department of Justice.
+          </p>
+          <p class="graph-help-block">
+            * Non-hispanic
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock search-display %}
+
+{% block lsb-display %}
+<div class=" chart-row">
+  <div class="brand-lines"></div>
+  <div class="container">
+    <div class="row">
+      <div id="lhs_div" class="col-md-12">
+        <h3>Likelihood of Search by "Stop Cause"</h3>
+
+        <p class="help-block">
+          {% comment %}
+            Display one description for the officer statistics, and another one for the department statistics
+          {% endcomment %}
+          {% if officer_id %}
+            This graph displays the likelihood of one group being searched by this
+            officer as compared to another group for a given stop cause. Adjusting
+            the drop down menu will display the likelihood of search occurring
+            relative to another group on a year-by-year basis.
+          {% else %}
+            This graph displays the likelihood of one race/ethnic composition group
+            being searched as compared to another group for a given stop cause.
+            Adjusting the drop down menu will display the likelihood of search
+            relative to another race/ethnic composition group on a year-by-year basis.
+          {% endif %}
+        </p>
+      </div>
+
+      <div class="col-md-10">
+        <div role="tabpanel">
+          <!-- Nav tabs -->
+          <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active">
+              <a href="#lsb_div" aria-controls="lsb_div" role="tab" data-toggle="tab">Chart</a></li>
+            <li role="presentation">
+              <a href="#lsb_data" aria-controls="lsb_data" role="tab" data-toggle="tab">Data</a></li>
+          </ul>
+
+          <!-- Tab panes -->
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="lsb_div">
+              <svg id="lsb"></svg>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="lsb_data">
+            </div>
+          </div>
+        </div>
+
+        <p class="graph-help-block">
+          Click the colored circles above the graph to display the
+          comparisons between various race/ethnic composition groups.
           Some percentages may be based on low levels of observation.
           Click the "Data" tab to review the actual raw counts from the
           NC Department of Justice.
@@ -349,180 +434,134 @@
       </div>
     </div>
   </div>
-{% endblock search-display %}
-
-{% block lsb-display %}
-  <div class="row">
-    <div id="lhs_div" class="col-md-12">
-      <h3>Likelihood of Search by "Stop Cause"</h3>
-
-      <p class="help-block">
-        {% comment %}
-          Display one description for the officer statistics, and another one for the department statistics
-        {% endcomment %}
-        {% if officer_id %}
-          This graph displays the likelihood of one group being searched by this
-          officer as compared to another group for a given stop cause. Adjusting
-          the drop down menu will display the likelihood of search occurring
-          relative to another group on a year-by-year basis.
-        {% else %}
-          This graph displays the likelihood of one race/ethnic composition group
-          being searched as compared to another group for a given stop cause.
-          Adjusting the drop down menu will display the likelihood of search
-          relative to another race/ethnic composition group on a year-by-year basis.
-        {% endif %}
-      </p>
-    </div>
-
-    <div class="col-md-10">
-      <div role="tabpanel">
-        <!-- Nav tabs -->
-        <ul class="nav nav-tabs" role="tablist">
-          <li role="presentation" class="active">
-            <a href="#lsb_div" aria-controls="lsb_div" role="tab" data-toggle="tab">Chart</a></li>
-          <li role="presentation">
-            <a href="#lsb_data" aria-controls="lsb_data" role="tab" data-toggle="tab">Data</a></li>
-        </ul>
-
-        <!-- Tab panes -->
-        <div class="tab-content">
-          <div role="tabpanel" class="tab-pane active" id="lsb_div">
-            <svg id="lsb"></svg>
-          </div>
-          <div role="tabpanel" class="tab-pane" id="lsb_data">
-          </div>
-        </div>
-      </div>
-
-      <p class="graph-help-block">
-        Click the colored circles above the graph to display the
-        comparisons between various race/ethnic composition groups.
-        Some percentages may be based on low levels of observation.
-        Click the "Data" tab to review the actual raw counts from the
-        NC Department of Justice.
-      </p>
-      <p class="graph-help-block">
-        * Non-hispanic
-      </p>
-    </div>
-  </div>
+</div>
 {% endblock lsb-display %}
 
 {% block contraband-display %}
-  <div class="row">
-    <div id="contraband_div" class="col-md-12">
-      <h3>Contraband "Hit-Rate"</h3>
+<div class=" chart-row">
+  <div class="brand-lines"></div>
+  <div class="container">
+    <div class="row">
+      <div id="contraband_div" class="col-md-12">
+        <h3>Contraband "Hit-Rate"</h3>
 
-      <p class="help-block">
-        This graph displays the percentage of searches that uncovered contraband
-        for a given race/ethnic composition group. Adjusting the drop down menu will
-        display the hit rate on a year-by-year basis.
-      </p>
-    </div>
-
-    <div class="col-md-10">
-      <div role="tabpanel">
-        <!-- Nav tabs -->
-        <ul class="nav nav-tabs" role="tablist">
-          <li role="presentation" class="active">
-            <a href="#chr_div" aria-controls="chr_div" role="tab" data-toggle="tab">Chart</a></li>
-          <li role="presentation">
-            <a href="#chr_data" aria-controls="chr_data" role="tab" data-toggle="tab">Data</a></li>
-        </ul>
-
-        <!-- Tab panes -->
-        <div class="tab-content">
-          <div role="tabpanel" class="tab-pane active" id="chr_div">
-            <svg id="chr"></svg>
-          </div>
-          <div role="tabpanel" class="tab-pane" id="chr_data">
-          </div>
-        </div>
+        <p class="help-block">
+          This graph displays the percentage of searches that uncovered contraband
+          for a given race/ethnic composition group. Adjusting the drop down menu will
+          display the hit rate on a year-by-year basis.
+        </p>
       </div>
 
-      <p class="graph-help-block">
-        Some percentages may be based on low levels of observation.
-        Click the "Data" tab to review the actual raw counts from the
-        NC Department of Justice.
-      </p>
-      <p class="graph-help-block">
-        * Non-hispanic
-      </p>
+      <div class="col-md-10">
+        <div role="tabpanel">
+          <!-- Nav tabs -->
+          <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active">
+              <a href="#chr_div" aria-controls="chr_div" role="tab" data-toggle="tab">Chart</a></li>
+            <li role="presentation">
+              <a href="#chr_data" aria-controls="chr_data" role="tab" data-toggle="tab">Data</a></li>
+          </ul>
+
+          <!-- Tab panes -->
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="chr_div">
+              <svg id="chr"></svg>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="chr_data">
+            </div>
+          </div>
+        </div>
+
+        <p class="graph-help-block">
+          Some percentages may be based on low levels of observation.
+          Click the "Data" tab to review the actual raw counts from the
+          NC Department of Justice.
+        </p>
+        <p class="graph-help-block">
+          * Non-hispanic
+        </p>
+      </div>
     </div>
   </div>
+</div>
 {% endblock contraband-display %}
 
 {% block use-of-force-display %}
-  <!-- use-of-force data -->
-  <div class="row">
-    <div class="col-md-12">
-      <h3>"Use-of-force" Data by Race/Ethnic Composition</h3>
+<div class=" chart-row">
+  <div class="brand-lines"></div>
+  <div class="container">
+    <!-- use-of-force data -->
+    <div class="row">
+      <div class="col-md-12">
+        <h3>"Use-of-force" Data by Race/Ethnic Composition</h3>
 
-      <p class="help-block">
-        {% comment %}
-          Display one description for the officer statistics, and another one for the department statistics
-        {% endcomment %}
-        {% if officer_id %}
-          These graphs reflect the race/ethnic composition of drivers against
-          whom this officer reported using force since they began reporting
-          their data to the NC Department of Justice.
-        {% else %}
-          These graphs reflect the race/ethnic composition of drivers against
-          whom law enforcement officers in the jurisdiction reported using force
-          since the department began reporting its data to the NC Department of
-          Justice.
-        {% endif %}
-      </p>
-    </div>
-
-    <div class="col-md-4">
-      <div class="pie-chart-container">
-        <svg id="use_force_race_pie"></svg>
+        <p class="help-block">
+          {% comment %}
+            Display one description for the officer statistics, and another one for the department statistics
+          {% endcomment %}
+          {% if officer_id %}
+            These graphs reflect the race/ethnic composition of drivers against
+            whom this officer reported using force since they began reporting
+            their data to the NC Department of Justice.
+          {% else %}
+            These graphs reflect the race/ethnic composition of drivers against
+            whom law enforcement officers in the jurisdiction reported using force
+            since the department began reporting its data to the NC Department of
+            Justice.
+          {% endif %}
+        </p>
       </div>
 
-      <p class="graph-help-block">
-        Adjusting the drop down menu will display the race/ethnic composition
-        breakdown of use-of-force incidents on a year-by-year basis.
-      </p>
-      <p class="graph-help-block">
-        * Non-hispanic
-      </p>
-    </div>
-
-    <div id="use_force_div" class="col-md-8 line-chart-container">
-      <h4>Longitudinal view of annual use-of-force by race/ethnic composition</h4>
-
-      <div role="tabpanel">
-
-        <!-- Nav tabs -->
-        <ul class="nav nav-tabs" role="tablist">
-          <li role="presentation" class="active">
-            <a href="#use_force_race_line_div" aria-controls="use_force_race_line_div" role="tab" data-toggle="tab">Chart</a></li>
-          <li role="presentation">
-            <a href="#use_force_race__data" aria-controls="use_force_race__data" role="tab" data-toggle="tab">Data</a></li>
-        </ul>
-
-        <!-- Tab panes -->
-        <div class="tab-content">
-          <div role="tabpanel" class="tab-pane active" id="use_force_race_line_div">
-            <svg id="use_force_race_line"></svg>
-          </div>
-          <div role="tabpanel" class="tab-pane" id="use_force_race__data">
-          </div>
+      <div class="col-md-4">
+        <div class="pie-chart-container">
+          <svg id="use_force_race_pie"></svg>
         </div>
 
+        <p class="graph-help-block">
+          Adjusting the drop down menu will display the race/ethnic composition
+          breakdown of use-of-force incidents on a year-by-year basis.
+        </p>
+        <p class="graph-help-block">
+          * Non-hispanic
+        </p>
       </div>
 
-      <p class="graph-help-block">
-        Some percentages may be based on low levels of observation.
-        Click the "Data" tab to review the actual raw counts from the
-        NC Department of Justice.
-      </p>
-      <p class="graph-help-block">
-        * Non-hispanic
-      </p>
+      <div id="use_force_div" class="col-md-8 line-chart-container">
+        <h4>Longitudinal view of annual use-of-force by race/ethnic composition</h4>
+
+        <div role="tabpanel">
+
+          <!-- Nav tabs -->
+          <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active">
+              <a href="#use_force_race_line_div" aria-controls="use_force_race_line_div" role="tab" data-toggle="tab">Chart</a></li>
+            <li role="presentation">
+              <a href="#use_force_race__data" aria-controls="use_force_race__data" role="tab" data-toggle="tab">Data</a></li>
+          </ul>
+
+          <!-- Tab panes -->
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="use_force_race_line_div">
+              <svg id="use_force_race_line"></svg>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="use_force_race__data">
+            </div>
+          </div>
+
+        </div>
+
+        <p class="graph-help-block">
+          Some percentages may be based on low levels of observation.
+          Click the "Data" tab to review the actual raw counts from the
+          NC Department of Justice.
+        </p>
+        <p class="graph-help-block">
+          * Non-hispanic
+        </p>
+      </div>
     </div>
   </div>
+</div>
 {% endblock use-of-force-display %}
 
 {% block graph-code %}
