@@ -36,10 +36,6 @@ Caktus AWS Access
 .. _named profile: https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html
 
 
-Provisioning
-============
-
-
 Create EKS cluster CloudFormation stack
 ---------------------------------------
 
@@ -115,3 +111,4 @@ Deploy application
 4. Deploy::
 
     inv staging deploy --tag=...
+=======
