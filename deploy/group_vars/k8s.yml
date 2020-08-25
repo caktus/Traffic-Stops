@@ -1,0 +1,68 @@
+---
+
+# ----------------------------------------------------------------------------
+# Global: CloudFormation stack outputs. See all.yml for stack parameters.
+# ----------------------------------------------------------------------------
+
+# The connection endpoint for the EKS cluster API
+ClusterEndpoint: "https://08D66B4141A37A403A73159D7A66BD66.gr7.us-east-2.eks.amazonaws.com"
+# The connection endpoint for the database
+DatabaseAddress: "td78e29qmbrmgb.cje1ewiwbprp.us-east-2.rds.amazonaws.com"
+# The docker repository URL
+RepositoryURL: "606178775542.dkr.ecr.us-east-2.amazonaws.com"
+
+# ----------------------------------------------------------------------------
+# caktus.django-k8s: Shared configuration variables for staging and production
+#                    environments.
+# ----------------------------------------------------------------------------
+
+k8s_auth_host: "{{ ClusterEndpoint }}"
+k8s_auth_ssl_ca_cert: "k8s_auth_ssl_ca_cert.txt"
+k8s_namespace: "{{ app_name }}-{{ env_name }}"
+
+k8s_ingress_certificate_issuer: letsencrypt-production
+
+# App pod configuration:
+k8s_container_name: app
+k8s_container_port: 8000
+k8s_container_image: "{{ RepositoryURL }}/traff-appli-gvyudgfsjhrz"
+k8s_container_image_pull_policy: Always
+k8s_container_replicas: 2
+k8s_migrations_enabled: true
+k8s_migration_command:
+  - bash
+  - migrate_all_dbs.sh
+k8s_collectstatic_enabled: false
+
+# Shared environment variables:
+env_database_url: "postgres://{{ app_name }}_{{ env_name }}:{{ database_password }}@{{ DatabaseAddress }}:5432/{{ app_name }}_{{ env_name }}"
+env_database_url_nc: "postgres://{{ app_name }}_{{ env_name }}:{{ database_password }}@{{ DatabaseAddress }}:5432/{{ app_name }}_{{ env_name }}_nc"
+env_django_settings: "traffic_stops.settings.deploy"
+env_broker_url: redis://redis:6379/0
+env_cache_host: redis://redis:6379/1
+env_default_file_storage: "{{ app_name }}.storages.MediaBoto3Storage"
+env_media_storage_bucket_name: "{{ app_name }}-{{ env_name }}-assets"
+env_aws_default_acl: public-read
+env_media_location: media/
+# New Relic APM: Caktus Free Account
+env_new_relic_app_name: "{{ k8s_namespace }}"
+env_new_relic_license_key: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          65373534343636336432383438303264343631303932656438623966323035343239373930376666
+          6164316530646163343433653266393262666262386135380a393831303730353161303830326237
+          35383465326466353161333236343163383964376336616236383831613034306436646535643833
+          3938656465363933370a353438613133306561356336343633336361636532666462366633663139
+          39316662303935303035666561323765636165313965363938336437343732343636656665323361
+          3665376430643661333134653034363033666533643962633466
+env_sentry_dsn: https://8567ec420cf04ce3b7f4b82d5fff70f7@o168020.ingest.sentry.io/5398612
+
+# Auxillary pod configuration:
+k8s_worker_enabled: true
+k8s_worker_replicas: 1
+k8s_worker_beat_enabled: true
+k8s_memcached_enabled: false
+k8s_redis_enabled: true
+
+# S3 bucket configuration:
+k8s_s3_region: "{{ aws_region }}"
+k8s_s3_cluster_name: "{{ k8s_cluster_name }}"

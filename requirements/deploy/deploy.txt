@@ -7,11 +7,11 @@
 certifi==2020.6.20        # via -c requirements/deploy/../base/base.txt, sentry-sdk
 django-redis==4.12.1      # via -r requirements/deploy/deploy.in
 django==2.2.15            # via -c requirements/deploy/../base/base.txt, django-redis
-newrelic==5.12.1.141      # via -r requirements/deploy/deploy.in
+newrelic==5.16.1.146      # via -r requirements/deploy/deploy.in
 python3-memcached==1.51   # via -r requirements/deploy/deploy.in
 pytz==2019.3              # via -c requirements/deploy/../base/base.txt, django
 redis==3.5.3              # via django-redis
-sentry-sdk==0.14.3        # via -r requirements/deploy/deploy.in
+sentry-sdk==0.16.5        # via -r requirements/deploy/deploy.in
 sqlparse==0.3.1           # via -c requirements/deploy/../base/base.txt, django
 urllib3==1.25.9           # via -c requirements/deploy/../base/base.txt, sentry-sdk
 uwsgi==2.0.18             # via -r requirements/deploy/deploy.in

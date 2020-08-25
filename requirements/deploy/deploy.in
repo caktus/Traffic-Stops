@@ -2,6 +2,6 @@
 -c ../base/base.txt
 django-redis
 python3-memcached
-newrelic
-sentry-sdk
+newrelic>=5.16.1.146
+sentry-sdk>=0.16.5
 uwsgi
