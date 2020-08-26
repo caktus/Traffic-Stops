@@ -4,6 +4,7 @@ import glob
 import logging
 import os
 import sys
+from urllib.parse import urlparse
 from pathlib import Path
 import psycopg2
 
@@ -276,11 +277,13 @@ def copy_from(destination, nc_csv_path):
     """Populates the NC database from csv files."""
     try:
         logger.info("Connecting to database")
+        parsed_db_url = urlparse(os.getenv("DATABASE_URL"))
         conn = psycopg2.connect(
             database="traffic_stops_nc",
-            user=os.environ.get("PGUSER"),
-            host=os.environ.get("PGHOST"),
-            port=os.environ.get("PGPORT")
+            user=parsed_db_url.username,
+            host=parsed_db_url.hostname,
+            port=parsed_db_url.port,
+            password=parsed_db_url.password
         )
 
         with conn:
