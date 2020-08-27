@@ -28,10 +28,13 @@ future==0.18.2            # via celery, census
 idna==2.10                # via requests
 jellyfish==0.6.1          # via us
 kombu==4.6.11             # via celery
+numpy==1.19.1             # via pandas
+pandas==1.1.1             # via -r requirements/base/base.in
 psycopg2-binary==2.8.5    # via -r requirements/base/base.in
-pytz==2019.3              # via celery, django
+python-dateutil==2.8.1    # via pandas
+pytz==2019.3              # via celery, django, pandas
 requests==2.24.0          # via -r requirements/base/base.in, census
-six==1.15.0               # via -r requirements/base/base.in, django-click, django-extensions
+six==1.15.0               # via -r requirements/base/base.in, django-click, django-extensions, python-dateutil
 sqlparse==0.3.1           # via django
 urllib3==1.25.9           # via requests
 us==2.0.2                 # via -r requirements/base/base.in
