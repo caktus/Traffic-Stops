@@ -10,7 +10,7 @@ import psycopg2
 
 from django.conf import settings
 from django.core.mail import EmailMessage
-from django.db import connections
+from django.db import connections, transaction
 
 import pytz
 
@@ -84,8 +84,6 @@ def run(url, destination=None, zip_path=None, min_stop_id=None,
         destination
     )
 
-    # drop constraints/indexes
-    drop_constraints_and_indexes(connections['traffic_stops_nc'].cursor())
     # use COPY to load CSV files as quickly as possible
     copy_from(destination, nc_agency_csv)
     logger.info("NC Data Import Complete")
@@ -275,35 +273,25 @@ def update_nc_agencies(nc_csv_path, destination):
     return new_nc_csv_path
 
 
+@transaction.atomic(using='traffic_stops_nc')
 def copy_from(destination, nc_csv_path):
     """Populates the NC database from csv files."""
-    try:
-        logger.info("Connecting to database")
-        parsed_db_url = urlparse(os.getenv("DATABASE_URL"))
-        conn = psycopg2.connect(
-            database="traffic_stops_nc",
-            user=parsed_db_url.username,
-            host=parsed_db_url.hostname,
-            port=parsed_db_url.port,
-            password=parsed_db_url.password
-        )
 
-        with conn:
-            with conn.cursor() as cur:
-                logger.info(f"Set the timezone to {settings.NC_TIME_ZONE}")
-                cur.execute(copy_nc.SET_TIMEZONE)
-                logger.info("Truncating tables")
-                cur.execute(copy_nc.CLEAN_DATABASE)
-                path = Path(destination)
-                for p in path.glob("*.csv"):
-                    if p.name in copy_nc.NC_COPY_INSTRUCTIONS.keys():
-                        with p.open() as fh:
-                            logger.info(f"INSERTING {p.name} into the database")
-                            cur.copy_expert(copy_nc.NC_COPY_INSTRUCTIONS[p.name], fh)
-                logger.info("Finalizing import")
-                cur.execute(copy_nc.FINALIZE_COPY)
-    except psycopg2.Error as e:
-        logger.error(f"ERROR: Import failed: {e}")
+    with connections['traffic_stops_nc'].cursor() as cur:
+        logger.info("Dropping NC constraints before import")
+        drop_constraints_and_indexes(cur)
+        logger.info(f"Set the timezone to {settings.NC_TIME_ZONE}")
+        cur.execute(copy_nc.SET_TIMEZONE)
+        logger.info("Truncating tables")
+        cur.execute(copy_nc.CLEAN_DATABASE)
+        path = Path(destination)
+        for p in path.glob("*.csv"):
+            if p.name in copy_nc.NC_COPY_INSTRUCTIONS.keys():
+                with p.open() as fh:
+                    logger.info(f"INSERTING {p.name} into the database")
+                    cur.copy_expert(copy_nc.NC_COPY_INSTRUCTIONS[p.name], fh)
+        logger.info("Finalizing import")
+        cur.execute(copy_nc.FINALIZE_COPY)
 
     # Remove all stops and related objects that are before 1 Jan 2002, when everyone
     # started reporting consistently.  Don't clear out the NC State Highway Patrol

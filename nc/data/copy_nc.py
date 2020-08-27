@@ -11,16 +11,16 @@ CLEAN_DATABASE = """
     TRUNCATE "nc_agency" RESTART IDENTITY CASCADE;
 """ # noqa
 
-# NC_COPY_INSTRUCTIONS: 
+# NC_COPY_INSTRUCTIONS:
 # KEY: Filename that will be found on the file system.
 # VALUE: The SQL COPY statement.
 # The SQL COPY statement is used with psycopg2's expert_copy which requires the FROM statement to be STDIN
 NC_COPY_INSTRUCTIONS = {
-    "Stop.csv": "COPY nc_stop (stop_id, agency_description, date, purpose, action, driver_arrest, passenger_arrest, encounter_force, engage_force, officer_injury, driver_injury, passenger_injury, officer_id, stop_location, stop_city) FROM STDIN WITH  DELIMITER ',' NULL AS '' CSV HEADER FORCE NOT NULL officer_id, stop_city, stop_location",
-    "PERSON.csv": "COPY nc_person (person_id, stop_id, type, age, gender, ethnicity, race) FROM STDIN WITH DELIMITER ',' NULL AS '' CSV HEADER FORCE NOT NULL ethnicity, gender, race",
-    "Search.csv": "COPY nc_search (search_id, stop_id, person_id, type, vehicle_search, driver_search, passenger_search, property_search, vehicle_siezed, personal_property_siezed, other_property_sized) FROM STDIN WITH DELIMITER ',' NULL AS '' CSV HEADER",
-    "Contraband.csv": "COPY nc_contraband (contraband_id, search_id, person_id, stop_id, ounces, pounds, pints, gallons, dosages, grams, kilos, money, weapons, dollar_amount) FROM STDIN WITH DELIMITER ',' CSV HEADER",
-    "SearchBasis.csv": "COPY nc_searchbasis (search_basis_id, search_id, person_id, stop_id, basis) FROM STDIN WITH DELIMITER ',' CSV HEADER",
+    # "Stop.csv": "COPY nc_stop (stop_id, agency_description, date, purpose, action, driver_arrest, passenger_arrest, encounter_force, engage_force, officer_injury, driver_injury, passenger_injury, officer_id, stop_location, stop_city) FROM STDIN WITH  DELIMITER ',' NULL AS '' CSV HEADER FORCE NOT NULL officer_id, stop_city, stop_location",
+    # "PERSON.csv": "COPY nc_person (person_id, stop_id, type, age, gender, ethnicity, race) FROM STDIN WITH DELIMITER ',' NULL AS '' CSV HEADER FORCE NOT NULL ethnicity, gender, race",
+    # "Search.csv": "COPY nc_search (search_id, stop_id, person_id, type, vehicle_search, driver_search, passenger_search, property_search, vehicle_siezed, personal_property_siezed, other_property_sized) FROM STDIN WITH DELIMITER ',' NULL AS '' CSV HEADER",
+    # "Contraband.csv": "COPY nc_contraband (contraband_id, search_id, person_id, stop_id, ounces, pounds, pints, gallons, dosages, grams, kilos, money, weapons, dollar_amount) FROM STDIN WITH DELIMITER ',' CSV HEADER",
+    "SearchBasis.csv": "COPY nc_searcasdfhbasis (seaasdfrch_basis_id, search_id, person_id, stop_id, basis) FROM STDIN WITH DELIMITER ',' CSV HEADER",
     "NC_agencies.csv": "COPY  nc_agency (id, name, census_profile_id) FROM STDIN WITH DELIMITER ',' CSV HEADER FORCE NOT NULL census_profile_id"
 } # noqa
 
@@ -63,5 +63,4 @@ FINALIZE_COPY = """
     CREATE INDEX nc_stop_date_7d643c8a9c590bf7_uniq ON nc_stop USING btree (date);
 
     ANALYZE;
-    COMMIT;
 """ # noqa
