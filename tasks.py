@@ -50,6 +50,19 @@ def run_in_ci_image(c, command):
         f"docker-compose -f docker-compose.yml -f docker-compose-deploy.yml run --rm app sh -lc '{ command }'"
     )
 
+@invoke.task
+def build_deployable(c):
+    """Builds a deployable image using the Dockerfile"""
+    kubesae.image["tag"](c)
+    c.run(f"docker build -t {c.config.app}:{c.config.tag} .")
+
+@invoke.task(pre=[build_deployable])
+def build_deploy(c, push=True, deploy=True):
+    """Pushes the built images"""
+    if push:
+        kubesae.image["push"](c)
+    if deploy:
+        kubesae.deploy["deploy"](c)
 
 @invoke.task
 def ansible_playbook(c, name, extra="", verbosity=1):
@@ -59,6 +72,7 @@ def ansible_playbook(c, name, extra="", verbosity=1):
 project = invoke.Collection("project")
 project.add_task(build_ci_images, name="ci-build")
 project.add_task(run_in_ci_image, name="ci-run")
+project.add_task(build_deploy)
 
 ns = invoke.Collection()
 ns.add_collection(kubesae.image)
