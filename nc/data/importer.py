@@ -89,7 +89,7 @@ def run(url, destination=None, zip_path=None, min_stop_id=None,
     logger.info("NC Data Import Complete")
 
     # Clear the query cache to get rid of NC queries made on old data
-    flush_memcached()
+    # flush_memcached()
 
     # fix landing page data
     facts = compute_dataset_facts(
