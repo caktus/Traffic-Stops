@@ -5,6 +5,8 @@ import logging
 import os
 import tempfile
 
+from django.conf import settings
+
 from tsdata.utils import unzip_data
 
 
@@ -15,10 +17,11 @@ def show_ftp_listing(s):
     logger.debug(s)
 
 def ftps_connect(host):
-    ftps = FTP_TLS() 
-    ftps.ssl_version = ssl.PROTOCOL_SSLv23 
-    ftps.connect(host) 
-    ftps.login(os.environ.get('NC_FTP_USER'), os.environ.get('NC_FTP_PASSWORD')) 
+    ftps = FTP_TLS()
+    ftps.ssl_version = ssl.PROTOCOL_SSLv23
+    ftps.connect(host)
+    ftps.login(settings.NC_FTP_USER, settings.NC_FTP_PASSWORD)
+    ftps.prot_p()
     return ftps
 
 def nc_download_and_unzip_data(destination, prefix='state-'):
@@ -38,11 +41,10 @@ def nc_download_and_unzip_data(destination, prefix='state-'):
         logger.debug("{} exists, skipping download".format(zip_filename))
     else:
         logger.debug("Downloading data to {}".format(zip_filename))
-        nc_data_site = os.environ.get('NC_FTP_HOST')
+        nc_data_site = settings.NC_FTP_HOST
         nc_data_file = 'STOPS_Extract.zip'
         nc_data_directory = '/TSTOPextract'
         ftps = ftps_connect(nc_data_site)
-        ftps.prot_p()
         ftps.cwd(nc_data_directory)
         logger.debug('Files available at %s:', nc_data_site)
         listing = ftps.retrlines('LIST', show_ftp_listing)
