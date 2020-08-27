@@ -273,6 +273,11 @@ def update_nc_agencies(nc_csv_path, destination):
     return new_nc_csv_path
 
 
+def set_time_zone(cur, time_zone):
+    logger.info(f"Set time zone to {time_zone}")
+    cur.execute(connections['traffic_stops_nc'].ops.set_time_zone_sql(), [time_zone])
+
+
 @transaction.atomic(using='traffic_stops_nc')
 def copy_from(destination, nc_csv_path):
     """Populates the NC database from csv files."""
@@ -280,18 +285,18 @@ def copy_from(destination, nc_csv_path):
     with connections['traffic_stops_nc'].cursor() as cur:
         logger.info("Dropping NC constraints before import")
         drop_constraints_and_indexes(cur)
-        logger.info(f"Set the timezone to {settings.NC_TIME_ZONE}")
-        cur.execute(copy_nc.SET_TIMEZONE)
+        set_time_zone(cur, settings.NC_TIME_ZONE)
         logger.info("Truncating tables")
         cur.execute(copy_nc.CLEAN_DATABASE)
         path = Path(destination)
         for p in path.glob("*.csv"):
             if p.name in copy_nc.NC_COPY_INSTRUCTIONS.keys():
                 with p.open() as fh:
-                    logger.info(f"INSERTING {p.name} into the database")
+                    logger.info(f"COPY {p.name} into the database")
                     cur.copy_expert(copy_nc.NC_COPY_INSTRUCTIONS[p.name], fh)
-        logger.info("Finalizing import")
+        logger.info("Finalizing import (this will take a LONG time...)")
         cur.execute(copy_nc.FINALIZE_COPY)
+        set_time_zone(cur, settings.TIME_ZONE)
 
     # Remove all stops and related objects that are before 1 Jan 2002, when everyone
     # started reporting consistently.  Don't clear out the NC State Highway Patrol
