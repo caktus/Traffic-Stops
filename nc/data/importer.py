@@ -74,9 +74,11 @@ def run(url, destination=None, zip_path=None, min_stop_id=None,
         override_start_date = 'Jan 01, 2002'
 
     # convert data files to CSV for database importing
+    logger.info("Converting to CSV")
     convert_to_csv(destination)
 
     # find any new NC agencies and add to a copy of NC_agencies.csv
+    logger.info("Looking for new NC agencies in Stops.csv")
     nc_agency_csv = update_nc_agencies(
         os.path.join(os.path.dirname(__file__), 'NC_agencies.csv'),
         destination
