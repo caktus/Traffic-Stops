@@ -31,4 +31,4 @@ run-dev:
 run-tests:
 	@echo 'Checking for migrations'
 	python manage.py makemigrations --dry-run | grep 'No changes detected' || (echo 'There are changes which require migrations.' && exit 1)
-	pytest
+	python manage.py test
