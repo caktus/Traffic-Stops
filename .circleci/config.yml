@@ -109,6 +109,11 @@ jobs:
             . env/bin/activate
 
             inv image.build
+      - run:
+          name: run migrations
+          command: |
+            . env/bin/activate
+            inv project.ci-run("./migrate_all_dbs.sh")
       - when:
         # If this test is not being run on master or develop, then we should
         # check to see if this branch will trigger a merge migration, and check
