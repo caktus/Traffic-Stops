@@ -58,6 +58,7 @@ ADD . /code/
 
 COPY --from=static_files /code/traffic_stops/static /code/traffic_stops/static
 COPY --from=static_files /code/node_modules/bootstrap /code/node_modules/bootstrap
+COPY /sql_init/docker-entrypoint.postgres.sql /docker-entrypoint-initdb.d/init.sql
 
 # uWSGI will listen on this port
 EXPOSE 8000

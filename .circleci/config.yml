@@ -76,18 +76,11 @@ jobs:
           include_visit_job_action: false
 
   test:
-    docker:
-      - image: circleci/python:3.7-buster
-        environment:
-            DJANGO_SETTINGS_MODULE: traffic_stops.settings.dev
-            DATABASE_URL: postgres://postgres@127.0.0.1:5432/traffic_stops
-      - image: circleci/postgres:11-alpine-ram
-        environment:
-          POSTGRES_USER: postgres
-          POSTGRES_DB: traffic_stops
+    executor: docker/docker
     working_directory: ~/traffic-stops
     steps:
       - checkout
+      - setup_remote_docker
       - restore_cache_cmd
       - run:
           name: Which branch
@@ -111,46 +104,45 @@ jobs:
             git config user.email "you@example.com"
             git config user.name "Your Name"
       - run:
-          name: Test
+          name: Build images
           command: |
             . env/bin/activate
 
-            ./migrate_all_dbs.sh
-            ./manage.py test
-      # - run:
-      #     name: run migrations
-      #     command: |
-      #       . env/bin/activate
-      #       inv project.ci-run --command="./migrate_all_dbs.sh"
-      # - when:
-      #   # If this test is not being run on master or develop, then we should
-      #   # check to see if this branch will trigger a merge migration, and check
-      #   # pre-commit
-      #     condition:
-      #       and:
-      #         - not: 
-      #             equal: [ develop, << pipeline.git.branch >> ]
-      #         - not: 
-      #             equal: [ master, << pipeline.git.branch >> ]
-      #     steps:
-      #       - run:
-      #           name: Check migrations
-      #           command: |
-      #             . env/bin/activate
+            inv image.build
+      - run:
+          name: run migrations
+          command: |
+            . env/bin/activate
+            inv project.ci-run --command="./migrate_all_dbs.sh"
+      - when:
+        # If this test is not being run on master or develop, then we should
+        # check to see if this branch will trigger a merge migration, and check
+        # pre-commit
+          condition:
+            and:
+              - not: 
+                  equal: [ develop, << pipeline.git.branch >> ]
+              - not: 
+                  equal: [ master, << pipeline.git.branch >> ]
+          steps:
+            - run:
+                name: Check migrations
+                command: |
+                  . env/bin/activate
 
-      #             inv project.ci-run --command="git merge --no-ff --no-commit develop && python manage.py makemigrations --check --dry-run"
-      #       - run:
-      #           name: Run pre-commit
-      #           command: |
-      #             . env/bin/activate  
+                  inv project.ci-run --command="git merge --no-ff --no-commit develop && python manage.py makemigrations --check --dry-run"
+            - run:
+                name: Run pre-commit
+                command: |
+                  . env/bin/activate  
 
-      #             inv project.ci-run --command='pre-commit run --all'
-      # - run:
-      #     name: Run tests
-      #     command: |
-      #       . env/bin/activate
+                  inv project.ci-run --command='pre-commit run --all'
+      - run:
+          name: Run tests
+          command: |
+            . env/bin/activate
             
-      #       inv project.ci-run --command='pytest'
+            inv project.ci-run --command='pytest'
       # - slack/status:
       #     success_message: ":caktus: ${CIRCLE_BRANCH} tests passed. <${CIRCLE_BUILD_URL}|Build> :successful:"
       #     failure_message: ":sadcactus: ${CIRCLE_BRANCH} tests failed. <${CIRCLE_BUILD_URL}|Build> :failed:"
@@ -163,18 +155,18 @@ workflows:
   build_deploy:
     jobs:
       - test
-      # - deploy:
-      #     requires:
-      #       - test
-      #     filters:
-      #       branches:
-      #         only:
-      #           - develop
-      # - deploy:
-      #     environment: "production"
-      #     requires:
-      #       - test
-      #     filters:
-      #       branches:
-      #         only:
-      #           - master
+      - deploy:
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - develop
+      - deploy:
+          environment: "production"
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - master
