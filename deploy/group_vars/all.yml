@@ -1,0 +1,87 @@
+---
+
+# ----------------------------------------------------------------------------
+# Global: Common configuration variables for all environments being deployed
+#         to Kubernetes.
+# ----------------------------------------------------------------------------
+
+app_name: trafficstops
+ansible_connection: local
+
+aws_region: us-east-2
+aws_profile: trafficstops
+
+admin_database_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          35663465323330356236653336333062613434373931393433396332663436623932616262343638
+          6238333466326630626137643166346666373231313731310a373534336434353762663133616432
+          61663134306434386435363737393063333636643566353830653531306137323031303065386466
+          6562323932386239350a373236383962653732353861373162646663353333353565626666313464
+          35386665623166343930303863383436373635333936366639376537363834346466
+
+# ----------------------------------------------------------------------------
+# caktus.aws-web-stacks: Ansible role to automate AWS CloudFormation stack
+#                        provisioning with aws-web-stacks.
+# ----------------------------------------------------------------------------
+
+stack_name: '{{ app_name }}-stack'
+
+cloudformation_stack:
+  region: "{{ aws_region }}"
+  stack_name: "{{ stack_name }}"
+  template_bucket: "aws-web-stacks-{{ app_name }}"
+  # Webstacks required variable
+  template_local_path: '{{ playbook_dir + "/stack/eks-no-nat.yml" }}'
+  create_changeset: true
+  termination_protection: true
+
+  template_parameters:
+    PrimaryAZ: "{{ aws_region }}a"
+    SecondaryAZ: "{{ aws_region }}b"
+    DesiredScale: 2
+    MaxScale: 4
+    UseAES256Encryption: "true"
+    CustomerManagedCmkArn: ""
+    ContainerInstanceType: t3a.medium
+    DatabaseClass: db.t3.large
+    DatabaseEngineVersion: "12"
+    DatabaseParameterGroupFamily: postgres12
+    DatabaseMultiAZ: "false"
+    DatabaseUser: "{{ app_name }}_admin"
+    DatabasePassword: "{{ admin_database_password }}"
+    DatabaseName: "{{ app_name }}"
+    DomainName: "{{ app_name }}.caktus-built.com"
+    DomainNameAlternates: ""
+    AssetsUseCloudFront: "false"
+  tags:
+    Environment: "{{ app_name }}"
+
+# ----------------------------------------------------------------------------
+# caktus.k8s-web-cluster: An Ansible role to help configure Kubernetes
+#                         clusters for web apps.
+# ----------------------------------------------------------------------------
+
+k8s_cluster_name: "{{ cloudformation_stack.stack_name }}-cluster"
+k8s_context: "arn:aws:eks:us-east-2:606178775542:cluster/{{ k8s_cluster_name }}"
+k8s_cluster_type: aws
+
+# Continuous integration:
+k8s_ci_aws_profile: "{{ aws_profile }}"
+k8s_ci_repository_arn: arn:aws:ecr:us-east-2:606178775542:repository/traff-appli-gvyudgfsjhrz
+k8s_ci_vault_password_arn: arn:aws:secretsmanager:us-east-2:606178775542:secret:trafficstops-ansible-vault-password-XKpR8f
+
+k8s_letsencrypt_email: admin@caktusgroup.com
+# New Relic Infrastructure: Caktus Paid Account
+k8s_newrelic_license_key: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          31623963653434303137323231656263643235616539316537346331646133313732316465623865
+          3438623336353035323437653033313434646366383236390a656531636336663530373462323331
+          32643434333833363433663932316534373565663035383334336231313366373763303263393836
+          3035363662323335630a306331303761303434633235616564386362353766336462656535663033
+          31333537343865616436623063386539303339653165636664633736666365623337326363646437
+          6565393035313438666364363231353562613334376135663031
+
+k8s_papertrail_logspout_destination: 'syslog+tls://logs2.papertrailapp.com:20851'
+k8s_papertrail_logspout_memory_limit: 128Mi
+
+k8s_iam_users: [copelco]

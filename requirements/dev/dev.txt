@@ -7,13 +7,15 @@
 -e git+https://github.com/caktus/invoke-kubesae@0.0.7#egg=invoke-kubesae  # via -r requirements/dev/dev.in
 alabaster==0.7.12         # via sphinx
 ansible==2.9.6            # via invoke-kubesae
-appnope==0.1.0            # via -r requirements/dev/dev.in
+appnope==0.1.0            # via -r requirements/dev/dev.in, ipython
 argh==0.26.2              # via sphinx-autobuild
 attrs==19.3.0             # via -c requirements/dev/../test/test.txt, jsonschema
 awscli==1.18.58           # via -r requirements/dev/dev.in
 babel==2.8.0              # via sphinx
 backcall==0.1.0           # via ipython
-botocore==1.16.8          # via awscli, s3transfer
+boto3==1.13.8             # via -r requirements/dev/dev.in
+boto==2.49.0              # via -r requirements/dev/dev.in
+botocore==1.16.8          # via awscli, boto3, s3transfer
 cachetools==4.1.0         # via google-auth
 certifi==2020.6.20        # via -c requirements/dev/../base/base.txt, kubernetes, requests
 cffi==1.14.0              # via cryptography
@@ -25,7 +27,7 @@ cryptography==2.9         # via ansible
 decorator==4.4.2          # via ipython, traitlets
 dictdiffer==0.8.1         # via openshift
 django-debug-toolbar==2.2  # via -r requirements/dev/dev.in
-django==2.2.14            # via -c requirements/dev/../base/base.txt, django-debug-toolbar
+django==2.2.15            # via -c requirements/dev/../base/base.txt, django-debug-toolbar
 docutils==0.15.2          # via awscli, botocore, rstcheck, sphinx
 flake8==3.8.3             # via -r requirements/dev/dev.in
 google-auth==1.14.3       # via kubernetes
@@ -36,7 +38,7 @@ ipython-genutils==0.2.0   # via traitlets
 ipython==7.14.0           # via -r requirements/dev/dev.in
 jedi==0.17.0              # via ipython
 jinja2==2.11.2            # via ansible, openshift, sphinx
-jmespath==0.10.0          # via botocore
+jmespath==0.10.0          # via boto3, botocore
 jsonschema==3.2.0         # via kubernetes-validate
 kubernetes-validate==1.18.0  # via -r requirements/dev/dev.in
 kubernetes==11.0.0        # via openshift
@@ -62,7 +64,7 @@ pyflakes==2.2.0           # via flake8
 pygments==2.6.1           # via ipython, pudb, sphinx
 pyparsing==2.4.7          # via -c requirements/dev/../test/test.txt, packaging
 pyrsistent==0.16.0        # via jsonschema
-python-dateutil==2.8.1    # via -c requirements/dev/../base/base.txt, -c requirements/dev/../test/test.txt, botocore, kubernetes
+python-dateutil==2.8.1    # via -c requirements/dev/../test/test.txt, botocore, kubernetes
 python-string-utils==1.0.0  # via openshift
 pytz==2019.3              # via -c requirements/dev/../base/base.txt, babel, django
 pyyaml==5.3.1             # via -c requirements/dev/../test/test.txt, ansible, awscli, cfn-flip, kubernetes, kubernetes-validate, sphinx-autobuild
@@ -72,7 +74,7 @@ rsa==3.4.2                # via awscli, google-auth
 rstcheck==3.3.1           # via -r requirements/dev/dev.in
 ruamel.yaml.clib==0.2.0   # via ruamel.yaml
 ruamel.yaml==0.16.10      # via openshift
-s3transfer==0.3.3         # via awscli
+s3transfer==0.3.3         # via awscli, boto3
 six==1.15.0               # via -c requirements/dev/../base/base.txt, -c requirements/dev/../test/test.txt, cfn-flip, cryptography, google-auth, jsonschema, kubernetes, livereload, openshift, packaging, pyrsistent, python-dateutil, traitlets, websocket-client
 snowballstemmer==2.0.0    # via sphinx
 sphinx-autobuild==0.7.1   # via -r requirements/dev/dev.in

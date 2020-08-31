@@ -1,4 +1,4 @@
-# Settings for live deployed environments: vagrant, staging, production, etc
+# Settings for live deployed environments: staging, production, etc
 from .base import *  # noqa
 
 # This is NOT a complete production settings file. For more, see:
@@ -42,7 +42,7 @@ elif EMAIL_USE_SSL:
 else:
     default_smtp_port = 25
 EMAIL_PORT = os.getenv("EMAIL_PORT", default_smtp_port)
-EMAIL_SUBJECT_PREFIX = "[odp %s] " % ENVIRONMENT.title()
+EMAIL_SUBJECT_PREFIX = "[trafficstops %s] " % ENVIRONMENT.title()
 DEFAULT_FROM_EMAIL = f"noreply@{os.getenv('DOMAIN', os.environ)}"
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
@@ -83,7 +83,7 @@ for backend in TEMPLATES:
 
 ### ADMINS and MANAGERS
 ADMINS = (
-    ('ODP Team', 'odp-team@caktusgroup.com'),
+    ('trafficstops team', 'forwardjustice-team@caktusgroup.com'),
 )
 MANAGERS = ADMINS
 
@@ -93,9 +93,11 @@ SENTRY_DSN = os.getenv("SENTRY_DSN")
 if SENTRY_DSN:
     import sentry_sdk
     from sentry_sdk.integrations.django import DjangoIntegration
+    from sentry_sdk.integrations.celery import CeleryIntegration
+    from sentry_sdk.integrations.redis import RedisIntegration
 
     sentry_sdk.init(
-        dsn=SENTRY_DSN, integrations=[DjangoIntegration()], environment=ENVIRONMENT,
+        dsn=SENTRY_DSN, integrations=[DjangoIntegration(), CeleryIntegration(), RedisIntegration()], environment=ENVIRONMENT,
     )
 
 DATABASE_ETL_USER = 'etl'

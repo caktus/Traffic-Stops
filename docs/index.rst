@@ -27,10 +27,7 @@ Contents:
 
    dev-setup
    data-import
-   server-setup
-   provisioning
    api
-   vagrant
 
 
 Indices and tables
