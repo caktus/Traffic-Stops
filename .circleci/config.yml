@@ -85,10 +85,7 @@ jobs:
         environment:
           POSTGRES_USER: postgres
           POSTGRES_DB: traffic_stops
-<<<<<<< HEAD
     working_directory: ~/traffic-stops
-=======
->>>>>>> fa33a0503957ebe915bf7fb585eb3b6b977253c7
     steps:
       - checkout
       - restore_cache_cmd
