@@ -46,7 +46,8 @@ applied before importing.  If in doubt:
 Command-line
 ++++++++++++
 
-If loading NC, make sure to add ``NC_FTP_USER`` and ``NC_FTP_PASSWORD`` and your ``.env`` file.
+If loading NC, make sure to add ``NC_FTP_USER``, ``NC_FTP_PASSWORD``, and
+``NC_FTP_HOST`` to your ``.env`` file.
 
 If on a Mac, install ``gnu-sed``:
 
@@ -131,42 +132,10 @@ activated prior to an import of IL data and then deactivated afterwards, as foll
     sudo rm /swapfile
 
 
-Raw NC Data
-___________
-
-
-Command-line
-++++++++++++
-
-Run the import command:
-
-.. code-block:: bash
-
-    sudo su - traffic_stops
-    cd /var/www/traffic_stops
-    source ./env/bin/activate
-    ./manage.sh import_nc --dest=/var/www/traffic_stops/data
-
-Reusing an existing ``--dest`` directory will speed up import.  However,
-if import code has changed since the last time the directory was used, don't
-reuse an existing directory.
-
-
 Admin
 +++++
 
 Follow the "Admin" instructions above under "Local/Development Environment".
-
-
-Create DB Dump
-______________
-
-.. code-block:: bash
-
-    sudo -u postgres pg_dump -Ox -Ft traffic_stops_nc_production > traffic_stops_nc_production.tar
-    zip traffic_stops_nc_production.tar.zip traffic_stops_nc_production.tar
-    # then on local laptop, run:
-    scp opendatapolicingnc.com:traffic_stops_nc_production.tar.zip .
 
 
 Updating landing page stats
