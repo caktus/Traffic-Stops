@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from nc.data import importer
+from nc.data import importer, DEFAULT_URL
 
 
 class Command(BaseCommand):
@@ -8,7 +8,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('--dest', default=None)
-        parser.add_argument('--url', default=None)
+        parser.add_argument('--url', default=DEFAULT_URL)
         parser.add_argument('--zip-path', default=None)
         parser.add_argument('--min-stop-id', default=None)
         parser.add_argument('--max-stop-id', default=None)

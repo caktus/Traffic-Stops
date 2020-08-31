@@ -1,9 +1,6 @@
 Data Import
 ===========
 
-Stop data can be imported in the same manner for all states.  Substitute the state
-abbreviation (e.g., "md") as appropriate in the Generic NC instructions below.
-
 Census data for all states is imported all at once, in the same manner for all
 environments, using the ``import_census`` management command.  This must be
 performed as part of developer and server setup as well as when census support is
@@ -42,8 +39,6 @@ applied before importing.  If in doubt:
 
     # for NC
     dropdb traffic_stops_nc && createdb -E UTF-8 traffic_stops_nc
-    # for MD
-    dropdb traffic_stops_md && createdb -E UTF-8 traffic_stops_md
 
     ./migrate_all_dbs.sh
 
@@ -66,9 +61,6 @@ Run the import command:
     # for NC (~25m)
     rm -rf ./ncdata  # if you don't want to reuse previous download
     python manage.py import_nc --dest $PWD/ncdata --noprime  # noprime = don't prime cache
-    # for MD (~30m)
-    rm -rf ./mddata  # if you don't want to reuse previous download
-    python manage.py import_md --dest $PWD/mddata
 
 This took ~25 minutes on my laptop. Run ``tail -f traffic_stops.log`` to follow
 along.  Reusing an existing ``--dest`` directory will speed up import.  However,
