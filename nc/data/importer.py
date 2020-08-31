@@ -300,32 +300,3 @@ def copy_from(destination, nc_csv_path):
         logger.info("ANALYZE")
         cur.execute("ANALYZE")
         logger.info("COMMIT")
-
-
-def delete_old_stops():
-    # Remove all stops and related objects that are before 1 Jan 2002, when everyone
-    # started reporting consistently.  Don't clear out the NC State Highway Patrol
-    # data, though, since they were reporting consistently before that.
-    nc_tz = pytz.timezone(settings.NC_TIME_ZONE)
-    begin_dt = nc_tz.localize(datetime.datetime(2002, 1, 1))
-    agency = Agency.objects.get(name="NC State Highway Patrol")
-    with connections['traffic_stops_nc'].cursor() as cur:
-        # Perform deletions of pre-2002 data in order by model dependencies, all tables
-        # that have a foreign key reference to another must be done beforehand:
-        #   SearchBasis (-> Search, Person, Stop),
-        #   Contraband (-> Search, Person, Stop),
-        #   Search (-> Person, Stop),
-        #   Person (-> Stop),
-        #   Stop
-        # Raw SQL is used here to avoid Django's delete functionality
-        # which is too slow with a database this big.
-        logger.info("Deleting nc_searchbasis before 2002")
-        cur.execute(copy_nc.DELETE_SEARCHBASIS_SQL, [agency.pk, begin_dt])
-        logger.info("Deleting nc_contraband before 2002")
-        cur.execute(copy_nc.DELETE_CONTRABAND_SQL, [agency.pk, begin_dt])
-        logger.info("Deleting nc_search before 2002")
-        cur.execute(copy_nc.DELETE_SEARCH_SQL, [agency.pk, begin_dt])
-        logger.info("Deleting nc_person before 2002")
-        cur.execute(copy_nc.DELETE_PERSON_SQL, [agency.pk, begin_dt])
-        logger.info("Deleting nc_stop before 2002")
-        cur.execute(copy_nc.DELETE_STOP_SQL, [agency.pk, begin_dt])
