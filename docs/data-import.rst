@@ -1,9 +1,6 @@
 Data Import
 ===========
 
-Stop data can be imported in the same manner for all states.  Substitute the state
-abbreviation (e.g., "md") as appropriate in the Generic NC instructions below.
-
 Census data for all states is imported all at once, in the same manner for all
 environments, using the ``import_census`` management command.  This must be
 performed as part of developer and server setup as well as when census support is
@@ -42,8 +39,6 @@ applied before importing.  If in doubt:
 
     # for NC
     dropdb traffic_stops_nc && createdb -E UTF-8 traffic_stops_nc
-    # for MD
-    dropdb traffic_stops_md && createdb -E UTF-8 traffic_stops_md
 
     ./migrate_all_dbs.sh
 
@@ -51,7 +46,8 @@ applied before importing.  If in doubt:
 Command-line
 ++++++++++++
 
-If loading NC, make sure to add ``NC_FTP_USER`` and ``NC_FTP_PASSWORD`` and your ``.env`` file.
+If loading NC, make sure to add ``NC_FTP_USER``, ``NC_FTP_PASSWORD``, and
+``NC_FTP_HOST`` to your ``.env`` file.
 
 If on a Mac, install ``gnu-sed``:
 
@@ -66,9 +62,6 @@ Run the import command:
     # for NC (~25m)
     rm -rf ./ncdata  # if you don't want to reuse previous download
     python manage.py import_nc --dest $PWD/ncdata --noprime  # noprime = don't prime cache
-    # for MD (~30m)
-    rm -rf ./mddata  # if you don't want to reuse previous download
-    python manage.py import_md --dest $PWD/mddata
 
 This took ~25 minutes on my laptop. Run ``tail -f traffic_stops.log`` to follow
 along.  Reusing an existing ``--dest`` directory will speed up import.  However,
@@ -139,42 +132,10 @@ activated prior to an import of IL data and then deactivated afterwards, as foll
     sudo rm /swapfile
 
 
-Raw NC Data
-___________
-
-
-Command-line
-++++++++++++
-
-Run the import command:
-
-.. code-block:: bash
-
-    sudo su - traffic_stops
-    cd /var/www/traffic_stops
-    source ./env/bin/activate
-    ./manage.sh import_nc --dest=/var/www/traffic_stops/data
-
-Reusing an existing ``--dest`` directory will speed up import.  However,
-if import code has changed since the last time the directory was used, don't
-reuse an existing directory.
-
-
 Admin
 +++++
 
 Follow the "Admin" instructions above under "Local/Development Environment".
-
-
-Create DB Dump
-______________
-
-.. code-block:: bash
-
-    sudo -u postgres pg_dump -Ox -Ft traffic_stops_nc_production > traffic_stops_nc_production.tar
-    zip traffic_stops_nc_production.tar.zip traffic_stops_nc_production.tar
-    # then on local laptop, run:
-    scp opendatapolicingnc.com:traffic_stops_nc_production.tar.zip .
 
 
 Updating landing page stats

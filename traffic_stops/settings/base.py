@@ -64,7 +64,7 @@ DATABASE_ETL_USER = ''
 # timezone as the operating system.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
-TIME_ZONE = 'America/New_York'
+TIME_ZONE = "UTC"
 NC_TIME_ZONE = 'America/New_York'
 
 NC_KEY = 'nc'
@@ -83,8 +83,6 @@ STATE_CONFIG = {
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
 LANGUAGE_CODE = "en-us"
-
-TIME_ZONE = "UTC"
 
 USE_I18N = True
 
@@ -207,6 +205,7 @@ LOGGING = {
     "loggers": {
         "django.request": {"handlers": ["mail_admins"], "level": "ERROR", "propagate": True,},
         "django.security": {"handlers": ["mail_admins"], "level": "ERROR", "propagate": True,},
+        "django.db": {"handlers": ["console"], "level": "INFO", "propagate": False,},
         "apps": {"level": "DEBUG", "handlers": ["console"], "propagate": False,},
         "traffic_stops": {"handlers": ["console"], "level": "INFO", "propagate": False,},
         "tsdata": {"handlers": ["console"], "level": "DEBUG", "propagate": False,},
