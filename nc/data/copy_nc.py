@@ -64,3 +64,50 @@ FINALIZE_COPY = """
 
     ANALYZE;
 """ # noqa
+
+DELETE_SEARCHBASIS_SQL = """
+    DELETE
+    FROM "nc_searchbasis"
+    USING "nc_stop"
+    WHERE "nc_searchbasis"."stop_id" = "nc_stop"."stop_id"
+      AND "nc_stop"."agency_id" <> %s
+      AND "nc_stop"."date" < %s;
+"""
+
+SELECT * FROM "nc_searchbasis" JOIN "nc_stop" ON ("nc_searchbasis"."stop_id" = "nc_stop"."stop_id") WHERE "nc_stop"."agency_id" <> 194 AND "nc_stop"."date" < '2002-01-01T00:00:00-05:00'::timestamptz;
+
+DELETE_CONTRABAND_SQL = """
+    DELETE
+    FROM "nc_contraband"
+    USING "nc_stop"
+    WHERE "nc_contraband"."stop_id" = "nc_stop"."stop_id"
+      AND "nc_stop"."agency_id" <> %s
+      AND "nc_stop"."date" < %s;
+"""
+
+DELETE_SEARCH_SQL = """
+    DELETE
+    FROM "nc_search"
+    USING "nc_stop"
+    WHERE "nc_search"."stop_id" = "nc_stop"."stop_id"
+      AND "nc_stop"."agency_id" <> %s
+      AND "nc_stop"."date" < %s;
+"""
+
+DELETE_PERSON_SQL = """
+    DELETE
+    FROM "nc_person"
+    USING "nc_stop"
+    WHERE "nc_person"."stop_id" = "nc_stop"."stop_id"
+      AND "nc_stop"."agency_id" <> %s
+      AND "nc_stop"."date" < %s;
+"""
+
+SELECT * FROM "nc_person" JOIN "nc_stop" ON ("nc_person"."stop_id" = "nc_stop"."stop_id") WHERE "nc_stop"."agency_id" <> 194 AND "nc_stop"."date" < '2002-01-01T00:00:00-05:00'::timestamptz;
+
+DELETE_STOP_SQL = """
+    DELETE
+    FROM "nc_stop"
+    WHERE "nc_stop"."agency_id" <> %s
+      AND "nc_stop"."date" < %s;
+"""
