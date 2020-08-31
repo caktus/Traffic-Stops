@@ -11,7 +11,7 @@ services:
       - "54344:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-      - ./docker-entrypoint.postgres.sql:/docker-entrypoint-initdb.d/init.sql
+      - .docker-entrypoint.postgres.sql:/docker-entrypoint-initdb.d/init.sql
     shm_size: 128mb
 
 volumes:
