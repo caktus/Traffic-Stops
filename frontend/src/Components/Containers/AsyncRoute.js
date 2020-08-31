@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
 // Sentry/Error Boundaries
 import * as Sentry from '@sentry/react';
@@ -13,7 +13,8 @@ import PropTypes from 'prop-types';
 // Router
 import { Route } from 'react-router-dom';
 
-const MIN_DELAY = 500;
+// const MIN_DELAY = 500;
+const MIN_DELAY = 50000;
 
 const AsyncPage = loadable(({ importComponent }) => pMinDelay(importComponent(), MIN_DELAY));
 
