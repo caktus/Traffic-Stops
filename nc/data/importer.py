@@ -8,6 +8,7 @@ from urllib.parse import urlparse
 from pathlib import Path
 import psycopg2
 
+from django.core.cache import cache
 from django.conf import settings
 from django.core.mail import EmailMessage
 from django.db import connections, transaction
@@ -296,26 +297,6 @@ def copy_from(destination, nc_csv_path):
                     cur.copy_expert(copy_nc.NC_COPY_INSTRUCTIONS[p.name], fh)
         logger.info("Finalizing import (this will take a LONG time...)")
         cur.execute(copy_nc.FINALIZE_COPY)
-        set_time_zone(cur, settings.TIME_ZONE)
-
-    # Remove all stops and related objects that are before 1 Jan 2002, when everyone
-    # started reporting consistently.  Don't clear out the NC State Highway Patrol
-    # data, though, since they were reporting consistently before that.
-
-    nc_tz = pytz.timezone(settings.NC_TIME_ZONE)
-    begin_dt = nc_tz.localize(datetime.datetime(2002, 1, 1))
-    agency = Agency.objects.get(name="NC State Highway Patrol")
-
-    # Perform deletions of pre-2002 data in order by model dependencies, all tables
-    # that have a foreign key reference to another must be done beforehand:
-    #   SearchBasis (-> Search, Person, Stop),
-    #   Contraband (-> Search, Person, Stop),
-    #   Search (-> Person, Stop),
-    #   Person (-> Stop),
-    #   Stop
-    logger.info("Removing pre-2002 data")
-    SearchBasis.objects.exclude(stop__agency=agency).filter(stop__date__lt=begin_dt).delete()
-    Contraband.objects.exclude(stop__agency=agency).filter(stop__date__lt=begin_dt).delete()
-    Search.objects.exclude(stop__agency=agency).filter(stop__date__lt=begin_dt).delete()
-    Person.objects.exclude(stop__agency=agency).filter(stop__date__lt=begin_dt).delete()
-    Stop.objects.exclude(agency=agency).filter(date__lt=begin_dt).delete()
+        logger.info("ANALYZE")
+        cur.execute("ANALYZE")
+        logger.info("COMMIT")
