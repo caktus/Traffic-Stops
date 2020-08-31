@@ -74,8 +74,6 @@ DELETE_SEARCHBASIS_SQL = """
       AND "nc_stop"."date" < %s;
 """
 
-SELECT * FROM "nc_searchbasis" JOIN "nc_stop" ON ("nc_searchbasis"."stop_id" = "nc_stop"."stop_id") WHERE "nc_stop"."agency_id" <> 194 AND "nc_stop"."date" < '2002-01-01T00:00:00-05:00'::timestamptz;
-
 DELETE_CONTRABAND_SQL = """
     DELETE
     FROM "nc_contraband"
@@ -102,8 +100,6 @@ DELETE_PERSON_SQL = """
       AND "nc_stop"."agency_id" <> %s
       AND "nc_stop"."date" < %s;
 """
-
-SELECT * FROM "nc_person" JOIN "nc_stop" ON ("nc_person"."stop_id" = "nc_stop"."stop_id") WHERE "nc_stop"."agency_id" <> 194 AND "nc_stop"."date" < '2002-01-01T00:00:00-05:00'::timestamptz;
 
 DELETE_STOP_SQL = """
     DELETE
