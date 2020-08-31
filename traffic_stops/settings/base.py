@@ -205,7 +205,7 @@ LOGGING = {
     "loggers": {
         "django.request": {"handlers": ["mail_admins"], "level": "ERROR", "propagate": True,},
         "django.security": {"handlers": ["mail_admins"], "level": "ERROR", "propagate": True,},
-        "django.db": {"handlers": ["console"], "level": "DEBUG", "propagate": False,},
+        "django.db": {"handlers": ["console"], "level": "INFO", "propagate": False,},
         "apps": {"level": "DEBUG", "handlers": ["console"], "propagate": False,},
         "traffic_stops": {"handlers": ["console"], "level": "INFO", "propagate": False,},
         "tsdata": {"handlers": ["console"], "level": "DEBUG", "propagate": False,},
