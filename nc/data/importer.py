@@ -299,4 +299,5 @@ def copy_from(destination, nc_csv_path):
         cur.execute(copy_nc.FINALIZE_COPY)
         logger.info("ANALYZE")
         cur.execute("ANALYZE")
+        set_time_zone(cur, settings.TIME_ZONE)
         logger.info("COMMIT")
