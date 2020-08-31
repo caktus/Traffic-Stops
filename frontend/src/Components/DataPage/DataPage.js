@@ -24,9 +24,9 @@ function DataPage(props) {
             {sidebarOpen && (
               <motion.div
                 key="DataSidebar"
-                initial={{ x: '-100%', duration: 750 }}
-                animate={{ x: 0, duration: 750 }}
-                exit={{ x: '-100%', duration: 750 }}
+                initial={{ opacity: 0.35, x: '-100%', duration: 750 }}
+                animate={{ opacity: 1, x: 0, duration: 750 }}
+                exit={{ opacity: 0.35, x: '-100%', duration: 750 }}
                 transition={{ ease: 'easeIn' }}
               >
                 <Sidebar open={sidebarOpen} setSidebarOpen={setSidebarOpen} />

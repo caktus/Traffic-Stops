@@ -13,9 +13,9 @@ import PropTypes from 'prop-types';
 // Router
 import { Route } from 'react-router-dom';
 
-const SUSPENSE_TIMEOUT = 200;
+const MIN_DELAY = 500;
 
-const AsyncPage = loadable(({ importComponent }) => pMinDelay(importComponent(), SUSPENSE_TIMEOUT));
+const AsyncPage = loadable(({ importComponent }) => pMinDelay(importComponent(), MIN_DELAY));
 
 function AsyncRoute({ renderLoading, renderError, importComponent, ...props }) {
   return (
