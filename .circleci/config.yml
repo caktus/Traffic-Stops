@@ -57,7 +57,7 @@ jobs:
           name: Test
           command: |
             . env/bin/activate
-            ./manage.py test
+            ./run_tests.sh
 
 workflows:
   version: 2
