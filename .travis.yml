@@ -17,7 +17,7 @@ cache:
     - $HOME/.cache/pip
 
 env:
-  - DJANGO_SETTINGS_MODULE="traffic_stops.settings.dev" PGHOST="127.0.0.1" PGPORT="5432" PGUSER="postgres"
+  - DJANGO_SETTINGS_MODULE="traffic_stops.settings.dev" PGHOST="127.0.0.1" PGPORT="5433" PGUSER="postgres"
 
 # install:
 #   - pip install -U pip
