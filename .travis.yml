@@ -10,7 +10,7 @@ cache:
     - $HOME/.cache/pip
 
 env:
-  - DJANGO_SETTINGS_MODULE="traffic_stops.settings.dev" PGHOST="127.0.0.1" PGPORT="54344" PGUSER="postgres" PGDATABASE=traffic_stops
+  - DJANGO_SETTINGS_MODULE="traffic_stops.settings.dev" PGHOST="127.0.0.1" PGPORT="54344" PGUSER="postgres" PGDATABASE=traffic_stops DATABASE_URL=postgres://127.0.0.1:54344/traffic_stops"
 
 install:
   - pip install -U pip
