@@ -1,25 +1,19 @@
 import csv
-import datetime
 import glob
 import logging
 import os
 import sys
-from urllib.parse import urlparse
 from pathlib import Path
-import psycopg2
 
-from django.core.cache import cache
 from django.conf import settings
 from django.core.mail import EmailMessage
 from django.db import connections, transaction
 
-import pytz
-
 from tsdata.dataset_facts import compute_dataset_facts
 from tsdata.sql import drop_constraints_and_indexes
-from tsdata.utils import call, flush_memcached, line_count, download_and_unzip_data, unzip_data
+from tsdata.utils import call, line_count, download_and_unzip_data, unzip_data
 from nc.data import copy_nc
-from nc.models import Agency, Search, Person, Stop, Contraband, SearchBasis
+from nc.models import Agency, Search, Stop
 from nc.prime_cache import run as prime_cache_run
 from .download_from_nc import nc_download_and_unzip_data
 

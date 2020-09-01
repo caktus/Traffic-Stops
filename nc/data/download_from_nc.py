@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 def show_ftp_listing(s):
     logger.debug(s)
 
+
 def ftps_connect(host):
     ftps = FTP_TLS()
     ftps.ssl_version = ssl.PROTOCOL_SSLv23
@@ -23,6 +24,7 @@ def ftps_connect(host):
     ftps.login(settings.NC_FTP_USER, settings.NC_FTP_PASSWORD)
     ftps.prot_p()
     return ftps
+
 
 def nc_download_and_unzip_data(destination, prefix='state-'):
     """Download and unzip data into destination directory"""
