@@ -31,55 +31,19 @@ def pod_stats(c):
     print(f"Maximum pods: {pod_capacity}")
     print(f"Total nodes: {len(nodes['items'])}")
 
-@invoke.task
-def build_ci_images(c):
-    """Build CircleCI test image using docker-compose"""
-    c.run("docker-compose -f docker-compose.yml -f docker-compose-deploy.yml build app")
-
-
-@invoke.task(help={"command": "Passes a command to the container to run (ex: 'ls -la')"})
-def run_in_ci_image(c, command):
-    """Runs command in the CircleCI test container.
-
-    Args:
-        command (str): A bash style command line command of variable length and composition.
-    Usage:
-        inv ci-run --command='pytest'
-    """
-    c.run(
-        f"docker-compose -f docker-compose.yml -f docker-compose.deploy.yml run --rm app sh -lc '{ command }'"
-    )
-
-@invoke.task
-def build_deployable(c):
-    """Builds a deployable image using the Dockerfile"""
-    kubesae.image["tag"](c)
-    c.run(f"docker build -t {c.config.app}:{c.config.tag} .")
-
-@invoke.task(pre=[build_deployable])
-def build_deploy(c, push=True, deploy=True):
-    """Pushes the built images"""
-    if push:
-        kubesae.image["push"](c)
-    if deploy:
-        kubesae.deploy["deploy"](c)
 
 @invoke.task
 def ansible_playbook(c, name, extra="", verbosity=1):
     with c.cd("deploy/"):
         c.run(f"ansible-playbook {name} {extra} -{'v'*verbosity}")
 
-project = invoke.Collection("project")
-project.add_task(build_ci_images, name="ci-build")
-project.add_task(run_in_ci_image, name="ci-run")
-project.add_task(build_deploy)
 
 ns = invoke.Collection()
 ns.add_collection(kubesae.image)
 ns.add_collection(kubesae.aws)
 ns.add_collection(kubesae.deploy)
 ns.add_collection(kubesae.pod)
-ns.add_collection(project)
+
 ns.add_task(staging)
 ns.add_task(production)
 ns.add_task(pod_stats)
