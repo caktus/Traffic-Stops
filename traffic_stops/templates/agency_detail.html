@@ -46,9 +46,9 @@
 
 <div class="affix-padder"></div>
 
-<div class="container agency-detail">
-  <div class="row">
-    <div class="col-md-12" role="main">
+<div class="agency-detail" role="main">
+  {% comment %} <div class="row"> {% endcomment %}
+    {% comment %} <div class="col-md-12" role="main"> {% endcomment %}
       {% block census-display %}{% endblock census-display %}
       {% block stop-display %}{% endblock stop-display %}
       {% block stop-count-display %}{% endblock stop-count-display %}
@@ -58,8 +58,8 @@
       {% block lsb-display %}{% endblock lsb-display %}
       {% block contraband-display %}{% endblock contraband-display %}
       {% block use-of-force-display %}{% endblock use-of-force-display %}
-    </div>
-  </div>
+    {% comment %} </div> {% endcomment %}
+  {% comment %} </div> {% endcomment %}
 </div>
 {% endblock %}
 

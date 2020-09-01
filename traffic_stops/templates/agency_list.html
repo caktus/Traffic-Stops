@@ -52,16 +52,19 @@
 {% endblock pre-content %}
 
 {% block content %}
-<div class="row">
-  <div class="col-xs-12">
+
+<div class="">
+  {% comment %} <div class="row "> {% endcomment %}
+  <div class="container">
     <p class="agency-list-help-block">
       {% block help-text %}
       {% endblock %}
     </p>
   </div>
+{% comment %} </div> {% endcomment %}
 </div>
 
-<div class="row">
+<div class="agency-list-list container">
   {% for letter, chunks in sorted_agencies %}
   <div class="col-md-12">
     <h1 class="headline">{{ letter }}</h1>

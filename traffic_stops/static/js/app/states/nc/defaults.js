@@ -37,7 +37,7 @@ export default {
     "#7A76B7", // purple
     "#DC8F27", // orange
   ],
-  baseline_color: "black",
+  baseline_color: "grey",
   single_color: "#5C0808",
   purpose_order: d3.map({
     'Driving While Impaired': 0,
