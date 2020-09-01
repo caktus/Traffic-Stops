@@ -4,16 +4,21 @@ import glob
 import logging
 import os
 import sys
+from urllib.parse import urlparse
+from pathlib import Path
+import psycopg2
 
+from django.core.cache import cache
 from django.conf import settings
 from django.core.mail import EmailMessage
-from django.db import connections
+from django.db import connections, transaction
 
 import pytz
 
 from tsdata.dataset_facts import compute_dataset_facts
 from tsdata.sql import drop_constraints_and_indexes
 from tsdata.utils import call, flush_memcached, line_count, download_and_unzip_data, unzip_data
+from nc.data import copy_nc
 from nc.models import Agency, Search, Person, Stop, Contraband, SearchBasis
 from nc.prime_cache import run as prime_cache_run
 from .download_from_nc import nc_download_and_unzip_data
@@ -70,22 +75,22 @@ def run(url, destination=None, zip_path=None, min_stop_id=None,
         override_start_date = 'Jan 01, 2002'
 
     # convert data files to CSV for database importing
+    logger.info("Converting to CSV")
     convert_to_csv(destination)
 
     # find any new NC agencies and add to a copy of NC_agencies.csv
+    logger.info("Looking for new NC agencies in Stops.csv")
     nc_agency_csv = update_nc_agencies(
         os.path.join(os.path.dirname(__file__), 'NC_agencies.csv'),
         destination
     )
 
-    # drop constraints/indexes
-    drop_constraints_and_indexes(connections['traffic_stops_nc'].cursor())
     # use COPY to load CSV files as quickly as possible
     copy_from(destination, nc_agency_csv)
     logger.info("NC Data Import Complete")
 
     # Clear the query cache to get rid of NC queries made on old data
-    flush_memcached()
+    # flush_memcached()
 
     # fix landing page data
     facts = compute_dataset_facts(
@@ -269,36 +274,30 @@ def update_nc_agencies(nc_csv_path, destination):
     return new_nc_csv_path
 
 
+def set_time_zone(cur, time_zone):
+    logger.info(f"Set time zone to {time_zone}")
+    cur.execute(connections['traffic_stops_nc'].ops.set_time_zone_sql(), [time_zone])
+
+
+@transaction.atomic(using='traffic_stops_nc')
 def copy_from(destination, nc_csv_path):
-    """Execute copy.sql to COPY csv data files into PostgreSQL database"""
-    sql_file = os.path.join(os.path.dirname(__file__), 'copy.sql')
-    cmd = ['psql',
-           '-v', 'data_dir={}'.format(destination),
-           '-v', 'nc_time_zone={}'.format(settings.NC_TIME_ZONE),
-           '-v', 'nc_csv_table={}'.format(nc_csv_path),
-           '-f', sql_file,
-           settings.DATABASES['traffic_stops_nc']['NAME']]
-    if settings.DATABASE_ETL_USER:
-        cmd.append(settings.DATABASE_ETL_USER)
-    call(cmd)
+    """Populates the NC database from csv files."""
 
-    # Remove all stops and related objects that are before 1 Jan 2002, when everyone
-    # started reporting consistently.  Don't clear out the NC State Highway Patrol
-    # data, though, since they were reporting consistently before that.
-
-    nc_tz = pytz.timezone(settings.NC_TIME_ZONE)
-    begin_dt = nc_tz.localize(datetime.datetime(2002, 1, 1))
-    agency = Agency.objects.get(name="NC State Highway Patrol")
-
-    # Perform deletions of pre-2002 data in order by model dependencies, all tables
-    # that have a foreign key reference to another must be done beforehand:
-    #   SearchBasis (-> Search, Person, Stop),
-    #   Contraband (-> Search, Person, Stop),
-    #   Search (-> Person, Stop),
-    #   Person (-> Stop),
-    #   Stop
-    SearchBasis.objects.exclude(stop__agency=agency).filter(stop__date__lt=begin_dt).delete()
-    Contraband.objects.exclude(stop__agency=agency).filter(stop__date__lt=begin_dt).delete()
-    Search.objects.exclude(stop__agency=agency).filter(stop__date__lt=begin_dt).delete()
-    Person.objects.exclude(stop__agency=agency).filter(stop__date__lt=begin_dt).delete()
-    Stop.objects.exclude(agency=agency).filter(date__lt=begin_dt).delete()
+    with connections['traffic_stops_nc'].cursor() as cur:
+        logger.info("Dropping NC constraints before import")
+        drop_constraints_and_indexes(cur)
+        set_time_zone(cur, settings.NC_TIME_ZONE)
+        logger.info("Truncating tables")
+        cur.execute(copy_nc.CLEAN_DATABASE)
+        path = Path(destination)
+        for p in path.glob("*.csv"):
+            if p.name in copy_nc.NC_COPY_INSTRUCTIONS.keys():
+                with p.open() as fh:
+                    logger.info(f"COPY {p.name} into the database")
+                    cur.copy_expert(copy_nc.NC_COPY_INSTRUCTIONS[p.name], fh)
+        logger.info("Finalizing import (this will take a LONG time...)")
+        cur.execute(copy_nc.FINALIZE_COPY)
+        logger.info("ANALYZE")
+        cur.execute("ANALYZE")
+        set_time_zone(cur, settings.TIME_ZONE)
+        logger.info("COMMIT")

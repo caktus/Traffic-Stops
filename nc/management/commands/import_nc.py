@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from nc.data import DEFAULT_URL, importer
+from nc.data import importer, DEFAULT_URL
 
 
 class Command(BaseCommand):
