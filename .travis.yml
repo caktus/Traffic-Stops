@@ -25,7 +25,7 @@ env:
 
 script:
   - docker-compose up -d
-  - coverage run manage.py test
+  - python manage.py test
   # - coverage run manage.py test
   # - coverage report -m --fail-under 74
   # - flake8 .
