@@ -35,7 +35,7 @@ jobs:
     working_directory: ~/traffic-stops
     steps:
       - checkout
-      - restore_cache
+      - restore_cache_cmd
       - run:
           name: Install Dependencies
           command: |
