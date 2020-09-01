@@ -27,8 +27,8 @@ env:
 #   - npm install
 
 before_script:
-  - createdb -E UTF-8 traffic_stops -U postgres -O $USER
-  - createdb -E UTF-8 traffic_stops_nc -U postgres -O $USER
+  - createdb -E UTF-8 traffic_stops -U $PGUSER -h $PGHOST -p $PGPORT
+  - createdb -E UTF-8 traffic_stops_nc -U $PGUSER -h $PGHOST -p $PGPORT
 
 script:
   - coverage run manage.py test
