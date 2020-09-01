@@ -24,6 +24,8 @@ commands:
           paths:
             - "env"
           key: v7-pip-dependencies-{{ checksum "requirements/dev/dev.txt" }}
+orbs:
+  slack: circleci/slack@3.4.2
 
 jobs:
   test:
