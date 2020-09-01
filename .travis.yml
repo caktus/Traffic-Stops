@@ -26,7 +26,6 @@ install:
 
 script:
   - docker-compose up -d
-  - python manage.py shell
   - python manage.py test
   # - coverage run manage.py test
   # - coverage report -m --fail-under 74
