@@ -14,7 +14,7 @@ env:
 
 install:
   - pip install -U pip
-  - pip install -U -r requirements/dev/dev.txt
+  - pip install -U -r requirements/test/test.txt
   - pip install -U -r requirements/base/base.txt
   - nvm install 6.12.0
   - nvm use 6.12.0
