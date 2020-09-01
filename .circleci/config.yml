@@ -27,24 +27,18 @@ commands:
 
 jobs:
   test:
-    docker:
-      - image: circleci/python:3.7
-        environment:
-          DATABASE_URL: postgres://127.0.0.1/traffic_stops
-          DATABASE_URL_NC: postgres://127.0.0.1/traffic_stops_nc
-      - image: postgres:12-alpine
-        environment:
-          POSTGRES_HOST_AUTH_METHOD: trust
+    machine:
+      image: ubuntu-1604:202007-01
+    environment:
+      DATABASE_URL: postgres://127.0.0.1/traffic_stops
+      DATABASE_URL_NC: postgres://127.0.0.1/traffic_stops_nc
     working_directory: ~/traffic-stops
     steps:
       - checkout
-      - restore_cache_cmd
-      - run: sudo apt-get update
-      - run: sudo apt-get install postgresql-client-12
       - run:
-          name: Postgres setup
+          name: Docker up
           command: |
-            createdb -d DATABASE_URL traffic_stops_nc
+            docker-compose up -d
 
 workflows:
   version: 2
