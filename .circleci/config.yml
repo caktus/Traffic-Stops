@@ -46,7 +46,7 @@ jobs:
             python3 -m venv env
             . env/bin/activate
 
-            pip install -r requirements/test/test.txt
+            pip install -r requirements/dev/dev.txt
             pip install -r requirements/base/base.txt
       - save_cache_cmd
       - run:
