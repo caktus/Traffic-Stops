@@ -30,6 +30,7 @@ jobs:
     machine:
       image: ubuntu-1604:202007-01
     environment:
+      DJANGO_SETTINGS_MODULE: traffic_stops.settings.dev
       DATABASE_URL: postgres://127.0.0.1/traffic_stops
       DATABASE_URL_NC: postgres://127.0.0.1/traffic_stops_nc
     working_directory: ~/traffic-stops
