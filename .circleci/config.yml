@@ -15,15 +15,15 @@ commands:
     steps:
       - restore_cache:
           keys:
-              - v6-pip-dependencies-{{ checksum "requirements/dev/dev.txt" }}
+              - v7-pip-dependencies-{{ checksum "requirements/dev/dev.txt" }}
               # fallback to using the latest cache if no exact match is found
-              - v6-pip-dependencies-
+              - v7-pip-dependencies-
   save_cache_cmd:
     steps:
       - save_cache:
           paths:
             - "env"
-          key: v6-pip-dependencies-{{ checksum "requirements/dev/dev.txt" }}
+          key: v7-pip-dependencies-{{ checksum "requirements/dev/dev.txt" }}
 
 jobs:
   test:
