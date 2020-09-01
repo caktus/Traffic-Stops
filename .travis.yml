@@ -7,6 +7,10 @@ python:
 
 addons:
   postgresql: "12"
+  apt:
+    packages:
+    - postgresql-12
+    - postgresql-client-12
 
 cache:
   directories:
@@ -15,12 +19,12 @@ cache:
 env:
   - DJANGO_SETTINGS_MODULE="traffic_stops.settings.dev" PGHOST="127.0.0.1" PGPORT="5432" PGUSER="postgres"
 
-install:
-  - pip install -U pip
-  - pip install -U -r requirements/dev/dev.txt
-  - nvm install 6.12.0
-  - nvm use 6.12.0
-  - npm install
+# install:
+#   - pip install -U pip
+#   - pip install -U -r requirements/dev/dev.txt
+#   - nvm install 6.12.0
+#   - nvm use 6.12.0
+#   - npm install
 
 before_script:
   - createdb -E UTF-8 traffic_stops -U postgres -O $USER
