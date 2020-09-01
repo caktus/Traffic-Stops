@@ -5,31 +5,30 @@ sudo: false
 python:
   - "3.7"
 
-addons:
-  postgresql: "12"
-
 cache:
   directories:
     - $HOME/.cache/pip
 
 env:
-  - DJANGO_SETTINGS_MODULE="traffic_stops.settings.dev"
+  - DJANGO_SETTINGS_MODULE="traffic_stops.settings.dev" PGHOST="127.0.0.1" PGPORT="54344" PGUSER="postgres" PGDATABASE=traffic_stops DATABASE_URL=postgres://127.0.0.1:54344/traffic_stops"
 
 install:
   - pip install -U pip
-  - pip install -U -r requirements/dev.txt
-  - nvm install 4.4
-  - nvm use 4.4
+  - pip install -U -r requirements/dev/dev.txt
+  - pip install -U -r requirements/base/base.txt
+  - nvm install 6.12.0
+  - nvm use 6.12.0
   - npm install
 
-before_script:
-  - createdb -E UTF-8 traffic_stops -U postgres -O $USER
-  - createdb -E UTF-8 traffic_stops_nc -U postgres -O $USER
-  - createdb -E UTF-8 traffic_stops_md -U postgres -O $USER
+# before_script:
+#   - createdb -E UTF-8 traffic_stops -U $PGUSER -h $PGHOST -p $PGPORT
+#   - createdb -E UTF-8 traffic_stops_nc -U $PGUSER -h $PGHOST -p $PGPORT
 
 script:
-  - coverage run manage.py test
-  - coverage report -m --fail-under 74
-  - flake8 .
-  - npm test
-  - python manage.py makemigrations --dry-run | grep 'No changes detected' || (echo 'There are changes which require migrations.' && exit 1)
+  - docker-compose up -d
+  - python manage.py test
+  # - coverage run manage.py test
+  # - coverage report -m --fail-under 74
+  # - flake8 .
+  # - npm test
+  # - python manage.py makemigrations --dry-run | grep 'No changes detected' || (echo 'There are changes which require migrations.' && exit 1)
