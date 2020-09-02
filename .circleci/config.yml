@@ -45,7 +45,7 @@ jobs:
             pip-sync requirements/base/base.txt requirements/test/test.txt
       - save_cache_cmd
       - run:
-          name: Run Precommit
+          name: Run Pre-commit
           command: |
             . env/bin/activate
 
