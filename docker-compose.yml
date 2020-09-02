@@ -18,6 +18,9 @@ services:
     image: redis:5-alpine
     ports:
       - "63791:6379"
+    volumes:
+      - redisdata:/data
 
 volumes:
   pgdata:
+  redisdata:
