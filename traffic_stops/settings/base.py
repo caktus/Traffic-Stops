@@ -254,17 +254,13 @@ if "redis" in CACHE_HOST:
         "default": {
             "BACKEND": "django_redis.cache.RedisCache",
             "LOCATION": CACHE_HOST,
-            "OPTIONS": {
-                "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            }
+            "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient",},
         }
     }
     SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 else:
     CACHES = {
-        'default': {
-            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        },
+        "default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache",},
     }
 
 CENSUS_API_KEY = ""
