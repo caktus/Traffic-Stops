@@ -1,1 +1,1 @@
-default_app_config = 'tsdata.apps.TSDataConfig'
+default_app_config = "tsdata.apps.TSDataConfig"

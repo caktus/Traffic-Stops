@@ -8,7 +8,8 @@ class PrimeCacheTests(TestCase):
     This merely gives the cache priming code a chance to blow up if silly
     changes are made.  No results are verified.
     """
-    databases = '__all__'
+
+    databases = "__all__"
 
     def test_prime_cache(self):
         factories.ContrabandFactory()

@@ -2,20 +2,19 @@ import logging
 import time
 
 from django.conf import settings
-from django.urls import reverse
 from django.db.models import Count
 from django.test.client import Client
-
+from django.urls import reverse
 from nc.models import Agency
 
 logger = logging.getLogger(__name__)
 ENDPOINTS = (
-    'stops',
-    'stops_by_reason',
-    'use_of_force',
-    'searches',
-    'searches_by_type',
-    'contraband_hit_rate',
+    "stops",
+    "stops_by_reason",
+    "use_of_force",
+    "searches",
+    "searches_by_type",
+    "contraband_hit_rate",
 )
 DEFAULT_CUTOFF_SECS = 4
 
@@ -46,6 +45,7 @@ def avoid_newrelic_bug():
     """
     try:
         from newrelic.hooks.framework_django import django_settings
+
         django_settings.browser_monitoring.auto_instrument = False
     except ImportError:
         pass
@@ -78,47 +78,49 @@ def run(cutoff_duration_secs=None):
 
     avoid_newrelic_bug()
 
-    logger.info('NC prime_cache starting')
+    logger.info("NC prime_cache starting")
     agencies = [
         (a.id, a.name, a.num_stops)
-        for a in Agency.objects.annotate(num_stops=Count('stops')).order_by('-num_stops')
+        for a in Agency.objects.annotate(num_stops=Count("stops")).order_by("-num_stops")
     ]
-    api = reverse('nc:agency-api-list')
+    api = reverse("nc:agency-api-list")
     agencies_processed = 0
     for agency_id, agency_name, num_stops in agencies:
         elapsed = []  # collect times for each request
         # prime each API endpoint
         for endpoint in ENDPOINTS:
-            uri = "{}/{}/{}/".format(api.rstrip('/'), agency_id,
-                                     endpoint)
+            uri = "{}/{}/{}/".format(api.rstrip("/"), agency_id, endpoint)
             start_time = time.time()
             req(uri)
             elapsed.append(time.time() - start_time)
         # prime first search page
-        payload = {'agency': agency_name}
-        search_uri = reverse('nc:stops-search')
+        payload = {"agency": agency_name}
+        search_uri = reverse("nc:stops-search")
         start_time = time.time()
         req(search_uri, payload)
         elapsed.append(time.time() - start_time)
         elapsed = sum(elapsed)
-        logger.info('Primed cache for agency %s:%s with %s stops in %.2f secs',
-                    agency_id, agency_name, '{:,}'.format(num_stops), elapsed)
+        logger.info(
+            "Primed cache for agency %s:%s with %s stops in %.2f secs",
+            agency_id,
+            agency_name,
+            "{:,}".format(num_stops),
+            elapsed,
+        )
         agencies_processed += 1
         num_remaining_agencies = len(agencies) - agencies_processed
         if elapsed < cutoff_duration_secs and num_remaining_agencies > 0:
-            logger.info('Not priming cache for %s remaining agencies',
-                        num_remaining_agencies)
+            logger.info("Not priming cache for %s remaining agencies", num_remaining_agencies)
             break
 
 
 def req(uri, payload=None):
     c = Client()
-    if settings.ALLOWED_HOSTS and settings.ALLOWED_HOSTS[0] != '*':
+    if settings.ALLOWED_HOSTS and settings.ALLOWED_HOSTS[0] != "*":
         host = settings.ALLOWED_HOSTS[0]
     else:
-        host = '127.0.0.1'
+        host = "127.0.0.1"
     response = c.get(uri, data=payload, HTTP_HOST=host)
     if response.status_code != 200:
-        logger.warning("Status not OK: {} ({})".format(
-                       uri, response.status_code))
-        raise Exception('Request to %s failed: %s', uri, response.status_code)
+        logger.warning("Status not OK: {} ({})".format(uri, response.status_code))
+        raise Exception("Request to %s failed: %s", uri, response.status_code)

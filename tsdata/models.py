@@ -1,21 +1,18 @@
-from django.db import models
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
 
-
-STATE_CHOICES = (
-    (settings.NC_KEY, 'North Carolina'),
-)
+STATE_CHOICES = ((settings.NC_KEY, "North Carolina"),)
 
 STATUS_CHOICES = (
-    ('running', 'Running'),
-    ('error', 'Error'),
-    ('finished', 'Finished'),
+    ("running", "Running"),
+    ("error", "Error"),
+    ("finished", "Finished"),
 )
 
 GEOGRAPHY_CHOICES = (
-    ('county', 'County'),
-    ('place', 'Place'),
+    ("county", "County"),
+    ("place", "Place"),
 )
 
 
@@ -25,8 +22,11 @@ class Dataset(models.Model):
     date_added = models.DateTimeField(auto_now_add=True)
     date_received = models.DateField()
     url = models.URLField("URL", unique=True)
-    destination = models.CharField(blank=True, max_length=1024,
-                                   help_text="Absolute path to destination directory (helpful for testing)")  # noqa
+    destination = models.CharField(
+        blank=True,
+        max_length=1024,
+        help_text="Absolute path to destination directory (helpful for testing)",
+    )  # noqa
     report_email_1 = models.EmailField(blank=True)
     report_email_2 = models.EmailField(blank=True)
 
@@ -53,7 +53,7 @@ class Import(models.Model):
     successful = models.BooleanField(default=False)
 
     def __str__(self):
-        return 'Import of {}'.format(self.dataset)
+        return "Import of {}".format(self.dataset)
 
 
 class CensusProfile(models.Model):
@@ -95,14 +95,14 @@ class StateFacts(models.Model):
     total_stops_millions = models.PositiveIntegerField(default=0)
     total_searches = models.PositiveIntegerField(default=0)
     total_agencies = models.PositiveIntegerField(default=0)
-    start_date = models.CharField(max_length=20, default='')
-    end_date = models.CharField(max_length=20, default='')
+    start_date = models.CharField(max_length=20, default="")
+    end_date = models.CharField(max_length=20, default="")
 
     def __str__(self):
-        return 'Facts for state %s' % self.state_key
+        return "Facts for state %s" % self.state_key
 
     class Meta:
-        verbose_name_plural = 'state facts'
+        verbose_name_plural = "state facts"
 
 
 class TopAgencyFacts(models.Model):
@@ -110,14 +110,12 @@ class TopAgencyFacts(models.Model):
     rank = models.SmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
     agency_id = models.PositiveIntegerField(default=0)
     stops = models.PositiveIntegerField(default=0)
-    name = models.CharField(max_length=255, default='')
+    name = models.CharField(max_length=255, default="")
 
     def __str__(self):
-        return 'Facts for state %s agency %s' % (self.state_facts.state_key, self.name)
+        return "Facts for state %s agency %s" % (self.state_facts.state_key, self.name)
 
     class Meta:
-        unique_together = (
-            ('state_facts', 'rank'),
-        )
-        verbose_name_plural = 'top agency facts'
-        ordering = ['state_facts__state_key', 'rank']
+        unique_together = (("state_facts", "rank"),)
+        verbose_name_plural = "top agency facts"
+        ordering = ["state_facts__state_key", "rank"]

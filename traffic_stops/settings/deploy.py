@@ -58,9 +58,7 @@ CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": CACHE_HOST,
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        }
+        "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient",},
     }
 }
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
@@ -82,9 +80,7 @@ for backend in TEMPLATES:
             backend["OPTIONS"]["loaders"] = [("django.template.loaders.cached.Loader", loaders)]
 
 ### ADMINS and MANAGERS
-ADMINS = (
-    ('trafficstops team', 'forwardjustice-team@caktusgroup.com'),
-)
+ADMINS = (("trafficstops team", "forwardjustice-team@caktusgroup.com"),)
 MANAGERS = ADMINS
 
 ### 3rd-party applications
@@ -97,23 +93,24 @@ if SENTRY_DSN:
     from sentry_sdk.integrations.redis import RedisIntegration
 
     sentry_sdk.init(
-        dsn=SENTRY_DSN, integrations=[DjangoIntegration(), CeleryIntegration(), RedisIntegration()], environment=ENVIRONMENT,
+        dsn=SENTRY_DSN,
+        integrations=[DjangoIntegration(), CeleryIntegration(), RedisIntegration()],
+        environment=ENVIRONMENT,
     )
 
-DATABASE_ETL_USER = 'etl'
+DATABASE_ETL_USER = "etl"
 
 BROKER_URL = os.getenv("BROKER_URL", "redis://redis:6379/0")
 
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': []
-}
+REST_FRAMEWORK = {"DEFAULT_AUTHENTICATION_CLASSES": []}
 
-NC_AUTO_IMPORT_DIRECTORY = '/var/www/traffic_stops/NC-automated-import'
+NC_AUTO_IMPORT_DIRECTORY = "/var/www/traffic_stops/NC-automated-import"
 
-if ENVIRONMENT.upper() == 'PRODUCTION':
-    CELERYBEAT_SCHEDULE['automatic-nc-import']['schedule'] = \
-        crontab(day_of_month='1', hour=3, minute=0)
+if ENVIRONMENT.upper() == "PRODUCTION":
+    CELERYBEAT_SCHEDULE["automatic-nc-import"]["schedule"] = crontab(
+        day_of_month="1", hour=3, minute=0
+    )
 
     # List of email addresses that receive the report of non-compliance of
     # traffic stop reporting.
-    COMPLIANCE_REPORT_LIST = ('forwardjustice-team@caktusgroup.com',)
+    COMPLIANCE_REPORT_LIST = ("forwardjustice-team@caktusgroup.com",)

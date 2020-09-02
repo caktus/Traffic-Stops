@@ -1,12 +1,11 @@
 import datetime
+
 import factory
 import factory.fuzzy
-
 from nc import models
 
 
 class AgencyFactory(factory.django.DjangoModelFactory):
-
     class Meta(object):
         model = models.Agency
 
@@ -14,28 +13,26 @@ class AgencyFactory(factory.django.DjangoModelFactory):
 
 
 class PersonFactory(factory.django.DjangoModelFactory):
-
     class Meta(object):
         model = models.Person
 
     person_id = factory.Sequence(lambda x: x)
-    stop = factory.SubFactory('nc.tests.factories.StopFactory')
+    stop = factory.SubFactory("nc.tests.factories.StopFactory")
     age = factory.fuzzy.FuzzyInteger(16, 100)
     race = factory.fuzzy.FuzzyChoice(x[0] for x in models.RACE_CHOICES)
-    ethnicity = factory.fuzzy.FuzzyChoice(
-        x[0] for x in models.ETHNICITY_CHOICES)
-    type = 'D'
+    ethnicity = factory.fuzzy.FuzzyChoice(x[0] for x in models.ETHNICITY_CHOICES)
+    type = "D"
 
 
 class StopFactory(factory.django.DjangoModelFactory):
-
     class Meta(object):
         model = models.Stop
 
     stop_id = factory.Sequence(lambda x: x)
     agency = factory.SubFactory(AgencyFactory)
-    date = factory.fuzzy.FuzzyDateTime(datetime.datetime(
-        2008, 1, 1, 0, 0, tzinfo=datetime.timezone.utc))
+    date = factory.fuzzy.FuzzyDateTime(
+        datetime.datetime(2008, 1, 1, 0, 0, tzinfo=datetime.timezone.utc)
+    )
     purpose = factory.fuzzy.FuzzyChoice(x[0] for x in models.PURPOSE_CHOICES)
     action = factory.fuzzy.FuzzyChoice(x[0] for x in models.ACTION_CHOICES)
     officer_id = factory.fuzzy.FuzzyInteger(0)
@@ -50,7 +47,6 @@ class StopFactory(factory.django.DjangoModelFactory):
 
 
 class SearchFactory(factory.django.DjangoModelFactory):
-
     class Meta(object):
         model = models.Search
 
@@ -61,7 +57,6 @@ class SearchFactory(factory.django.DjangoModelFactory):
 
 
 class ContrabandFactory(factory.django.DjangoModelFactory):
-
     class Meta(object):
         model = models.Contraband
 

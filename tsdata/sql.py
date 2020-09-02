@@ -1,6 +1,5 @@
 import logging
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -35,9 +34,9 @@ def get_sql_statements(cursor, select_sql):
     # running through Django Debug Toolbar (it defaults params to (),
     # Django expects None for no params).
     cursor.execute(select_sql, params=None)
-    sql = ''
+    sql = ""
     for row in cursor.fetchall():
-        sql += '{}\n'.format(row[0])
+        sql += "{}\n".format(row[0])
     return sql
 
 

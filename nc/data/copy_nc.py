@@ -1,6 +1,6 @@
 from django.conf import settings
 
-SET_TIMEZONE = f"SET TIMEZONE='{settings.NC_TIME_ZONE}'" # noqa
+SET_TIMEZONE = f"SET TIMEZONE='{settings.NC_TIME_ZONE}'"  # noqa
 
 CLEAN_DATABASE = """
     TRUNCATE "nc_stop" RESTART IDENTITY CASCADE;
@@ -9,7 +9,7 @@ CLEAN_DATABASE = """
     TRUNCATE "nc_searchbasis" RESTART IDENTITY CASCADE;
     TRUNCATE "nc_contraband" RESTART IDENTITY CASCADE;
     TRUNCATE "nc_agency" RESTART IDENTITY CASCADE;
-""" # noqa
+"""  # noqa
 
 # NC_COPY_INSTRUCTIONS:
 # KEY: Filename that will be found on the file system.
@@ -21,8 +21,8 @@ NC_COPY_INSTRUCTIONS = {
     "Search.csv": "COPY nc_search (search_id, stop_id, person_id, type, vehicle_search, driver_search, passenger_search, property_search, vehicle_siezed, personal_property_siezed, other_property_sized) FROM STDIN WITH DELIMITER ',' NULL AS '' CSV HEADER",
     "Contraband.csv": "COPY nc_contraband (contraband_id, search_id, person_id, stop_id, ounces, pounds, pints, gallons, dosages, grams, kilos, money, weapons, dollar_amount) FROM STDIN WITH DELIMITER ',' CSV HEADER",
     "SearchBasis.csv": "COPY nc_searchbasis (search_basis_id, search_id, person_id, stop_id, basis) FROM STDIN WITH DELIMITER ',' CSV HEADER",
-    "NC_agencies.csv": "COPY  nc_agency (id, name, census_profile_id) FROM STDIN WITH DELIMITER ',' CSV HEADER FORCE NOT NULL census_profile_id"
-} # noqa
+    "NC_agencies.csv": "COPY  nc_agency (id, name, census_profile_id) FROM STDIN WITH DELIMITER ',' CSV HEADER FORCE NOT NULL census_profile_id",
+}  # noqa
 
 FINALIZE_COPY = """
     UPDATE nc_stop SET agency_id = nc_agency.id FROM nc_agency WHERE nc_stop.agency_description = nc_agency.name;
@@ -63,4 +63,4 @@ FINALIZE_COPY = """
     CREATE INDEX nc_stop_date_7d643c8a9c590bf7_uniq ON nc_stop USING btree (date);
 
     ANALYZE;
-""" # noqa
+"""  # noqa

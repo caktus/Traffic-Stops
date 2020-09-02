@@ -1,26 +1,26 @@
-from django.urls import reverse
 from django.test import TestCase
+from django.urls import reverse
 from nc.tests import factories
 
 
 class ViewTests(TestCase):
-    databases = '__all__'
+    databases = "__all__"
 
     def test_home(self):
-        response = self.client.get(reverse('nc:home'))
+        response = self.client.get(reverse("nc:home"))
         self.assertEqual(200, response.status_code)
 
     def test_search(self):
-        response = self.client.get(reverse('nc:stops-search'))
+        response = self.client.get(reverse("nc:stops-search"))
         self.assertEqual(200, response.status_code)
 
     def test_agency_detail(self):
         agency = factories.AgencyFactory(name="Durham")
-        response = self.client.get(reverse('nc:agency-detail', args=[agency.pk]))
+        response = self.client.get(reverse("nc:agency-detail", args=[agency.pk]))
         self.assertEqual(200, response.status_code)
 
     def test_agency_list(self):
-        response = self.client.get(reverse('nc:agency-list'))
+        response = self.client.get(reverse("nc:agency-list"))
         self.assertEqual(200, response.status_code)
 
     def test_agency_list_sorted_agencies(self):
@@ -44,8 +44,8 @@ class ViewTests(TestCase):
         factories.AgencyFactory(name="Def____")
         factories.AgencyFactory(name="Ghi____")
 
-        response = self.client.get(reverse('nc:agency-list'))
-        sorted_agencies = response.context['sorted_agencies']
+        response = self.client.get(reverse("nc:agency-list"))
+        sorted_agencies = response.context["sorted_agencies"]
 
         # Verify that there are three alphabetic categories
         self.assertEqual(3, len(sorted_agencies))
@@ -66,9 +66,9 @@ class ViewTests(TestCase):
 
     def test_homepage_find_a_stop(self):
         """Test Find a Stop form is present on NC homepage"""
-        response = self.client.get(reverse('nc:home'))
+        response = self.client.get(reverse("nc:home"))
         # make sure form is in context
-        self.assertTrue('find_a_stop_form' in response.context)
-        form = response.context['find_a_stop_form']
+        self.assertTrue("find_a_stop_form" in response.context)
+        form = response.context["find_a_stop_form"]
         # make sure required agency field label is present
-        self.assertContains(response, form['agency'].label)
+        self.assertContains(response, form["agency"].label)

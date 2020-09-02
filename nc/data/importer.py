@@ -8,22 +8,21 @@ from pathlib import Path
 from django.conf import settings
 from django.core.mail import EmailMessage
 from django.db import connections, transaction
-
-from tsdata.dataset_facts import compute_dataset_facts
-from tsdata.sql import drop_constraints_and_indexes
-from tsdata.utils import call, line_count, download_and_unzip_data, unzip_data
 from nc.data import copy_nc
 from nc.models import Agency, Search, Stop
 from nc.prime_cache import run as prime_cache_run
+from tsdata.dataset_facts import compute_dataset_facts
+from tsdata.sql import drop_constraints_and_indexes
+from tsdata.utils import call, download_and_unzip_data, line_count, unzip_data
+
 from .download_from_nc import nc_download_and_unzip_data
 
 logger = logging.getLogger(__name__)
 
-MAGIC_NC_FTP_URL = 'ftp://nc.us/'
+MAGIC_NC_FTP_URL = "ftp://nc.us/"
 
 
-def run(url, destination=None, zip_path=None, min_stop_id=None,
-        max_stop_id=None, prime_cache=True):
+def run(url, destination=None, zip_path=None, min_stop_id=None, max_stop_id=None, prime_cache=True):
     """
     Download NC data, extract, convert to CSV, and load into PostgreSQL
 
@@ -42,15 +41,15 @@ def run(url, destination=None, zip_path=None, min_stop_id=None,
       save time for developers by reducing the amount of data to import
     """
     if not url and not destination:
-        raise ValueError('destination must be provided when no URL is provided')
+        raise ValueError("destination must be provided when no URL is provided")
 
     if (min_stop_id is None) != (max_stop_id is None):
-        raise ValueError('provide neither or both of min_stop_id and max_stop_id')
+        raise ValueError("provide neither or both of min_stop_id and max_stop_id")
 
     if max_stop_id is not None and min_stop_id > max_stop_id:
-        raise ValueError('min_stop_id cannot be larger than max_stop_id')
+        raise ValueError("min_stop_id cannot be larger than max_stop_id")
 
-    logger.info('*** NC Data Import Started ***')
+    logger.info("*** NC Data Import Started ***")
 
     if url:
         if url == MAGIC_NC_FTP_URL:
@@ -66,7 +65,7 @@ def run(url, destination=None, zip_path=None, min_stop_id=None,
     else:
         # When processing entire dataset, pretend we don't have data from
         # 2000-2001 since so few agencies reported then.
-        override_start_date = 'Jan 01, 2002'
+        override_start_date = "Jan 01, 2002"
 
     # convert data files to CSV for database importing
     logger.info("Converting to CSV")
@@ -75,8 +74,7 @@ def run(url, destination=None, zip_path=None, min_stop_id=None,
     # find any new NC agencies and add to a copy of NC_agencies.csv
     logger.info("Looking for new NC agencies in Stops.csv")
     nc_agency_csv = update_nc_agencies(
-        os.path.join(os.path.dirname(__file__), 'NC_agencies.csv'),
-        destination
+        os.path.join(os.path.dirname(__file__), "NC_agencies.csv"), destination
     )
 
     # use COPY to load CSV files as quickly as possible
@@ -88,10 +86,9 @@ def run(url, destination=None, zip_path=None, min_stop_id=None,
 
     # fix landing page data
     facts = compute_dataset_facts(
-        Agency, Stop, settings.NC_KEY, Search=Search,
-        override_start_date=override_start_date
+        Agency, Stop, settings.NC_KEY, Search=Search, override_start_date=override_start_date
     )
-    logger.info('NC dataset facts: %r', facts)
+    logger.info("NC dataset facts: %r", facts)
 
     # prime the query cache for large NC agencies
     if prime_cache:
@@ -109,21 +106,21 @@ def truncate_input_data(destination, min_stop_id, max_stop_id):
     :param min_stop_id: omit stops with lower id
     :param max_stop_id: point in the Stops data at which to truncate
     """
-    logger.info('Filtering out stops with id not in (%s, %s)', min_stop_id, max_stop_id)
+    logger.info("Filtering out stops with id not in (%s, %s)", min_stop_id, max_stop_id)
     data_file_description = (
-        ('Stop.txt', 0),
-        ('PERSON.txt', 1),
-        ('Search.txt', 1),
-        ('Contraband.txt', 3),
-        ('SearchBasis.txt', 3),
+        ("Stop.txt", 0),
+        ("PERSON.txt", 1),
+        ("Search.txt", 1),
+        ("Contraband.txt", 3),
+        ("SearchBasis.txt", 3),
     )
     for in_basename, stops_field_num in data_file_description:
         data_in_path = os.path.join(destination, in_basename)
-        data_out_path = data_in_path + '.new'
-        with open(data_in_path, 'rb') as data_in:
-            with open(data_out_path, 'wb') as data_out:
+        data_out_path = data_in_path + ".new"
+        with open(data_in_path, "rb") as data_in:
+            with open(data_out_path, "wb") as data_out:
                 for line in data_in:
-                    fields = line.split(b'\t')
+                    fields = line.split(b"\t")
                     stop_id = int(fields[stops_field_num])
                     if min_stop_id <= stop_id <= max_stop_id:
                         data_out.write(line)
@@ -132,29 +129,29 @@ def truncate_input_data(destination, min_stop_id, max_stop_id):
 
 def to_standard_csv(input_path, output_path):
     csv.register_dialect(
-        'nc_data_in',
-        delimiter='\t',
+        "nc_data_in",
+        delimiter="\t",
         doublequote=False,
         escapechar=None,
-        lineterminator='\r\n',
+        lineterminator="\r\n",
         quotechar='"',
         quoting=csv.QUOTE_MINIMAL,
         skipinitialspace=False,
     )
     csv.register_dialect(
-        'nc_data_out',
-        delimiter=',',
+        "nc_data_out",
+        delimiter=",",
         doublequote=False,
         escapechar=None,
-        lineterminator='\n',
+        lineterminator="\n",
         quotechar='"',
         quoting=csv.QUOTE_MINIMAL,
         skipinitialspace=False,
     )
-    with open(input_path, 'rt') as input:
-        with open(output_path, 'wt') as output:
-            reader = csv.reader(input, dialect='nc_data_in')
-            writer = csv.writer(output, dialect='nc_data_out')
+    with open(input_path, "rt") as input:
+        with open(output_path, "wt") as output:
+            reader = csv.reader(input, dialect="nc_data_in")
+            writer = csv.writer(output, dialect="nc_data_out")
             headings_written = False
             num_columns = sys.maxsize  # keep all of first row, however many
             for row in reader:
@@ -163,7 +160,7 @@ def to_standard_csv(input_path, output_path):
                     # Some records in Stops.csv have extra columns; drop any
                     # columns beyond those in the first record.
                     num_columns = len(columns)
-                    headings = ['column%d' % (i + 1) for i in range(len(columns))]
+                    headings = ["column%d" % (i + 1) for i in range(len(columns))]
                     writer.writerow(headings)
                     headings_written = True
                 writer.writerow(columns)
@@ -171,13 +168,13 @@ def to_standard_csv(input_path, output_path):
 
 def convert_to_csv(destination):
     """Convert each NC *.txt data file to CSV"""
-    files = glob.iglob(os.path.join(destination, '*.txt'))
+    files = glob.iglob(os.path.join(destination, "*.txt"))
     for data_path in files:
-        if os.path.basename(data_path) == 'QUERY_README.txt':  # list of years in the query
+        if os.path.basename(data_path) == "QUERY_README.txt":  # list of years in the query
             continue
-        csv_path = data_path.replace('.txt', '.csv')
+        csv_path = data_path.replace(".txt", ".csv")
         if os.path.exists(csv_path):
-            logger.info('{} already exists, skipping csv conversion'.format(csv_path))
+            logger.info("{} already exists, skipping csv conversion".format(csv_path))
             continue
         logger.info("Converting {} > {}".format(data_path, csv_path))
         # Edit source data .txt file in-place to remove NUL bytes
@@ -187,10 +184,10 @@ def convert_to_csv(destination):
         data_count = line_count(data_path)
         csv_count = line_count(csv_path)
         if data_count == (csv_count - 1):
-            logger.debug('CSV line count matches original data file: {}'.format(data_count))
+            logger.debug("CSV line count matches original data file: {}".format(data_count))
         else:
-            logger.error('DAT {}'.format(data_count))
-            logger.error('CSV {}'.format(csv_count))
+            logger.error("DAT {}".format(data_count))
+            logger.error("CSV {}".format(csv_count))
 
 
 def update_nc_agencies(nc_csv_path, destination):
@@ -207,7 +204,7 @@ def update_nc_agencies(nc_csv_path, destination):
     until a developer adds the agency to the table in the source code.
     """
 
-    with open(os.path.join(destination, 'Stop.csv')) as stop_file:
+    with open(os.path.join(destination, "Stop.csv")) as stop_file:
         stops = csv.reader(stop_file)
         next(stops)  # skip CSV header line
         current_agencies = set()
@@ -224,8 +221,7 @@ def update_nc_agencies(nc_csv_path, destination):
             agency_table_contents.append(row)
 
     if current_agencies.issubset(existing_agencies):
-        logger.info('No new agencies in latest NC data, using table %s',
-                    nc_csv_path)
+        logger.info("No new agencies in latest NC data, using table %s", nc_csv_path)
         return nc_csv_path
 
     # Build an updated table to use for the import and send an e-mail to
@@ -234,35 +230,34 @@ def update_nc_agencies(nc_csv_path, destination):
     last_agency_id = int(agency_table_contents[-1][0])
     for agency_name in extra_agencies:
         last_agency_id += 1
-        agency_table_contents.append([last_agency_id, agency_name, ''])
+        agency_table_contents.append([last_agency_id, agency_name, ""])
 
-    new_nc_csv_path = os.path.join(destination, 'NC_agencies.csv')
-    with open(new_nc_csv_path, 'w') as agency_file:
+    new_nc_csv_path = os.path.join(destination, "NC_agencies.csv")
+    with open(new_nc_csv_path, "w") as agency_file:
         agency_table = csv.writer(agency_file)
         for agency_info in agency_table_contents:
             agency_table.writerow(agency_info)
 
-    logger.info('%s new agencies in latest NC data, using table %s',
-                len(extra_agencies), new_nc_csv_path)
+    logger.info(
+        "%s new agencies in latest NC data, using table %s", len(extra_agencies), new_nc_csv_path
+    )
 
     email_body = """
         Here are the new agencies:\n
            %s\n
         A new agency table is attached.  You can add census codes for the
         the new agencies before checking in.
-    """ % ', '.join(extra_agencies)
+    """ % ", ".join(
+        extra_agencies
+    )
     email = EmailMessage(
-        'New NC agencies were discovered during import',
+        "New NC agencies were discovered during import",
         email_body,
         settings.DEFAULT_FROM_EMAIL,
         settings.NC_AUTO_IMPORT_MONITORS,
         attachments=(
-            (
-                os.path.basename(new_nc_csv_path),
-                open(new_nc_csv_path).read(),
-                'application/csv'
-            ),
-        )
+            (os.path.basename(new_nc_csv_path), open(new_nc_csv_path).read(), "application/csv"),
+        ),
     )
     email.send()
     return new_nc_csv_path
@@ -270,14 +265,14 @@ def update_nc_agencies(nc_csv_path, destination):
 
 def set_time_zone(cur, time_zone):
     logger.info(f"Set time zone to {time_zone}")
-    cur.execute(connections['traffic_stops_nc'].ops.set_time_zone_sql(), [time_zone])
+    cur.execute(connections["traffic_stops_nc"].ops.set_time_zone_sql(), [time_zone])
 
 
-@transaction.atomic(using='traffic_stops_nc')
+@transaction.atomic(using="traffic_stops_nc")
 def copy_from(destination, nc_csv_path):
     """Populates the NC database from csv files."""
 
-    with connections['traffic_stops_nc'].cursor() as cur:
+    with connections["traffic_stops_nc"].cursor() as cur:
         logger.info("Dropping NC constraints before import")
         drop_constraints_and_indexes(cur)
         set_time_zone(cur, settings.NC_TIME_ZONE)
