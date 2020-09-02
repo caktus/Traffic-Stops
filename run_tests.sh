@@ -15,7 +15,7 @@ fi
 flake8 .
 
 rm -f .coverage
-coverage run manage.py test ${DBARG} --noinput --settings=traffic_stops.settings.dev "$@"
+coverage run manage.py test ${DBARG} --noinput --settings=traffic_stops.settings.test "$@"
 coverage report --fail-under=${MIN_COVERAGE}
 
 python manage.py makemigrations --dry-run | grep 'No changes detected' || (echo 'There are changes which require migrations.' && exit 1)
