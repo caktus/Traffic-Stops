@@ -33,6 +33,17 @@ def search(request):
     else:
         people = Person.objects.none()
     people = people.select_related("stop").order_by("stop__date")
+    people = people.only(
+        "stop__stop_id",
+        "stop__date",
+        "stop__agency_id",
+        "stop__agency_description",
+        "stop__officer_id",
+        "gender",
+        "race",
+        "ethnicity",
+        "age",
+    )
     context = {
         "form": form,
         "people": people,
