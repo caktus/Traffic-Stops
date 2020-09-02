@@ -1,9 +1,10 @@
-from django.core.exceptions import ImproperlyConfigured
-from django.shortcuts import redirect, Http404
-from django.views.generic import DetailView, ListView, TemplateView
-from django.views.generic.edit import ProcessFormView, FormMixin
-from traffic_stops.utils import get_chunks
 from collections import defaultdict
+
+from django.core.exceptions import ImproperlyConfigured
+from django.shortcuts import Http404, redirect
+from django.views.generic import DetailView, ListView, TemplateView
+from django.views.generic.edit import FormMixin, ProcessFormView
+from traffic_stops.utils import get_chunks
 
 
 class Home(FormMixin, ProcessFormView, TemplateView):
@@ -12,7 +13,7 @@ class Home(FormMixin, ProcessFormView, TemplateView):
             form = self.get_form_class()(request.GET)
             if form.is_valid():
                 success = self.get_success_url()
-                return redirect(success, form.cleaned_data['agency'].pk)
+                return redirect(success, form.cleaned_data["agency"].pk)
         return super(Home, self).get(request, **kwargs)
 
 
@@ -25,7 +26,7 @@ class AgencyList(FormMixin, ListView):
         if request.GET:
             form = self.get_form_class()(request.GET)
             if form.is_valid():
-                return self.get_success_url(pk=form.cleaned_data['agency'].pk)
+                return self.get_success_url(pk=form.cleaned_data["agency"].pk)
         return super(AgencyList, self).get(request, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -36,14 +37,14 @@ class AgencyList(FormMixin, ListView):
         # we just add it as a trivial context-modification snippet.
         form_class = self.get_form_class()
         form = self.get_form(form_class)
-        context['form'] = form
+        context["form"] = form
 
         # Once we have the "letters present", we want to be able to iterate
         # over categorized, sorted lists of agencies. Therefore we create
         # a dict indexed by first letter.
         sorted_agencies = defaultdict(list)
 
-        for agency in context['agency_list']:
+        for agency in context["agency_list"]:
             initial = agency.name[:1]
             sorted_agencies[initial].append(agency)
 
@@ -53,8 +54,8 @@ class AgencyList(FormMixin, ListView):
 
         sorted_agencies = sorted(sorted_agencies.items())
 
-        context['sorted_agencies'] = sorted_agencies
-        context['agency_form'] = form
+        context["sorted_agencies"] = sorted_agencies
+        context["agency_form"] = form
 
         return context
 
@@ -68,13 +69,13 @@ class AgencyDetail(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(AgencyDetail, self).get_context_data(**kwargs)
-        agency = context['object']
-        officer_id = self.request.GET.get('officer_id')
+        agency = context["object"]
+        officer_id = self.request.GET.get("officer_id")
 
         if officer_id:
             Stop = self.get_stop_model()
             if not Stop.objects.filter(agency=agency, officer_id=officer_id).exists():
                 raise Http404()
-            context['officer_id'] = officer_id
+            context["officer_id"] = officer_id
 
         return context

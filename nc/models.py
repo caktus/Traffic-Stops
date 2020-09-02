@@ -1,65 +1,70 @@
-from django.db import models
-
 from caching.base import CachingManager, CachingMixin
-
+from django.db import models
 from tsdata.models import CensusProfile
 
-PURPOSE_CHOICES = ((1, 'Speed Limit Violation'),
-                   (2, 'Stop Light/Sign Violation'),
-                   (3, 'Driving While Impaired'),
-                   (4, 'Safe Movement Violation'),
-                   (5, 'Vehicle Equipment Violation'),
-                   (6, 'Vehicle Regulatory Violation'),
-                   (7, 'Seat Belt Violation'),
-                   (8, 'Investigation'),
-                   (9, 'Other Motor Vehicle Violation'),
-                   (10, 'Checkpoint'))
+PURPOSE_CHOICES = (
+    (1, "Speed Limit Violation"),
+    (2, "Stop Light/Sign Violation"),
+    (3, "Driving While Impaired"),
+    (4, "Safe Movement Violation"),
+    (5, "Vehicle Equipment Violation"),
+    (6, "Vehicle Regulatory Violation"),
+    (7, "Seat Belt Violation"),
+    (8, "Investigation"),
+    (9, "Other Motor Vehicle Violation"),
+    (10, "Checkpoint"),
+)
 
-ACTION_CHOICES = ((1, 'Verbal Warning'),
-                  (2, 'Written Warning'),
-                  (3, 'Citation Issued'),
-                  (4, 'On-View Arrest'),
-                  (5, 'No Action Taken'))
-
-
-PERSON_TYPE_CHOICES = (("D", "Driver"),
-                       ("P", "Passenger"))
-
-
-GENDER_CHOICES = (("M", "Male"),
-                  ("F", "Female"))
+ACTION_CHOICES = (
+    (1, "Verbal Warning"),
+    (2, "Written Warning"),
+    (3, "Citation Issued"),
+    (4, "On-View Arrest"),
+    (5, "No Action Taken"),
+)
 
 
-ETHNICITY_CHOICES = (('H', 'Hispanic'),
-                     ('N', 'Non-Hispanic'))
+PERSON_TYPE_CHOICES = (("D", "Driver"), ("P", "Passenger"))
 
 
-RACE_CHOICES = (('A', 'Asian'),
-                ('B', 'Black'),
-                ('I', 'Native American'),
-                ('U', 'Other'),
-                ('W', 'White'))
+GENDER_CHOICES = (("M", "Male"), ("F", "Female"))
 
 
-SEARCH_TYPE_CHOICES = ((1, 'Consent'),
-                       (2, 'Search Warrant'),
-                       (3, 'Probable Cause'),
-                       (4, 'Search Incident to Arrest'),
-                       (5, 'Protective Frisk'))
+ETHNICITY_CHOICES = (("H", "Hispanic"), ("N", "Non-Hispanic"))
 
 
-SEARCH_BASIS_CHOICES = (('ER',   'Erratic/Suspicious Behavior'),
-                        ('OB',   'Observation of Suspected Contraband'),
-                        ('OI',   'Other Official Information'),
-                        ('SM',   'Suspicious Movement'),
-                        ('TIP',  'Informant Tip'),
-                        ('WTNS', 'Witness Observation'))
+RACE_CHOICES = (
+    ("A", "Asian"),
+    ("B", "Black"),
+    ("I", "Native American"),
+    ("U", "Other"),
+    ("W", "White"),
+)
+
+
+SEARCH_TYPE_CHOICES = (
+    (1, "Consent"),
+    (2, "Search Warrant"),
+    (3, "Probable Cause"),
+    (4, "Search Incident to Arrest"),
+    (5, "Protective Frisk"),
+)
+
+
+SEARCH_BASIS_CHOICES = (
+    ("ER", "Erratic/Suspicious Behavior"),
+    ("OB", "Observation of Suspected Contraband"),
+    ("OI", "Other Official Information"),
+    ("SM", "Suspicious Movement"),
+    ("TIP", "Informant Tip"),
+    ("WTNS", "Witness Observation"),
+)
 
 
 class Stop(CachingMixin, models.Model):
     stop_id = models.PositiveIntegerField(primary_key=True)
     agency_description = models.CharField(max_length=100)
-    agency = models.ForeignKey('Agency', null=True, related_name='stops', on_delete=models.CASCADE)
+    agency = models.ForeignKey("Agency", null=True, related_name="stops", on_delete=models.CASCADE)
     date = models.DateTimeField(db_index=True)
     purpose = models.PositiveSmallIntegerField(choices=PURPOSE_CHOICES)
     action = models.PositiveSmallIntegerField(choices=ACTION_CHOICES)
@@ -137,12 +142,12 @@ class SearchBasis(CachingMixin, models.Model):
 class Agency(CachingMixin, models.Model):
     name = models.CharField(max_length=255)
     # link to CensusProfile (no cross-database foreign key)
-    census_profile_id = models.CharField(max_length=16, blank=True, default='')
+    census_profile_id = models.CharField(max_length=16, blank=True, default="")
 
     objects = CachingManager()
 
     class Meta(object):
-        verbose_name_plural = 'Agencies'
+        verbose_name_plural = "Agencies"
 
     def __str__(self):
         return self.name

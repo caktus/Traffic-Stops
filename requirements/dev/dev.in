@@ -24,9 +24,3 @@ django-debug-toolbar
 ipython
 appnope
 pudb
-
-# Linting
-flake8
-# Pinned due to bug introduced in release 20.8b0
-black==19.10b0
-pre-commit

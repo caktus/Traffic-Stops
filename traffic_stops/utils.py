@@ -7,4 +7,4 @@ def get_chunks(xs, chunk_count=3):
     """
     chunk_width = math.ceil(len(xs) / chunk_count)
     ranges = range(0, len(xs), chunk_width)
-    return [xs[x:x + chunk_width] for x in ranges]
+    return [xs[x : x + chunk_width] for x in ranges]
