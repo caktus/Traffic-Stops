@@ -1,4 +1,3 @@
-from django.db import connections
 from django.shortcuts import render
 from traffic_stops import base_views
 from tsdata.dataset_facts import get_dataset_facts_context
