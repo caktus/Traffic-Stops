@@ -7,7 +7,6 @@ import zipfile
 from collections import OrderedDict
 
 import requests
-from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -155,26 +154,3 @@ class GroupedData(object):
             row.update(data)
             response.append(row)
         return response
-
-
-def flush_memcached():
-    if hasattr(settings, "CACHES"):
-        caches = getattr(settings, "CACHES")
-        if (
-            "default" in caches
-            and "BACKEND" in caches["default"]
-            and "LOCATION" in caches["default"]
-            and "MemcachedCache" in caches["default"]["BACKEND"]
-        ):
-            logger.info("Flushing memcached")
-            import memcache
-
-            mc = memcache.Client([caches["default"]["LOCATION"]])
-            mc.flush_all()
-            return True
-        else:
-            logger.warning("Not flushing memcached; could not find expected configuration")
-    else:
-        # this must be a development environment
-        logger.info("Not flushing memcached, CACHES not set")
-    return False
