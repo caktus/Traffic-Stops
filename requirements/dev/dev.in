@@ -25,5 +25,4 @@ ipython
 appnope
 pudb
 
-# Linting
-flake8
+

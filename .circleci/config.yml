@@ -40,10 +40,13 @@ jobs:
           command: |
             python3 -m venv env
             . env/bin/activate
-
-            pip install -r requirements/dev/dev.txt
-            pip install -r requirements/base/base.txt
+            python -m pip install pip-tools
+            pip-sync requirements/base/base.txt requirements/test/test.txt
       - save_cache_cmd
+      - run:
+          name: Run Precommit
+          command: |
+            pre-commit run --all
       - run:
           name: Docker up
           command: |

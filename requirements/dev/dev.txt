@@ -29,7 +29,6 @@ dictdiffer==0.8.1         # via openshift
 django-debug-toolbar==2.2  # via -r requirements/dev/dev.in
 django==2.2.15            # via -c requirements/dev/../base/base.txt, django-debug-toolbar
 docutils==0.15.2          # via awscli, botocore, rstcheck, sphinx
-flake8==3.8.3             # via -r requirements/dev/dev.in
 google-auth==1.14.3       # via kubernetes
 idna==2.10                # via -c requirements/dev/../base/base.txt, requests
 imagesize==1.2.0          # via sphinx
@@ -44,7 +43,6 @@ kubernetes-validate==1.18.0  # via -r requirements/dev/dev.in
 kubernetes==11.0.0        # via openshift
 livereload==2.6.2         # via sphinx-autobuild
 markupsafe==1.1.1         # via jinja2
-mccabe==0.6.1             # via flake8
 oauthlib==3.1.0           # via requests-oauthlib
 openshift==0.11.0         # via -r requirements/dev/dev.in
 packaging==20.3           # via -c requirements/dev/../test/test.txt, sphinx
@@ -58,9 +56,7 @@ ptyprocess==0.6.0         # via pexpect
 pudb==2019.2              # via -r requirements/dev/dev.in
 pyasn1-modules==0.2.8     # via google-auth
 pyasn1==0.4.8             # via pyasn1-modules, rsa
-pycodestyle==2.6.0        # via flake8
 pycparser==2.20           # via cffi
-pyflakes==2.2.0           # via flake8
 pygments==2.6.1           # via ipython, pudb, sphinx
 pyparsing==2.4.7          # via -c requirements/dev/../test/test.txt, packaging
 pyrsistent==0.16.0        # via jsonschema

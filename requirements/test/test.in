@@ -1,12 +1,16 @@
 # test.in
+-c ../base/base.txt
 -c ../dev/dev.txt
 
 pyyaml
-black
 isort
 pytest
 pytest-cov
 factory_boy
 pytest-django
 coverage
+# Linting
+flake8
+# Pinned due to bug introduced in release 20.8b0
+black==19.10b0
 pre-commit
