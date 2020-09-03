@@ -19,3 +19,4 @@ psycopg2-binary
 requests
 six
 whitenoise
+pandas

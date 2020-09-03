@@ -17,45 +17,41 @@ ADMINS = (
 )
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'traffic_stops',
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': '',
-        'PORT': '',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": "traffic_stops",
+        "USER": "",
+        "PASSWORD": "",
+        "HOST": "",
+        "PORT": "",
     },
-    'traffic_stops_nc': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'traffic_stops_nc',
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': '',
-        'PORT': '',
-    }
+    "traffic_stops_nc": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": "traffic_stops_nc",
+        "USER": "",
+        "PASSWORD": "",
+        "HOST": "",
+        "PORT": "",
+    },
 }
 
 if os.getenv("DATABASE_URL"):
     import dj_database_url
 
     db_from_env = dj_database_url.config(
-        env='DATABASE_URL',
-        conn_max_age=500,
-        ssl_require=os.getenv("DATABASE_SSL", False),
+        env="DATABASE_URL", conn_max_age=500, ssl_require=os.getenv("DATABASE_SSL", False),
     )
     DATABASES["default"].update(db_from_env)
 
     if os.getenv("DATABASE_URL_NC"):
         db_from_env = dj_database_url.config(
-            env='DATABASE_URL_NC',
-            conn_max_age=500,
-            ssl_require=os.getenv("DATABASE_SSL", False),
+            env="DATABASE_URL_NC", conn_max_age=500, ssl_require=os.getenv("DATABASE_SSL", False),
         )
         DATABASES["traffic_stops_nc"].update(db_from_env)
 
 
-DATABASE_ROUTERS = ['traffic_stops.routers.StateDatasetRouter']
-DATABASE_ETL_USER = ''
+DATABASE_ROUTERS = ["traffic_stops.routers.StateDatasetRouter"]
+DATABASE_ETL_USER = ""
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -64,10 +60,10 @@ DATABASE_ETL_USER = ''
 # timezone as the operating system.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
-TIME_ZONE = 'America/New_York'
-NC_TIME_ZONE = 'America/New_York'
+TIME_ZONE = "UTC"
+NC_TIME_ZONE = "America/New_York"
 
-NC_KEY = 'nc'
+NC_KEY = "nc"
 
 
 class StateConfig:
@@ -83,8 +79,6 @@ STATE_CONFIG = {
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
 LANGUAGE_CODE = "en-us"
-
-TIME_ZONE = "UTC"
 
 USE_I18N = True
 
@@ -103,7 +97,7 @@ STATICFILES_FINDERS = [
 
 STATICFILES_DIRS = [
     os.path.join(PROJECT_DIR, "static"),
-    os.path.join(BASE_DIR, 'node_modules/bootstrap'),
+    os.path.join(BASE_DIR, "node_modules/bootstrap"),
 ]
 
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
@@ -129,63 +123,61 @@ AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [os.path.join(PROJECT_DIR, "templates"),],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.contrib.auth.context_processors.auth',
-                'django.template.context_processors.debug',
-                'django.template.context_processors.i18n',
-                'django.template.context_processors.media',
-                'django.template.context_processors.tz',
-                'django.template.context_processors.request',
-                'django.contrib.messages.context_processors.messages',
-                'dealer.contrib.django.context_processor',
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.contrib.auth.context_processors.auth",
+                "django.template.context_processors.debug",
+                "django.template.context_processors.i18n",
+                "django.template.context_processors.media",
+                "django.template.context_processors.tz",
+                "django.template.context_processors.request",
+                "django.contrib.messages.context_processors.messages",
+                "dealer.contrib.django.context_processor",
             ],
         },
     },
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.locale.LocaleMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'traffic_stops.middleware.StateMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "traffic_stops.middleware.StateMiddleware",
 ]
 
-ROOT_URLCONF = 'traffic_stops.urls'
+ROOT_URLCONF = "traffic_stops.urls"
 
 # Python dotted path to the WSGI application used by Django's runserver.
-WSGI_APPLICATION = 'traffic_stops.wsgi.application'
+WSGI_APPLICATION = "traffic_stops.wsgi.application"
 
-FIXTURE_DIRS = (
-    os.path.join(BASE_DIR, 'fixtures'),
-)
+FIXTURE_DIRS = (os.path.join(BASE_DIR, "fixtures"),)
 
 INSTALLED_APPS = [
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
     # 'django.contrib.sites',  # required by django-allauth
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'django.contrib.admin',
-    'django.contrib.humanize',
-    'django.contrib.sitemaps',
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "django.contrib.admin",
+    "django.contrib.humanize",
+    "django.contrib.sitemaps",
     # External apps
-    'selectable',
-    'bootstrap3',
-    'el_pagination',
-    'rest_framework',
+    "selectable",
+    "bootstrap3",
+    "el_pagination",
+    "rest_framework",
     # Custom apps
-    'tsdata',
-    'nc',
+    "tsdata",
+    "nc",
 ]
 
 
@@ -207,6 +199,7 @@ LOGGING = {
     "loggers": {
         "django.request": {"handlers": ["mail_admins"], "level": "ERROR", "propagate": True,},
         "django.security": {"handlers": ["mail_admins"], "level": "ERROR", "propagate": True,},
+        "django.db": {"handlers": ["console"], "level": "INFO", "propagate": False,},
         "apps": {"level": "DEBUG", "handlers": ["console"], "propagate": False,},
         "traffic_stops": {"handlers": ["console"], "level": "INFO", "propagate": False,},
         "tsdata": {"handlers": ["console"], "level": "DEBUG", "propagate": False,},
@@ -220,9 +213,9 @@ LOGGING = {
 
 CELERYBEAT_SCHEDULE = {
     # Production overrides the schedule
-    'automatic-nc-import': {
-        'task': 'nc.tasks.download_and_import_nc_dataset',
-        'schedule': crontab(day_of_week='monday', hour=3, minute=0),
+    "automatic-nc-import": {
+        "task": "nc.tasks.download_and_import_nc_dataset",
+        "schedule": crontab(day_of_week="monday", hour=3, minute=0),
     },
 }
 
@@ -245,27 +238,30 @@ AUTH_PASSWORD_VALIDATORS = [
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_BROWSER_XSS_FILTER = True
 CSRF_COOKIE_HTTPONLY = True
-X_FRAME_OPTIONS = 'DENY'
+X_FRAME_OPTIONS = "DENY"
 
 # Application settings
-LOGIN_URL = 'account_login'
-LOGIN_REDIRECT_URL = 'home'
+LOGIN_URL = "account_login"
+LOGIN_REDIRECT_URL = "home"
 SELECTABLE_MAX_LIMIT = 30
 
-REST_FRAMEWORK_EXTENSIONS = {
-    'DEFAULT_CACHE_RESPONSE_TIMEOUT': 60 * 60 * 24 * 60  # 60 days
-}
+REST_FRAMEWORK_EXTENSIONS = {"DEFAULT_CACHE_RESPONSE_TIMEOUT": 60 * 60 * 24 * 60}  # 60 days
 
 CACHE_COUNT_TIMEOUT = 60 * 60 * 24 * 60  # 60 days
 
-CENSUS_API_KEY = ''
+CENSUS_API_KEY = ""
 
-NC_AUTO_IMPORT_DIRECTORY = '/tmp/NC-automated-import'
+NC_AUTO_IMPORT_DIRECTORY = "/tmp/NC-automated-import"
 
 # 0, 1, or 2 e-mail addresses which will be notified after
 # automatic NC imports
-NC_AUTO_IMPORT_MONITORS = ('odp-team@caktusgroup.com',)
+NC_AUTO_IMPORT_MONITORS = ("odp-team@caktusgroup.com",)
 
 # List of email addresses that receive the report of non-compliance of
 # traffic stop reporting.
 COMPLIANCE_REPORT_LIST = ()
+
+# NC FTP Settings
+NC_FTP_HOST = os.environ.get("NC_FTP_HOST", "")
+NC_FTP_USER = os.environ.get("NC_FTP_USER", "")
+NC_FTP_PASSWORD = os.environ.get("NC_FTP_PASSWORD", "")

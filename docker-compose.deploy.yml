@@ -2,7 +2,7 @@ version: '3.4'
 
 services:
   app:
-    image: opendatapolicing_app:latest
+    image: trafficstops_app:latest
     command: ["uwsgi", "--show-config"]
     environment:
       DJANGO_MANAGEPY_MIGRATE: "on"
@@ -16,7 +16,7 @@ services:
     ports:
       - "8000:8000"
   worker:
-    image: opendatapolicing_app:latest
+    image: trafficstops_app:latest
     command: ["celery", "--app=traffic_stops", "worker", "-l", "info"]
     env_file:
       - .docker.env
@@ -27,7 +27,7 @@ services:
       - redis
       - mailhog
   beat:
-    image: opendatapolicing_app:latest
+    image: trafficstops_app:latest
     command: ["celery", "--app=traffic_stops", "beat", "--pidfile=/tmp/celerybeat.pid", "--schedule=/tmp/celerybeat-schedule", "-l", "info"]
     env_file:
       - .docker.env

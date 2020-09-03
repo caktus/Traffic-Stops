@@ -24,6 +24,3 @@ django-debug-toolbar
 ipython
 appnope
 pudb
-
-# Linting
-flake8

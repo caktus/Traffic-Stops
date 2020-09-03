@@ -1,18 +1,17 @@
-from datetime import timedelta
 import os
 import shutil
+from datetime import timedelta
 
 from celery.utils.log import get_task_logger
 from django.conf import settings
 from django.utils.timezone import now
-
 from nc.data.importer import MAGIC_NC_FTP_URL
 from traffic_stops.celery import app
 from tsdata.models import Dataset
 from tsdata.tasks import import_dataset
 
 logger = get_task_logger(__name__)
-MAGIC_NC_DATASET_NAME = 'Automated NC import'
+MAGIC_NC_DATASET_NAME = "Automated NC import"
 
 
 @app.task
@@ -24,11 +23,10 @@ def download_and_import_nc_dataset():
     triggering a download task (as if an admin had triggered
     it manually).
     """
-    logger.info('Triggering automatic NC import')
+    logger.info("Triggering automatic NC import")
     Dataset.objects.filter(name=MAGIC_NC_DATASET_NAME).delete()
     if os.path.exists(settings.NC_AUTO_IMPORT_DIRECTORY):
-        logger.info('Cleaning up download directory %s',
-                    settings.NC_AUTO_IMPORT_DIRECTORY)
+        logger.info("Cleaning up download directory %s", settings.NC_AUTO_IMPORT_DIRECTORY)
         shutil.rmtree(settings.NC_AUTO_IMPORT_DIRECTORY)
     nc_dataset = Dataset(
         state=settings.NC_KEY,

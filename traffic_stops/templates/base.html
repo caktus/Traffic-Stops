@@ -9,7 +9,7 @@
     <meta name="author" content="{% block meta-author %}{% endblock %}">
     <meta name="keywords" content="{% block meta-keywords %}{% endblock %}">
     {% block extra-meta %}{% endblock %}
-    <link href='//fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
     {% block extra-css %}{% endblock %}
     <link rel="stylesheet" type="text/css" media="all" href="{% static 'css/bundle.css' %}?rev={{ REVISION }}">
     <script src="{% static 'libs/modernizr.js' %}"></script>
@@ -26,10 +26,10 @@
         {% endblock pre-content %}
 
         {% block content-outer %}
-        <div id="content" class="container">
+        <div id="content">
             <div class="row">
                 {% block messages-outer %}
-                <div id="messages" class="span12">
+                <div id="messages" class="container span12">
                     {% block messages %}
                     {% for msg in messages %}
                         {% include "includes/message.html" with msg=msg %}
@@ -43,10 +43,10 @@
         {% endblock content-outer %}
     </div>
     {% block footer %}
-    <div class="affix-offset-bottom" id="footer">
+    <div class="black-block affix-offset-bottom" id="footer">
+    <div class="brand-lines"></div>
       <div class="container">
-        <p class="small credit">Traffic Stops - <a href='https://forwardjustice.org/'>Forward Justice</a>
-        </p>
+        <p class="small credit">Traffic Stops - <a href="https://www.forwardjustice.org"><img class="credit-img" src="{% static 'img/FJ_logo.svg' %}" alt="the Forward Justice logo"></a></p>
       </div>
     </div>
     {% endblock footer %}

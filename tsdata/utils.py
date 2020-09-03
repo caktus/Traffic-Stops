@@ -1,42 +1,39 @@
 import logging
 import os
-import requests
 import subprocess
 import tempfile
 import time
 import zipfile
-
 from collections import OrderedDict
 
+import requests
 from django.conf import settings
-
 
 logger = logging.getLogger(__name__)
 
 
 def call(cmd, shell=False):
     """Spawn a new process and capture its output"""
-    logger.debug(' '.join(cmd))
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                         shell=shell)
+    logger.debug(" ".join(cmd))
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=shell)
     stdout, stderr = p.communicate()
     if p.returncode != 0:
         raise IOError(stderr)
     if stderr:
-        logger.error(stderr.decode('utf-8'))
+        logger.error(stderr.decode("utf-8"))
     return stdout
 
 
 def line_count(fname):
     """Count number of lines in specified file"""
-    return int(call(['wc', '-l', fname]).strip().split()[0])
+    return int(call(["wc", "-l", fname]).strip().split()[0])
 
 
 def get_zipfile_path(url, destination):
     """
     Get full path of the zipfile as if it has been downloaded to destination.
     """
-    return os.path.join(destination, url.split('/')[-1])
+    return os.path.join(destination, url.split("/")[-1])
 
 
 def get_datafile_path(url, destination, zip_path=None):
@@ -48,7 +45,7 @@ def get_datafile_path(url, destination, zip_path=None):
     Datafile may not have been extracted yet.
     """
     if bool(url) == bool(zip_path):
-        raise ValueError('Exactly one of url and zip_path parameters must be provided!')
+        raise ValueError("Exactly one of url and zip_path parameters must be provided!")
 
     if not zip_path:
         zip_path = get_zipfile_path(url, destination)
@@ -64,15 +61,15 @@ def get_csv_path(url, destination):
     Assumptions: See assumptions of get_datafile_path()
     """
     datafile_path = get_datafile_path(url, destination)
-    return os.path.splitext(datafile_path)[0] + '-processed.csv'
+    return os.path.splitext(datafile_path)[0] + "-processed.csv"
 
 
 def unzip_data(destination, url=None, zip_path=None):
     if not destination:
-        raise ValueError('The destination parameter is required!')
+        raise ValueError("The destination parameter is required!")
 
     if bool(url) == bool(zip_path):
-        raise ValueError('Exactly one of url and zip_path parameters must be provided!')
+        raise ValueError("Exactly one of url and zip_path parameters must be provided!")
 
     if not zip_path:
         zip_path = get_zipfile_path(url, destination)
@@ -87,7 +84,7 @@ def unzip_data(destination, url=None, zip_path=None):
         logger.debug("Extraction complete")
 
 
-def download_and_unzip_data(url, destination, prefix='state-'):
+def download_and_unzip_data(url, destination, prefix="state-"):
     """Download and unzip data into destination directory"""
     # make sure destination exists or create a temporary directory
     if not destination:
@@ -106,20 +103,22 @@ def download_and_unzip_data(url, destination, prefix='state-'):
         response = requests.get(url, stream=True)
         # XXX check status code here; e.g., if permissions haven't been granted
         # for a file being downloaded from S3 a 403 will be returned
-        content_length = int(response.headers.get('content-length'))
+        content_length = int(response.headers.get("content-length"))
         start = time.clock()
         downloaded = 0
-        with open(zip_filename, 'wb') as f:
+        with open(zip_filename, "wb") as f:
             for chunk in response.iter_content(chunk_size=1024):
                 if chunk:
                     downloaded += len(chunk)
                     now = time.clock()
                     if (now - start) >= 5:
-                        logger.debug('{0:.2g}% downloaded'.format(downloaded/content_length*100))
+                        logger.debug(
+                            "{0:.2g}% downloaded".format(downloaded / content_length * 100)
+                        )
                         start = now
                     f.write(chunk)
                     f.flush()
-        logger.debug('100% downloaded')
+        logger.debug("100% downloaded")
 
     unzip_data(destination, url=url)
     return destination
@@ -159,20 +158,23 @@ class GroupedData(object):
 
 
 def flush_memcached():
-    if hasattr(settings, 'CACHES'):
-        caches = getattr(settings, 'CACHES')
-        if ('default' in caches and
-                'BACKEND' in caches['default'] and
-                'LOCATION' in caches['default'] and
-                'MemcachedCache' in caches['default']['BACKEND']):
-            logger.info('Flushing memcached')
+    if hasattr(settings, "CACHES"):
+        caches = getattr(settings, "CACHES")
+        if (
+            "default" in caches
+            and "BACKEND" in caches["default"]
+            and "LOCATION" in caches["default"]
+            and "MemcachedCache" in caches["default"]["BACKEND"]
+        ):
+            logger.info("Flushing memcached")
             import memcache
-            mc = memcache.Client([caches['default']['LOCATION']])
+
+            mc = memcache.Client([caches["default"]["LOCATION"]])
             mc.flush_all()
             return True
         else:
-            logger.warning('Not flushing memcached; could not find expected configuration')
+            logger.warning("Not flushing memcached; could not find expected configuration")
     else:
         # this must be a development environment
-        logger.info('Not flushing memcached, CACHES not set')
+        logger.info("Not flushing memcached, CACHES not set")
     return False

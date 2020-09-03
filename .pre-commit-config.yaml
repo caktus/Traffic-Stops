@@ -1,0 +1,30 @@
+repos:
+  - repo: https://github.com/psf/black
+    rev: 19.10b0
+    hooks:
+      - id: black
+        language_version: python3.8
+        exclude: migrations
+  - repo: https://github.com/pre-commit/mirrors-isort
+    rev: v4.3.21
+    hooks:
+      - id: isort
+        # Resolves conflict with black
+        args: [--multi-line=3, --trailing-comma, --force-grid-wrap=0, --use-parentheses, --line-width=100]
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.4.0
+    hooks:
+      - id: check-docstring-first
+      - id: check-merge-conflict
+      - id: check-json
+        exclude: docs/dev
+      - id: check-yaml
+        exclude: (deploy/host_vars|deploy/stack|deploy)
+      - id: check-xml
+      - id: debug-statements
+      - id: detect-aws-credentials
+        args: [--allow-missing-credentials]
+      - id: detect-private-key
+      - id: flake8
+        exclude: settings|migrations|test
+      - id: no-commit-to-branch

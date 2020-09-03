@@ -1,6 +1,5 @@
 import boto3
 
-
 session = boto3.Session(profile_name="trafficstops")
 credentials = session.get_credentials().get_frozen_credentials()
 

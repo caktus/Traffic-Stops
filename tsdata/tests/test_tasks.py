@@ -5,26 +5,22 @@ import io
 from django.core import mail
 from django.test import TestCase, override_settings
 from django.utils import timezone
-
-from nc.tests.factories import (
-    AgencyFactory as NCAgencyFactory,
-    StopFactory as NCStopFactory
-)
+from nc.tests.factories import AgencyFactory as NCAgencyFactory
+from nc.tests.factories import StopFactory as NCStopFactory
 from tsdata import tasks
 from tsdata.tests.factories import DatasetFactory
 
 
-@override_settings(COMPLIANCE_REPORT_LIST=('compliance@example.com',))
+@override_settings(COMPLIANCE_REPORT_LIST=("compliance@example.com",))
 class ComplianceReportTests(TestCase):
-    databases = '__all__'
+    databases = "__all__"
 
     def test_all_agencies_good(self):
         for i in range(3):
             agency = NCAgencyFactory()
-            NCStopFactory(
-                agency=agency, date=timezone.now() - datetime.timedelta(days=30))
+            NCStopFactory(agency=agency, date=timezone.now() - datetime.timedelta(days=30))
 
-        dataset = DatasetFactory(state='nc')
+        dataset = DatasetFactory(state="nc")
 
         tasks.compliance_report(dataset.id)
         self.assertEqual(len(mail.outbox), 1)
@@ -40,14 +36,13 @@ class ComplianceReportTests(TestCase):
             for d, agency in zip(days, agencies)
         ]
 
-        dataset = DatasetFactory(state='nc')
+        dataset = DatasetFactory(state="nc")
 
         tasks.compliance_report(dataset.id)
         self.assertEqual(len(mail.outbox), 1)
         msg = mail.outbox.pop()
         self.assertEqual(
-            msg.body,
-            "Attached are the agencies out of compliance in the most recent data import."
+            msg.body, "Attached are the agencies out of compliance in the most recent data import."
         )
         self.assertEqual(len(msg.attachments), 1)
         filename, contents, mimetype = msg.attachments[0]
@@ -58,19 +53,20 @@ class ComplianceReportTests(TestCase):
         self.assertEqual(len(rows), 3)
         self.assertEqual(
             rows[0],
-            {'id': str(agencies[2].id),
-             'name': agencies[2].name,
-             'last_reported': stops[2].date.isoformat(sep=' ')}
+            {
+                "id": str(agencies[2].id),
+                "name": agencies[2].name,
+                "last_reported": stops[2].date.isoformat(sep=" "),
+            },
         )
         self.assertEqual(
             rows[1],
-            {'id': str(agencies[3].id),
-             'name': agencies[3].name,
-             'last_reported': stops[3].date.isoformat(sep=' ')}
+            {
+                "id": str(agencies[3].id),
+                "name": agencies[3].name,
+                "last_reported": stops[3].date.isoformat(sep=" "),
+            },
         )
         self.assertEqual(
-            rows[2],
-            {'id': str(agencies[4].id),
-             'name': agencies[4].name,
-             'last_reported': ''}
+            rows[2], {"id": str(agencies[4].id), "name": agencies[4].name, "last_reported": ""}
         )
