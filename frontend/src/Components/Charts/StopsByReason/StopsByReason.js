@@ -43,7 +43,7 @@ function StopsByReason(props) {
   }, [agencyId, dispatch]);
 
   return (
-    <StopsByReasonStyled>
+    <StopsByReasonStyled data-testid="StopsByReason">
       <h2>Stops by Reason</h2>
       {state.loading[CHART_STOPS_BY_REASON]}
       {state?.chartErrors[CHART_STOPS_BY_REASON] && (
@@ -59,7 +59,10 @@ function StopsByReason(props) {
       )}
       {state?.loading[CHART_STOPS_BY_REASON] && <ChartSkeleton />}
       {state?.chartData[CHART_STOPS_BY_REASON] && (
-        <StackedBar data={state.chartData[CHART_STOPS_BY_REASON]} />
+        <StackedBar
+          data-testid="StopsByReasonChart"
+          data={state.chartData[CHART_STOPS_BY_REASON]}
+        />
       )}
     </StopsByReasonStyled>
   );

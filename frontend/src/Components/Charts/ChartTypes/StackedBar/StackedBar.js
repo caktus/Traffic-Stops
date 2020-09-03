@@ -25,7 +25,7 @@ const DEFAULT_BASE_GROUP = 'white';
 
 const GROUP_KEYS = ['asian', 'black', 'hispanic', 'native_american', 'other', 'white'];
 
-function StackedBar({ data }) {
+function StackedBar({ data, ...props }) {
   const [mappedData, setMappedData] = useState([]);
 
   const _reduceYears = (yearlyData) => {
@@ -87,7 +87,7 @@ function StackedBar({ data }) {
   }, [data]);
 
   return (
-    <article style={{ height: 1000, width: 1000, fontSize: 16, fontFamily: 'monospace' }}>
+    <div {...props} style={{ height: 1000, width: 1000, fontSize: 16, fontFamily: 'monospace' }}>
       <ResponsiveBar
         // width={900}
         // height={500}
@@ -106,7 +106,7 @@ function StackedBar({ data }) {
         enableGridX={true}
         tooltipFormat={(value) => `${value}%`}
       />
-    </article>
+    </div>
   );
 }
 

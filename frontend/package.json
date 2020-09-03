@@ -22,10 +22,14 @@
     "styled-components": "^5.1.1",
     "tinycolor2": "^1.4.1"
   },
+  "devDependencies": {
+    "cypress": "^5.1.0",
+    "eslint-plugin-cypress": "^2.11.1"
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "NODE_ENV=testing cypress open",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {

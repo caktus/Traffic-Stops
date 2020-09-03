@@ -1,9 +1,9 @@
 // First level
 export const ABOUT_SLUG = '/';
-export const AGENCY_SEARCH = '/agencies';
+export const AGENCY_SEARCH_SLUG = '/agencies';
 
 // Second level
-export const AGENCY_DATA = '/:agencyId';
+export const AGENCY_DATA_SLUG = '/:agencyId';
 
 // Third level
-export const STOPS_BY_REASON = '/stops-by-reason';
+export const STOPS_BY_REASON_SLUG = '/stops-by-reason';

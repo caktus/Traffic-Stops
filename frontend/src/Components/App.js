@@ -8,7 +8,7 @@ import themes from '../styles/themes.styled';
 
 // Router
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import { AGENCY_SEARCH, ABOUT_SLUG } from 'Routes/slugs';
+import { AGENCY_SEARCH_SLUG, ABOUT_SLUG } from 'Routes/slugs';
 
 // Layout
 import Header from 'Components/Header/Header';
@@ -28,10 +28,10 @@ function App() {
           <LayoutStyled>
             <Header />
             <Switch>
-              <Route path={`${AGENCY_SEARCH}/:agencyId`}>
+              <Route path={`${AGENCY_SEARCH_SLUG}/:agencyId`}>
                 <AgencyData />
               </Route>
-              <Route path={AGENCY_SEARCH}>
+              <Route path={AGENCY_SEARCH_SLUG}>
                 <AgencySearch />
               </Route>
               <Route exact path={ABOUT_SLUG}>
@@ -46,10 +46,3 @@ function App() {
 }
 
 export default App;
-
-// / = LandingPage --> click "get started"
-
-// /data = with all the charts --> sidebar shows up with charts
-//    /data/:chartId-type = specific chart, sidebar
-
-// /about = about

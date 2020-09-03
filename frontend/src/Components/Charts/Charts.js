@@ -8,7 +8,7 @@ import AboutCharts from './AboutCharts/AboutCharts';
 // Route
 import AsyncRoute from 'Components/Containers/AsyncRoute';
 import { useRouteMatch, useParams } from 'react-router-dom';
-import { STOPS_BY_REASON } from 'Routes/slugs';
+import { STOPS_BY_REASON_SLUG } from 'Routes/slugs';
 
 // AJAX
 import axios from 'Services/Axios';
@@ -54,8 +54,12 @@ function Charts() {
           <AboutCharts agency={agency} />
           <HR />
           <AsyncRoute
-            path={`${match.path}${STOPS_BY_REASON}`}
-            importComponent={() => import('Components/Charts/StopsByReason/StopsByReason')}
+            path={`${match.path}${STOPS_BY_REASON_SLUG}`}
+            importComponent={() =>
+              import(
+                /* webpackChunkName: 'StopsByReason' */ 'Components/Charts/StopsByReason/StopsByReason'
+              )
+            }
             renderLoading={() => <ChartSkeleton />}
             renderError={() => <ChartError chartName="Stops by Reason" />}
           />

@@ -7,7 +7,7 @@ import Navbar from './Navbar';
 
 function Header(props) {
   return (
-    <HeaderStyled>
+    <HeaderStyled data-testid="Header">
       <LogosStyled>
         <LogoFull />
         <p>Traffic Stops</p>

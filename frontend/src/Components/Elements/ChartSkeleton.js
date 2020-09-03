@@ -11,7 +11,13 @@ function ChartSkeleton() {
         exit={{ opacity: 0.35, x: 50, duration: 350 }}
         transition={{ ease: 'easeIn' }}
       >
-        <ContentLoader viewBox="0 0 400 200" height={200} width={400} speed={2}>
+        <ContentLoader
+          viewBox="0 0 400 200"
+          height={200}
+          width={400}
+          speed={2}
+          data-testid="ChartSkeleton"
+        >
           <rect x="100" y="5" rx="0" ry="0" width="200" height="15" />
           <circle cx="140" cy="110" r="70" />
           <rect x="230" y="50" rx="0" ry="0" width="7" height="7" />

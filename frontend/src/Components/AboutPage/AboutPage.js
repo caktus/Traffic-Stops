@@ -3,7 +3,7 @@ import { AboutPageStyled } from './AboutPage.styled';
 
 function AboutPage(props) {
   return (
-    <AboutPageStyled>
+    <AboutPageStyled data-testid="AboutPage">
       <p>AboutPage</p>
     </AboutPageStyled>
   );

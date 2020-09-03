@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavbarStyled, Navlink } from './Navbar.styled';
 
-import { ABOUT_SLUG, AGENCY_SEARCH } from 'Routes/slugs';
+import { ABOUT_SLUG, AGENCY_SEARCH_SLUG } from 'Routes/slugs';
 
 function Navbar(props) {
   return (
@@ -10,7 +10,7 @@ function Navbar(props) {
         About
       </Navlink>
 
-      <Navlink to={AGENCY_SEARCH}>Search Agencies</Navlink>
+      <Navlink to={AGENCY_SEARCH_SLUG}>Search Agencies</Navlink>
 
       <Navlink exact to={ABOUT_SLUG}>
         More things
