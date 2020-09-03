@@ -2,14 +2,15 @@ import React from 'react';
 import { SidebarStyled, SidebarNav, NavLinkStyled } from './Sidebar.styled';
 
 // Routing
-import { DATA_SLUG, STOPS_BY_REASON, SOME_OTHER_CHART } from 'Routes/slugs';
+import { STOPS_BY_REASON } from 'Routes/slugs';
+import { useRouteMatch } from 'react-router-dom';
 
 function Sidebar(props) {
+  const match = useRouteMatch();
   return (
     <SidebarStyled>
       <SidebarNav>
-        <NavLinkStyled to={`${DATA_SLUG}${STOPS_BY_REASON}`}>Stops by Reason</NavLinkStyled>
-        <NavLinkStyled to={`${DATA_SLUG}${SOME_OTHER_CHART}`}>Some other Chart</NavLinkStyled>
+        <NavLinkStyled to={`${match.url}${STOPS_BY_REASON}`}>Stops by Reason</NavLinkStyled>
       </SidebarNav>
     </SidebarStyled>
   );

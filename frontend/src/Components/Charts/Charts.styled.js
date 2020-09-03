@@ -6,4 +6,5 @@ export const ChartsStyled = styled(motion.div)`
   display: flex;
   flex-direction: column;
   padding: 1rem;
+  overflow: scroll;
 `;

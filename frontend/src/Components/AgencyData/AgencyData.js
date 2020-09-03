@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { DataPageStyled, MotionDiv } from './DataPage.styled';
+import { AgencyDataStyled, MotionDiv } from './AgencyData.styled';
 
 // Animationg
 import { AnimateSharedLayout, AnimatePresence, motion } from 'framer-motion';
@@ -8,16 +8,15 @@ import { AnimateSharedLayout, AnimatePresence, motion } from 'framer-motion';
 import Sidebar from '../Sidebar/Sidebar';
 import Charts from 'Components/Charts/Charts';
 
-function DataPage(props) {
+function AgencyData(props) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
-    // when this component mounts, open the sidebar
     setSidebarOpen(true);
   }, []);
 
   return (
-    <DataPageStyled {...props}>
+    <AgencyDataStyled {...props}>
       <AnimateSharedLayout>
         <MotionDiv layout>
           <AnimatePresence>
@@ -37,8 +36,8 @@ function DataPage(props) {
           <Charts />
         </MotionDiv>
       </AnimateSharedLayout>
-    </DataPageStyled>
+    </AgencyDataStyled>
   );
 }
 
-export default DataPage;
+export default AgencyData;

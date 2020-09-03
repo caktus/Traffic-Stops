@@ -14,7 +14,7 @@ import PropTypes from 'prop-types';
 import { Route } from 'react-router-dom';
 
 // const MIN_DELAY = 500;
-const MIN_DELAY = 50000;
+const MIN_DELAY = 10000;
 
 const AsyncPage = loadable(({ importComponent }) => pMinDelay(importComponent(), MIN_DELAY));
 

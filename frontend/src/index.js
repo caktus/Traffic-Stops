@@ -12,7 +12,7 @@ import App from 'Components/App';
 
 // Eventually, we'll want to make sure NODE_ENV is set up
 // so that the following commented code wont run locally.
-// Sentry.init({ dsn: SENTRY_DSN });
+Sentry.init({ dsn: SENTRY_DSN });
 
 ReactDOM.render(
   <React.StrictMode>

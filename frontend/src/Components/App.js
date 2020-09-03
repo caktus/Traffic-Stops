@@ -8,6 +8,7 @@ import themes from '../styles/themes.styled';
 
 // Router
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { AGENCY_SEARCH, ABOUT_SLUG } from 'Routes/slugs';
 
 // Layout
 import Header from 'Components/Header/Header';
@@ -15,7 +16,8 @@ import { LayoutStyled } from './Layout.styled';
 
 // Routes
 import About from 'Components/AboutPage/AboutPage';
-import DataPage from 'Components/DataPage/DataPage';
+import AgencySearch from 'Components/AgencySearch/AgencySearch';
+import AgencyData from 'Components/AgencyData/AgencyData';
 
 function App() {
   return (
@@ -26,10 +28,13 @@ function App() {
           <LayoutStyled>
             <Header />
             <Switch>
-              <Route path="/data">
-                <DataPage />
+              <Route path={`${AGENCY_SEARCH}/:agencyId`}>
+                <AgencyData />
               </Route>
-              <Route exact path="/">
+              <Route path={AGENCY_SEARCH}>
+                <AgencySearch />
+              </Route>
+              <Route exact path={ABOUT_SLUG}>
                 <About />
               </Route>
             </Switch>
