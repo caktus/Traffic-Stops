@@ -7,5 +7,8 @@ class AgencyLookup(ModelLookup):
     model = Agency
     search_fields = ("name__icontains",)
 
+    def get_queryset(self):
+        return super().get_queryset().order_by("name")
+
 
 registry.register(AgencyLookup)

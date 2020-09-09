@@ -5,7 +5,6 @@ from zipfile import ZipFile
 from django.test import TestCase
 from tsdata.utils import (
     download_and_unzip_data,
-    flush_memcached,
     get_csv_path,
     get_datafile_path,
     get_zipfile_path,
@@ -42,12 +41,6 @@ class TestUtils(TestCase):
             set(os.listdir(orig_destination.name)),
         )
         orig_destination.cleanup()
-
-    def test_flush_memcached(self):
-        """
-        can only verify that it won't do anything in a test environment
-        """
-        self.assertFalse(flush_memcached())
 
     def test_get_csv_path(self):
         destination = tempfile.TemporaryDirectory()

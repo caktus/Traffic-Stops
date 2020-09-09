@@ -11,6 +11,7 @@ django-dotenv
 django-el-pagination
 django-extensions
 django-memoize
+django-redis
 django-selectable
 djangorestframework
 dj-database-url

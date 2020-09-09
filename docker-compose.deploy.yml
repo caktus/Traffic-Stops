@@ -37,7 +37,5 @@ services:
       - app
       - redis
       - mailhog
-  redis:
-    image: redis:5-alpine
   mailhog:
     image: mailhog/mailhog:v1.0.0

@@ -14,7 +14,14 @@ services:
       - ./docker-entrypoint.postgres.sql:/docker-entrypoint-initdb.d/init.sql
       - ./docker-postgresql.conf:/etc/postgresql/postgresql.conf
     command: postgres -c config_file=/etc/postgresql/postgresql.conf
-    shm_size: 128mb
+    shm_size: 512mb
+  redis:
+    image: redis:5-alpine
+    ports:
+      - "63791:6379"
+    volumes:
+      - redisdata:/data
 
 volumes:
   pgdata:
+  redisdata:

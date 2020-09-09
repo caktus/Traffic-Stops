@@ -248,6 +248,20 @@ SELECTABLE_MAX_LIMIT = 30
 REST_FRAMEWORK_EXTENSIONS = {"DEFAULT_CACHE_RESPONSE_TIMEOUT": 60 * 60 * 24 * 60}  # 60 days
 
 CACHE_COUNT_TIMEOUT = 60 * 60 * 24 * 60  # 60 days
+CACHE_HOST = os.getenv("CACHE_HOST", "")
+if "redis" in CACHE_HOST:
+    CACHES = {
+        "default": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": CACHE_HOST,
+            "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient",},
+        }
+    }
+    SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+else:
+    CACHES = {
+        "default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache",},
+    }
 
 CENSUS_API_KEY = ""
 

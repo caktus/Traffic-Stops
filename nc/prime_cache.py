@@ -79,6 +79,7 @@ def run(cutoff_duration_secs=None):
     avoid_newrelic_bug()
 
     logger.info("NC prime_cache starting")
+    logger.info("Finding largest agencies by stop counts")
     agencies = [
         (a.id, a.name, a.num_stops)
         for a in Agency.objects.annotate(num_stops=Count("stops")).order_by("-num_stops")
@@ -120,6 +121,7 @@ def req(uri, payload=None):
         host = settings.ALLOWED_HOSTS[0]
     else:
         host = "127.0.0.1"
+    logger.debug(f"Querying {uri}")
     response = c.get(uri, data=payload, HTTP_HOST=host)
     if response.status_code != 200:
         logger.warning("Status not OK: {} ({})".format(uri, response.status_code))
