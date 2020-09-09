@@ -265,7 +265,7 @@ else:
 
 CENSUS_API_KEY = ""
 
-NC_AUTO_IMPORT_DIRECTORY = "/tmp/NC-automated-import"
+NC_AUTO_IMPORT_DIRECTORY = "/tmp/nc-automated-import"
 
 # 0, 1, or 2 e-mail addresses which will be notified after
 # automatic NC imports
