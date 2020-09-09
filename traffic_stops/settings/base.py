@@ -215,7 +215,7 @@ CELERYBEAT_SCHEDULE = {
     # Production overrides the schedule
     "automatic-nc-import": {
         "task": "nc.tasks.download_and_import_nc_dataset",
-        "schedule": crontab(day_of_week="monday", hour=3, minute=0),
+        "schedule": crontab(hour=3, minute=0),
     },
 }
 
