@@ -94,8 +94,6 @@ BROKER_URL = os.getenv("BROKER_URL", "redis://redis:6379/0")
 
 REST_FRAMEWORK = {"DEFAULT_AUTHENTICATION_CLASSES": []}
 
-NC_AUTO_IMPORT_DIRECTORY = "/var/www/traffic_stops/NC-automated-import"
-
 if ENVIRONMENT.upper() == "PRODUCTION":
     CELERYBEAT_SCHEDULE["automatic-nc-import"]["schedule"] = crontab(
         day_of_month="1", hour=3, minute=0
