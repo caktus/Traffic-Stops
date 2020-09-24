@@ -1,5 +1,5 @@
 # base requirements.in
-django>2.2,<3.0
+django>2.2.15,<3.0
 celery
 census
 us

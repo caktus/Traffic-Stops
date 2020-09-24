@@ -7,7 +7,7 @@
 -e git+https://github.com/caktus/invoke-kubesae@0.0.7#egg=invoke-kubesae  # via -r requirements/dev/dev.in
 alabaster==0.7.12         # via sphinx
 ansible==2.9.6            # via invoke-kubesae
-appnope==0.1.0            # via -r requirements/dev/dev.in, ipython
+appnope==0.1.0            # via -r requirements/dev/dev.in
 argh==0.26.2              # via sphinx-autobuild
 attrs==19.3.0             # via -c requirements/dev/../test/test.txt, jsonschema
 awscli==1.18.58           # via -r requirements/dev/dev.in
@@ -27,7 +27,7 @@ cryptography==2.9         # via ansible
 decorator==4.4.2          # via ipython, traitlets
 dictdiffer==0.8.1         # via openshift
 django-debug-toolbar==2.2  # via -r requirements/dev/dev.in
-django==2.2.15            # via -c requirements/dev/../base/base.txt, django-debug-toolbar
+django==2.2.16            # via -c requirements/dev/../base/base.txt, django-debug-toolbar
 docutils==0.15.2          # via awscli, botocore, rstcheck, sphinx
 google-auth==1.14.3       # via kubernetes
 idna==2.10                # via -c requirements/dev/../base/base.txt, requests
