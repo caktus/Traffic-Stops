@@ -67,7 +67,7 @@ env_nc_ftp_password: !vault |
 # 'ses-smtp-user.20200921-084510' user in traffic-stops account
 env_email_host: "email-smtp.us-east-2.amazonaws.com"
 env_email_host_user: AKIAY2IYSCH3F77YGKIU
-env_email_host_pass: !vault |
+env_email_host_password: !vault |
   $ANSIBLE_VAULT;1.1;AES256
   63326431353232626532633236353639383565613539366562383562333632316462303935646461
   3361623338333438343664633962303732613665376266360a656262373730393131643637336537
