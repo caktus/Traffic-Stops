@@ -1,7 +1,13 @@
 env_name: "production"
 
 k8s_domain_names:
-  - trafficstops-prod.caktus-built.com
+  - nccopwatch.org
+k8s_domain_from_to_www_redirect: true
+k8s_ingress_tls_domains_extra:
+  - www.nccopwatch.org
+# k8s_domain_redirects:
+# - nccopwatch.com
+# - www.nccopwatch.com
 
 k8s_auth_api_key: !vault |
   $ANSIBLE_VAULT;1.1;AES256
@@ -96,17 +102,10 @@ k8s_environment_variables:
   MEDIA_LOCATION: "{{ env_media_location }}"
   # *** Email
   # 'ses-smtp-user.20200921-084510' user in traffic-stops account
-  EMAIL_HOST: "email-smtp.us-east-2.amazonaws.com"
-  EMAIL_HOST_USER: AKIAY2IYSCH3F77YGKIU
-  EMAIL_HOST_PASSWORD: !vault |
-    $ANSIBLE_VAULT;1.1;AES256
-    63326431353232626532633236353639383565613539366562383562333632316462303935646461
-    3361623338333438343664633962303732613665376266360a656262373730393131643637336537
-    33653535616137633632396364386638663539663433333931336663666637333933353965383963
-    3861306138336265330a616263353832636239396565306138376332306534666166386539623265
-    31326137623163613135346565346632623661303839653038333866363565623865363766326465
-    3232353563333332396133636565626662366332356638303166
-  EMAIL_USE_TLS: "true"
+  EMAIL_HOST: "{{ env_email_host }}"
+  EMAIL_HOST_USER: "{{ env_email_host_user }}"
+  EMAIL_HOST_PASSWORD: "{{ env_email_host_password }}"
+  EMAIL_USE_TLS: "{{ env_email_use_tls }}"
   # *** New Relic APM
   NEW_RELIC_APP_NAME: "{{ env_new_relic_app_name }}"
   NEW_RELIC_LICENSE_KEY: "{{ env_new_relic_license_key }}"
