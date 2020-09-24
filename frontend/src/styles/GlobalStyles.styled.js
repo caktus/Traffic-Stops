@@ -23,4 +23,8 @@ export default createGlobalStyle`
         -moz-osx-font-smoothing: grayscale;
     }
 
+    h1 {
+        margin: 1rem;
+    }
+
 `;
