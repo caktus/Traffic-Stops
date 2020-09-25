@@ -39,7 +39,7 @@ const FETCH_SUCCESS = 'FETCH_SUCCESS';
 const FETCH_ERROR = 'FETCH_ERROR';
 
 /**
- * ObservableFetch hydrates wrapped components the following props after
+ * ObservableFetch hydrates wrapped components with the following props after
  * fetching from a list of urls.
  * - fetching {boolean} - fetch in progress
  * - error {string} - any resultant errors

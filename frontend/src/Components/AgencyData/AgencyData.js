@@ -5,7 +5,7 @@ import { AgencyDataStyled, MotionDiv } from './AgencyData.styled';
 import { AnimateSharedLayout, AnimatePresence, motion } from 'framer-motion';
 
 // Children
-import Sidebar from '../Sidebar/Sidebar';
+import Sidebar from 'Components/Sidebar/Sidebar';
 import Charts from 'Components/Charts/Charts';
 
 function AgencyData(props) {
