@@ -53,16 +53,6 @@ SESSION_COOKIE_SECURE = os.getenv("SESSION_COOKIE_SECURE", "True") == "True"
 
 ### Performance optimizations
 
-CACHE_HOST = os.getenv("CACHE_HOST", "redis://redis:6379/1")
-CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": CACHE_HOST,
-        "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient",},
-    }
-}
-SESSION_ENGINE = "django.contrib.sessions.backends.cache"
-
 # Use template caching on deployed servers
 for backend in TEMPLATES:
     if backend["BACKEND"] == "django.template.backends.django.DjangoTemplates":
@@ -103,8 +93,6 @@ DATABASE_ETL_USER = "etl"
 BROKER_URL = os.getenv("BROKER_URL", "redis://redis:6379/0")
 
 REST_FRAMEWORK = {"DEFAULT_AUTHENTICATION_CLASSES": []}
-
-NC_AUTO_IMPORT_DIRECTORY = "/var/www/traffic_stops/NC-automated-import"
 
 if ENVIRONMENT.upper() == "PRODUCTION":
     CELERYBEAT_SCHEDULE["automatic-nc-import"]["schedule"] = crontab(

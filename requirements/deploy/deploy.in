@@ -1,6 +1,5 @@
 # Deploy.in
 -c ../base/base.txt
-django-redis
 python3-memcached
 newrelic>=5.16.1.146
 sentry-sdk>=0.16.5

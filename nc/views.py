@@ -1,4 +1,3 @@
-from django.db import connections
 from django.shortcuts import render
 from traffic_stops import base_views
 from tsdata.dataset_facts import get_dataset_facts_context
@@ -33,16 +32,17 @@ def search(request):
     else:
         people = Person.objects.none()
     people = people.select_related("stop").order_by("stop__date")
-    connection = connections[people.db]
-    with connection.cursor() as cursor:
-        # Disable seq scanning when generating this count
-        # Override the count to produce this result for the pagination
-        # Might not be necessary if we adjusted the random_page_cost
-        # See https://stackoverflow.com/questions/10643215/
-        cursor.execute("SET enable_seqscan = OFF;")
-        total = people.count()
-        people.count = lambda: total
-        cursor.execute("SET enable_seqscan = ON;")
+    people = people.only(
+        "stop__stop_id",
+        "stop__date",
+        "stop__agency_id",
+        "stop__agency_description",
+        "stop__officer_id",
+        "gender",
+        "race",
+        "ethnicity",
+        "age",
+    )
     context = {
         "form": form,
         "people": people,

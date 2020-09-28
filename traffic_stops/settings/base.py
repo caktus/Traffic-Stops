@@ -215,7 +215,7 @@ CELERYBEAT_SCHEDULE = {
     # Production overrides the schedule
     "automatic-nc-import": {
         "task": "nc.tasks.download_and_import_nc_dataset",
-        "schedule": crontab(day_of_week="monday", hour=3, minute=0),
+        "schedule": crontab(hour=3, minute=0),
     },
 }
 
@@ -248,10 +248,24 @@ SELECTABLE_MAX_LIMIT = 30
 REST_FRAMEWORK_EXTENSIONS = {"DEFAULT_CACHE_RESPONSE_TIMEOUT": 60 * 60 * 24 * 60}  # 60 days
 
 CACHE_COUNT_TIMEOUT = 60 * 60 * 24 * 60  # 60 days
+CACHE_HOST = os.getenv("CACHE_HOST", "")
+if "redis" in CACHE_HOST:
+    CACHES = {
+        "default": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": CACHE_HOST,
+            "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient",},
+        }
+    }
+    SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+else:
+    CACHES = {
+        "default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache",},
+    }
 
 CENSUS_API_KEY = ""
 
-NC_AUTO_IMPORT_DIRECTORY = "/tmp/NC-automated-import"
+NC_AUTO_IMPORT_DIRECTORY = "/tmp/nc-automated-import"
 
 # 0, 1, or 2 e-mail addresses which will be notified after
 # automatic NC imports

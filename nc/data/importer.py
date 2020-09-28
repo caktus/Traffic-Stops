@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 
 from django.conf import settings
+from django.core.cache import cache
 from django.core.mail import EmailMessage
 from django.db import connections, transaction
 from nc.data import copy_nc
@@ -82,7 +83,7 @@ def run(url, destination=None, zip_path=None, min_stop_id=None, max_stop_id=None
     logger.info("NC Data Import Complete")
 
     # Clear the query cache to get rid of NC queries made on old data
-    # flush_memcached()
+    cache.clear()
 
     # fix landing page data
     facts = compute_dataset_facts(
