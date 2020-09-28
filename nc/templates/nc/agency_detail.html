@@ -20,36 +20,41 @@
 
 {% block census-display %}
   <!-- census data -->
-  <div id="census_row" class="row optional">
-    <div class="col-md-12 headline">
-      <h2>ACS Census Data (2012 - 2016)<a class="anchor-offset" id="demographics"></a></h2>
-    </div>
+  <div id="census_row" class="chart-row row optional">
+    <div class="brand-lines"></div>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12 headline">
+          <h2>ACS Census Data (2014 - 2018)<a class="anchor-offset" id="demographics"></a></h2>
+        </div>
 
 
-    <div class="col-md-12">
-      <h3>Local Population (percentage by race/ethnic composition)</h3>
+        <div class="col-md-12">
+          <h3>Local Population (percentage by race/ethnic composition)</h3>
 
-      <p class="help-block">
-        This graph reflects the race/ethnic composition of the jurisdiction at the time of the most recent survey by the Census Bureau. It is included for comparative purposes. The actual local driving population within a given jurisdiction may vary significantly from census figures.
-      </p>
-    </div>
+          <p class="help-block">
+            This graph reflects the race/ethnic composition of the jurisdiction at the time of the most recent survey by the Census Bureau. It is included for comparative purposes. The actual local driving population within a given jurisdiction may vary significantly from census figures.
+          </p>
+        </div>
 
-    <div class="col-md-4">
-      <div class="pie-chart-container">
-        <svg id="census_pie"></svg>
+        <div class="col-md-4">
+          <div class="pie-chart-container">
+            <svg id="census_pie"></svg>
+          </div>
+          <p class="graph-help-block">
+            * Non-hispanic
+          </p>
+        </div>
+
+        <div class="col-md-8">
+          <h3>Tabular view of census data</h3>
+          <br><br>
+          <div id="census_data"></div>
+          <p class="graph-help-block">
+            * Non-hispanic
+          </p>
+        </div>
       </div>
-      <p class="graph-help-block">
-        * Non-hispanic
-      </p>
-    </div>
-
-    <div class="col-md-8">
-      <h3>Tabular view of census data</h3>
-      <br><br>
-      <div id="census_data"></div>
-      <p class="graph-help-block">
-        * Non-hispanic
-      </p>
     </div>
   </div>
 {% endblock census-display %}
