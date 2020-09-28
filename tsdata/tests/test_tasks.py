@@ -28,6 +28,15 @@ class ComplianceReportTests(TestCase):
         self.assertEqual(msg.body, "All agencies have reported within the last 90 days.")
         self.assertEqual(len(msg.attachments), 0)
 
+    def test_agency_last_stop_changed(self):
+        agency = NCAgencyFactory()
+        date_last_stop = timezone.now() - datetime.timedelta(days=30)
+        NCStopFactory(agency=agency, date=date_last_stop)
+        dataset = DatasetFactory(state="nc")
+        tasks.compliance_report(dataset.id)
+        agency.refresh_from_db()
+        self.assertEqual(date_last_stop.strftime("%Y-%m-%d"), str(agency.last_reported_stop))
+
     def test_report_sent(self):
         agencies = [NCAgencyFactory() for i in range(5)]
         days = [10, 30, 100, 130]
@@ -56,7 +65,7 @@ class ComplianceReportTests(TestCase):
             {
                 "id": str(agencies[2].id),
                 "name": agencies[2].name,
-                "last_reported": stops[2].date.isoformat(sep=" "),
+                "last_reported_stop": stops[2].date.strftime("%Y-%m-%d"),
             },
         )
         self.assertEqual(
@@ -64,9 +73,9 @@ class ComplianceReportTests(TestCase):
             {
                 "id": str(agencies[3].id),
                 "name": agencies[3].name,
-                "last_reported": stops[3].date.isoformat(sep=" "),
+                "last_reported_stop": stops[3].date.strftime("%Y-%m-%d"),
             },
         )
         self.assertEqual(
-            rows[2], {"id": str(agencies[4].id), "name": agencies[4].name, "last_reported": ""}
+            rows[2], {"id": str(agencies[4].id), "name": agencies[4].name, "last_reported_stop": ""}
         )
