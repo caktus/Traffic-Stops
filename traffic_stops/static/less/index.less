@@ -15,15 +15,15 @@
 ==================== */
 
 // Forward Justice colors from forwardjustice.org
-@brand-primary:    #272973;
-@brand-secondary:  #e49a43;
-@brand-tertiary:   #02bcbb;
+@brand-primary: #272973;
+@brand-secondary: #e49a43;
+@brand-tertiary: #02bcbb;
 @brand-quaternary: @brand-primary;
 
 @brand-black: #111111;
-@brand-grey: #ACACAC;
+@brand-grey: #acacac;
 
-@link-color:       @brand-primary;
+@link-color: @brand-primary;
 @link-hover-color: darken(@link-color, 30%);
 @border-radius-base: 2px;
 
@@ -36,26 +36,36 @@
 /* Fonts
 ===============*/
 
-@font-heading: 'Bebas Neue', sans-serif;
-@font-body: 'Montserrat', sans-serif;
+@font-heading: "Bebas Neue", sans-serif;
+@font-body: "Montserrat", sans-serif;
 
 /* Sitewide
 ==================== */
 
 .odp-nav.navbar-inverse .navbar-nav > .active > a,
 .odp-nav.navbar-inverse .navbar-nav > .active > a:hover,
-.odp-nav.navbar-inverse .navbar-nav > li > a:hover{
+.odp-nav.navbar-inverse .navbar-nav > li > a:hover {
   background-color: @brand-secondary;
 }
 
-h1, h2, h3, h4, h5 {
+h1,
+h2,
+h3,
+h4,
+h5 {
   color: @brand-primary;
   font-family: @font-heading;
 }
 
-h2 { font-size: 36px; }
-h3 { font-size: 30px; }
-h4 { font-size: 24px; }
+h2 {
+  font-size: 36px;
+}
+h3 {
+  font-size: 30px;
+}
+h4 {
+  font-size: 24px;
+}
 
 p {
   padding: 1rem;
@@ -106,7 +116,7 @@ p {
 }
 
 .fat-underline::before {
-  content: '';
+  content: "";
   position: absolute;
   width: 105%;
   height: 42px;
@@ -141,38 +151,44 @@ p {
   position: relative;
 }
 
-.brand-lines:before, .brand-lines:after {
-    content: '';
-    position: absolute;
-    background-color: @brand-tertiary;
+.brand-lines:before,
+.brand-lines:after {
+  content: "";
+  position: absolute;
+  background-color: @brand-tertiary;
 }
 
 .brand-lines:before {
-    height: 25px;
-    width: 325px;
-    left: 0;
-    // z-index: 1;
-    top: -12.5px;
+  height: 25px;
+  width: 325px;
+  left: 0;
+  // z-index: 1;
+  top: -12.5px;
 }
 
 .brand-lines:after {
-    height: 25px;
-    width: 325px;
-    right: 0;
-    // z-index: 1;
-    top: -12.5px;
+  height: 25px;
+  width: 325px;
+  right: 0;
+  // z-index: 1;
+  top: -12.5px;
 }
 
 .black-block {
   background: @brand-black;
-  h1, h2, h3, h4 {
+  h1,
+  h2,
+  h3,
+  h4 {
     margin: 0;
     padding-top: 20px;
     padding-bottom: 10px;
     color: @brand-tertiary;
   }
 
-  p, td, th {
+  p,
+  td,
+  th {
     color: @brand-grey;
     font-size: 16px;
   }
@@ -232,8 +248,8 @@ p {
 .justify {
   text-align: justify;
   -webkit-hyphens: auto;
-      -ms-hyphens: auto;
-          hyphens: auto;
+  -ms-hyphens: auto;
+  hyphens: auto;
 }
 
 html,
@@ -305,7 +321,7 @@ code {
 }
 
 .navbar-brand__logo-img {
-    height: 100%;
+  height: 100%;
 }
 
 .odp-nav .navbar-nav > .active > a,
@@ -324,7 +340,6 @@ code {
   background-color: @gray-lighter;
 
   &:hover {
-
   }
 }
 
@@ -337,7 +352,7 @@ code {
   text-align: center;
   background-color: @brand-primary;
   color: white;
-  text-shadow: 0 1px 0 rgba(0, 0, 0, .5);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
 
   h1 {
     color: white;
@@ -370,12 +385,13 @@ code {
     }
   }
   @media (max-width: @screen-sm-min) {
-    .btn.nc, .btn.md {
+    .btn.nc,
+    .btn.md {
       margin-bottom: 40px;
     }
   }
   @media (min-width: @screen-sm-min) {
-    h1.title{
+    h1.title {
       font-size: 60px;
     }
   }
@@ -411,7 +427,7 @@ code {
   text-align: left;
   background-color: @brand-primary;
   color: @brand-secondary;
-  text-shadow: 0 1px 0 rgba(0, 0, 0, .5);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
 
   &.agency-detail {
     padding: 70px 40px 60px 40px;
@@ -478,26 +494,26 @@ code {
     margin-top: 20px;
   }
 
-    @media (max-width: 768px) {
-      > * {
-        text-align: center;
-      }
-
-      a.pull-right {
-        float: none !important;
-      }
-
-      .title-container {
-        margin-top: 0;
-        margin-bottom: 20px;
-        padding: 0 30px;
-        border-bottom: 1px solid white;
-      }
-
-      h1 {
-        display: inline-block;
-      }
+  @media (max-width: 768px) {
+    > * {
+      text-align: center;
     }
+
+    a.pull-right {
+      float: none !important;
+    }
+
+    .title-container {
+      margin-top: 0;
+      margin-bottom: 20px;
+      padding: 0 30px;
+      border-bottom: 1px solid white;
+    }
+
+    h1 {
+      display: inline-block;
+    }
+  }
 }
 
 .state-banner.small {
@@ -529,7 +545,7 @@ code {
   background-position: center;
   background-size: cover;
   color: white;
-  text-shadow: 0 1px 0 rgba(0, 0, 0, .5);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
 
   blockquote {
     border-left: 0;
@@ -539,7 +555,9 @@ code {
     }
   }
 
-  h3 {color: white}
+  h3 {
+    color: white;
+  }
 
   @media (max-width: @screen-sm-min) {
     blockquote {
@@ -664,7 +682,7 @@ p.agency-intro a {
     input {
       height: 39px;
     }
-}
+  }
 }
 
 /* Find a Traffic Stop page
@@ -724,11 +742,15 @@ p.agency-intro a {
   margin-bottom: 2rem;
 }
 
+.agency-last-stop {
+  color: @brand-tertiary;
+}
+
 /* Agency detail page
 ========================================= */
 
-.chart-row:nth-child(odd){
-  .black-block();  
+.chart-row:nth-child(odd) {
+  .black-block();
 }
 
 .state-banner.officer {
@@ -765,16 +787,16 @@ h2.officer {
 }
 
 /* table overrides */
-.table-striped>tbody>tr:nth-child(even)>td, 
-.table-striped>tbody>tr:nth-child(even)>th {
-   background-color: white; // Choose your own color here
-   color: @brand-black;
- }
-.table-striped>tbody>tr:nth-child(odd)>td, 
-.table-striped>tbody>tr:nth-child(odd)>th {
-   background-color: @brand-grey; // Choose your own color here
-   color: @brand-black;
- }
+.table-striped > tbody > tr:nth-child(even) > td,
+.table-striped > tbody > tr:nth-child(even) > th {
+  background-color: white; // Choose your own color here
+  color: @brand-black;
+}
+.table-striped > tbody > tr:nth-child(odd) > td,
+.table-striped > tbody > tr:nth-child(odd) > th {
+  background-color: @brand-grey; // Choose your own color here
+  color: @brand-black;
+}
 
 /***
  * For census data and other rows that may or may not be needed, depending
@@ -871,8 +893,8 @@ nav.graphs-nav {
       }
 
       @media (max-width: 770px) {
-        height: 0!important;
-        width: 0!important;
+        height: 0 !important;
+        width: 0 !important;
       }
     }
   }
@@ -925,9 +947,9 @@ h4.graph-label {
   /***
    * Smaller fonts on md-and-up
    */
-   p.graph-help-block {
-     font-size: 95%;
-   }
+  p.graph-help-block {
+    font-size: 95%;
+  }
 
   /***
    * Adding the divider border to the pie chart & adjusting whitespace
@@ -937,7 +959,6 @@ h4.graph-label {
     @media (min-width: 992px) {
       border-right: 1px solid @gray-light;
     }
-
   }
 
   .line-chart-container {
@@ -965,7 +986,7 @@ h4.graph-label {
 /* NVD3 style-overrides
 ========================================= */
 
-.nvd3.nv-pie .nv-label text{
+.nvd3.nv-pie .nv-label text {
   fill: white !important;
   font-weight: bold;
 }
