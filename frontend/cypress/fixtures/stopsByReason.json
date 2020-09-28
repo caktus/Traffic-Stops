@@ -1,0 +1,3426 @@
+{
+    "stops": [
+        {
+            "purpose": "Speed Limit Violation",
+            "year": 2002,
+            "asian": 123,
+            "black": 2121,
+            "native_american": 9,
+            "other": 152,
+            "white": 1976,
+            "hispanic": 424
+        },
+        {
+            "purpose": "Stop Light/Sign Violation",
+            "year": 2002,
+            "asian": 36,
+            "black": 860,
+            "native_american": 1,
+            "other": 31,
+            "white": 377,
+            "hispanic": 225
+        },
+        {
+            "purpose": "Driving While Impaired",
+            "year": 2002,
+            "asian": 0,
+            "black": 56,
+            "native_american": 0,
+            "other": 0,
+            "white": 29,
+            "hispanic": 82
+        },
+        {
+            "purpose": "Safe Movement Violation",
+            "year": 2002,
+            "asian": 13,
+            "black": 426,
+            "native_american": 0,
+            "other": 23,
+            "white": 267,
+            "hispanic": 156
+        },
+        {
+            "purpose": "Vehicle Equipment Violation",
+            "year": 2002,
+            "asian": 16,
+            "black": 1185,
+            "native_american": 3,
+            "other": 20,
+            "white": 325,
+            "hispanic": 363
+        },
+        {
+            "purpose": "Vehicle Regulatory Violation",
+            "year": 2002,
+            "asian": 37,
+            "black": 1829,
+            "native_american": 5,
+            "other": 42,
+            "white": 829,
+            "hispanic": 286
+        },
+        {
+            "purpose": "Seat Belt Violation",
+            "year": 2002,
+            "asian": 13,
+            "black": 498,
+            "native_american": 0,
+            "other": 15,
+            "white": 260,
+            "hispanic": 93
+        },
+        {
+            "purpose": "Investigation",
+            "year": 2002,
+            "asian": 3,
+            "black": 364,
+            "native_american": 0,
+            "other": 2,
+            "white": 95,
+            "hispanic": 108
+        },
+        {
+            "purpose": "Other Motor Vehicle Violation",
+            "year": 2002,
+            "asian": 10,
+            "black": 789,
+            "native_american": 3,
+            "other": 18,
+            "white": 256,
+            "hispanic": 223
+        },
+        {
+            "purpose": "Speed Limit Violation",
+            "year": 2003,
+            "asian": 122,
+            "black": 2515,
+            "native_american": 3,
+            "other": 61,
+            "white": 2439,
+            "hispanic": 501
+        },
+        {
+            "purpose": "Stop Light/Sign Violation",
+            "year": 2003,
+            "asian": 26,
+            "black": 716,
+            "native_american": 3,
+            "other": 22,
+            "white": 250,
+            "hispanic": 241
+        },
+        {
+            "purpose": "Driving While Impaired",
+            "year": 2003,
+            "asian": 0,
+            "black": 26,
+            "native_american": 0,
+            "other": 0,
+            "white": 18,
+            "hispanic": 57
+        },
+        {
+            "purpose": "Safe Movement Violation",
+            "year": 2003,
+            "asian": 5,
+            "black": 359,
+            "native_american": 0,
+            "other": 8,
+            "white": 178,
+            "hispanic": 136
+        },
+        {
+            "purpose": "Vehicle Equipment Violation",
+            "year": 2003,
+            "asian": 12,
+            "black": 1064,
+            "native_american": 2,
+            "other": 13,
+            "white": 279,
+            "hispanic": 364
+        },
+        {
+            "purpose": "Vehicle Regulatory Violation",
+            "year": 2003,
+            "asian": 25,
+            "black": 1949,
+            "native_american": 2,
+            "other": 19,
+            "white": 765,
+            "hispanic": 379
+        },
+        {
+            "purpose": "Seat Belt Violation",
+            "year": 2003,
+            "asian": 4,
+            "black": 592,
+            "native_american": 0,
+            "other": 9,
+            "white": 356,
+            "hispanic": 92
+        },
+        {
+            "purpose": "Investigation",
+            "year": 2003,
+            "asian": 0,
+            "black": 385,
+            "native_american": 1,
+            "other": 3,
+            "white": 64,
+            "hispanic": 123
+        },
+        {
+            "purpose": "Other Motor Vehicle Violation",
+            "year": 2003,
+            "asian": 10,
+            "black": 717,
+            "native_american": 0,
+            "other": 4,
+            "white": 232,
+            "hispanic": 215
+        },
+        {
+            "purpose": "Speed Limit Violation",
+            "year": 2004,
+            "asian": 135,
+            "black": 2209,
+            "native_american": 1,
+            "other": 112,
+            "white": 2693,
+            "hispanic": 569
+        },
+        {
+            "purpose": "Stop Light/Sign Violation",
+            "year": 2004,
+            "asian": 17,
+            "black": 525,
+            "native_american": 1,
+            "other": 13,
+            "white": 343,
+            "hispanic": 145
+        },
+        {
+            "purpose": "Driving While Impaired",
+            "year": 2004,
+            "asian": 0,
+            "black": 16,
+            "native_american": 0,
+            "other": 1,
+            "white": 7,
+            "hispanic": 28
+        },
+        {
+            "purpose": "Safe Movement Violation",
+            "year": 2004,
+            "asian": 9,
+            "black": 306,
+            "native_american": 2,
+            "other": 9,
+            "white": 183,
+            "hispanic": 99
+        },
+        {
+            "purpose": "Vehicle Equipment Violation",
+            "year": 2004,
+            "asian": 11,
+            "black": 854,
+            "native_american": 0,
+            "other": 7,
+            "white": 240,
+            "hispanic": 258
+        },
+        {
+            "purpose": "Vehicle Regulatory Violation",
+            "year": 2004,
+            "asian": 32,
+            "black": 1557,
+            "native_american": 2,
+            "other": 12,
+            "white": 645,
+            "hispanic": 278
+        },
+        {
+            "purpose": "Seat Belt Violation",
+            "year": 2004,
+            "asian": 4,
+            "black": 469,
+            "native_american": 0,
+            "other": 6,
+            "white": 224,
+            "hispanic": 72
+        },
+        {
+            "purpose": "Investigation",
+            "year": 2004,
+            "asian": 3,
+            "black": 347,
+            "native_american": 0,
+            "other": 2,
+            "white": 84,
+            "hispanic": 102
+        },
+        {
+            "purpose": "Other Motor Vehicle Violation",
+            "year": 2004,
+            "asian": 4,
+            "black": 456,
+            "native_american": 0,
+            "other": 6,
+            "white": 107,
+            "hispanic": 93
+        },
+        {
+            "purpose": "Speed Limit Violation",
+            "year": 2005,
+            "asian": 120,
+            "black": 2074,
+            "native_american": 2,
+            "other": 102,
+            "white": 2164,
+            "hispanic": 517
+        },
+        {
+            "purpose": "Stop Light/Sign Violation",
+            "year": 2005,
+            "asian": 14,
+            "black": 368,
+            "native_american": 1,
+            "other": 8,
+            "white": 164,
+            "hispanic": 103
+        },
+        {
+            "purpose": "Driving While Impaired",
+            "year": 2005,
+            "asian": 0,
+            "black": 12,
+            "native_american": 0,
+            "other": 0,
+            "white": 7,
+            "hispanic": 28
+        },
+        {
+            "purpose": "Safe Movement Violation",
+            "year": 2005,
+            "asian": 8,
+            "black": 226,
+            "native_american": 0,
+            "other": 4,
+            "white": 108,
+            "hispanic": 72
+        },
+        {
+            "purpose": "Vehicle Equipment Violation",
+            "year": 2005,
+            "asian": 4,
+            "black": 760,
+            "native_american": 1,
+            "other": 11,
+            "white": 154,
+            "hispanic": 227
+        },
+        {
+            "purpose": "Vehicle Regulatory Violation",
+            "year": 2005,
+            "asian": 8,
+            "black": 1260,
+            "native_american": 1,
+            "other": 11,
+            "white": 432,
+            "hispanic": 210
+        },
+        {
+            "purpose": "Seat Belt Violation",
+            "year": 2005,
+            "asian": 4,
+            "black": 309,
+            "native_american": 1,
+            "other": 10,
+            "white": 176,
+            "hispanic": 53
+        },
+        {
+            "purpose": "Investigation",
+            "year": 2005,
+            "asian": 1,
+            "black": 224,
+            "native_american": 0,
+            "other": 2,
+            "white": 45,
+            "hispanic": 82
+        },
+        {
+            "purpose": "Other Motor Vehicle Violation",
+            "year": 2005,
+            "asian": 4,
+            "black": 393,
+            "native_american": 1,
+            "other": 1,
+            "white": 103,
+            "hispanic": 85
+        },
+        {
+            "purpose": "Speed Limit Violation",
+            "year": 2006,
+            "asian": 117,
+            "black": 2378,
+            "native_american": 30,
+            "other": 46,
+            "white": 2190,
+            "hispanic": 475
+        },
+        {
+            "purpose": "Stop Light/Sign Violation",
+            "year": 2006,
+            "asian": 8,
+            "black": 348,
+            "native_american": 0,
+            "other": 12,
+            "white": 188,
+            "hispanic": 90
+        },
+        {
+            "purpose": "Driving While Impaired",
+            "year": 2006,
+            "asian": 0,
+            "black": 35,
+            "native_american": 0,
+            "other": 0,
+            "white": 11,
+            "hispanic": 18
+        },
+        {
+            "purpose": "Safe Movement Violation",
+            "year": 2006,
+            "asian": 11,
+            "black": 425,
+            "native_american": 1,
+            "other": 5,
+            "white": 206,
+            "hispanic": 145
+        },
+        {
+            "purpose": "Vehicle Equipment Violation",
+            "year": 2006,
+            "asian": 12,
+            "black": 1231,
+            "native_american": 3,
+            "other": 8,
+            "white": 347,
+            "hispanic": 287
+        },
+        {
+            "purpose": "Vehicle Regulatory Violation",
+            "year": 2006,
+            "asian": 11,
+            "black": 1508,
+            "native_american": 4,
+            "other": 12,
+            "white": 485,
+            "hispanic": 276
+        },
+        {
+            "purpose": "Seat Belt Violation",
+            "year": 2006,
+            "asian": 5,
+            "black": 372,
+            "native_american": 0,
+            "other": 4,
+            "white": 150,
+            "hispanic": 54
+        },
+        {
+            "purpose": "Investigation",
+            "year": 2006,
+            "asian": 1,
+            "black": 408,
+            "native_american": 0,
+            "other": 2,
+            "white": 103,
+            "hispanic": 103
+        },
+        {
+            "purpose": "Other Motor Vehicle Violation",
+            "year": 2006,
+            "asian": 13,
+            "black": 481,
+            "native_american": 2,
+            "other": 5,
+            "white": 170,
+            "hispanic": 178
+        },
+        {
+            "purpose": "Speed Limit Violation",
+            "year": 2007,
+            "asian": 122,
+            "black": 2498,
+            "native_american": 34,
+            "other": 23,
+            "white": 1947,
+            "hispanic": 442
+        },
+        {
+            "purpose": "Stop Light/Sign Violation",
+            "year": 2007,
+            "asian": 23,
+            "black": 601,
+            "native_american": 6,
+            "other": 6,
+            "white": 411,
+            "hispanic": 137
+        },
+        {
+            "purpose": "Driving While Impaired",
+            "year": 2007,
+            "asian": 0,
+            "black": 23,
+            "native_american": 1,
+            "other": 0,
+            "white": 24,
+            "hispanic": 27
+        },
+        {
+            "purpose": "Safe Movement Violation",
+            "year": 2007,
+            "asian": 27,
+            "black": 879,
+            "native_american": 9,
+            "other": 9,
+            "white": 583,
+            "hispanic": 262
+        },
+        {
+            "purpose": "Vehicle Equipment Violation",
+            "year": 2007,
+            "asian": 27,
+            "black": 2142,
+            "native_american": 6,
+            "other": 12,
+            "white": 770,
+            "hispanic": 502
+        },
+        {
+            "purpose": "Vehicle Regulatory Violation",
+            "year": 2007,
+            "asian": 34,
+            "black": 2009,
+            "native_american": 8,
+            "other": 14,
+            "white": 876,
+            "hispanic": 303
+        },
+        {
+            "purpose": "Seat Belt Violation",
+            "year": 2007,
+            "asian": 3,
+            "black": 514,
+            "native_american": 3,
+            "other": 3,
+            "white": 203,
+            "hispanic": 72
+        },
+        {
+            "purpose": "Investigation",
+            "year": 2007,
+            "asian": 6,
+            "black": 990,
+            "native_american": 1,
+            "other": 5,
+            "white": 293,
+            "hispanic": 294
+        },
+        {
+            "purpose": "Other Motor Vehicle Violation",
+            "year": 2007,
+            "asian": 19,
+            "black": 674,
+            "native_american": 2,
+            "other": 3,
+            "white": 217,
+            "hispanic": 249
+        },
+        {
+            "purpose": "Speed Limit Violation",
+            "year": 2008,
+            "asian": 164,
+            "black": 3531,
+            "native_american": 26,
+            "other": 29,
+            "white": 2649,
+            "hispanic": 523
+        },
+        {
+            "purpose": "Stop Light/Sign Violation",
+            "year": 2008,
+            "asian": 40,
+            "black": 892,
+            "native_american": 12,
+            "other": 9,
+            "white": 536,
+            "hispanic": 174
+        },
+        {
+            "purpose": "Driving While Impaired",
+            "year": 2008,
+            "asian": 1,
+            "black": 30,
+            "native_american": 0,
+            "other": 0,
+            "white": 39,
+            "hispanic": 48
+        },
+        {
+            "purpose": "Safe Movement Violation",
+            "year": 2008,
+            "asian": 63,
+            "black": 1270,
+            "native_american": 14,
+            "other": 13,
+            "white": 595,
+            "hispanic": 341
+        },
+        {
+            "purpose": "Vehicle Equipment Violation",
+            "year": 2008,
+            "asian": 38,
+            "black": 3635,
+            "native_american": 15,
+            "other": 15,
+            "white": 1096,
+            "hispanic": 630
+        },
+        {
+            "purpose": "Vehicle Regulatory Violation",
+            "year": 2008,
+            "asian": 41,
+            "black": 3311,
+            "native_american": 10,
+            "other": 14,
+            "white": 1133,
+            "hispanic": 493
+        },
+        {
+            "purpose": "Seat Belt Violation",
+            "year": 2008,
+            "asian": 5,
+            "black": 603,
+            "native_american": 4,
+            "other": 2,
+            "white": 206,
+            "hispanic": 53
+        },
+        {
+            "purpose": "Investigation",
+            "year": 2008,
+            "asian": 21,
+            "black": 2278,
+            "native_american": 6,
+            "other": 13,
+            "white": 661,
+            "hispanic": 663
+        },
+        {
+            "purpose": "Other Motor Vehicle Violation",
+            "year": 2008,
+            "asian": 9,
+            "black": 844,
+            "native_american": 3,
+            "other": 3,
+            "white": 306,
+            "hispanic": 274
+        },
+        {
+            "purpose": "Speed Limit Violation",
+            "year": 2009,
+            "asian": 90,
+            "black": 2145,
+            "native_american": 27,
+            "other": 6,
+            "white": 1611,
+            "hispanic": 245
+        },
+        {
+            "purpose": "Stop Light/Sign Violation",
+            "year": 2009,
+            "asian": 17,
+            "black": 473,
+            "native_american": 3,
+            "other": 7,
+            "white": 253,
+            "hispanic": 70
+        },
+        {
+            "purpose": "Driving While Impaired",
+            "year": 2009,
+            "asian": 0,
+            "black": 8,
+            "native_american": 1,
+            "other": 2,
+            "white": 12,
+            "hispanic": 17
+        },
+        {
+            "purpose": "Safe Movement Violation",
+            "year": 2009,
+            "asian": 26,
+            "black": 591,
+            "native_american": 5,
+            "other": 3,
+            "white": 329,
+            "hispanic": 123
+        },
+        {
+            "purpose": "Vehicle Equipment Violation",
+            "year": 2009,
+            "asian": 35,
+            "black": 1674,
+            "native_american": 8,
+            "other": 6,
+            "white": 524,
+            "hispanic": 246
+        },
+        {
+            "purpose": "Vehicle Regulatory Violation",
+            "year": 2009,
+            "asian": 29,
+            "black": 1905,
+            "native_american": 12,
+            "other": 6,
+            "white": 727,
+            "hispanic": 274
+        },
+        {
+            "purpose": "Seat Belt Violation",
+            "year": 2009,
+            "asian": 3,
+            "black": 361,
+            "native_american": 1,
+            "other": 0,
+            "white": 156,
+            "hispanic": 25
+        },
+        {
+            "purpose": "Investigation",
+            "year": 2009,
+            "asian": 6,
+            "black": 1248,
+            "native_american": 2,
+            "other": 5,
+            "white": 450,
+            "hispanic": 380
+        },
+        {
+            "purpose": "Other Motor Vehicle Violation",
+            "year": 2009,
+            "asian": 7,
+            "black": 477,
+            "native_american": 1,
+            "other": 3,
+            "white": 225,
+            "hispanic": 137
+        },
+        {
+            "purpose": "Speed Limit Violation",
+            "year": 2010,
+            "asian": 213,
+            "black": 4039,
+            "native_american": 67,
+            "other": 31,
+            "white": 2926,
+            "hispanic": 600
+        },
+        {
+            "purpose": "Stop Light/Sign Violation",
+            "year": 2010,
+            "asian": 25,
+            "black": 753,
+            "native_american": 5,
+            "other": 5,
+            "white": 409,
+            "hispanic": 165
+        },
+        {
+            "purpose": "Driving While Impaired",
+            "year": 2010,
+            "asian": 0,
+            "black": 32,
+            "native_american": 0,
+            "other": 0,
+            "white": 13,
+            "hispanic": 51
+        },
+        {
+            "purpose": "Safe Movement Violation",
+            "year": 2010,
+            "asian": 42,
+            "black": 1124,
+            "native_american": 12,
+            "other": 4,
+            "white": 518,
+            "hispanic": 283
+        },
+        {
+            "purpose": "Vehicle Equipment Violation",
+            "year": 2010,
+            "asian": 38,
+            "black": 2577,
+            "native_american": 11,
+            "other": 8,
+            "white": 703,
+            "hispanic": 436
+        },
+        {
+            "purpose": "Vehicle Regulatory Violation",
+            "year": 2010,
+            "asian": 83,
+            "black": 4106,
+            "native_american": 17,
+            "other": 14,
+            "white": 1689,
+            "hispanic": 920
+        },
+        {
+            "purpose": "Seat Belt Violation",
+            "year": 2010,
+            "asian": 5,
+            "black": 629,
+            "native_american": 3,
+            "other": 1,
+            "white": 248,
+            "hispanic": 50
+        },
+        {
+            "purpose": "Investigation",
+            "year": 2010,
+            "asian": 28,
+            "black": 1911,
+            "native_american": 6,
+            "other": 5,
+            "white": 548,
+            "hispanic": 988
+        },
+        {
+            "purpose": "Other Motor Vehicle Violation",
+            "year": 2010,
+            "asian": 10,
+            "black": 758,
+            "native_american": 6,
+            "other": 1,
+            "white": 180,
+            "hispanic": 262
+        },
+        {
+            "purpose": "Speed Limit Violation",
+            "year": 2011,
+            "asian": 262,
+            "black": 4566,
+            "native_american": 90,
+            "other": 30,
+            "white": 3321,
+            "hispanic": 720
+        },
+        {
+            "purpose": "Stop Light/Sign Violation",
+            "year": 2011,
+            "asian": 36,
+            "black": 876,
+            "native_american": 11,
+            "other": 11,
+            "white": 473,
+            "hispanic": 185
+        },
+        {
+            "purpose": "Driving While Impaired",
+            "year": 2011,
+            "asian": 1,
+            "black": 39,
+            "native_american": 0,
+            "other": 0,
+            "white": 16,
+            "hispanic": 38
+        },
+        {
+            "purpose": "Safe Movement Violation",
+            "year": 2011,
+            "asian": 34,
+            "black": 1245,
+            "native_american": 15,
+            "other": 14,
+            "white": 651,
+            "hispanic": 328
+        },
+        {
+            "purpose": "Vehicle Equipment Violation",
+            "year": 2011,
+            "asian": 52,
+            "black": 2312,
+            "native_american": 4,
+            "other": 10,
+            "white": 595,
+            "hispanic": 380
+        },
+        {
+            "purpose": "Vehicle Regulatory Violation",
+            "year": 2011,
+            "asian": 76,
+            "black": 3910,
+            "native_american": 20,
+            "other": 22,
+            "white": 1612,
+            "hispanic": 789
+        },
+        {
+            "purpose": "Seat Belt Violation",
+            "year": 2011,
+            "asian": 5,
+            "black": 324,
+            "native_american": 0,
+            "other": 3,
+            "white": 112,
+            "hispanic": 25
+        },
+        {
+            "purpose": "Investigation",
+            "year": 2011,
+            "asian": 29,
+            "black": 1682,
+            "native_american": 9,
+            "other": 8,
+            "white": 454,
+            "hispanic": 653
+        },
+        {
+            "purpose": "Other Motor Vehicle Violation",
+            "year": 2011,
+            "asian": 16,
+            "black": 731,
+            "native_american": 7,
+            "other": 6,
+            "white": 199,
+            "hispanic": 204
+        },
+        {
+            "purpose": "Checkpoint",
+            "year": 2011,
+            "asian": 0,
+            "black": 77,
+            "native_american": 0,
+            "other": 0,
+            "white": 18,
+            "hispanic": 60
+        },
+        {
+            "purpose": "Speed Limit Violation",
+            "year": 2012,
+            "asian": 158,
+            "black": 3045,
+            "native_american": 47,
+            "other": 24,
+            "white": 2055,
+            "hispanic": 432
+        },
+        {
+            "purpose": "Stop Light/Sign Violation",
+            "year": 2012,
+            "asian": 60,
+            "black": 1082,
+            "native_american": 15,
+            "other": 12,
+            "white": 640,
+            "hispanic": 267
+        },
+        {
+            "purpose": "Driving While Impaired",
+            "year": 2012,
+            "asian": 0,
+            "black": 27,
+            "native_american": 0,
+            "other": 1,
+            "white": 23,
+            "hispanic": 36
+        },
+        {
+            "purpose": "Safe Movement Violation",
+            "year": 2012,
+            "asian": 36,
+            "black": 1206,
+            "native_american": 9,
+            "other": 15,
+            "white": 513,
+            "hispanic": 257
+        },
+        {
+            "purpose": "Vehicle Equipment Violation",
+            "year": 2012,
+            "asian": 35,
+            "black": 2299,
+            "native_american": 8,
+            "other": 8,
+            "white": 577,
+            "hispanic": 353
+        },
+        {
+            "purpose": "Vehicle Regulatory Violation",
+            "year": 2012,
+            "asian": 62,
+            "black": 3687,
+            "native_american": 10,
+            "other": 20,
+            "white": 1439,
+            "hispanic": 744
+        },
+        {
+            "purpose": "Seat Belt Violation",
+            "year": 2012,
+            "asian": 2,
+            "black": 396,
+            "native_american": 3,
+            "other": 1,
+            "white": 87,
+            "hispanic": 38
+        },
+        {
+            "purpose": "Investigation",
+            "year": 2012,
+            "asian": 17,
+            "black": 1015,
+            "native_american": 3,
+            "other": 5,
+            "white": 283,
+            "hispanic": 395
+        },
+        {
+            "purpose": "Other Motor Vehicle Violation",
+            "year": 2012,
+            "asian": 11,
+            "black": 496,
+            "native_american": 5,
+            "other": 3,
+            "white": 148,
+            "hispanic": 202
+        },
+        {
+            "purpose": "Checkpoint",
+            "year": 2012,
+            "asian": 6,
+            "black": 717,
+            "native_american": 2,
+            "other": 1,
+            "white": 130,
+            "hispanic": 479
+        },
+        {
+            "purpose": "Speed Limit Violation",
+            "year": 2013,
+            "asian": 223,
+            "black": 4145,
+            "native_american": 81,
+            "other": 31,
+            "white": 2629,
+            "hispanic": 553
+        },
+        {
+            "purpose": "Stop Light/Sign Violation",
+            "year": 2013,
+            "asian": 58,
+            "black": 1149,
+            "native_american": 27,
+            "other": 10,
+            "white": 609,
+            "hispanic": 224
+        },
+        {
+            "purpose": "Driving While Impaired",
+            "year": 2013,
+            "asian": 0,
+            "black": 19,
+            "native_american": 2,
+            "other": 0,
+            "white": 6,
+            "hispanic": 22
+        },
+        {
+            "purpose": "Safe Movement Violation",
+            "year": 2013,
+            "asian": 59,
+            "black": 1256,
+            "native_american": 22,
+            "other": 12,
+            "white": 622,
+            "hispanic": 241
+        },
+        {
+            "purpose": "Vehicle Equipment Violation",
+            "year": 2013,
+            "asian": 31,
+            "black": 2506,
+            "native_american": 20,
+            "other": 12,
+            "white": 584,
+            "hispanic": 372
+        },
+        {
+            "purpose": "Vehicle Regulatory Violation",
+            "year": 2013,
+            "asian": 60,
+            "black": 3946,
+            "native_american": 32,
+            "other": 12,
+            "white": 1528,
+            "hispanic": 668
+        },
+        {
+            "purpose": "Seat Belt Violation",
+            "year": 2013,
+            "asian": 10,
+            "black": 384,
+            "native_american": 2,
+            "other": 6,
+            "white": 186,
+            "hispanic": 39
+        },
+        {
+            "purpose": "Investigation",
+            "year": 2013,
+            "asian": 12,
+            "black": 761,
+            "native_american": 2,
+            "other": 6,
+            "white": 210,
+            "hispanic": 239
+        },
+        {
+            "purpose": "Other Motor Vehicle Violation",
+            "year": 2013,
+            "asian": 5,
+            "black": 424,
+            "native_american": 1,
+            "other": 6,
+            "white": 140,
+            "hispanic": 146
+        },
+        {
+            "purpose": "Checkpoint",
+            "year": 2013,
+            "asian": 4,
+            "black": 690,
+            "native_american": 3,
+            "other": 1,
+            "white": 127,
+            "hispanic": 455
+        },
+        {
+            "purpose": "Speed Limit Violation",
+            "year": 2014,
+            "asian": 197,
+            "black": 4202,
+            "native_american": 71,
+            "other": 31,
+            "white": 2926,
+            "hispanic": 619
+        },
+        {
+            "purpose": "Stop Light/Sign Violation",
+            "year": 2014,
+            "asian": 42,
+            "black": 852,
+            "native_american": 17,
+            "other": 7,
+            "white": 475,
+            "hispanic": 166
+        },
+        {
+            "purpose": "Driving While Impaired",
+            "year": 2014,
+            "asian": 1,
+            "black": 12,
+            "native_american": 1,
+            "other": 0,
+            "white": 6,
+            "hispanic": 22
+        },
+        {
+            "purpose": "Safe Movement Violation",
+            "year": 2014,
+            "asian": 60,
+            "black": 1152,
+            "native_american": 16,
+            "other": 13,
+            "white": 592,
+            "hispanic": 208
+        },
+        {
+            "purpose": "Vehicle Equipment Violation",
+            "year": 2014,
+            "asian": 24,
+            "black": 1840,
+            "native_american": 15,
+            "other": 6,
+            "white": 475,
+            "hispanic": 320
+        },
+        {
+            "purpose": "Vehicle Regulatory Violation",
+            "year": 2014,
+            "asian": 36,
+            "black": 3033,
+            "native_american": 10,
+            "other": 11,
+            "white": 976,
+            "hispanic": 496
+        },
+        {
+            "purpose": "Seat Belt Violation",
+            "year": 2014,
+            "asian": 4,
+            "black": 467,
+            "native_american": 6,
+            "other": 8,
+            "white": 156,
+            "hispanic": 47
+        },
+        {
+            "purpose": "Investigation",
+            "year": 2014,
+            "asian": 6,
+            "black": 604,
+            "native_american": 3,
+            "other": 7,
+            "white": 171,
+            "hispanic": 225
+        },
+        {
+            "purpose": "Other Motor Vehicle Violation",
+            "year": 2014,
+            "asian": 4,
+            "black": 266,
+            "native_american": 0,
+            "other": 1,
+            "white": 96,
+            "hispanic": 73
+        },
+        {
+            "purpose": "Checkpoint",
+            "year": 2014,
+            "asian": 4,
+            "black": 413,
+            "native_american": 4,
+            "other": 0,
+            "white": 109,
+            "hispanic": 336
+        },
+        {
+            "purpose": "Speed Limit Violation",
+            "year": 2015,
+            "asian": 198,
+            "black": 3866,
+            "native_american": 69,
+            "other": 43,
+            "white": 2986,
+            "hispanic": 598
+        },
+        {
+            "purpose": "Stop Light/Sign Violation",
+            "year": 2015,
+            "asian": 39,
+            "black": 955,
+            "native_american": 18,
+            "other": 11,
+            "white": 441,
+            "hispanic": 200
+        },
+        {
+            "purpose": "Driving While Impaired",
+            "year": 2015,
+            "asian": 0,
+            "black": 22,
+            "native_american": 0,
+            "other": 0,
+            "white": 12,
+            "hispanic": 13
+        },
+        {
+            "purpose": "Safe Movement Violation",
+            "year": 2015,
+            "asian": 39,
+            "black": 947,
+            "native_american": 17,
+            "other": 12,
+            "white": 474,
+            "hispanic": 202
+        },
+        {
+            "purpose": "Vehicle Equipment Violation",
+            "year": 2015,
+            "asian": 27,
+            "black": 1700,
+            "native_american": 7,
+            "other": 9,
+            "white": 361,
+            "hispanic": 245
+        },
+        {
+            "purpose": "Vehicle Regulatory Violation",
+            "year": 2015,
+            "asian": 32,
+            "black": 2851,
+            "native_american": 19,
+            "other": 11,
+            "white": 825,
+            "hispanic": 336
+        },
+        {
+            "purpose": "Seat Belt Violation",
+            "year": 2015,
+            "asian": 9,
+            "black": 614,
+            "native_american": 5,
+            "other": 5,
+            "white": 275,
+            "hispanic": 55
+        },
+        {
+            "purpose": "Investigation",
+            "year": 2015,
+            "asian": 8,
+            "black": 606,
+            "native_american": 2,
+            "other": 3,
+            "white": 129,
+            "hispanic": 164
+        },
+        {
+            "purpose": "Other Motor Vehicle Violation",
+            "year": 2015,
+            "asian": 3,
+            "black": 199,
+            "native_american": 2,
+            "other": 3,
+            "white": 60,
+            "hispanic": 43
+        },
+        {
+            "purpose": "Checkpoint",
+            "year": 2015,
+            "asian": 4,
+            "black": 498,
+            "native_american": 2,
+            "other": 4,
+            "white": 111,
+            "hispanic": 347
+        },
+        {
+            "purpose": "Speed Limit Violation",
+            "year": 2016,
+            "asian": 120,
+            "black": 2753,
+            "native_american": 67,
+            "other": 14,
+            "white": 2146,
+            "hispanic": 518
+        },
+        {
+            "purpose": "Stop Light/Sign Violation",
+            "year": 2016,
+            "asian": 26,
+            "black": 687,
+            "native_american": 9,
+            "other": 4,
+            "white": 294,
+            "hispanic": 149
+        },
+        {
+            "purpose": "Driving While Impaired",
+            "year": 2016,
+            "asian": 2,
+            "black": 13,
+            "native_american": 0,
+            "other": 0,
+            "white": 9,
+            "hispanic": 19
+        },
+        {
+            "purpose": "Safe Movement Violation",
+            "year": 2016,
+            "asian": 42,
+            "black": 855,
+            "native_american": 18,
+            "other": 4,
+            "white": 455,
+            "hispanic": 210
+        },
+        {
+            "purpose": "Vehicle Equipment Violation",
+            "year": 2016,
+            "asian": 31,
+            "black": 1146,
+            "native_american": 9,
+            "other": 9,
+            "white": 301,
+            "hispanic": 182
+        },
+        {
+            "purpose": "Vehicle Regulatory Violation",
+            "year": 2016,
+            "asian": 20,
+            "black": 1822,
+            "native_american": 8,
+            "other": 5,
+            "white": 529,
+            "hispanic": 210
+        },
+        {
+            "purpose": "Seat Belt Violation",
+            "year": 2016,
+            "asian": 8,
+            "black": 432,
+            "native_american": 5,
+            "other": 6,
+            "white": 224,
+            "hispanic": 54
+        },
+        {
+            "purpose": "Investigation",
+            "year": 2016,
+            "asian": 6,
+            "black": 427,
+            "native_american": 1,
+            "other": 2,
+            "white": 115,
+            "hispanic": 111
+        },
+        {
+            "purpose": "Other Motor Vehicle Violation",
+            "year": 2016,
+            "asian": 3,
+            "black": 170,
+            "native_american": 2,
+            "other": 1,
+            "white": 69,
+            "hispanic": 40
+        },
+        {
+            "purpose": "Checkpoint",
+            "year": 2016,
+            "asian": 1,
+            "black": 229,
+            "native_american": 0,
+            "other": 1,
+            "white": 41,
+            "hispanic": 120
+        },
+        {
+            "purpose": "Speed Limit Violation",
+            "year": 2017,
+            "asian": 128,
+            "black": 2613,
+            "native_american": 32,
+            "other": 23,
+            "white": 1911,
+            "hispanic": 489
+        },
+        {
+            "purpose": "Stop Light/Sign Violation",
+            "year": 2017,
+            "asian": 31,
+            "black": 545,
+            "native_american": 4,
+            "other": 3,
+            "white": 286,
+            "hispanic": 102
+        },
+        {
+            "purpose": "Driving While Impaired",
+            "year": 2017,
+            "asian": 1,
+            "black": 10,
+            "native_american": 1,
+            "other": 0,
+            "white": 5,
+            "hispanic": 7
+        },
+        {
+            "purpose": "Safe Movement Violation",
+            "year": 2017,
+            "asian": 26,
+            "black": 684,
+            "native_american": 8,
+            "other": 12,
+            "white": 356,
+            "hispanic": 172
+        },
+        {
+            "purpose": "Vehicle Equipment Violation",
+            "year": 2017,
+            "asian": 21,
+            "black": 812,
+            "native_american": 5,
+            "other": 3,
+            "white": 184,
+            "hispanic": 145
+        },
+        {
+            "purpose": "Vehicle Regulatory Violation",
+            "year": 2017,
+            "asian": 10,
+            "black": 1420,
+            "native_american": 2,
+            "other": 4,
+            "white": 323,
+            "hispanic": 134
+        },
+        {
+            "purpose": "Seat Belt Violation",
+            "year": 2017,
+            "asian": 5,
+            "black": 175,
+            "native_american": 0,
+            "other": 3,
+            "white": 115,
+            "hispanic": 23
+        },
+        {
+            "purpose": "Investigation",
+            "year": 2017,
+            "asian": 6,
+            "black": 293,
+            "native_american": 1,
+            "other": 3,
+            "white": 75,
+            "hispanic": 68
+        },
+        {
+            "purpose": "Other Motor Vehicle Violation",
+            "year": 2017,
+            "asian": 7,
+            "black": 87,
+            "native_american": 2,
+            "other": 0,
+            "white": 44,
+            "hispanic": 30
+        },
+        {
+            "purpose": "Checkpoint",
+            "year": 2017,
+            "asian": 1,
+            "black": 64,
+            "native_american": 0,
+            "other": 0,
+            "white": 21,
+            "hispanic": 30
+        },
+        {
+            "purpose": "Speed Limit Violation",
+            "year": 2018,
+            "asian": 142,
+            "black": 2219,
+            "native_american": 21,
+            "other": 29,
+            "white": 1541,
+            "hispanic": 445
+        },
+        {
+            "purpose": "Stop Light/Sign Violation",
+            "year": 2018,
+            "asian": 35,
+            "black": 730,
+            "native_american": 19,
+            "other": 5,
+            "white": 324,
+            "hispanic": 155
+        },
+        {
+            "purpose": "Driving While Impaired",
+            "year": 2018,
+            "asian": 0,
+            "black": 8,
+            "native_american": 0,
+            "other": 0,
+            "white": 1,
+            "hispanic": 5
+        },
+        {
+            "purpose": "Safe Movement Violation",
+            "year": 2018,
+            "asian": 35,
+            "black": 707,
+            "native_american": 5,
+            "other": 7,
+            "white": 343,
+            "hispanic": 163
+        },
+        {
+            "purpose": "Vehicle Equipment Violation",
+            "year": 2018,
+            "asian": 24,
+            "black": 1190,
+            "native_american": 6,
+            "other": 16,
+            "white": 273,
+            "hispanic": 209
+        },
+        {
+            "purpose": "Vehicle Regulatory Violation",
+            "year": 2018,
+            "asian": 23,
+            "black": 2061,
+            "native_american": 6,
+            "other": 9,
+            "white": 486,
+            "hispanic": 174
+        },
+        {
+            "purpose": "Seat Belt Violation",
+            "year": 2018,
+            "asian": 6,
+            "black": 234,
+            "native_american": 0,
+            "other": 1,
+            "white": 94,
+            "hispanic": 20
+        },
+        {
+            "purpose": "Investigation",
+            "year": 2018,
+            "asian": 10,
+            "black": 374,
+            "native_american": 1,
+            "other": 2,
+            "white": 128,
+            "hispanic": 65
+        },
+        {
+            "purpose": "Other Motor Vehicle Violation",
+            "year": 2018,
+            "asian": 4,
+            "black": 177,
+            "native_american": 1,
+            "other": 0,
+            "white": 70,
+            "hispanic": 46
+        },
+        {
+            "purpose": "Checkpoint",
+            "year": 2018,
+            "asian": 1,
+            "black": 16,
+            "native_american": 0,
+            "other": 0,
+            "white": 6,
+            "hispanic": 15
+        },
+        {
+            "purpose": "Speed Limit Violation",
+            "year": 2019,
+            "asian": 90,
+            "black": 1525,
+            "native_american": 22,
+            "other": 15,
+            "white": 919,
+            "hispanic": 337
+        },
+        {
+            "purpose": "Stop Light/Sign Violation",
+            "year": 2019,
+            "asian": 13,
+            "black": 527,
+            "native_american": 3,
+            "other": 5,
+            "white": 254,
+            "hispanic": 123
+        },
+        {
+            "purpose": "Driving While Impaired",
+            "year": 2019,
+            "asian": 0,
+            "black": 4,
+            "native_american": 0,
+            "other": 0,
+            "white": 4,
+            "hispanic": 5
+        },
+        {
+            "purpose": "Safe Movement Violation",
+            "year": 2019,
+            "asian": 17,
+            "black": 492,
+            "native_american": 5,
+            "other": 4,
+            "white": 216,
+            "hispanic": 121
+        },
+        {
+            "purpose": "Vehicle Equipment Violation",
+            "year": 2019,
+            "asian": 13,
+            "black": 961,
+            "native_american": 7,
+            "other": 11,
+            "white": 207,
+            "hispanic": 170
+        },
+        {
+            "purpose": "Vehicle Regulatory Violation",
+            "year": 2019,
+            "asian": 15,
+            "black": 1618,
+            "native_american": 3,
+            "other": 9,
+            "white": 290,
+            "hispanic": 148
+        },
+        {
+            "purpose": "Seat Belt Violation",
+            "year": 2019,
+            "asian": 5,
+            "black": 123,
+            "native_american": 0,
+            "other": 1,
+            "white": 45,
+            "hispanic": 23
+        },
+        {
+            "purpose": "Investigation",
+            "year": 2019,
+            "asian": 1,
+            "black": 206,
+            "native_american": 1,
+            "other": 1,
+            "white": 68,
+            "hispanic": 33
+        },
+        {
+            "purpose": "Other Motor Vehicle Violation",
+            "year": 2019,
+            "asian": 2,
+            "black": 109,
+            "native_american": 0,
+            "other": 0,
+            "white": 38,
+            "hispanic": 9
+        },
+        {
+            "purpose": "Checkpoint",
+            "year": 2019,
+            "asian": 0,
+            "black": 27,
+            "native_american": 0,
+            "other": 1,
+            "white": 13,
+            "hispanic": 30
+        }
+    ],
+    "searches": [
+        {
+            "purpose": "Speed Limit Violation",
+            "year": 2002,
+            "asian": 2,
+            "black": 72,
+            "native_american": 1,
+            "other": 1,
+            "white": 14,
+            "hispanic": 18
+        },
+        {
+            "purpose": "Stop Light/Sign Violation",
+            "year": 2002,
+            "asian": 0,
+            "black": 60,
+            "native_american": 0,
+            "other": 0,
+            "white": 13,
+            "hispanic": 19
+        },
+        {
+            "purpose": "Driving While Impaired",
+            "year": 2002,
+            "asian": 0,
+            "black": 33,
+            "native_american": 0,
+            "other": 0,
+            "white": 19,
+            "hispanic": 52
+        },
+        {
+            "purpose": "Safe Movement Violation",
+            "year": 2002,
+            "asian": 1,
+            "black": 45,
+            "native_american": 0,
+            "other": 3,
+            "white": 9,
+            "hispanic": 16
+        },
+        {
+            "purpose": "Vehicle Equipment Violation",
+            "year": 2002,
+            "asian": 2,
+            "black": 161,
+            "native_american": 0,
+            "other": 1,
+            "white": 30,
+            "hispanic": 34
+        },
+        {
+            "purpose": "Vehicle Regulatory Violation",
+            "year": 2002,
+            "asian": 1,
+            "black": 151,
+            "native_american": 0,
+            "other": 0,
+            "white": 18,
+            "hispanic": 20
+        },
+        {
+            "purpose": "Seat Belt Violation",
+            "year": 2002,
+            "asian": 1,
+            "black": 54,
+            "native_american": 0,
+            "other": 1,
+            "white": 4,
+            "hispanic": 7
+        },
+        {
+            "purpose": "Investigation",
+            "year": 2002,
+            "asian": 1,
+            "black": 96,
+            "native_american": 0,
+            "other": 1,
+            "white": 27,
+            "hispanic": 14
+        },
+        {
+            "purpose": "Other Motor Vehicle Violation",
+            "year": 2002,
+            "asian": 0,
+            "black": 100,
+            "native_american": 0,
+            "other": 3,
+            "white": 16,
+            "hispanic": 12
+        },
+        {
+            "purpose": "Speed Limit Violation",
+            "year": 2003,
+            "asian": 1,
+            "black": 57,
+            "native_american": 0,
+            "other": 1,
+            "white": 18,
+            "hispanic": 20
+        },
+        {
+            "purpose": "Stop Light/Sign Violation",
+            "year": 2003,
+            "asian": 0,
+            "black": 32,
+            "native_american": 0,
+            "other": 0,
+            "white": 3,
+            "hispanic": 16
+        },
+        {
+            "purpose": "Driving While Impaired",
+            "year": 2003,
+            "asian": 0,
+            "black": 11,
+            "native_american": 0,
+            "other": 0,
+            "white": 8,
+            "hispanic": 30
+        },
+        {
+            "purpose": "Safe Movement Violation",
+            "year": 2003,
+            "asian": 0,
+            "black": 25,
+            "native_american": 0,
+            "other": 0,
+            "white": 2,
+            "hispanic": 24
+        },
+        {
+            "purpose": "Vehicle Equipment Violation",
+            "year": 2003,
+            "asian": 0,
+            "black": 109,
+            "native_american": 0,
+            "other": 0,
+            "white": 21,
+            "hispanic": 32
+        },
+        {
+            "purpose": "Vehicle Regulatory Violation",
+            "year": 2003,
+            "asian": 0,
+            "black": 152,
+            "native_american": 0,
+            "other": 0,
+            "white": 11,
+            "hispanic": 25
+        },
+        {
+            "purpose": "Seat Belt Violation",
+            "year": 2003,
+            "asian": 0,
+            "black": 53,
+            "native_american": 0,
+            "other": 0,
+            "white": 6,
+            "hispanic": 5
+        },
+        {
+            "purpose": "Investigation",
+            "year": 2003,
+            "asian": 0,
+            "black": 68,
+            "native_american": 0,
+            "other": 1,
+            "white": 7,
+            "hispanic": 12
+        },
+        {
+            "purpose": "Other Motor Vehicle Violation",
+            "year": 2003,
+            "asian": 0,
+            "black": 68,
+            "native_american": 0,
+            "other": 0,
+            "white": 17,
+            "hispanic": 8
+        },
+        {
+            "purpose": "Speed Limit Violation",
+            "year": 2004,
+            "asian": 0,
+            "black": 71,
+            "native_american": 0,
+            "other": 2,
+            "white": 29,
+            "hispanic": 21
+        },
+        {
+            "purpose": "Stop Light/Sign Violation",
+            "year": 2004,
+            "asian": 0,
+            "black": 35,
+            "native_american": 0,
+            "other": 0,
+            "white": 5,
+            "hispanic": 11
+        },
+        {
+            "purpose": "Driving While Impaired",
+            "year": 2004,
+            "asian": 0,
+            "black": 9,
+            "native_american": 0,
+            "other": 1,
+            "white": 4,
+            "hispanic": 19
+        },
+        {
+            "purpose": "Safe Movement Violation",
+            "year": 2004,
+            "asian": 0,
+            "black": 33,
+            "native_american": 1,
+            "other": 0,
+            "white": 6,
+            "hispanic": 10
+        },
+        {
+            "purpose": "Vehicle Equipment Violation",
+            "year": 2004,
+            "asian": 1,
+            "black": 88,
+            "native_american": 0,
+            "other": 0,
+            "white": 14,
+            "hispanic": 26
+        },
+        {
+            "purpose": "Vehicle Regulatory Violation",
+            "year": 2004,
+            "asian": 0,
+            "black": 131,
+            "native_american": 0,
+            "other": 0,
+            "white": 29,
+            "hispanic": 27
+        },
+        {
+            "purpose": "Seat Belt Violation",
+            "year": 2004,
+            "asian": 0,
+            "black": 32,
+            "native_american": 0,
+            "other": 0,
+            "white": 4,
+            "hispanic": 4
+        },
+        {
+            "purpose": "Investigation",
+            "year": 2004,
+            "asian": 0,
+            "black": 69,
+            "native_american": 0,
+            "other": 1,
+            "white": 17,
+            "hispanic": 14
+        },
+        {
+            "purpose": "Other Motor Vehicle Violation",
+            "year": 2004,
+            "asian": 0,
+            "black": 53,
+            "native_american": 0,
+            "other": 0,
+            "white": 7,
+            "hispanic": 6
+        },
+        {
+            "purpose": "Speed Limit Violation",
+            "year": 2005,
+            "asian": 0,
+            "black": 40,
+            "native_american": 0,
+            "other": 0,
+            "white": 17,
+            "hispanic": 21
+        },
+        {
+            "purpose": "Stop Light/Sign Violation",
+            "year": 2005,
+            "asian": 0,
+            "black": 21,
+            "native_american": 0,
+            "other": 0,
+            "white": 2,
+            "hispanic": 5
+        },
+        {
+            "purpose": "Driving While Impaired",
+            "year": 2005,
+            "asian": 0,
+            "black": 5,
+            "native_american": 0,
+            "other": 0,
+            "white": 3,
+            "hispanic": 14
+        },
+        {
+            "purpose": "Safe Movement Violation",
+            "year": 2005,
+            "asian": 0,
+            "black": 22,
+            "native_american": 0,
+            "other": 0,
+            "white": 6,
+            "hispanic": 5
+        },
+        {
+            "purpose": "Vehicle Equipment Violation",
+            "year": 2005,
+            "asian": 0,
+            "black": 85,
+            "native_american": 1,
+            "other": 0,
+            "white": 10,
+            "hispanic": 27
+        },
+        {
+            "purpose": "Vehicle Regulatory Violation",
+            "year": 2005,
+            "asian": 0,
+            "black": 134,
+            "native_american": 0,
+            "other": 0,
+            "white": 8,
+            "hispanic": 18
+        },
+        {
+            "purpose": "Seat Belt Violation",
+            "year": 2005,
+            "asian": 0,
+            "black": 21,
+            "native_american": 0,
+            "other": 0,
+            "white": 0,
+            "hispanic": 1
+        },
+        {
+            "purpose": "Investigation",
+            "year": 2005,
+            "asian": 0,
+            "black": 61,
+            "native_american": 0,
+            "other": 0,
+            "white": 9,
+            "hispanic": 12
+        },
+        {
+            "purpose": "Other Motor Vehicle Violation",
+            "year": 2005,
+            "asian": 0,
+            "black": 45,
+            "native_american": 0,
+            "other": 0,
+            "white": 6,
+            "hispanic": 12
+        },
+        {
+            "purpose": "Speed Limit Violation",
+            "year": 2006,
+            "asian": 5,
+            "black": 123,
+            "native_american": 0,
+            "other": 0,
+            "white": 42,
+            "hispanic": 35
+        },
+        {
+            "purpose": "Stop Light/Sign Violation",
+            "year": 2006,
+            "asian": 0,
+            "black": 25,
+            "native_american": 0,
+            "other": 0,
+            "white": 8,
+            "hispanic": 14
+        },
+        {
+            "purpose": "Driving While Impaired",
+            "year": 2006,
+            "asian": 0,
+            "black": 18,
+            "native_american": 0,
+            "other": 0,
+            "white": 7,
+            "hispanic": 12
+        },
+        {
+            "purpose": "Safe Movement Violation",
+            "year": 2006,
+            "asian": 0,
+            "black": 55,
+            "native_american": 0,
+            "other": 0,
+            "white": 14,
+            "hispanic": 31
+        },
+        {
+            "purpose": "Vehicle Equipment Violation",
+            "year": 2006,
+            "asian": 1,
+            "black": 156,
+            "native_american": 0,
+            "other": 0,
+            "white": 30,
+            "hispanic": 32
+        },
+        {
+            "purpose": "Vehicle Regulatory Violation",
+            "year": 2006,
+            "asian": 0,
+            "black": 167,
+            "native_american": 0,
+            "other": 0,
+            "white": 20,
+            "hispanic": 30
+        },
+        {
+            "purpose": "Seat Belt Violation",
+            "year": 2006,
+            "asian": 0,
+            "black": 26,
+            "native_american": 0,
+            "other": 0,
+            "white": 3,
+            "hispanic": 3
+        },
+        {
+            "purpose": "Investigation",
+            "year": 2006,
+            "asian": 1,
+            "black": 91,
+            "native_american": 0,
+            "other": 0,
+            "white": 20,
+            "hispanic": 9
+        },
+        {
+            "purpose": "Other Motor Vehicle Violation",
+            "year": 2006,
+            "asian": 0,
+            "black": 50,
+            "native_american": 1,
+            "other": 1,
+            "white": 9,
+            "hispanic": 8
+        },
+        {
+            "purpose": "Speed Limit Violation",
+            "year": 2007,
+            "asian": 9,
+            "black": 144,
+            "native_american": 2,
+            "other": 0,
+            "white": 42,
+            "hispanic": 33
+        },
+        {
+            "purpose": "Stop Light/Sign Violation",
+            "year": 2007,
+            "asian": 0,
+            "black": 37,
+            "native_american": 0,
+            "other": 0,
+            "white": 5,
+            "hispanic": 9
+        },
+        {
+            "purpose": "Driving While Impaired",
+            "year": 2007,
+            "asian": 0,
+            "black": 13,
+            "native_american": 0,
+            "other": 0,
+            "white": 17,
+            "hispanic": 16
+        },
+        {
+            "purpose": "Safe Movement Violation",
+            "year": 2007,
+            "asian": 4,
+            "black": 103,
+            "native_american": 0,
+            "other": 0,
+            "white": 41,
+            "hispanic": 47
+        },
+        {
+            "purpose": "Vehicle Equipment Violation",
+            "year": 2007,
+            "asian": 0,
+            "black": 185,
+            "native_american": 0,
+            "other": 0,
+            "white": 34,
+            "hispanic": 47
+        },
+        {
+            "purpose": "Vehicle Regulatory Violation",
+            "year": 2007,
+            "asian": 2,
+            "black": 171,
+            "native_american": 0,
+            "other": 2,
+            "white": 46,
+            "hispanic": 21
+        },
+        {
+            "purpose": "Seat Belt Violation",
+            "year": 2007,
+            "asian": 0,
+            "black": 64,
+            "native_american": 0,
+            "other": 0,
+            "white": 15,
+            "hispanic": 4
+        },
+        {
+            "purpose": "Investigation",
+            "year": 2007,
+            "asian": 2,
+            "black": 144,
+            "native_american": 0,
+            "other": 0,
+            "white": 32,
+            "hispanic": 30
+        },
+        {
+            "purpose": "Other Motor Vehicle Violation",
+            "year": 2007,
+            "asian": 0,
+            "black": 70,
+            "native_american": 0,
+            "other": 1,
+            "white": 14,
+            "hispanic": 18
+        },
+        {
+            "purpose": "Speed Limit Violation",
+            "year": 2008,
+            "asian": 2,
+            "black": 176,
+            "native_american": 0,
+            "other": 1,
+            "white": 35,
+            "hispanic": 32
+        },
+        {
+            "purpose": "Stop Light/Sign Violation",
+            "year": 2008,
+            "asian": 0,
+            "black": 47,
+            "native_american": 1,
+            "other": 0,
+            "white": 10,
+            "hispanic": 9
+        },
+        {
+            "purpose": "Driving While Impaired",
+            "year": 2008,
+            "asian": 1,
+            "black": 16,
+            "native_american": 0,
+            "other": 0,
+            "white": 16,
+            "hispanic": 28
+        },
+        {
+            "purpose": "Safe Movement Violation",
+            "year": 2008,
+            "asian": 4,
+            "black": 122,
+            "native_american": 1,
+            "other": 0,
+            "white": 26,
+            "hispanic": 43
+        },
+        {
+            "purpose": "Vehicle Equipment Violation",
+            "year": 2008,
+            "asian": 0,
+            "black": 356,
+            "native_american": 1,
+            "other": 1,
+            "white": 62,
+            "hispanic": 41
+        },
+        {
+            "purpose": "Vehicle Regulatory Violation",
+            "year": 2008,
+            "asian": 2,
+            "black": 320,
+            "native_american": 0,
+            "other": 0,
+            "white": 41,
+            "hispanic": 20
+        },
+        {
+            "purpose": "Seat Belt Violation",
+            "year": 2008,
+            "asian": 1,
+            "black": 80,
+            "native_american": 0,
+            "other": 0,
+            "white": 10,
+            "hispanic": 6
+        },
+        {
+            "purpose": "Investigation",
+            "year": 2008,
+            "asian": 0,
+            "black": 362,
+            "native_american": 0,
+            "other": 2,
+            "white": 65,
+            "hispanic": 46
+        },
+        {
+            "purpose": "Other Motor Vehicle Violation",
+            "year": 2008,
+            "asian": 1,
+            "black": 118,
+            "native_american": 0,
+            "other": 0,
+            "white": 15,
+            "hispanic": 17
+        },
+        {
+            "purpose": "Speed Limit Violation",
+            "year": 2009,
+            "asian": 0,
+            "black": 58,
+            "native_american": 0,
+            "other": 0,
+            "white": 4,
+            "hispanic": 4
+        },
+        {
+            "purpose": "Stop Light/Sign Violation",
+            "year": 2009,
+            "asian": 0,
+            "black": 19,
+            "native_american": 0,
+            "other": 0,
+            "white": 3,
+            "hispanic": 1
+        },
+        {
+            "purpose": "Driving While Impaired",
+            "year": 2009,
+            "asian": 0,
+            "black": 2,
+            "native_american": 1,
+            "other": 0,
+            "white": 3,
+            "hispanic": 7
+        },
+        {
+            "purpose": "Safe Movement Violation",
+            "year": 2009,
+            "asian": 0,
+            "black": 68,
+            "native_american": 0,
+            "other": 2,
+            "white": 23,
+            "hispanic": 12
+        },
+        {
+            "purpose": "Vehicle Equipment Violation",
+            "year": 2009,
+            "asian": 0,
+            "black": 126,
+            "native_american": 0,
+            "other": 0,
+            "white": 18,
+            "hispanic": 21
+        },
+        {
+            "purpose": "Vehicle Regulatory Violation",
+            "year": 2009,
+            "asian": 0,
+            "black": 141,
+            "native_american": 0,
+            "other": 0,
+            "white": 20,
+            "hispanic": 15
+        },
+        {
+            "purpose": "Seat Belt Violation",
+            "year": 2009,
+            "asian": 0,
+            "black": 29,
+            "native_american": 0,
+            "other": 0,
+            "white": 6,
+            "hispanic": 1
+        },
+        {
+            "purpose": "Investigation",
+            "year": 2009,
+            "asian": 0,
+            "black": 135,
+            "native_american": 0,
+            "other": 1,
+            "white": 30,
+            "hispanic": 14
+        },
+        {
+            "purpose": "Other Motor Vehicle Violation",
+            "year": 2009,
+            "asian": 0,
+            "black": 39,
+            "native_american": 0,
+            "other": 1,
+            "white": 10,
+            "hispanic": 5
+        },
+        {
+            "purpose": "Speed Limit Violation",
+            "year": 2010,
+            "asian": 1,
+            "black": 75,
+            "native_american": 0,
+            "other": 0,
+            "white": 13,
+            "hispanic": 19
+        },
+        {
+            "purpose": "Stop Light/Sign Violation",
+            "year": 2010,
+            "asian": 0,
+            "black": 36,
+            "native_american": 0,
+            "other": 0,
+            "white": 7,
+            "hispanic": 2
+        },
+        {
+            "purpose": "Driving While Impaired",
+            "year": 2010,
+            "asian": 0,
+            "black": 7,
+            "native_american": 0,
+            "other": 0,
+            "white": 3,
+            "hispanic": 16
+        },
+        {
+            "purpose": "Safe Movement Violation",
+            "year": 2010,
+            "asian": 1,
+            "black": 95,
+            "native_american": 0,
+            "other": 0,
+            "white": 21,
+            "hispanic": 26
+        },
+        {
+            "purpose": "Vehicle Equipment Violation",
+            "year": 2010,
+            "asian": 1,
+            "black": 238,
+            "native_american": 0,
+            "other": 0,
+            "white": 33,
+            "hispanic": 19
+        },
+        {
+            "purpose": "Vehicle Regulatory Violation",
+            "year": 2010,
+            "asian": 0,
+            "black": 222,
+            "native_american": 0,
+            "other": 0,
+            "white": 19,
+            "hispanic": 23
+        },
+        {
+            "purpose": "Seat Belt Violation",
+            "year": 2010,
+            "asian": 0,
+            "black": 75,
+            "native_american": 0,
+            "other": 0,
+            "white": 5,
+            "hispanic": 3
+        },
+        {
+            "purpose": "Investigation",
+            "year": 2010,
+            "asian": 0,
+            "black": 233,
+            "native_american": 1,
+            "other": 0,
+            "white": 38,
+            "hispanic": 36
+        },
+        {
+            "purpose": "Other Motor Vehicle Violation",
+            "year": 2010,
+            "asian": 0,
+            "black": 59,
+            "native_american": 1,
+            "other": 0,
+            "white": 6,
+            "hispanic": 4
+        },
+        {
+            "purpose": "Speed Limit Violation",
+            "year": 2011,
+            "asian": 4,
+            "black": 124,
+            "native_american": 1,
+            "other": 0,
+            "white": 34,
+            "hispanic": 21
+        },
+        {
+            "purpose": "Stop Light/Sign Violation",
+            "year": 2011,
+            "asian": 0,
+            "black": 68,
+            "native_american": 0,
+            "other": 0,
+            "white": 12,
+            "hispanic": 4
+        },
+        {
+            "purpose": "Driving While Impaired",
+            "year": 2011,
+            "asian": 0,
+            "black": 8,
+            "native_american": 0,
+            "other": 0,
+            "white": 3,
+            "hispanic": 8
+        },
+        {
+            "purpose": "Safe Movement Violation",
+            "year": 2011,
+            "asian": 2,
+            "black": 118,
+            "native_american": 0,
+            "other": 1,
+            "white": 27,
+            "hispanic": 38
+        },
+        {
+            "purpose": "Vehicle Equipment Violation",
+            "year": 2011,
+            "asian": 0,
+            "black": 277,
+            "native_american": 0,
+            "other": 1,
+            "white": 19,
+            "hispanic": 17
+        },
+        {
+            "purpose": "Vehicle Regulatory Violation",
+            "year": 2011,
+            "asian": 0,
+            "black": 301,
+            "native_american": 0,
+            "other": 0,
+            "white": 32,
+            "hispanic": 28
+        },
+        {
+            "purpose": "Seat Belt Violation",
+            "year": 2011,
+            "asian": 1,
+            "black": 39,
+            "native_american": 0,
+            "other": 0,
+            "white": 3,
+            "hispanic": 5
+        },
+        {
+            "purpose": "Investigation",
+            "year": 2011,
+            "asian": 0,
+            "black": 336,
+            "native_american": 0,
+            "other": 1,
+            "white": 38,
+            "hispanic": 18
+        },
+        {
+            "purpose": "Other Motor Vehicle Violation",
+            "year": 2011,
+            "asian": 0,
+            "black": 55,
+            "native_american": 0,
+            "other": 0,
+            "white": 6,
+            "hispanic": 11
+        },
+        {
+            "purpose": "Checkpoint",
+            "year": 2011,
+            "asian": 0,
+            "black": 5,
+            "native_american": 0,
+            "other": 0,
+            "white": 1,
+            "hispanic": 0
+        },
+        {
+            "purpose": "Speed Limit Violation",
+            "year": 2012,
+            "asian": 1,
+            "black": 88,
+            "native_american": 0,
+            "other": 0,
+            "white": 15,
+            "hispanic": 13
+        },
+        {
+            "purpose": "Stop Light/Sign Violation",
+            "year": 2012,
+            "asian": 0,
+            "black": 73,
+            "native_american": 0,
+            "other": 0,
+            "white": 9,
+            "hispanic": 6
+        },
+        {
+            "purpose": "Driving While Impaired",
+            "year": 2012,
+            "asian": 0,
+            "black": 10,
+            "native_american": 0,
+            "other": 0,
+            "white": 9,
+            "hispanic": 19
+        },
+        {
+            "purpose": "Safe Movement Violation",
+            "year": 2012,
+            "asian": 0,
+            "black": 102,
+            "native_american": 0,
+            "other": 0,
+            "white": 17,
+            "hispanic": 25
+        },
+        {
+            "purpose": "Vehicle Equipment Violation",
+            "year": 2012,
+            "asian": 0,
+            "black": 238,
+            "native_american": 2,
+            "other": 0,
+            "white": 24,
+            "hispanic": 24
+        },
+        {
+            "purpose": "Vehicle Regulatory Violation",
+            "year": 2012,
+            "asian": 0,
+            "black": 318,
+            "native_american": 0,
+            "other": 1,
+            "white": 24,
+            "hispanic": 24
+        },
+        {
+            "purpose": "Seat Belt Violation",
+            "year": 2012,
+            "asian": 0,
+            "black": 45,
+            "native_american": 0,
+            "other": 0,
+            "white": 2,
+            "hispanic": 2
+        },
+        {
+            "purpose": "Investigation",
+            "year": 2012,
+            "asian": 0,
+            "black": 183,
+            "native_american": 0,
+            "other": 0,
+            "white": 36,
+            "hispanic": 14
+        },
+        {
+            "purpose": "Other Motor Vehicle Violation",
+            "year": 2012,
+            "asian": 0,
+            "black": 33,
+            "native_american": 0,
+            "other": 0,
+            "white": 10,
+            "hispanic": 13
+        },
+        {
+            "purpose": "Checkpoint",
+            "year": 2012,
+            "asian": 0,
+            "black": 67,
+            "native_american": 0,
+            "other": 0,
+            "white": 6,
+            "hispanic": 11
+        },
+        {
+            "purpose": "Speed Limit Violation",
+            "year": 2013,
+            "asian": 2,
+            "black": 115,
+            "native_american": 0,
+            "other": 0,
+            "white": 11,
+            "hispanic": 12
+        },
+        {
+            "purpose": "Stop Light/Sign Violation",
+            "year": 2013,
+            "asian": 0,
+            "black": 65,
+            "native_american": 1,
+            "other": 0,
+            "white": 11,
+            "hispanic": 5
+        },
+        {
+            "purpose": "Driving While Impaired",
+            "year": 2013,
+            "asian": 0,
+            "black": 7,
+            "native_american": 0,
+            "other": 0,
+            "white": 2,
+            "hispanic": 12
+        },
+        {
+            "purpose": "Safe Movement Violation",
+            "year": 2013,
+            "asian": 2,
+            "black": 100,
+            "native_american": 1,
+            "other": 0,
+            "white": 19,
+            "hispanic": 14
+        },
+        {
+            "purpose": "Vehicle Equipment Violation",
+            "year": 2013,
+            "asian": 0,
+            "black": 237,
+            "native_american": 0,
+            "other": 0,
+            "white": 24,
+            "hispanic": 21
+        },
+        {
+            "purpose": "Vehicle Regulatory Violation",
+            "year": 2013,
+            "asian": 0,
+            "black": 277,
+            "native_american": 1,
+            "other": 1,
+            "white": 32,
+            "hispanic": 25
+        },
+        {
+            "purpose": "Seat Belt Violation",
+            "year": 2013,
+            "asian": 0,
+            "black": 28,
+            "native_american": 0,
+            "other": 0,
+            "white": 5,
+            "hispanic": 0
+        },
+        {
+            "purpose": "Investigation",
+            "year": 2013,
+            "asian": 0,
+            "black": 117,
+            "native_american": 0,
+            "other": 1,
+            "white": 21,
+            "hispanic": 15
+        },
+        {
+            "purpose": "Other Motor Vehicle Violation",
+            "year": 2013,
+            "asian": 0,
+            "black": 46,
+            "native_american": 0,
+            "other": 0,
+            "white": 4,
+            "hispanic": 10
+        },
+        {
+            "purpose": "Checkpoint",
+            "year": 2013,
+            "asian": 0,
+            "black": 66,
+            "native_american": 0,
+            "other": 0,
+            "white": 2,
+            "hispanic": 5
+        },
+        {
+            "purpose": "Speed Limit Violation",
+            "year": 2014,
+            "asian": 2,
+            "black": 121,
+            "native_american": 0,
+            "other": 0,
+            "white": 20,
+            "hispanic": 13
+        },
+        {
+            "purpose": "Stop Light/Sign Violation",
+            "year": 2014,
+            "asian": 0,
+            "black": 64,
+            "native_american": 1,
+            "other": 0,
+            "white": 14,
+            "hispanic": 3
+        },
+        {
+            "purpose": "Driving While Impaired",
+            "year": 2014,
+            "asian": 0,
+            "black": 8,
+            "native_american": 0,
+            "other": 0,
+            "white": 3,
+            "hispanic": 11
+        },
+        {
+            "purpose": "Safe Movement Violation",
+            "year": 2014,
+            "asian": 0,
+            "black": 129,
+            "native_american": 0,
+            "other": 0,
+            "white": 25,
+            "hispanic": 17
+        },
+        {
+            "purpose": "Vehicle Equipment Violation",
+            "year": 2014,
+            "asian": 1,
+            "black": 213,
+            "native_american": 1,
+            "other": 0,
+            "white": 19,
+            "hispanic": 24
+        },
+        {
+            "purpose": "Vehicle Regulatory Violation",
+            "year": 2014,
+            "asian": 0,
+            "black": 265,
+            "native_american": 0,
+            "other": 0,
+            "white": 29,
+            "hispanic": 23
+        },
+        {
+            "purpose": "Seat Belt Violation",
+            "year": 2014,
+            "asian": 0,
+            "black": 29,
+            "native_american": 0,
+            "other": 0,
+            "white": 5,
+            "hispanic": 0
+        },
+        {
+            "purpose": "Investigation",
+            "year": 2014,
+            "asian": 0,
+            "black": 122,
+            "native_american": 0,
+            "other": 0,
+            "white": 15,
+            "hispanic": 17
+        },
+        {
+            "purpose": "Other Motor Vehicle Violation",
+            "year": 2014,
+            "asian": 0,
+            "black": 36,
+            "native_american": 0,
+            "other": 0,
+            "white": 5,
+            "hispanic": 6
+        },
+        {
+            "purpose": "Checkpoint",
+            "year": 2014,
+            "asian": 0,
+            "black": 41,
+            "native_american": 1,
+            "other": 0,
+            "white": 6,
+            "hispanic": 5
+        },
+        {
+            "purpose": "Speed Limit Violation",
+            "year": 2015,
+            "asian": 0,
+            "black": 133,
+            "native_american": 1,
+            "other": 0,
+            "white": 13,
+            "hispanic": 7
+        },
+        {
+            "purpose": "Stop Light/Sign Violation",
+            "year": 2015,
+            "asian": 2,
+            "black": 86,
+            "native_american": 1,
+            "other": 0,
+            "white": 12,
+            "hispanic": 3
+        },
+        {
+            "purpose": "Driving While Impaired",
+            "year": 2015,
+            "asian": 0,
+            "black": 12,
+            "native_american": 0,
+            "other": 0,
+            "white": 3,
+            "hispanic": 5
+        },
+        {
+            "purpose": "Safe Movement Violation",
+            "year": 2015,
+            "asian": 0,
+            "black": 93,
+            "native_american": 0,
+            "other": 1,
+            "white": 8,
+            "hispanic": 6
+        },
+        {
+            "purpose": "Vehicle Equipment Violation",
+            "year": 2015,
+            "asian": 0,
+            "black": 232,
+            "native_american": 0,
+            "other": 0,
+            "white": 9,
+            "hispanic": 18
+        },
+        {
+            "purpose": "Vehicle Regulatory Violation",
+            "year": 2015,
+            "asian": 0,
+            "black": 328,
+            "native_american": 1,
+            "other": 2,
+            "white": 36,
+            "hispanic": 16
+        },
+        {
+            "purpose": "Seat Belt Violation",
+            "year": 2015,
+            "asian": 0,
+            "black": 32,
+            "native_american": 0,
+            "other": 0,
+            "white": 3,
+            "hispanic": 2
+        },
+        {
+            "purpose": "Investigation",
+            "year": 2015,
+            "asian": 1,
+            "black": 158,
+            "native_american": 0,
+            "other": 0,
+            "white": 20,
+            "hispanic": 13
+        },
+        {
+            "purpose": "Other Motor Vehicle Violation",
+            "year": 2015,
+            "asian": 0,
+            "black": 36,
+            "native_american": 0,
+            "other": 0,
+            "white": 5,
+            "hispanic": 2
+        },
+        {
+            "purpose": "Checkpoint",
+            "year": 2015,
+            "asian": 0,
+            "black": 64,
+            "native_american": 1,
+            "other": 0,
+            "white": 2,
+            "hispanic": 7
+        },
+        {
+            "purpose": "Speed Limit Violation",
+            "year": 2016,
+            "asian": 0,
+            "black": 56,
+            "native_american": 1,
+            "other": 0,
+            "white": 8,
+            "hispanic": 3
+        },
+        {
+            "purpose": "Stop Light/Sign Violation",
+            "year": 2016,
+            "asian": 0,
+            "black": 45,
+            "native_american": 0,
+            "other": 0,
+            "white": 6,
+            "hispanic": 3
+        },
+        {
+            "purpose": "Driving While Impaired",
+            "year": 2016,
+            "asian": 1,
+            "black": 10,
+            "native_american": 0,
+            "other": 0,
+            "white": 6,
+            "hispanic": 10
+        },
+        {
+            "purpose": "Safe Movement Violation",
+            "year": 2016,
+            "asian": 0,
+            "black": 69,
+            "native_american": 0,
+            "other": 0,
+            "white": 8,
+            "hispanic": 8
+        },
+        {
+            "purpose": "Vehicle Equipment Violation",
+            "year": 2016,
+            "asian": 0,
+            "black": 125,
+            "native_american": 0,
+            "other": 1,
+            "white": 8,
+            "hispanic": 10
+        },
+        {
+            "purpose": "Vehicle Regulatory Violation",
+            "year": 2016,
+            "asian": 0,
+            "black": 166,
+            "native_american": 0,
+            "other": 0,
+            "white": 22,
+            "hispanic": 11
+        },
+        {
+            "purpose": "Seat Belt Violation",
+            "year": 2016,
+            "asian": 0,
+            "black": 16,
+            "native_american": 0,
+            "other": 0,
+            "white": 0,
+            "hispanic": 0
+        },
+        {
+            "purpose": "Investigation",
+            "year": 2016,
+            "asian": 0,
+            "black": 100,
+            "native_american": 0,
+            "other": 0,
+            "white": 10,
+            "hispanic": 9
+        },
+        {
+            "purpose": "Other Motor Vehicle Violation",
+            "year": 2016,
+            "asian": 0,
+            "black": 27,
+            "native_american": 1,
+            "other": 0,
+            "white": 4,
+            "hispanic": 5
+        },
+        {
+            "purpose": "Checkpoint",
+            "year": 2016,
+            "asian": 0,
+            "black": 34,
+            "native_american": 0,
+            "other": 0,
+            "white": 2,
+            "hispanic": 2
+        },
+        {
+            "purpose": "Speed Limit Violation",
+            "year": 2017,
+            "asian": 0,
+            "black": 48,
+            "native_american": 0,
+            "other": 0,
+            "white": 5,
+            "hispanic": 5
+        },
+        {
+            "purpose": "Stop Light/Sign Violation",
+            "year": 2017,
+            "asian": 0,
+            "black": 19,
+            "native_american": 1,
+            "other": 0,
+            "white": 3,
+            "hispanic": 4
+        },
+        {
+            "purpose": "Driving While Impaired",
+            "year": 2017,
+            "asian": 0,
+            "black": 5,
+            "native_american": 0,
+            "other": 0,
+            "white": 1,
+            "hispanic": 3
+        },
+        {
+            "purpose": "Safe Movement Violation",
+            "year": 2017,
+            "asian": 0,
+            "black": 40,
+            "native_american": 0,
+            "other": 1,
+            "white": 9,
+            "hispanic": 10
+        },
+        {
+            "purpose": "Vehicle Equipment Violation",
+            "year": 2017,
+            "asian": 0,
+            "black": 70,
+            "native_american": 0,
+            "other": 0,
+            "white": 8,
+            "hispanic": 3
+        },
+        {
+            "purpose": "Vehicle Regulatory Violation",
+            "year": 2017,
+            "asian": 0,
+            "black": 109,
+            "native_american": 0,
+            "other": 0,
+            "white": 16,
+            "hispanic": 4
+        },
+        {
+            "purpose": "Seat Belt Violation",
+            "year": 2017,
+            "asian": 0,
+            "black": 6,
+            "native_american": 0,
+            "other": 0,
+            "white": 0,
+            "hispanic": 0
+        },
+        {
+            "purpose": "Investigation",
+            "year": 2017,
+            "asian": 1,
+            "black": 76,
+            "native_american": 0,
+            "other": 1,
+            "white": 11,
+            "hispanic": 5
+        },
+        {
+            "purpose": "Other Motor Vehicle Violation",
+            "year": 2017,
+            "asian": 0,
+            "black": 7,
+            "native_american": 0,
+            "other": 0,
+            "white": 1,
+            "hispanic": 3
+        },
+        {
+            "purpose": "Checkpoint",
+            "year": 2017,
+            "asian": 1,
+            "black": 8,
+            "native_american": 0,
+            "other": 0,
+            "white": 3,
+            "hispanic": 0
+        },
+        {
+            "purpose": "Speed Limit Violation",
+            "year": 2018,
+            "asian": 0,
+            "black": 52,
+            "native_american": 0,
+            "other": 1,
+            "white": 8,
+            "hispanic": 6
+        },
+        {
+            "purpose": "Stop Light/Sign Violation",
+            "year": 2018,
+            "asian": 0,
+            "black": 40,
+            "native_american": 0,
+            "other": 0,
+            "white": 1,
+            "hispanic": 8
+        },
+        {
+            "purpose": "Driving While Impaired",
+            "year": 2018,
+            "asian": 0,
+            "black": 4,
+            "native_american": 0,
+            "other": 0,
+            "white": 0,
+            "hispanic": 3
+        },
+        {
+            "purpose": "Safe Movement Violation",
+            "year": 2018,
+            "asian": 2,
+            "black": 48,
+            "native_american": 0,
+            "other": 0,
+            "white": 10,
+            "hispanic": 7
+        },
+        {
+            "purpose": "Vehicle Equipment Violation",
+            "year": 2018,
+            "asian": 1,
+            "black": 89,
+            "native_american": 0,
+            "other": 0,
+            "white": 4,
+            "hispanic": 9
+        },
+        {
+            "purpose": "Vehicle Regulatory Violation",
+            "year": 2018,
+            "asian": 0,
+            "black": 179,
+            "native_american": 0,
+            "other": 1,
+            "white": 12,
+            "hispanic": 11
+        },
+        {
+            "purpose": "Seat Belt Violation",
+            "year": 2018,
+            "asian": 0,
+            "black": 11,
+            "native_american": 0,
+            "other": 0,
+            "white": 2,
+            "hispanic": 1
+        },
+        {
+            "purpose": "Investigation",
+            "year": 2018,
+            "asian": 1,
+            "black": 89,
+            "native_american": 0,
+            "other": 0,
+            "white": 9,
+            "hispanic": 10
+        },
+        {
+            "purpose": "Other Motor Vehicle Violation",
+            "year": 2018,
+            "asian": 0,
+            "black": 13,
+            "native_american": 0,
+            "other": 0,
+            "white": 2,
+            "hispanic": 0
+        },
+        {
+            "purpose": "Checkpoint",
+            "year": 2018,
+            "asian": 0,
+            "black": 4,
+            "native_american": 0,
+            "other": 0,
+            "white": 0,
+            "hispanic": 1
+        },
+        {
+            "purpose": "Speed Limit Violation",
+            "year": 2019,
+            "asian": 0,
+            "black": 47,
+            "native_american": 0,
+            "other": 0,
+            "white": 3,
+            "hispanic": 4
+        },
+        {
+            "purpose": "Stop Light/Sign Violation",
+            "year": 2019,
+            "asian": 0,
+            "black": 45,
+            "native_american": 0,
+            "other": 0,
+            "white": 2,
+            "hispanic": 2
+        },
+        {
+            "purpose": "Driving While Impaired",
+            "year": 2019,
+            "asian": 0,
+            "black": 2,
+            "native_american": 0,
+            "other": 0,
+            "white": 2,
+            "hispanic": 3
+        },
+        {
+            "purpose": "Safe Movement Violation",
+            "year": 2019,
+            "asian": 0,
+            "black": 34,
+            "native_american": 0,
+            "other": 0,
+            "white": 5,
+            "hispanic": 1
+        },
+        {
+            "purpose": "Vehicle Equipment Violation",
+            "year": 2019,
+            "asian": 0,
+            "black": 96,
+            "native_american": 0,
+            "other": 1,
+            "white": 5,
+            "hispanic": 7
+        },
+        {
+            "purpose": "Vehicle Regulatory Violation",
+            "year": 2019,
+            "asian": 0,
+            "black": 182,
+            "native_american": 0,
+            "other": 0,
+            "white": 13,
+            "hispanic": 7
+        },
+        {
+            "purpose": "Seat Belt Violation",
+            "year": 2019,
+            "asian": 0,
+            "black": 7,
+            "native_american": 0,
+            "other": 0,
+            "white": 0,
+            "hispanic": 1
+        },
+        {
+            "purpose": "Investigation",
+            "year": 2019,
+            "asian": 0,
+            "black": 53,
+            "native_american": 0,
+            "other": 0,
+            "white": 5,
+            "hispanic": 2
+        },
+        {
+            "purpose": "Other Motor Vehicle Violation",
+            "year": 2019,
+            "asian": 0,
+            "black": 18,
+            "native_american": 0,
+            "other": 0,
+            "white": 2,
+            "hispanic": 1
+        },
+        {
+            "purpose": "Checkpoint",
+            "year": 2019,
+            "asian": 0,
+            "black": 1,
+            "native_american": 0,
+            "other": 0,
+            "white": 0,
+            "hispanic": 0
+        }
+    ]
+}

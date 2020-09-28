@@ -1,0 +1,9 @@
+{
+  "short_name": "Traffic Stops",
+  "name": "Forward Justice Traffic Stops",
+  "icons": [],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}
