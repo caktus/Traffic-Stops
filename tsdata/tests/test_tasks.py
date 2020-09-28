@@ -1,7 +1,6 @@
 import csv
 import datetime
 import io
-from datetime import date
 
 from django.core import mail
 from django.test import TestCase, override_settings
