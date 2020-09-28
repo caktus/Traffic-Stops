@@ -97,4 +97,7 @@ REST_FRAMEWORK = {"DEFAULT_AUTHENTICATION_CLASSES": []}
 if ENVIRONMENT.upper() == "PRODUCTION":
     # List of email addresses that receive the report of non-compliance of
     # traffic stop reporting.
-    COMPLIANCE_REPORT_LIST = ("forwardjustice-team@caktusgroup.com",)
+    COMPLIANCE_REPORT_LIST = (
+        "forwardjustice-team@caktusgroup.com",
+        "wcarpenter@forwardjustice.org",
+    )

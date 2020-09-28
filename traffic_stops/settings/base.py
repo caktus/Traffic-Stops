@@ -273,7 +273,7 @@ NC_AUTO_IMPORT_MONITORS = ("odp-team@caktusgroup.com",)
 
 # List of email addresses that receive the report of non-compliance of
 # traffic stop reporting.
-COMPLIANCE_REPORT_LIST = ()
+COMPLIANCE_REPORT_LIST = ("forwardjustice-team@caktusgroup.com",)
 
 # NC FTP Settings
 NC_FTP_HOST = os.environ.get("NC_FTP_HOST", "")
