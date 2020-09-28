@@ -113,7 +113,7 @@ DEFAULT_FILE_STORAGE = os.getenv(
 )
 AWS_DEFAULT_ACL = os.getenv("AWS_DEFAULT_ACL")
 AWS_S3_SIGNATURE_VERSION = os.getenv("AWS_S3_SIGNATURE_VERSION", "s3v4")
-AWS_S3_REGION_NAME = os.getenv("AWS_S3_REGION_NAME", "us-east-1")
+AWS_S3_REGION_NAME = os.getenv("AWS_S3_REGION_NAME", "us-east-2")
 # See https://github.com/wagtail/wagtail/pull/4495#issuecomment-387434521
 AWS_S3_FILE_OVERWRITE = False
 AWS_QUERYSTRING_AUTH = os.getenv("AWS_QUERYSTRING_AUTH", "True") == "True"
