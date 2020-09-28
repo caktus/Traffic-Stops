@@ -22,6 +22,7 @@
 
 @brand-black: #111111;
 @brand-grey: #ACACAC;
+@brand-grey-dark: #7e7e7e;
 
 @link-color:       @brand-primary;
 @link-hover-color: darken(@link-color, 30%);
@@ -164,21 +165,21 @@ p {
 }
 
 .black-block {
-  background: @brand-black;
+  background: @brand-grey-dark;
   h1, h2, h3, h4 {
     margin: 0;
     padding-top: 20px;
     padding-bottom: 10px;
-    color: @brand-tertiary;
+    color: @brand-primary;
   }
 
   p, td, th {
-    color: @brand-grey;
+    color: black;
     font-size: 16px;
   }
 
   text {
-    fill: @brand-grey !important;
+    fill: black !important;
   }
 }
 
@@ -768,12 +769,12 @@ h2.officer {
 .table-striped>tbody>tr:nth-child(even)>td, 
 .table-striped>tbody>tr:nth-child(even)>th {
    background-color: white; // Choose your own color here
-   color: @brand-black;
+   color: black;
  }
 .table-striped>tbody>tr:nth-child(odd)>td, 
 .table-striped>tbody>tr:nth-child(odd)>th {
    background-color: @brand-grey; // Choose your own color here
-   color: @brand-black;
+   color: black;
  }
 
 /***
