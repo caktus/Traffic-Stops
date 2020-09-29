@@ -269,7 +269,7 @@ NC_AUTO_IMPORT_DIRECTORY = "/tmp/nc-automated-import"
 
 # 0, 1, or 2 e-mail addresses which will be notified after
 # automatic NC imports
-NC_AUTO_IMPORT_MONITORS = ("odp-team@caktusgroup.com",)
+NC_AUTO_IMPORT_MONITORS = ("forwardjustice-team@caktusgroup.com",)
 
 # List of email addresses that receive the report of non-compliance of
 # traffic stop reporting.
