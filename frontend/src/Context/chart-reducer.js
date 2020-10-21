@@ -38,7 +38,6 @@ const chartStateReducer = (state, action) => {
     }
 
     case CHART_FETCH_START: {
-      console.log('char fetch starting, action is: ', action);
       return {
         ...state,
         loading: { ...state.loading, [action.chartName]: true },

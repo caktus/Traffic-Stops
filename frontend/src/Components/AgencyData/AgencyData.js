@@ -4,6 +4,10 @@ import { AgencyDataStyled, MotionDiv } from './AgencyData.styled';
 // Animationg
 import { AnimateSharedLayout, AnimatePresence, motion } from 'framer-motion';
 
+// Context
+import { ChartStateProvider } from 'Context/chart-state';
+import chartStateReducer, { initialState } from 'Context/chart-reducer';
+
 // Children
 import Sidebar from '../Sidebar/Sidebar';
 import Charts from 'Components/Charts/Charts';
@@ -32,8 +36,10 @@ function AgencyData(props) {
               </motion.div>
             )}
           </AnimatePresence>
-
-          <Charts />
+          
+          <ChartStateProvider reducer={chartStateReducer} initialState={initialState}>
+            <Charts />
+          </ChartStateProvider>
         </MotionDiv>
       </AnimateSharedLayout>
     </AgencyDataStyled>

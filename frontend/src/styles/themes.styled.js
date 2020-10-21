@@ -21,31 +21,57 @@ export default Object.freeze({
     fontBody: "'Montserrat', sans-serif",
 
     // Elements
-    elementBorder: '1px solid black',
+    elementBorder: '1px solid',
+    toolTipBorder: '6px solid #272973',
+    toolTipBorderRadius: '10px',
+
+    // Racial group colors
+    ethnicGroup: {
+      asian: "#1b9e77",
+      black: "#e7298a",
+      hispanic: "#7570b3",
+      native_american: "#d95f02",
+      other: "#66a61e",
+      white: "#e6ab02",
+    }
   },
 });
 
 /*
+What IS the best color scheme??
+{
+  asian: "#1b9e77",
+  black: "#e7298a",
+  hispanic: "#7570b3",
+  native_american: "#d95f02",
+  other: "#66a61e",
+  white: "#e6ab02",
+}
 
-// Forward Justice colors from forwardjustice.org
-@brand-primary:    #272973;
-@brand-secondary:  #e49a43;
-@brand-tertiary:   #02bcbb;
-@brand-quaternary: @brand-primary;
+{
+  asian: #003f5c,
+  black: #444e86,
+  hispanic: #955196,
+  native_american: #dd5182,
+  other: #ff6e54,
+  white: #ffa600,
+}
 
-@brand-black: #111111;
-@brand-grey: #ACACAC;
+{
+  asian: "#72e5ef", 
+  black: "#cb907b", 
+  hispanic: "#58df8c", 
+  native_american: "#eb6756", 
+  other: "#579ba1", 
+  white: "#f6dce3",
+}
 
-@link-color: @brand-primary;
-@link-hover - color: darken(@link-color, 30 %);
-@border-radius - base: 2px;
-
-@navbar-default -link - color: @brand-primary;
-@navbar-default -link - hover - color: @brand-quaternary;
-@navbar-inverse - bg: @brand-primary;
-@navbar-inverse - border: @brand-primary;
-@navbar-inverse - link - color: white;
-
-@font-heading: 'Bebas Neue', sans - serif;
-@font-body: 'Montserrat', sans - serif;
+{
+    asian: "#FF1DC0",
+    black: "#0CEEFF",
+    hispanic: "#FFF600",
+    native_american: "#1AFF00",
+    other: "#FF0046",
+    white: "#0161FF",
+}
 */

@@ -6,6 +6,7 @@
   "dependencies": {
     "@loadable/component": "^5.13.1",
     "@nivo/bar": "^0.62.0",
+    "@nivo/pie": "^0.63.0",
     "@sentry/react": "^5.22.0",
     "axios": "^0.20.0",
     "framer-motion": "^2.6.3",
