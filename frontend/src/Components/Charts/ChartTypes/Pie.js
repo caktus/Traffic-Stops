@@ -1,43 +1,70 @@
 import React from 'react';
 import { useTheme } from 'styled-components';
+import { VictoryPie, VictoryLabel, VictoryTooltip } from 'victory';
 
-// Deps
-import { ResponsivePie } from '@nivo/pie';
+const PIE_STYLES = {
+  data: {
+    fill: ({ datum }) => datum.color
+  },
+  labels: { 
+    fill: "white", 
+    fontSize: 20, 
+    fontWeight: "bold"
+  }
+}
 
+const LABEL_SKIP_ANGLE = .4;
 
-const PIE_THEME = {
-  fontSize: 16,
-};
+const _getLabel = props => {
+  const { slice, datum } = props;
+  const { startAngle, endAngle } = slice;
+  const sliceAngle = endAngle - startAngle
+  console.log('sliceAngle: ', sliceAngle)
+  console.log(LABEL_SKIP_ANGLE)
+  if (sliceAngle <= LABEL_SKIP_ANGLE) return ""
+  return `${datum.y}%`
+}
 
-// make sure parent container has a defined height when using
-// responsive component, otherwise height will be 0 and
-// no chart will be rendered.
-const Pie = ({ data }) => {
+function Pie({ data }) {
   const theme = useTheme();
+
   return (
-      <ResponsivePie
-        data={data}
-        theme={PIE_THEME}
-        colors={({ color }) => color }
-        sortByValue={true}
-        sliceLabel={({ value }) => `${value}%`}
-        slicesLabelsTextColor={theme.colorBlack}
-        slicesLabelsSkipAngle={20}
-        innerRadius={0.5}
-        padAngle={2}
-        cornerRadius={3}
-        borderWidth={2}
-        borderColor={{ from: 'color', modifiers: [ [ 'darker', 0.2 ] ] }}
-        radialLabel="label"
-        radialLabelsTextColor={theme.colorBlack}
-        radialLabelsLinkColorstring={{ from: 'color' }}
-        radialLabelsLinkStrokeWidth={4}
-        radialLabelsSkipAngle={10}
-        animate={true}
-        motionStiffness={90}
-        motionDamping={15}
+    <VictoryPie 
+      data={data}
+      style={PIE_STYLES}
+      labelComponent={<PieLabel theme={theme} />}
+      labelRadius={({ innerRadius }) => innerRadius + 30 }
+      padAngle={2}
+      cornerRadius={5}
+      innerRadius={50}
+    />
+  );
+}
+
+const PieLabel = props => {
+  const { datum, style, slice, theme } = props;
+  const { startAngle, endAngle } = slice;
+  const sliceAngle = endAngle - startAngle
+  return (
+    <g>
+      <VictoryLabel
+        {...props}
+        text={sliceAngle <= LABEL_SKIP_ANGLE ? "" : `${datum.y}%`}
+        // text={datum.y < 5 ? '' : `${Math.floor(datum.y)}%`}
       />
+      <VictoryTooltip
+        {...props}
+        style={{ ...style, fill: datum.color }}
+        flyoutStyle={{ stroke: theme.colorPrimary, fill: theme.colorWhite, strokeWidth: 2 }}
+        text={`${datum.displayName}\n${datum.y}%`}
+        orientation="top"
+        pointerLength={5}
+        height={40}
+      />
+    </g>
   )
 }
+
+PieLabel.defaultEvents = VictoryTooltip.defaultEvents
 
 export default Pie;

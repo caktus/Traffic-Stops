@@ -9,7 +9,7 @@ export const SidebarStyled = styled(motion.div)`
   color: ${(props) => props.theme.colorWhite};
 
   border-right: ${(props) => props.theme.elementBorder} ${props => props.theme.colorBlack};
-  width: 125px;
+  width: 140px;
   height: 100%;
 
   overflow-x: hidden;

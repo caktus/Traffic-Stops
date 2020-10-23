@@ -8,64 +8,73 @@ import { useParams } from 'react-router-dom';
 import toTitleCase from 'util/toTitleCase';
 
 // State
-import useDataset, { STOPS_BY_REASON } from 'hooks/useDataset';
+import useDataset, { SEARCHES_BY_TYPE } from 'hooks/useDataset';
 
 // Children
 import ChartBase from 'Components/Charts/ChartBase';
 import Select from 'Components/Elements/Inputs/Select';
 import Line from 'Components/Charts/ChartTypes/Line';
 
-const CHART_TITLE = 'Departmental Stop Count';
+const CHART_TITLE = 'Departmental Search Count';
 
 const GROUP_KEYS = ['asian', 'black', 'hispanic', 'native_american', 'other', 'white'];
 
 const STOPS_ALL = 'all';
 
-function DepartmentalStopCount() {
+function DepartmentalSearchCount() {
   let { agencyId } = useParams();
   const theme = useTheme();
-  const [chartState] = useDataset(agencyId, STOPS_BY_REASON);
+  const [chartState] = useDataset(agencyId, SEARCHES_BY_TYPE);
   const [availableYears, setAvailableYears] = useState([]);
-  const [availableSearchTypes, setAvailableStopReasons] = useState([]);
-  const [stopReasonFilter, setStopReasonFilter] = useState(STOPS_ALL);
+  const [availableSearchTypes, setAvailableSearchTypes] = useState([]);
+  const [searchTypeFilter, setSearchTypeFilter] = useState(STOPS_ALL);
 
   useEffect(() => {
-    const data = chartState.chartData[STOPS_BY_REASON]?.stops;
+    const data = chartState.chartData[SEARCHES_BY_TYPE];
     if (data) {
-      // data is a list of purpose <--> year mappings.
-      // to get all available purpose types, we must select a single year,
-      // map over all its instances and grab the "purpose" key.
+      // data is a list of search_type <--> year mappings.
+      // to get all available search_type types, we must select a single year,
+      // map over all its instances and grab the "search_type" key.
 
       // grab the latest year, just to be safe:
       const latestYear = data[data.length - 1].year;
       // pull all entries for latest year
       const latestSet = data.filter((d) => d.year === latestYear);
       // map over entries and create array of reason objects for select widget
-      const stopReasons = latestSet.map((s) => ({ name: s.purpose, value: s.purpose }));
-      setAvailableStopReasons(stopReasons);
+      const stopReasons = latestSet.map((s) => ({ name: s.search_type, value: s.search_type }));
+      setAvailableSearchTypes(stopReasons);
     }
-  }, [chartState.chartData[STOPS_BY_REASON]?.stops]);
+  }, [chartState.chartData[SEARCHES_BY_TYPE]]);
+
+  const _getYearsSet = (data) => {
+    // grab latest arbitrary search_type
+    const latestPurpose = data[data.length - 1].search_type;
+    // get all data with single search_type
+    const purposeSet = data.filter((d) => d.search_type === latestPurpose);
+    // get available years from set
+    return purposeSet.map((s) => s.year);
+  };
 
   useEffect(() => {
-    const data = chartState.chartData[STOPS_BY_REASON]?.stops;
+    const data = chartState.chartData[SEARCHES_BY_TYPE];
     if (data) {
-      // grab latest arbitrary purpose
-      const latestPurpose = data[0].purpose;
-      // get all data with single purpose
-      const purposeSet = data.filter((d) => d.purpose === latestPurpose);
+      // grab latest arbitrary search_type
+      const latestPurpose = data[data.length - 1].search_type;
+      // get all data with single search_type
+      const purposeSet = data.filter((d) => d.search_type === latestPurpose);
       // get available years from set
       const uniqueYears = purposeSet.map((s) => s.year);
       setAvailableYears(uniqueYears);
     }
-  }, [chartState.chartData[STOPS_BY_REASON]?.stops]);
+  }, [chartState.chartData[SEARCHES_BY_TYPE]]);
 
-  const handleSelectStopReason = (e) => {
-    setStopReasonFilter(e.target.value);
+  const handleSelectSearchType = (e) => {
+    setSearchTypeFilter(e.target.value);
   };
 
   const _filterDataBySearchType = (data) => {
-    if (stopReasonFilter === STOPS_ALL) return data;
-    else return data.filter((d) => d.purpose === stopReasonFilter);
+    if (searchTypeFilter === STOPS_ALL) return data;
+    else return data.filter((d) => d.search_type === searchTypeFilter);
   };
 
   const _reduceStopReasonsByEthnicity = (data, yearsSet, ethnicGroup) =>
@@ -74,36 +83,29 @@ function DepartmentalStopCount() {
       tick.x = year;
       tick.symbol = 'circle';
       tick.displayName = toTitleCase(ethnicGroup);
-      if (stopReasonFilter === STOPS_ALL) {
+      if (searchTypeFilter === STOPS_ALL) {
         const yearSet = data.filter((d) => d.year === year);
         const stopTotal = yearSet.reduce((acc, curr) => {
           return { [ethnicGroup]: acc[ethnicGroup] + curr[ethnicGroup] };
         })[ethnicGroup];
         tick.y = stopTotal;
       } else {
-        if (data.length === 0) {
-          tick.y = 0;
-        } else {
-          tick.y = data.find((d) => d.year === year)[ethnicGroup];
-        }
+        tick.y = data.find((d) => d.year === year)[ethnicGroup];
       }
       return tick;
     });
 
   const mapData = (filteredKeys = []) => {
-    const data = chartState.chartData[STOPS_BY_REASON]?.stops;
     const mappedData = [];
+    const data = chartState.chartData[SEARCHES_BY_TYPE];
     if (data) {
+      const yearsSet = _getYearsSet(data);
       const dataByStopReason = _filterDataBySearchType(data);
       filteredKeys.forEach((ethnicGroup) => {
         const group = {};
-        group.id = ethnicGroup; // + `__${stopReasonFilter}`;
+        group.id = ethnicGroup; // + `__${searchTypeFilter}`;
         group.color = theme.ethnicGroup[ethnicGroup];
-        const groupData = _reduceStopReasonsByEthnicity(
-          dataByStopReason,
-          availableYears,
-          ethnicGroup
-        );
+        const groupData = _reduceStopReasonsByEthnicity(dataByStopReason, yearsSet, ethnicGroup);
         group.data = groupData;
         mappedData.push(group);
       });
@@ -119,20 +121,20 @@ function DepartmentalStopCount() {
       renderAdditionalFilter={() => (
         <Select
           label="Search Type"
-          value={stopReasonFilter}
-          onChange={handleSelectStopReason}
+          value={searchTypeFilter}
+          onChange={handleSelectSearchType}
           options={availableSearchTypes}
           nullValue={{ name: 'All', value: STOPS_ALL }}
         />
       )}
       chartTitle={CHART_TITLE}
-      datasetKey={STOPS_BY_REASON}
+      datasetKey={SEARCHES_BY_TYPE}
       chartState={chartState}
-      data-testid={CHART_TITLE}
+      data-testid={SEARCHES_BY_TYPE}
     >
       <Line xTicks={availableYears} />
     </ChartBase>
   );
 }
 
-export default DepartmentalStopCount;
+export default DepartmentalSearchCount;

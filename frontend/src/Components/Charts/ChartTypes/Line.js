@@ -1,54 +1,39 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { useEffect } from 'react';
 
 // Deps
-import { ResponsiveLine } from '@nivo/line';
-import LineSliceTooltip from './LineSliceTooltip/LineSliceTooltip';
+import { VictoryChart, VictoryLine, VictoryAxis, VictoryVoronoiContainer } from 'victory';
 
-function Line({ data, renderSliceTooltip, ...props }) {
-  return (
-    <ResponsiveLine 
-      {...props}
-      data={data}
-      colors={({ color }) => color }
-      margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
-      xScale={{ type: 'point' }}
-      yScale={{ type: 'linear', min: 'auto', max: 'auto', stacked: false, reverse: false }}
-      // yFormat=" >-.2f"
-      axisTop={null}
-      axisRight={null}
-      axisBottom={{
-          orient: 'bottom',
-          tickSize: 5,
-          tickPadding: 5,
-          tickRotation: 0,
-          legend: 'Year',
-          legendOffset: 36,
-          legendPosition: 'middle'
-      }}
-      axisLeft={{
-          orient: 'left',
-          tickSize: 5,
-          tickPadding: 5,
-          tickRotation: 0,
-          // legend: 'count',
-          // legendOffset: -40,
-          // legendPosition: 'middle'
-        }}
-        enableSlices="x"
-        sliceTooltip={LineSliceTooltip}
-        pointSize={10}
-        pointBorderWidth={2}
-        pointLabelYOffset={-12}
-        // animate={true}
-    />
-  );
-}
-
-Line.propTypes = {
-  data: PropTypes.arrayOf(PropTypes.object),
+const AXIS_STYLE = {
+  grid: { stroke: '#818e99', strokeWidth: 0.5 },
+  tickLabels: { fontSize: 8 },
 };
 
-Line.defaultProps = {};
+const CHART_ANIMATION = { duration: 500, easing: 'linear' };
+
+function Line({ data = [], xTicks }) {
+  return (
+    <VictoryChart
+      animate={CHART_ANIMATION}
+      containerComponent={
+        <VictoryVoronoiContainer
+          voronoiDimension="x"
+          labels={({ datum }) => `${datum.displayName} - ${datum.y}`}
+        />
+      }
+    >
+      <VictoryAxis dependentAxis style={AXIS_STYLE} />
+      <VictoryAxis label="Year" style={AXIS_STYLE} tickValues={xTicks} />
+      {data.map((lineData) => (
+        <VictoryLine
+          key={lineData.id}
+          data={lineData.data}
+          style={{
+            data: { stroke: lineData.color },
+          }}
+        />
+      ))}
+    </VictoryChart>
+  );
+}
 
 export default Line;

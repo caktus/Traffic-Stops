@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTheme } from 'styled-components';
 import { StopsByEthnicCompositionStyled } from './StopsByEthnicComposition.styled';
 
@@ -14,103 +14,82 @@ import { getStopsURL } from 'Services/endpoints';
 import { useParams } from 'react-router-dom';
 
 // State
-import { useChartState } from 'Context/chart-state';
-import { CHART_FETCH_START, CHART_FETCH_SUCCESS, CHART_FETCH_FAILURE } from 'Context/chart-reducer';
+
+import useDataset, { STOPS } from 'hooks/useDataset';
 
 // Children
-import ChartBase from '../ChartBase';
-import GroupedBar from '../ChartTypes/GroupedBar';
+import ChartBase from 'Components/Charts/ChartBase';
+import StackedBar from 'Components/Charts/ChartTypes/StackedBar';
 
-const CHART_KEY = 'STOPS_BY_ETHNIC_COMPOSITION'
-const CHART_TITLE = 'Stops by Ethnic Composition' 
+const DATSET_KEY = 'STOPS_BY_ETHNIC_COMPOSITION';
+const CHART_TITLE = 'Stops by Ethnic Composition';
 
 const GROUP_KEYS = ['asian', 'black', 'hispanic', 'native_american', 'other', 'white'];
 
 function StopsByEthnicComposition() {
   let { agencyId } = useParams();
-  const theme = useTheme()
-  const [state, dispatch] = useChartState();
-
-  useEffect(() => {
-    const _fetchStops = async () => {
-      dispatch({ type: CHART_FETCH_START, chartName: CHART_KEY });
-      try {
-        const { data } = await axios.get(getStopsURL(agencyId));
-        dispatch({
-          type: CHART_FETCH_SUCCESS,
-          chartName: CHART_KEY,
-          payload: data,
-        });
-      } catch (error) {
-        dispatch({
-          type: CHART_FETCH_FAILURE,
-          chartName: CHART_KEY,
-          payload: 'There was an error loading the data for this chart. Try refreshing the page',
-        });
-      }
-    };
-    _fetchStops();
-  }, [agencyId, dispatch]);
+  const theme = useTheme();
+  const [chartState] = useDataset(agencyId, STOPS);
 
   const _calculateYearTotal = (yearData, filteredKeys) => {
     let yearSum = 0;
-    filteredKeys.forEach(ethnicGroup => yearSum += yearData[ethnicGroup])
-    return yearSum
-  }
+    filteredKeys.forEach((ethnicGroup) => (yearSum += yearData[ethnicGroup]));
+    return yearSum;
+  };
 
   const _filterOutEthnicGroups = (data, groupFilters) => {
-    const filteredData = data.map(yearData => {
-      const filteredYearData = {}
-      filteredYearData.year = yearData.year
-      groupFilters.forEach(ethnicGroup => {
-        filteredYearData[ethnicGroup] = yearData[ethnicGroup]
-      })
-      return filteredYearData
-    })
-    return filteredData
-  }
+    const filteredData = data.map((yearData) => {
+      const filteredYearData = {};
+      filteredYearData.year = yearData.year;
+      groupFilters.forEach((ethnicGroup) => {
+        filteredYearData[ethnicGroup] = yearData[ethnicGroup];
+      });
+      return filteredYearData;
+    });
+    return filteredData;
+  };
 
-
-  const mapData = (data, filteredKeys) => {
-    const mappedData = []
+  const mapData = (filteredKeys = []) => {
+    const data = chartState.chartData[STOPS];
+    const mappedData = [];
     if (data) {
-      const filteredData = _filterOutEthnicGroups(data, filteredKeys)
-      filteredData.forEach(yearData => {
-        const yearFinal = {}
-        yearFinal.year = yearData.year
-        const yearTotal = _calculateYearTotal(yearData, filteredKeys)
-        filteredKeys.forEach(ethnicGroup => {
-          const groupYearlyTotal = yearData[ethnicGroup]
-          yearFinal[ethnicGroup] = decimalToFixedPercent(groupYearlyTotal, yearTotal)
-          yearFinal[`${ethnicGroup}Color`] = theme.ethnicGroup[ethnicGroup]
-        })
-        mappedData.push(yearFinal)
-      })
+      const filteredData = _filterOutEthnicGroups(data, filteredKeys);
+      const yearTotals = {};
+      filteredData.forEach((row) => {
+        yearTotals[row.year] = _calculateYearTotal(row, filteredKeys);
+      });
+
+      filteredKeys.forEach((ethnicGroup) => {
+        const groupSet = {};
+        groupSet.id = toTitleCase(ethnicGroup);
+        groupSet.color = theme.ethnicGroup[ethnicGroup];
+        groupSet.data = data.map((datum) => {
+          return {
+            x: datum.year,
+            y: decimalToFixedPercent(datum[ethnicGroup], yearTotals[datum.year]),
+            label: toTitleCase(ethnicGroup),
+          };
+        });
+        mappedData.push(groupSet);
+      });
     }
-    return mappedData
-  }
-
-  // const _getAvailableYears = () => availableYears.map(year => ({ name: year, value: year}))
-
-  // const handleYearSelected = e => {
-  //   setFilteredYear(e.target.value)
-  // }
+    return mappedData;
+  };
 
   return (
     <StopsByEthnicCompositionStyled>
       <ChartBase
-        rawData={state.chartData[CHART_KEY]}
         mapData={mapData}
         groupKeys={GROUP_KEYS}
-        getLabelFromKey={key => toTitleCase(key)}
+        getLabelFromKey={(key) => toTitleCase(key)}
         // renderAdditionalFilter={() => <Select label="Year" value={filteredYear} onChange={handleYearSelected} options={_getAvailableYears()} nullValue={{ name: "All", value: YEAR_ALL }}/>}
-        chartTitle={CHART_TITLE} 
-        chartKey={CHART_KEY} 
-        chartState={state}
-        data-testid={CHART_KEY}
+        chartTitle={CHART_TITLE}
+        datasetKey={DATSET_KEY}
+        chartState={chartState}
+        data-testid={DATSET_KEY}
       >
-        <GroupedBar dataKeys={GROUP_KEYS} indexBy="year" layout="vertical" groupMode="stacked" />
-      </ChartBase>   
+        <StackedBar horizontal={true} />
+      </ChartBase>
     </StopsByEthnicCompositionStyled>
   );
 }

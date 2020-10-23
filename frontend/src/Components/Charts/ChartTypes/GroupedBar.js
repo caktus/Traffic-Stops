@@ -1,57 +1,41 @@
 import React from 'react';
-import PropTypes from 'prop-types'
+import PropTypes from 'prop-types';
 
-// Deps
-import { ResponsiveBar } from '@nivo/bar';
+import { VictoryChart, VictoryGroup, VictoryBar, VictoryAxis } from 'victory';
 
-// Util
-import setChartColors from 'util/setChartColors';
+const AXIS_STYLE = {
+  grid: { stroke: '#818e99', strokeWidth: 0.5 },
+  tickLabels: { fontSize: 8 },
+};
 
-const STACKED_BAR_PROPS = {
-  borderRadius: 2,
-  margin: { right: 20, bottom: 20, left: 40 },
-  labelSkipHeight: 10,
-}
-const GROUPED_BAR_PROPS = {
-  margin: { right: 20, bottom: 100, left: 180 }
-}
-
-const STACKED_BAR_THEME = {}
-const GROUPED_BAR_THEME = {}
-
-function GroupedBar({ data, dataKeys, indexBy, layout, groupMode, ...props }) {
-  const BASE_PROPS = groupMode === "stacked" ? STACKED_BAR_PROPS : GROUPED_BAR_PROPS
+function GroupedBar({ data, horizontal, xTicks }) {
   return (
-      <ResponsiveBar
-        {...props}
-        {...BASE_PROPS}
-        data={data}
-        theme={groupMode === "stacked" ? STACKED_BAR_THEME : GROUPED_BAR_THEME }
-        indexBy={indexBy}
-        keys={dataKeys}
-        padding={0.2}
-        colors={setChartColors}
-        labelTextColor="inherit:darker(1.4)"
-        layout={layout}
-        groupMode={groupMode}
-        enableGridY={false}
-        enableGridX={true}
-        tooltipFormat={(value) => `${value}%`}
-      />
+    <VictoryChart domainPadding={15} width={700}>
+      <VictoryAxis dependentAxis style={AXIS_STYLE} />
+      <VictoryAxis label="Year" style={AXIS_STYLE} tickValues={xTicks} />
+      <VictoryGroup offset={5}>
+        {data.map((bar, i) => (
+          <VictoryBar
+            barWidth={4}
+            horizontal={horizontal}
+            key={bar.id}
+            data={bar.data}
+            style={{
+              data: { fill: bar.color },
+            }}
+          />
+        ))}
+      </VictoryGroup>
+    </VictoryChart>
   );
 }
 
 GroupedBar.propTypes = {
-  data: PropTypes.arrayOf(PropTypes.object),
-  dataKeys: PropTypes.array.isRequired,
-  layout: PropTypes.oneOf(["horizontal", "vertical"]),
-  groupMode: PropTypes.oneOf(["stacked", "grouped"]),
+  horizontal: PropTypes.bool,
 };
 
 GroupedBar.defaultProps = {
-  layout: "horizontal",
-  groupMode: "grouped",
-}
-
+  horizontal: false,
+};
 
 export default GroupedBar;

@@ -4,39 +4,53 @@ import { AnimatePresence } from 'framer-motion';
 
 // Children
 import ChartSkeleton from 'Components/Elements/Skeletons/ChartSkeleton';
-import ResponsiveChartContainer from "Components/Charts/ResponsiveChartContainer.styled"
+import ResponsiveChartContainer from 'Components/Charts/ResponsiveChartContainer.styled';
 import Legend from './Legend/Legend';
 
 function ChartBase({
-  children, 
-  chartKey, 
-  chartState, 
+  children,
+  datasetKey,
+  hideLegend,
+  chartState,
   chartTitle,
-  rawData,
   mapData,
   groupKeys,
   getLabelFromKey,
   renderAdditionalFilter,
-  ...props 
+  ...props
 }) {
-  const [keysToShow, setKeysToShow] = useState(groupKeys)
-  const [data, setData] = useState([])
+  const [keysToShow, setKeysToShow] = useState(groupKeys);
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
-    const mapped = mapData(rawData, keysToShow)
-    setData(mapped)
-  },[rawData, keysToShow, mapData])
+    const mapped = mapData(keysToShow);
+    setData(mapped);
+  }, [keysToShow, mapData]);
 
   const handleLegendKeyClick = (keyId) => {
-    let newKeys = [ ...keysToShow];
-    if (keysToShow.includes(keyId)) newKeys = newKeys.filter(k => k !== keyId)
-    else newKeys.push(keyId)
-    setKeysToShow(newKeys)
-  }
+    let newKeys = [...keysToShow];
+    if (keysToShow.includes(keyId)) newKeys = newKeys.filter((k) => k !== keyId);
+    else newKeys.push(keyId);
+    setKeysToShow(newKeys);
+  };
 
+  // set isLoading
   useEffect(() => {
+    if (Array.isArray(datasetKey)) {
+      const loadingStates = datasetKey.map((dk) => chartState?.loading[dk]);
+      setIsLoading(loadingStates.some(Boolean));
+    } else setIsLoading(chartState?.loading[datasetKey]);
+  }, [chartState?.loading[datasetKey]]);
 
-  }, [data])
+  // set hasError
+  useEffect(() => {
+    if (Array.isArray(datasetKey)) {
+      const errorsPresent = datasetKey.map((dk) => chartState?.chartErrors[dk]);
+      setHasError(errorsPresent.some((e) => e));
+    } else setHasError(chartState?.chartErrors[datasetKey]);
+  }, [chartState?.chartErrors[datasetKey]]);
 
   return (
     <AnimatePresence>
@@ -47,14 +61,20 @@ function ChartBase({
         transition={{ ease: 'easeIn' }}
         {...props}
       >
-        {chartState.loading[chartKey]}
-        {chartState?.chartErrors[chartKey] && <p>some chart error message</p>}
-        {chartState?.loading[chartKey] && <ChartSkeleton />}
+        {hasError && <p>some chart error message</p>}
+        {isLoading && <ChartSkeleton />}
         <h2>{chartTitle}</h2>
-        {<Legend groupKeys={groupKeys} keysToShow={keysToShow} handleLegendKeyClick={handleLegendKeyClick} getLabelFromKey={getLabelFromKey} />}
+        {!hideLegend && (
+          <Legend
+            groupKeys={groupKeys}
+            keysToShow={keysToShow}
+            handleLegendKeyClick={handleLegendKeyClick}
+            getLabelFromKey={getLabelFromKey}
+          />
+        )}
         {renderAdditionalFilter && renderAdditionalFilter()}
         <ResponsiveChartContainer>
-          {React.cloneElement(children, { data })}
+          {data.length > 0 && React.cloneElement(children, { data })}
         </ResponsiveChartContainer>
       </ChartBaseStyled>
     </AnimatePresence>

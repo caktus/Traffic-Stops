@@ -2,7 +2,7 @@ import React from 'react';
 import { SidebarStyled, SidebarNav, NavLinkStyled } from './Sidebar.styled';
 
 // Routing
-import * as slugs  from 'Routes/slugs';
+import * as slugs from 'Routes/slugs';
 import { useRouteMatch } from 'react-router-dom';
 
 function Sidebar(props) {
@@ -10,10 +10,7 @@ function Sidebar(props) {
   return (
     <SidebarStyled data-testid="Sidebar">
       <SidebarNav>
-        <NavLinkStyled
-        data-testid="CensusDataNavLink"
-          to={`${match.url}${slugs.CENSUS_DATA_SLUG}`}
-        >
+        <NavLinkStyled data-testid="CensusDataNavLink" to={`${match.url}${slugs.CENSUS_DATA_SLUG}`}>
           Census Data
         </NavLinkStyled>
         <NavLinkStyled
@@ -33,6 +30,27 @@ function Sidebar(props) {
           to={`${match.url}${slugs.DEPARTMENTAL_STOP_COUNT_SLUG}`}
         >
           Departmental Stop Count
+        </NavLinkStyled>
+        <NavLinkStyled
+          data-testid="DepartmentalSearchCount"
+          to={`${match.url}${slugs.DEPARTMENTAL_SEARCH_COUNT_SLUG}`}
+        >
+          Departmental Search Count
+        </NavLinkStyled>
+        <NavLinkStyled
+          data-testid="DepartmentalSearchRate"
+          to={`${match.url}${slugs.DEPARTMENTAL_SEARCH_RATE_SLUG}`}
+        >
+          Departmental Search Rate
+        </NavLinkStyled>
+        <NavLinkStyled data-testid="UseOfForce" to={`${match.url}${slugs.USE_OF_FORCE_SLUG}`}>
+          Use of Force
+        </NavLinkStyled>
+        <NavLinkStyled
+          data-testid="ContrabandHitrate"
+          to={`${match.url}${slugs.CONTRABAND_HITRATE_SLUG}`}
+        >
+          Contraband Hit-rate
         </NavLinkStyled>
       </SidebarNav>
     </SidebarStyled>
