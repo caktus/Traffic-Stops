@@ -51,12 +51,12 @@ RACE_VARIABLES = {
 class ACS(object):
     """Base class to call ACS API and normalize output"""
 
-    source = "ACS 5-Year Data (2012-2016)"
+    source = "ACS 5-Year Data (2014-2018)"
     geography = None
     drop_columns = None
 
     def __init__(self, key, state_abbr):
-        self.api = census.Census(key, year=2016)
+        self.api = census.Census(key, year=2018)
         self.fips = getattr(states, state_abbr).fips
         self.state_abbr = state_abbr
 

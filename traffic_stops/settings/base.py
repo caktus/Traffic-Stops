@@ -113,7 +113,7 @@ DEFAULT_FILE_STORAGE = os.getenv(
 )
 AWS_DEFAULT_ACL = os.getenv("AWS_DEFAULT_ACL")
 AWS_S3_SIGNATURE_VERSION = os.getenv("AWS_S3_SIGNATURE_VERSION", "s3v4")
-AWS_S3_REGION_NAME = os.getenv("AWS_S3_REGION_NAME", "us-east-1")
+AWS_S3_REGION_NAME = os.getenv("AWS_S3_REGION_NAME", "us-east-2")
 # See https://github.com/wagtail/wagtail/pull/4495#issuecomment-387434521
 AWS_S3_FILE_OVERWRITE = False
 AWS_QUERYSTRING_AUTH = os.getenv("AWS_QUERYSTRING_AUTH", "True") == "True"
@@ -269,11 +269,11 @@ NC_AUTO_IMPORT_DIRECTORY = "/tmp/nc-automated-import"
 
 # 0, 1, or 2 e-mail addresses which will be notified after
 # automatic NC imports
-NC_AUTO_IMPORT_MONITORS = ("odp-team@caktusgroup.com",)
+NC_AUTO_IMPORT_MONITORS = ("forwardjustice-team@caktusgroup.com",)
 
 # List of email addresses that receive the report of non-compliance of
 # traffic stop reporting.
-COMPLIANCE_REPORT_LIST = ()
+COMPLIANCE_REPORT_LIST = ("forwardjustice-team@caktusgroup.com",)
 
 # NC FTP Settings
 NC_FTP_HOST = os.environ.get("NC_FTP_HOST", "")

@@ -1,8 +1,11 @@
 import { lighten, darken } from './styleUtils/lighten-darken';
 
 export default Object.freeze({
+  /**
+   * This is the base theme.
+   */
   ForwardJusticeLight: {
-    // Colors
+    /* Colors */
     colorPrimary: '#272973',
     colorSecondary: '#e49a43',
     colorTertiary: '#02bcbb',
@@ -16,7 +19,7 @@ export default Object.freeze({
     colorGrey: '#ACACAC',
     colorWhite: '#fff',
 
-    // Fonts
+    /* Fonts */
     fontHeading: "'Bebas Neue', sans-serif",
     fontBody: "'Montserrat', sans-serif",
 
@@ -27,13 +30,13 @@ export default Object.freeze({
 
     // Racial group colors
     ethnicGroup: {
-      asian: "#1b9e77",
-      black: "#e7298a",
-      hispanic: "#7570b3",
-      native_american: "#d95f02",
-      other: "#66a61e",
-      white: "#e6ab02",
-    }
+      asian: '#1b9e77',
+      black: '#e7298a',
+      hispanic: '#7570b3',
+      native_american: '#d95f02',
+      other: '#66a61e',
+      white: '#e6ab02',
+    },
   },
 });
 

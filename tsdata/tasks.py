@@ -5,7 +5,7 @@ import io
 from celery.utils.log import get_task_logger
 from django.conf import settings
 from django.core.mail import EmailMessage, send_mail
-from django.db.models import Max, Q
+from django.db.models import Max, OuterRef, Q, Subquery
 from django.utils import timezone
 from nc.data.importer import run as nc_run
 from traffic_stops.celery import app
@@ -50,6 +50,7 @@ def import_dataset(dataset_id):
 
 @app.task
 def compliance_report(dataset_id):
+    logger.info("Generating compliance report")
     if not settings.COMPLIANCE_REPORT_LIST:
         return
 
@@ -60,13 +61,23 @@ def compliance_report(dataset_id):
     Agency = dataset.agency_model
 
     now = timezone.now()
-    qs = (
-        Agency.objects.annotate(last_reported=Max("stops__date"))
-        .filter(
-            Q(last_reported__lt=now - datetime.timedelta(days=90)) | Q(last_reported__isnull=True)
+
+    logger.info("Updating agency last stop")
+    Agency.objects.update(
+        last_reported_stop=Subquery(
+            Agency.objects.filter(id=OuterRef("id"))
+            .annotate(last_reported=Max("stops__date"))
+            .values("last_reported")[:1]
         )
-        .values("id", "name", "last_reported")
-        .order_by("-last_reported")
+    )
+
+    qs = (
+        Agency.objects.filter(
+            Q(last_reported_stop__lt=now - datetime.timedelta(days=90))
+            | Q(last_reported_stop__isnull=True)
+        )
+        .values("id", "name", "last_reported_stop")
+        .order_by("-last_reported_stop")
     )
 
     if not qs:
@@ -79,11 +90,11 @@ def compliance_report(dataset_id):
         return
 
     csvfile = io.StringIO()
-    writer = csv.DictWriter(csvfile, fieldnames=("id", "name", "last_reported"))
+    writer = csv.DictWriter(csvfile, fieldnames=("id", "name", "last_reported_stop"))
     writer.writeheader()
-    writer.writerows(filter(lambda r: r["last_reported"] is not None, qs))
+    writer.writerows(filter(lambda r: r["last_reported_stop"] is not None, qs))
     # Sort the agencies with no stops reported last
-    writer.writerows(filter(lambda r: r["last_reported"] is None, qs))
+    writer.writerows(filter(lambda r: r["last_reported_stop"] is None, qs))
 
     message = EmailMessage(
         "{} Compliance Report, {}".format(dataset.state.upper(), now.date().isoformat()),

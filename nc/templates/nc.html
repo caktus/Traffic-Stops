@@ -101,22 +101,20 @@
 
 {% block about-text %}
   <p>
-      Traffic Stops aggregates, visualizes, and publishes public
-      records related to all known traffic stops to have occurred in North
-      Carolina since {{ nc.start_date }}. Data is available
-      for most North Carolina departments and officers serving populations
-      greater than 10,000.
+    According to the US Department of Justice, vehicle stops are the number one reason for contact 
+    between citizens and police. NC CopWatch aims to provide a platform for North Carolina community 
+    members to have access to law enforcement stop, search, and use of force data. The site displays 
+    this data in graphs and charts and incorporates features that allow the user to compare the traffic 
+    stop data to population data, as well as review traffic stop data for individual departments over 
+    time. 
   </p>
   <p>
-      North Carolina law requires all such agencies to report their data
-      on a monthly basis to the NC Department of Justice; however, some
-      datasets are incomplete or remain unreported.  Where data sets are
-      incomplete or missing from the website it is because they have not
-      been reported to the state agency from which the site derives its
-      records. Traffic Stops does not have access to, nor does it
-      publish, the names of officers, drivers, or passengers involved in
-      traffic stops.
+    NC CopWatch was created to serve as a resource to community members, organizers, and advocates 
+    across the state of North Carolina seeking transparency and accountability in our statewide policing 
+    practices. The site should operate as an advocacy tool for those seeking policy changes in law 
+    enforcement practices.
   </p>
+  <p><a href="{% url "about" %}">Learn More</a></p>
 {% endblock about-text %}
 
 {% block dataset-facts %}

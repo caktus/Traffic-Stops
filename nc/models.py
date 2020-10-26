@@ -143,6 +143,7 @@ class Agency(CachingMixin, models.Model):
     name = models.CharField(max_length=255)
     # link to CensusProfile (no cross-database foreign key)
     census_profile_id = models.CharField(max_length=16, blank=True, default="")
+    last_reported_stop = models.DateField(null=True)
 
     objects = CachingManager()
 
