@@ -8,7 +8,6 @@ import { useParams } from 'react-router-dom';
 import axios from 'Services/Axios';
 
 // Children
-import StackedBar from '../ChartTypes/StackedBar/StackedBar';
 import { getStopsByReasonURL } from 'Services/endpoints';
 import { useChartState } from 'Context/chart-state';
 import ChartSkeleton from 'Components/Elements/ChartSkeleton';
@@ -58,12 +57,7 @@ function StopsByReason(props) {
         </p>
       )}
       {state?.loading[CHART_STOPS_BY_REASON] && <ChartSkeleton />}
-      {state?.chartData[CHART_STOPS_BY_REASON] && (
-        <StackedBar
-          data-testid="StopsByReasonChart"
-          data={state.chartData[CHART_STOPS_BY_REASON]}
-        />
-      )}
+      {state?.chartData[CHART_STOPS_BY_REASON] && <h2>the chart</h2>}
     </StopsByReasonStyled>
   );
 }
