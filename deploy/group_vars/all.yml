@@ -42,7 +42,7 @@ cloudformation_stack:
     UseAES256Encryption: "true"
     CustomerManagedCmkArn: ""
     ContainerInstanceType: t3a.medium
-    DatabaseAllocatedStorage: 80
+    DatabaseAllocatedStorage: 100
     DatabaseClass: db.t3.large
     DatabaseEngineVersion: "12"
     DatabaseParameterGroupFamily: postgres12

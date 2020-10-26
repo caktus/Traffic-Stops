@@ -4,10 +4,15 @@
 
 {% block extra-meta %}
   {{ block.super }}
-  <meta property="og:title" content="Traffic Stop Data for {% if officer_id %} Officer {% endif %}{{ object }}" />
+  <meta property="og:title" content="Traffic Stop Data for {% if officer_id %} Officer {{ officer_id }} at the {% endif %} {{ object }}"/>
+  <meta property="og:description" content="NC Copwatch collects traffic stop data reported by policing agencies across the state. {% if officer_id %} Officer {{ officer_id }}{% else %}{{ object }}{% endif %} has traffic stop data available for analysis at nccopwatch.org." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="{{ request.build_absolute_uri }}" />
-  <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host}}{% static 'img/NC_copwatch_logo.png' %}" />
+  <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host}}{% static 'img/NC_copwatch_social_share_logo.png' %}" />
+  <meta property="og:image:type" content="image/jpg" />
+  <meta property="og:image:alt" content="The NC CopWatch Logo" />
+  <meta property="og:image:width" content="600" />
+  <meta property="og:image:height" content="300" />
 {% endblock %}
 
 {% block agency-list-url %}{% url 'nc:agency-list' %}{% endblock agency-list-url %}
@@ -20,36 +25,41 @@
 
 {% block census-display %}
   <!-- census data -->
-  <div id="census_row" class="row optional">
-    <div class="col-md-12 headline">
-      <h2>ACS Census Data (2012 - 2016)<a class="anchor-offset" id="demographics"></a></h2>
-    </div>
+  <div id="census_row" class="chart-row row optional">
+    <div class="brand-lines"></div>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12 headline">
+          <h2>ACS Census Data (2014 - 2018)<a class="anchor-offset" id="demographics"></a></h2>
+        </div>
 
 
-    <div class="col-md-12">
-      <h3>Local Population (percentage by race/ethnic composition)</h3>
+        <div class="col-md-12">
+          <h3>Local Population (percentage by race/ethnic composition)</h3>
 
-      <p class="help-block">
-        This graph reflects the race/ethnic composition of the jurisdiction at the time of the most recent survey by the Census Bureau. It is included for comparative purposes. The actual local driving population within a given jurisdiction may vary significantly from census figures.
-      </p>
-    </div>
+          <p class="help-block">
+            This graph reflects the race/ethnic composition of the jurisdiction at the time of the most recent survey by the Census Bureau. It is included for comparative purposes. The actual local driving population within a given jurisdiction may vary significantly from census figures.
+          </p>
+        </div>
 
-    <div class="col-md-4">
-      <div class="pie-chart-container">
-        <svg id="census_pie"></svg>
+        <div class="col-md-4">
+          <div class="pie-chart-container">
+            <svg id="census_pie"></svg>
+          </div>
+          <p class="graph-help-block">
+            * Non-hispanic
+          </p>
+        </div>
+
+        <div class="col-md-8">
+          <h3>Tabular view of census data</h3>
+          <br><br>
+          <div id="census_data"></div>
+          <p class="graph-help-block">
+            * Non-hispanic
+          </p>
+        </div>
       </div>
-      <p class="graph-help-block">
-        * Non-hispanic
-      </p>
-    </div>
-
-    <div class="col-md-8">
-      <h3>Tabular view of census data</h3>
-      <br><br>
-      <div id="census_data"></div>
-      <p class="graph-help-block">
-        * Non-hispanic
-      </p>
     </div>
   </div>
 {% endblock census-display %}

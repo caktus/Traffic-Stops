@@ -1,8 +1,11 @@
 import { lighten, darken } from './styleUtils/lighten-darken';
 
 export default Object.freeze({
+  /**
+   * This is the base theme.
+   */
   ForwardJusticeLight: {
-    // Colors
+    /* Colors */
     colorPrimary: '#272973',
     colorSecondary: '#e49a43',
     colorTertiary: '#02bcbb',
@@ -16,36 +19,16 @@ export default Object.freeze({
     colorGrey: '#ACACAC',
     colorWhite: '#fff',
 
-    // Fonts
+    /* Fonts */
     fontHeading: "'Bebas Neue', sans-serif",
     fontBody: "'Montserrat', sans-serif",
 
-    // Elements
+    /* Elements */
     elementBorder: '1px solid black',
   },
+
+  /**
+   * This is a pretend theme. New themes would start out like this. New themes will break the app if they don't have all the same keys defined.
+   */
+  MyOtherTheme: {},
 });
-
-/*
-
-// Forward Justice colors from forwardjustice.org
-@brand-primary:    #272973;
-@brand-secondary:  #e49a43;
-@brand-tertiary:   #02bcbb;
-@brand-quaternary: @brand-primary;
-
-@brand-black: #111111;
-@brand-grey: #ACACAC;
-
-@link-color: @brand-primary;
-@link-hover - color: darken(@link-color, 30 %);
-@border-radius - base: 2px;
-
-@navbar-default -link - color: @brand-primary;
-@navbar-default -link - hover - color: @brand-quaternary;
-@navbar-inverse - bg: @brand-primary;
-@navbar-inverse - border: @brand-primary;
-@navbar-inverse - link - color: white;
-
-@font-heading: 'Bebas Neue', sans - serif;
-@font-body: 'Montserrat', sans - serif;
-*/
