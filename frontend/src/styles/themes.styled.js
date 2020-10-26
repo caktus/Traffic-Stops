@@ -27,13 +27,13 @@ export default Object.freeze({
 
     // Racial group colors
     ethnicGroup: {
-      asian: "#1b9e77",
-      black: "#e7298a",
-      hispanic: "#7570b3",
-      native_american: "#d95f02",
-      other: "#66a61e",
-      white: "#e6ab02",
-    }
+      asian: '#1b9e77',
+      black: '#e7298a',
+      hispanic: '#7570b3',
+      native_american: '#d95f02',
+      other: '#66a61e',
+      white: '#e6ab02',
+    },
   },
 });
 
