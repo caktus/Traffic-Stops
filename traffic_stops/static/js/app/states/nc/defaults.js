@@ -30,12 +30,12 @@ export default {
     'hispanic': 'Hispanic'
   }),
   colors: [
-    "#1C9647", // dark green
-    "#3F5EAB", // dark blue
-    "#A7D16B", // light green
-    "#66ACDD", // light blue
-    "#7A76B7", // purple
-    "#DC8F27", // orange
+    "#8DD3C7", // seafoam
+    "#D95F02", // burnt orange
+    "#7570B3", // periwinkle
+    "#E7298A", // fuscia af
+    "#66A61E", // viridescent moss
+    "#E6AB02", // goldenrod
   ],
   baseline_color: "grey",
   single_color: "#5C0808",
