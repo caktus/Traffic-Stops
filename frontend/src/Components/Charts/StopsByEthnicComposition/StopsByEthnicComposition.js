@@ -20,6 +20,7 @@ import useDataset, { STOPS } from 'hooks/useDataset';
 // Children
 import ChartBase from 'Components/Charts/ChartBase';
 import StackedBar from 'Components/Charts/ChartTypes/StackedBar';
+import StopsByEthnicCompositionTable from 'Components/Tables/StopsByEthnicCompositionTable';
 
 const DATSET_KEY = 'STOPS_BY_ETHNIC_COMPOSITION';
 const CHART_TITLE = 'Stops by Ethnic Composition';
@@ -90,6 +91,8 @@ function StopsByEthnicComposition() {
       >
         <StackedBar horizontal={true} />
       </ChartBase>
+
+      <StopsByEthnicCompositionTable data={chartState.chartData[STOPS]} />
     </StopsByEthnicCompositionStyled>
   );
 }

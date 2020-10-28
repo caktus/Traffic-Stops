@@ -13,6 +13,7 @@ import useDataset, { USE_OF_FORCE } from 'hooks/useDataset';
 // Children
 import ChartBase from 'Components/Charts/ChartBase';
 import GroupedBar from 'Components/Charts/ChartTypes/GroupedBar';
+import UseOfForceTable from 'Components/Tables/UseOfForceTable';
 
 const CHART_TITLE = 'Use of Force';
 
@@ -52,17 +53,20 @@ function UseOfForce() {
   };
 
   return (
-    <ChartBase
-      mapData={mapData}
-      groupKeys={GROUP_KEYS}
-      getLabelFromKey={(key) => toTitleCase(key)}
-      chartTitle={CHART_TITLE}
-      datasetKey={USE_OF_FORCE}
-      chartState={chartState}
-      data-testid={CHART_TITLE}
-    >
-      <GroupedBar xTicks={availableYears} />
-    </ChartBase>
+    <>
+      <ChartBase
+        mapData={mapData}
+        groupKeys={GROUP_KEYS}
+        getLabelFromKey={(key) => toTitleCase(key)}
+        chartTitle={CHART_TITLE}
+        datasetKey={USE_OF_FORCE}
+        chartState={chartState}
+        data-testid={CHART_TITLE}
+      >
+        <GroupedBar xTicks={availableYears} />
+      </ChartBase>
+      <UseOfForceTable data={chartState.chartData[USE_OF_FORCE]} />
+    </>
   );
 }
 

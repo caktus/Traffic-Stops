@@ -13,6 +13,7 @@ import useDataset, { SEARCHES, STOPS } from 'hooks/useDataset';
 // Children
 import ChartBase from 'Components/Charts/ChartBase';
 import Line from 'Components/Charts/ChartTypes/Line';
+import DepartmentalSearchRateTable from 'Components/Tables/DepartmentalSearchRateTable';
 
 const CHART_TITLE = 'Departmental Search Rate';
 
@@ -78,17 +79,23 @@ function DepartmentalSearchRate() {
   };
 
   return (
-    <ChartBase
-      mapData={mapData}
-      groupKeys={GROUP_KEYS}
-      getLabelFromKey={(key) => toTitleCase(key)}
-      chartTitle={CHART_TITLE}
-      datasetKey={[STOPS, SEARCHES]}
-      chartState={chartState}
-      data-testid={CHART_TITLE}
-    >
-      <Line xTicks={availableYears} />
-    </ChartBase>
+    <>
+      <ChartBase
+        mapData={mapData}
+        groupKeys={GROUP_KEYS}
+        getLabelFromKey={(key) => toTitleCase(key)}
+        chartTitle={CHART_TITLE}
+        datasetKey={[STOPS, SEARCHES]}
+        chartState={chartState}
+        data-testid={CHART_TITLE}
+      >
+        <Line xTicks={availableYears} />
+      </ChartBase>
+      <DepartmentalSearchRateTable
+        stops={chartState.chartData[STOPS]}
+        searches={chartState.chartData[SEARCHES]}
+      />
+    </>
   );
 }
 

@@ -13,6 +13,7 @@ import decimalToFixedPercent from 'util/decimalToFixedPercent';
 // Children
 import Pie from 'Components/Charts/ChartTypes/Pie';
 import ChartBase from 'Components/Charts/ChartBase';
+import CensusDataTable from 'Components/Tables/CensusDataTable';
 
 const CHART_TITLE = 'Census Data';
 const DATSET_KEY = AGENCY_DETAIL;
@@ -62,19 +63,22 @@ function CensusData() {
   };
 
   return (
-    <CensusDataStyled>
-      <ChartBase
-        mapData={mapData}
-        groupKeys={KEY_IDS}
-        getLabelFromKey={(key) => toTitleCase(key)}
-        chartTitle={CHART_TITLE}
-        datasetKey={DATSET_KEY}
-        chartState={chartState}
-        data-testid={DATSET_KEY}
-      >
-        <Pie />
-      </ChartBase>
-    </CensusDataStyled>
+    <>
+      <CensusDataStyled>
+        <ChartBase
+          mapData={mapData}
+          groupKeys={KEY_IDS}
+          getLabelFromKey={(key) => toTitleCase(key)}
+          chartTitle={CHART_TITLE}
+          datasetKey={DATSET_KEY}
+          chartState={chartState}
+          data-testid={DATSET_KEY}
+        >
+          <Pie />
+        </ChartBase>
+      </CensusDataStyled>
+      <CensusDataTable data={chartState.chartData[AGENCY_DETAIL]?.census_profile} />
+    </>
   );
 }
 
