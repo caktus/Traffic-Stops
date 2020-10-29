@@ -1,19 +1,14 @@
-import React, { useEffect } from 'react';
+import React from 'react';
+
+// Constants
+import { AXIS_STYLE } from './chartConstants';
 
 // Deps
 import { VictoryChart, VictoryLine, VictoryAxis, VictoryVoronoiContainer } from 'victory';
 
-const AXIS_STYLE = {
-  grid: { stroke: '#818e99', strokeWidth: 0.5 },
-  tickLabels: { fontSize: 8 },
-};
-
-const CHART_ANIMATION = { duration: 500, easing: 'linear' };
-
 function Line({ data = [], xTicks }) {
   return (
     <VictoryChart
-      animate={CHART_ANIMATION}
       containerComponent={
         <VictoryVoronoiContainer
           voronoiDimension="x"

@@ -103,7 +103,7 @@ function DepartmentalSearchCount() {
       const dataByStopReason = _filterDataBySearchType(data);
       filteredKeys.forEach((ethnicGroup) => {
         const group = {};
-        group.id = ethnicGroup; // + `__${searchTypeFilter}`;
+        group.id = ethnicGroup;
         group.color = theme.ethnicGroup[ethnicGroup];
         const groupData = _reduceStopReasonsByEthnicity(dataByStopReason, yearsSet, ethnicGroup);
         group.data = groupData;

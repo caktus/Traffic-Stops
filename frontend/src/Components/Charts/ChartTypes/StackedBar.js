@@ -1,29 +1,8 @@
 import React from 'react';
 
 import { VictoryChart, VictoryStack, VictoryBar, VictoryTooltip, VictoryAxis } from 'victory';
+import { AXIS_STYLE, TOOLTIP_PROPS } from './chartConstants';
 
-const AXIS_STYLE = {
-  grid: { stroke: '#818e99', strokeWidth: 0.5 },
-  tickLabels: { fontSize: 8 },
-};
-
-const tooltipProps = {
-  flyoutWidth: 95,
-  flyoutHeight: 35,
-  cornerRadius: 5,
-  pointerLength: 40,
-  flyoutStyle: {
-    stroke: '#868C97',
-    strokeWidth: 2,
-    fill: '#FFFFFF',
-  },
-  style: {
-    fill: '#868C97',
-    fontSize: 8,
-    fontWeight: 500,
-    textAnchor: 'middle',
-  },
-};
 
 function StackedBar({ data = [] }) {
   return (
@@ -38,7 +17,7 @@ function StackedBar({ data = [] }) {
             style={{
               data: { fill: bar.color },
             }}
-            labelComponent={<VictoryTooltip {...tooltipProps} />}
+            labelComponent={<VictoryTooltip {...TOOLTIP_PROPS} />}
           />
         ))}
       </VictoryStack>

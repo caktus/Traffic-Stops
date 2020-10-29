@@ -97,7 +97,7 @@ function DepartmentalStopCount() {
       const dataByStopReason = _filterDataBySearchType(data);
       filteredKeys.forEach((ethnicGroup) => {
         const group = {};
-        group.id = ethnicGroup; // + `__${stopReasonFilter}`;
+        group.id = ethnicGroup;
         group.color = theme.ethnicGroup[ethnicGroup];
         const groupData = _reduceStopReasonsByEthnicity(
           dataByStopReason,
