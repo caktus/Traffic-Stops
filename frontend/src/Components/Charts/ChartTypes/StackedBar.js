@@ -27,7 +27,7 @@ const tooltipProps = {
 
 function StackedBar({ data = [] }) {
   return (
-    <VictoryChart animate={{ duration: 500, easing: 'linear' }}>
+    <VictoryChart   >
       <VictoryAxis dependentAxis style={AXIS_STYLE} />
       <VictoryAxis label="Year" style={AXIS_STYLE} />
       <VictoryStack>

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { AgencyDataStyled, MotionDiv } from './AgencyData.styled';
+import { AgencyDataStyled, ContentWrapper } from './AgencyData.styled';
 
 // Animationg
-import { AnimateSharedLayout, AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 
 // Context
 import { ChartStateProvider } from 'Context/chart-state';
@@ -21,8 +21,7 @@ function AgencyData(props) {
 
   return (
     <AgencyDataStyled data-testid="AgencyData" {...props}>
-      <AnimateSharedLayout>
-        <MotionDiv layout>
+        <ContentWrapper >
           <AnimatePresence>
             {sidebarOpen && (
               <motion.div
@@ -40,8 +39,7 @@ function AgencyData(props) {
           <ChartStateProvider reducer={chartStateReducer} initialState={initialState}>
             <Charts />
           </ChartStateProvider>
-        </MotionDiv>
-      </AnimateSharedLayout>
+        </ContentWrapper>
     </AgencyDataStyled>
   );
 }

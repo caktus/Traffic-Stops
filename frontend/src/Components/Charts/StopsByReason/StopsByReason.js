@@ -47,12 +47,12 @@ function StopsByReason() {
   const [filteredYear, setFilteredYear] = useState(YEAR_ALL);
 
   useEffect(() => {
-    const data = chartState.chartData[STOPS_BY_REASON];
+    const data = chartState.data[STOPS_BY_REASON];
     if (data) {
       const uniqueYears = new Set(data.stops.map((d) => d.year));
       setAvailableYears([...uniqueYears]);
     }
-  }, [chartState.chartData[STOPS_BY_REASON]]);
+  }, [chartState.data[STOPS_BY_REASON]]);
 
   const _reduceYears = (yearlyData) => {
     return STOP_REASON_KEYS.map((key) => {
@@ -142,7 +142,7 @@ function StopsByReason() {
     // The way this data comes in pretty much guarantees
     // that we'll have to loop over the entire set for
     // each ethnic group. Can we improve this a bit??
-    const data = chartState.chartData[STOPS_BY_REASON];
+    const data = chartState.data[STOPS_BY_REASON];
     const mappedData = [];
     if (data) {
       console.log('incoming data: ', data);

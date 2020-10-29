@@ -50,7 +50,7 @@ function StopsByEthnicComposition() {
   };
 
   const mapData = (filteredKeys = []) => {
-    const data = chartState.chartData[STOPS];
+    const data = chartState.data[STOPS];
     const mappedData = [];
     if (data) {
       const filteredData = _filterOutEthnicGroups(data, filteredKeys);

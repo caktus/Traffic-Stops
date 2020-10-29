@@ -27,12 +27,12 @@ function DepartmentalSearchRate() {
   const [availableYears, setAvailableYears] = useState([]);
 
   useEffect(() => {
-    const stops = chartState.chartData[STOPS];
+    const stops = chartState.data[STOPS];
     if (stops) {
       const uniqueYears = stops.map((s) => s.year);
       setAvailableYears(uniqueYears);
     }
-  }, [chartState.chartData[STOPS]]);
+  }, [chartState.data[STOPS]]);
 
   const _getSearchRateForYearByGroup = (searches, stops, year, ethnicGroup, filteredKeys) => {
     const searchesForYear = searches.find((s) => s.year === year);
@@ -57,8 +57,8 @@ function DepartmentalSearchRate() {
 
   const mapData = (filteredKeys = []) => {
     const mappedData = [];
-    const stops = chartState.chartData[STOPS];
-    const searches = chartState.chartData[SEARCHES];
+    const stops = chartState.data[STOPS];
+    const searches = chartState.data[SEARCHES];
     if (searches && stops) {
       filteredKeys.forEach((ethnicGroup) => {
         const groupData = {};

@@ -32,13 +32,13 @@ function ContrabandHitrate() {
   /* LIFECYCLE AND DATA PREP */
 
   useEffect(() => {
-    const data = chartState.chartData[CONTRABAND_HIT_RATE];
+    const data = chartState.data[CONTRABAND_HIT_RATE];
     if (data) {
       const { contraband } = data;
       const years = contraband.map((s) => s.year);
       setAvailableYears(years);
     }
-  }, [chartState.chartData[CONTRABAND_HIT_RATE]]);
+  }, [chartState.data[CONTRABAND_HIT_RATE]]);
 
   /* DATA MAPPING */
 
@@ -57,7 +57,7 @@ function ContrabandHitrate() {
   };
 
   const mapData = () => {
-    const data = chartState.chartData[CONTRABAND_HIT_RATE];
+    const data = chartState.data[CONTRABAND_HIT_RATE];
     const mappedData = [];
     if (data) {
       const { contraband, searches } = data;

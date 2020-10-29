@@ -5,7 +5,7 @@ import { SidebarStyled, SidebarNav, NavLinkStyled } from './Sidebar.styled';
 import * as slugs from 'Routes/slugs';
 import { useRouteMatch } from 'react-router-dom';
 
-function Sidebar(props) {
+function Sidebar() {
   const match = useRouteMatch();
   return (
     <SidebarStyled data-testid="Sidebar">

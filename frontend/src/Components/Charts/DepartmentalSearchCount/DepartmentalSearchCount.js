@@ -30,7 +30,7 @@ function DepartmentalSearchCount() {
   const [searchTypeFilter, setSearchTypeFilter] = useState(STOPS_ALL);
 
   useEffect(() => {
-    const data = chartState.chartData[SEARCHES_BY_TYPE];
+    const data = chartState.data[SEARCHES_BY_TYPE];
     if (data) {
       // data is a list of search_type <--> year mappings.
       // to get all available search_type types, we must select a single year,
@@ -44,7 +44,7 @@ function DepartmentalSearchCount() {
       const stopReasons = latestSet.map((s) => ({ name: s.search_type, value: s.search_type }));
       setAvailableSearchTypes(stopReasons);
     }
-  }, [chartState.chartData[SEARCHES_BY_TYPE]]);
+  }, [chartState.data[SEARCHES_BY_TYPE]]);
 
   const _getYearsSet = (data) => {
     // grab latest arbitrary search_type
@@ -56,7 +56,7 @@ function DepartmentalSearchCount() {
   };
 
   useEffect(() => {
-    const data = chartState.chartData[SEARCHES_BY_TYPE];
+    const data = chartState.data[SEARCHES_BY_TYPE];
     if (data) {
       // grab latest arbitrary search_type
       const latestPurpose = data[data.length - 1].search_type;
@@ -66,7 +66,7 @@ function DepartmentalSearchCount() {
       const uniqueYears = purposeSet.map((s) => s.year);
       setAvailableYears(uniqueYears);
     }
-  }, [chartState.chartData[SEARCHES_BY_TYPE]]);
+  }, [chartState.data[SEARCHES_BY_TYPE]]);
 
   const handleSelectSearchType = (e) => {
     setSearchTypeFilter(e.target.value);
@@ -97,7 +97,7 @@ function DepartmentalSearchCount() {
 
   const mapData = (filteredKeys = []) => {
     const mappedData = [];
-    const data = chartState.chartData[SEARCHES_BY_TYPE];
+    const data = chartState.data[SEARCHES_BY_TYPE];
     if (data) {
       const yearsSet = _getYearsSet(data);
       const dataByStopReason = _filterDataBySearchType(data);
