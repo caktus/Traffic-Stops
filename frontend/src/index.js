@@ -10,9 +10,8 @@ import { SENTRY_DSN } from 'settings';
 // Children
 import App from 'Components/App';
 
-// Eventually, we'll want to make sure NODE_ENV is set up
-// so that the following commented code wont run locally.
-Sentry.init({ dsn: SENTRY_DSN });
+// Eventually, we'll want to make sure NODE_ENV is set up to actuall be something other than "development" in produciton
+if (process.env.NODE_ENV !== "development") Sentry.init({ dsn: SENTRY_DSN });
 
 ReactDOM.render(
   <React.StrictMode>

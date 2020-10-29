@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { AgencyDataStyled, MotionDiv } from './AgencyData.styled';
+import { AgencyDataStyled, ContentWrapper } from './AgencyData.styled';
 
 // Animationg
-import { AnimateSharedLayout, AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
+
+// Context
+import { ChartStateProvider } from 'Context/chart-state';
+import chartStateReducer, { initialState } from 'Context/chart-reducer';
 
 // Children
 import Sidebar from 'Components/Sidebar/Sidebar';
@@ -17,8 +21,7 @@ function AgencyData(props) {
 
   return (
     <AgencyDataStyled data-testid="AgencyData" {...props}>
-      <AnimateSharedLayout>
-        <MotionDiv layout>
+        <ContentWrapper >
           <AnimatePresence>
             {sidebarOpen && (
               <motion.div
@@ -32,10 +35,11 @@ function AgencyData(props) {
               </motion.div>
             )}
           </AnimatePresence>
-
-          <Charts />
-        </MotionDiv>
-      </AnimateSharedLayout>
+          
+          <ChartStateProvider reducer={chartStateReducer} initialState={initialState}>
+            <Charts />
+          </ChartStateProvider>
+        </ContentWrapper>
     </AgencyDataStyled>
   );
 }

@@ -1,63 +1,88 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useTheme } from 'styled-components';
 import { StopsByReasonStyled } from './StopsByReason.styled';
 
 // Router
 import { useParams } from 'react-router-dom';
 
-// ajax
-import axios from 'Services/Axios';
+// Util
+import toTitleCase from 'util/toTitleCase';
+
+// State
+import useDataset, { STOPS_BY_REASON } from 'hooks/useDataset';
 
 // Children
-import { getStopsByReasonURL } from 'Services/endpoints';
-import { useChartState } from 'Context/chart-state';
-import ChartSkeleton from 'Components/Elements/ChartSkeleton';
-import { CHART_FETCH_START, CHART_FETCH_SUCCESS, CHART_FETCH_FAILURE } from 'Context/chart-reducer';
+import GroupedBar from 'Components/Charts/ChartTypes/GroupedBar';
+import ChartBase from 'Components/Charts/ChartBase';
+import Select from 'Components/Elements/Inputs/Select';
 
-export const CHART_STOPS_BY_REASON = 'CHART_STOPS_BY_REASON';
+const CHART_TITLE = 'Likelihood of Search by "Stop Cause"';
 
-function StopsByReason(props) {
+const STOP_REASON_KEYS = [
+  'Driving While Impaired',
+  'Safe Movement Violation',
+  'Vehicle Equipment Violation',
+  'Other Motor Vehicle Violation',
+  'Stop Light/Sign Violation',
+  'Speed Limit Violation',
+  'Vehicle Regulatory Violation',
+  'Seat Belt Violation',
+];
+
+const DEFAULT_BASE_GROUP = 'white';
+
+const GROUP_KEYS = ['asian', 'black', 'hispanic', 'native_american', 'other', 'white'];
+
+const YEAR_ALL = 'all';
+
+function StopsByReason() {
   let { agencyId } = useParams();
-  const [state, dispatch] = useChartState();
+  const [chartState] = useDataset(agencyId, STOPS_BY_REASON);
+  const [availableYears, setAvailableYears] = useState([]);
+  const [filteredYear, setFilteredYear] = useState(YEAR_ALL);
 
   useEffect(() => {
-    const _fetchStopsByReason = async () => {
-      dispatch({ action: CHART_FETCH_START });
-      try {
-        const { data } = await axios.get(getStopsByReasonURL(agencyId));
-        dispatch({
-          type: CHART_FETCH_SUCCESS,
-          chartName: CHART_STOPS_BY_REASON,
-          payload: data,
-        });
-      } catch (error) {
-        console.log('Error in stopsbyreason data fetch: ', error);
-        dispatch({
-          type: CHART_FETCH_FAILURE,
-          chartName: CHART_STOPS_BY_REASON,
-          payload: 'There was an error loading the data for this chart. Try refreshing the page',
-        });
-      }
-    };
-    _fetchStopsByReason();
-  }, [agencyId, dispatch]);
+    const data = chartState.data[STOPS_BY_REASON];
+    if (data) {
+      const uniqueYears = new Set(data.stops.map((d) => d.year));
+      setAvailableYears([...uniqueYears]);
+    }
+  }, [chartState.data[STOPS_BY_REASON]]);
+
+
+  const mapData = (filteredKeys = []) => {
+    const mappedData = [];
+    return mappedData;
+  };
+
+  const _getAvailableYears = () => availableYears.map((year) => ({ name: year, value: year }));
+
+  const handleYearSelected = (e) => {
+    setFilteredYear(e.target.value);
+  };
 
   return (
-    <StopsByReasonStyled data-testid="StopsByReason">
-      <h2>Stops by Reason</h2>
-      {state.loading[CHART_STOPS_BY_REASON]}
-      {state?.chartErrors[CHART_STOPS_BY_REASON] && (
-        <p>
-          <span role="img" aria-label="sad face">
-            😭
-          </span>
-          on noes!!
-          <span role="img" aria-label="sad face">
-            😭
-          </span>
-        </p>
-      )}
-      {state?.loading[CHART_STOPS_BY_REASON] && <ChartSkeleton />}
-      {state?.chartData[CHART_STOPS_BY_REASON] && <h2>the chart</h2>}
+    <StopsByReasonStyled>
+      <ChartBase
+        mapData={mapData}
+        groupKeys={GROUP_KEYS.filter((k) => k !== DEFAULT_BASE_GROUP)}
+        getLabelFromKey={(key) => `${toTitleCase(key)} vs. ${toTitleCase(DEFAULT_BASE_GROUP)}`}
+        renderAdditionalFilter={() => (
+          <Select
+            label="Year"
+            value={filteredYear}
+            onChange={handleYearSelected}
+            options={_getAvailableYears()}
+            nullValue={{ name: 'All', value: YEAR_ALL }}
+          />
+        )}
+        chartTitle={CHART_TITLE}
+        datasetKey={STOPS_BY_REASON}
+        chartState={chartState}
+        data-testid={STOPS_BY_REASON}
+      >
+        <GroupedBar />
+      </ChartBase>
     </StopsByReasonStyled>
   );
 }

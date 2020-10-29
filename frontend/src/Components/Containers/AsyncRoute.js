@@ -5,7 +5,6 @@ import * as Sentry from '@sentry/react';
 
 // Async component tools
 import loadable from '@loadable/component';
-import pMinDelay from 'p-min-delay';
 
 // PropTypes
 import PropTypes from 'prop-types';
@@ -14,9 +13,10 @@ import PropTypes from 'prop-types';
 import { Route } from 'react-router-dom';
 
 // const MIN_DELAY = 500;
-export const MIN_DELAY = 400;
+// export const MIN_DELAY = 1000;
 
-const AsyncPage = loadable(({ importComponent }) => pMinDelay(importComponent(), MIN_DELAY));
+// TODO: implement a delay before showing loading!
+const AsyncPage = loadable(({ importComponent }) => importComponent());
 
 function AsyncRoute({ renderLoading, renderError, importComponent, ...props }) {
   return (

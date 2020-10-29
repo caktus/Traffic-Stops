@@ -24,7 +24,9 @@
     "url": "https://github.com/[ORGANIZATION]/PROJECT_NAME/issues"
   },
   "homepage": "https://github.com/[ORGANIZATION]/PROJECT_NAME#readme",
-  "dependencies": {},
+  "dependencies": {
+    "@nivo/line": "^0.63.0"
+  },
   "devDependencies": {
     "@caktus/flexless": "^0.1.1",
     "babel-core": "^6.10.4",
