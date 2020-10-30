@@ -2,6 +2,7 @@ import csv
 import glob
 import logging
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -169,9 +170,10 @@ def to_standard_csv(input_path, output_path):
 
 def convert_to_csv(destination):
     """Convert each NC *.txt data file to CSV"""
+    FILES_TO_SKIP = r"(QUERY_README\.txt|^.*_format\.txt)"
     files = glob.iglob(os.path.join(destination, "*.txt"))
     for data_path in files:
-        if os.path.basename(data_path) == "QUERY_README.txt":  # list of years in the query
+        if re.match(FILES_TO_SKIP, os.path.basename(data_path)):
             continue
         csv_path = data_path.replace(".txt", ".csv")
         if os.path.exists(csv_path):
