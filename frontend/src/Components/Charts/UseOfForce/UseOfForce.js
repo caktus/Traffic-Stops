@@ -26,16 +26,16 @@ function UseOfForce() {
   const [availableYears, setAvailableYears] = useState([]);
 
   useEffect(() => {
-    const data = chartState.chartData[USE_OF_FORCE];
+    const data = chartState.data[USE_OF_FORCE];
     if (data) {
       const years = data.map((s) => s.year);
       setAvailableYears(years);
     }
-  }, [chartState.chartData[USE_OF_FORCE]]);
+  }, [chartState.data[USE_OF_FORCE]]);
 
   const mapData = (filteredKeys) => {
     const mappedData = [];
-    const data = chartState.chartData[USE_OF_FORCE];
+    const data = chartState.data[USE_OF_FORCE];
     if (data) {
       filteredKeys.forEach((ethnicGroup, i) => {
         const groupData = {};

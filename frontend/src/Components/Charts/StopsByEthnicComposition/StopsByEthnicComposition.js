@@ -6,10 +6,6 @@ import { StopsByEthnicCompositionStyled } from './StopsByEthnicComposition.style
 import toTitleCase from 'util/toTitleCase';
 import decimalToFixedPercent from 'util/decimalToFixedPercent';
 
-// AJAX
-import axios from 'Services/Axios';
-import { getStopsURL } from 'Services/endpoints';
-
 // Router
 import { useParams } from 'react-router-dom';
 
@@ -51,7 +47,7 @@ function StopsByEthnicComposition() {
   };
 
   const mapData = (filteredKeys = []) => {
-    const data = chartState.chartData[STOPS];
+    const data = chartState.data[STOPS];
     const mappedData = [];
     if (data) {
       const filteredData = _filterOutEthnicGroups(data, filteredKeys);
@@ -83,7 +79,6 @@ function StopsByEthnicComposition() {
         mapData={mapData}
         groupKeys={GROUP_KEYS}
         getLabelFromKey={(key) => toTitleCase(key)}
-        // renderAdditionalFilter={() => <Select label="Year" value={filteredYear} onChange={handleYearSelected} options={_getAvailableYears()} nullValue={{ name: "All", value: YEAR_ALL }}/>}
         chartTitle={CHART_TITLE}
         datasetKey={DATSET_KEY}
         chartState={chartState}

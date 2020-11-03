@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { ChartBaseStyled } from './ChartBase.styled';
-import { AnimatePresence } from 'framer-motion';
 
 // Children
 import ChartSkeleton from 'Components/Elements/Skeletons/ChartSkeleton';
@@ -53,31 +52,29 @@ function ChartBase({
   }, [chartState?.chartErrors[datasetKey]]);
 
   return (
-    // <AnimatePresence>
-    <ChartBaseStyled
-      initial={{ opacity: 0.35, x: -50, duration: 350 }}
-      animate={{ opacity: 1, x: 0, duration: 350 }}
-      exit={{ opacity: 0.35, x: 50, duration: 350 }}
-      transition={{ ease: 'easeIn' }}
-      {...props}
-    >
-      {hasError && <p>some chart error message</p>}
-      {isLoading && <ChartSkeleton />}
-      <h2>{chartTitle}</h2>
-      {!hideLegend && (
-        <Legend
-          groupKeys={groupKeys}
-          keysToShow={keysToShow}
-          handleLegendKeyClick={handleLegendKeyClick}
-          getLabelFromKey={getLabelFromKey}
-        />
-      )}
-      {renderAdditionalFilter && renderAdditionalFilter()}
-      <ResponsiveChartContainer>
-        {data.length > 0 && React.cloneElement(children, { data })}
-      </ResponsiveChartContainer>
-    </ChartBaseStyled>
-    // </AnimatePresence>
+      <ChartBaseStyled
+        initial={{ opacity: 0.35, x: -50, duration: 350 }}
+        animate={{ opacity: 1, x: 0, duration: 350 }}
+        exit={{ opacity: 0.35, x: 50, duration: 350 }}
+        transition={{ ease: 'easeIn' }}
+        {...props}
+      >
+        {hasError && <p>some chart error message</p>}
+        {isLoading && <ChartSkeleton />}
+        <h2>{chartTitle}</h2>
+        {!hideLegend && (
+          <Legend
+            groupKeys={groupKeys}
+            keysToShow={keysToShow}
+            handleLegendKeyClick={handleLegendKeyClick}
+            getLabelFromKey={getLabelFromKey}
+          />
+        )}
+        {renderAdditionalFilter && renderAdditionalFilter()}
+        <ResponsiveChartContainer>
+          {data.length > 0 && React.cloneElement(children, { data })}
+        </ResponsiveChartContainer>
+      </ChartBaseStyled>
   );
 }
 

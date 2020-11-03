@@ -5,7 +5,7 @@ export const DATASET_FETCH_FAILURE = 'DATASET_FETCH_FAILURE';
 export const initialState = {
   loading: {},
   chartErrors: {},
-  chartData: {},
+  data: {},
 };
 
 const chartStateReducer = (state, action) => {
@@ -21,7 +21,7 @@ const chartStateReducer = (state, action) => {
       return {
         ...state,
         loading: { ...state.loading, [action.dataset]: false },
-        chartData: { ...state.chartData, [action.dataset]: action.payload },
+        data: { ...state.data, [action.dataset]: action.payload },
         chartErrors: { ...state.chartErrors, [action.dataset]: false },
       };
     }
@@ -29,7 +29,7 @@ const chartStateReducer = (state, action) => {
       return {
         ...state,
         loading: { ...state.loading, [action.dataset]: false },
-        chartErrors: { ...state.chartData, [action.dataset]: action.payload },
+        chartErrors: { ...state.data, [action.dataset]: action.payload },
       };
     }
 

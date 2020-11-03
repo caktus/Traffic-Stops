@@ -31,7 +31,7 @@ function DepartmentalStopCount() {
   const [stopReasonFilter, setStopReasonFilter] = useState(STOPS_ALL);
 
   useEffect(() => {
-    const data = chartState.chartData[STOPS_BY_REASON]?.stops;
+    const data = chartState.data[STOPS_BY_REASON]?.stops;
     if (data) {
       // data is a list of purpose <--> year mappings.
       // to get all available purpose types, we must select a single year,
@@ -48,7 +48,7 @@ function DepartmentalStopCount() {
   }, [chartState.chartData[STOPS_BY_REASON]]);
 
   useEffect(() => {
-    const data = chartState.chartData[STOPS_BY_REASON]?.stops;
+    const data = chartState.data[STOPS_BY_REASON]?.stops;
     if (data) {
       // grab latest arbitrary purpose
       const latestPurpose = data[0].purpose;
@@ -92,13 +92,13 @@ function DepartmentalStopCount() {
     });
 
   const mapData = (filteredKeys = []) => {
-    const data = chartState.chartData[STOPS_BY_REASON]?.stops;
+    const data = chartState.data[STOPS_BY_REASON]?.stops;
     const mappedData = [];
     if (data) {
       const dataByStopReason = _filterDataBySearchType(data);
       filteredKeys.forEach((ethnicGroup) => {
         const group = {};
-        group.id = ethnicGroup; // + `__${stopReasonFilter}`;
+        group.id = ethnicGroup;
         group.color = theme.ethnicGroup[ethnicGroup];
         const groupData = _reduceStopReasonsByEthnicity(
           dataByStopReason,

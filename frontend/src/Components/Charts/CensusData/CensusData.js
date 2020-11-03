@@ -42,7 +42,7 @@ function CensusData() {
 
   const mapData = (keyFilters) => {
     const derivedData = [];
-    const data = chartState.chartData[AGENCY_DETAIL]?.census_profile;
+    const data = chartState.data[AGENCY_DETAIL]?.census_profile;
     if (data && keyFilters) {
       const filtered = _filterKeys(data, keyFilters);
       const total = _calculateTotal(filtered);

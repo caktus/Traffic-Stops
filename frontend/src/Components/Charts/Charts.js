@@ -37,7 +37,6 @@ function Charts() {
       >
         <AboutCharts />
         <HR />
-        <h1>I'm just an h1</h1>
         <AsyncRoute
           path={`${match.path}${slugs.STOPS_BY_REASON_SLUG}`}
           importComponent={() =>

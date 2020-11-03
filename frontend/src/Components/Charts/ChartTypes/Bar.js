@@ -1,11 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { VictoryAxis, VictoryBar, VictoryChart } from 'victory';
-
-const AXIS_STYLE = {
-  grid: { stroke: '#818e99', strokeWidth: 0.5 },
-  tickLabels: { fontSize: 8 },
-};
+import { AXIS_STYLE } from './chartConstants';
 
 function Bar({ data, chartProps, xAxisProps, yAxisProps, barProps }) {
   return (

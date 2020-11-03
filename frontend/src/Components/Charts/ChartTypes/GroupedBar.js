@@ -2,11 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { VictoryChart, VictoryGroup, VictoryBar, VictoryAxis } from 'victory';
-
-const AXIS_STYLE = {
-  grid: { stroke: '#818e99', strokeWidth: 0.5 },
-  tickLabels: { fontSize: 8 },
-};
+import { AXIS_STYLE } from './chartConstants';
 
 function GroupedBar({ data, horizontal, xTicks }) {
   return (
