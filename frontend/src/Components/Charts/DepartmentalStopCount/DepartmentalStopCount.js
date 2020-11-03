@@ -45,7 +45,7 @@ function DepartmentalStopCount() {
       const stopReasons = latestSet.map((s) => ({ name: s.purpose, value: s.purpose }));
       setAvailableStopReasons(stopReasons);
     }
-  }, [chartState.chartData[STOPS_BY_REASON]]);
+  }, [chartState.data[STOPS_BY_REASON]?.stops]);
 
   useEffect(() => {
     const data = chartState.data[STOPS_BY_REASON]?.stops;
@@ -58,7 +58,7 @@ function DepartmentalStopCount() {
       const uniqueYears = purposeSet.map((s) => s.year);
       setAvailableYears(uniqueYears);
     }
-  }, [chartState.chartData[STOPS_BY_REASON]]);
+  }, [chartState.data[STOPS_BY_REASON]?.stops]);
 
   const handleSelectStopReason = (e) => {
     setStopReasonFilter(e.target.value);
