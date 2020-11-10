@@ -46,35 +46,35 @@ function ChartBase({
   // set hasError
   useEffect(() => {
     if (Array.isArray(datasetKey)) {
-      const errorsPresent = datasetKey.map((dk) => chartState?.chartErrors[dk]);
+      const errorsPresent = datasetKey.map((dk) => chartState?.errors[dk]);
       setHasError(errorsPresent.some((e) => e));
-    } else setHasError(chartState?.chartErrors[datasetKey]);
-  }, [chartState?.chartErrors[datasetKey]]);
+    } else setHasError(chartState?.errors[datasetKey]);
+  }, [chartState?.errors[datasetKey]]);
 
   return (
-      <ChartBaseStyled
-        initial={{ opacity: 0.35, x: -50, duration: 350 }}
-        animate={{ opacity: 1, x: 0, duration: 350 }}
-        exit={{ opacity: 0.35, x: 50, duration: 350 }}
-        transition={{ ease: 'easeIn' }}
-        {...props}
-      >
-        {hasError && <p>some chart error message</p>}
-        {isLoading && <ChartSkeleton />}
-        <h2>{chartTitle}</h2>
-        {!hideLegend && (
-          <Legend
-            groupKeys={groupKeys}
-            keysToShow={keysToShow}
-            handleLegendKeyClick={handleLegendKeyClick}
-            getLabelFromKey={getLabelFromKey}
-          />
-        )}
-        {renderAdditionalFilter && renderAdditionalFilter()}
-        <ResponsiveChartContainer>
-          {data.length > 0 && React.cloneElement(children, { data })}
-        </ResponsiveChartContainer>
-      </ChartBaseStyled>
+    <ChartBaseStyled
+      initial={{ opacity: 0.35, x: -50, duration: 350 }}
+      animate={{ opacity: 1, x: 0, duration: 350 }}
+      exit={{ opacity: 0.35, x: 50, duration: 350 }}
+      transition={{ ease: 'easeIn' }}
+      {...props}
+    >
+      {hasError && <p>some chart error message</p>}
+      {isLoading && <ChartSkeleton />}
+      <h2>{chartTitle}</h2>
+      {!hideLegend && (
+        <Legend
+          groupKeys={groupKeys}
+          keysToShow={keysToShow}
+          handleLegendKeyClick={handleLegendKeyClick}
+          getLabelFromKey={getLabelFromKey}
+        />
+      )}
+      {renderAdditionalFilter && renderAdditionalFilter()}
+      <ResponsiveChartContainer>
+        {data.length > 0 && React.cloneElement(children, { data })}
+      </ResponsiveChartContainer>
+    </ChartBaseStyled>
   );
 }
 

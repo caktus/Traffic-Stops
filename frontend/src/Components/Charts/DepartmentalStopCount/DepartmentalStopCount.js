@@ -14,6 +14,7 @@ import useDataset, { STOPS_BY_REASON } from 'hooks/useDataset';
 import ChartBase from 'Components/Charts/ChartBase';
 import Select from 'Components/Elements/Inputs/Select';
 import Line from 'Components/Charts/ChartTypes/Line';
+import DepartmentalStopCountTable from 'Components/Tables/DepartmentalStopCountTable';
 
 const CHART_TITLE = 'Departmental Stop Count';
 
@@ -111,27 +112,33 @@ function DepartmentalStopCount() {
     return mappedData;
   };
 
+  // DELETE ME
+  useEffect(() => {}, [chartState.data[STOPS_BY_REASON]]);
+
   return (
-    <ChartBase
-      mapData={mapData}
-      groupKeys={GROUP_KEYS}
-      getLabelFromKey={(key) => toTitleCase(key)}
-      renderAdditionalFilter={() => (
-        <Select
-          label="Search Type"
-          value={stopReasonFilter}
-          onChange={handleSelectStopReason}
-          options={availableSearchTypes}
-          nullValue={{ name: 'All', value: STOPS_ALL }}
-        />
-      )}
-      chartTitle={CHART_TITLE}
-      datasetKey={STOPS_BY_REASON}
-      chartState={chartState}
-      data-testid={CHART_TITLE}
-    >
-      <Line xTicks={availableYears} />
-    </ChartBase>
+    <>
+      <ChartBase
+        mapData={mapData}
+        groupKeys={GROUP_KEYS}
+        getLabelFromKey={(key) => toTitleCase(key)}
+        renderAdditionalFilter={() => (
+          <Select
+            label="Search Type"
+            value={stopReasonFilter}
+            onChange={handleSelectStopReason}
+            options={availableSearchTypes}
+            nullValue={{ name: 'All', value: STOPS_ALL }}
+          />
+        )}
+        chartTitle={CHART_TITLE}
+        datasetKey={STOPS_BY_REASON}
+        chartState={chartState}
+        data-testid={CHART_TITLE}
+      >
+        <Line xTicks={availableYears} />
+      </ChartBase>
+      <DepartmentalStopCountTable data={chartState.data[STOPS_BY_REASON]?.stops} />
+    </>
   );
 }
 
