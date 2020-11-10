@@ -39,6 +39,7 @@ export default Object.freeze({
     elementBorder: '1px solid',
     toolTipBorder: '6px solid #272973',
     toolTipBorderRadius: '10px',
+    commonBorderRadius: '6px',
 
     // Racial group colors
     ethnicGroup: {

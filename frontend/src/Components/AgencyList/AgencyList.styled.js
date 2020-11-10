@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import MainBase from 'styles/MainBase';
 
-export const AgencySearchStyled = styled(MainBase)``;
+export const AgencyListStyled = styled(MainBase)``;
 
 export const AgenciesList = styled.ul`
   display: flex;
