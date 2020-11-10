@@ -16,7 +16,6 @@ export const iconPositions = {
 };
 
 function Input({ label, iconPosition, Icon, invertIcon, required, optional, helpText, ...props }) {
-  console.log('iconPosition: ', iconPosition);
   return (
     <Styled.Wrapper>
       {label && (

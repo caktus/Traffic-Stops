@@ -26,7 +26,7 @@ export const LegendSpan = styled.span`
 export const FormGroup = styled.div`
   display: flex;
   flex-direction: row;
-  margin: 2rem;
+  margin: 2rem 1rem;
 
   @media (${breakpoints.smallerThanTabletLandscape}) {
     flex-direction: column;
