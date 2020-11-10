@@ -1,11 +1,8 @@
 import { lighten, darken } from './styleUtils/lighten-darken';
 
 export default Object.freeze({
-  /**
-   * This is the base theme.
-   */
   ForwardJusticeLight: {
-    /* Colors */
+    // Colors
     colorPrimary: '#272973',
     colorSecondary: '#e49a43',
     colorTertiary: '#02bcbb',
@@ -19,7 +16,7 @@ export default Object.freeze({
     colorGrey: '#ACACAC',
     colorWhite: '#fff',
 
-    /* Fonts */
+    // Fonts
     fontHeading: "'Bebas Neue', sans-serif",
     fontBody: "'Montserrat', sans-serif",
 
