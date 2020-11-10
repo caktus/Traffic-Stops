@@ -136,7 +136,7 @@ function DepartmentalSearchCount() {
       >
         <Line xTicks={availableYears} />
       </ChartBase>
-      <DepartmentalSearchCountTable data={chartState.chartData[SEARCHES_BY_TYPE]} />
+      <DepartmentalSearchCountTable data={chartState.data[SEARCHES_BY_TYPE]} />
     </>
   );
 }

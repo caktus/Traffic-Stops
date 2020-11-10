@@ -118,7 +118,7 @@ function ContrabandHitrate() {
           }}
         />
       </ChartBase>
-      <ContrabandHitrateTable data={chartState.chartData[CONTRABAND_HIT_RATE]} />
+      <ContrabandHitrateTable data={chartState.data[CONTRABAND_HIT_RATE]} />
     </>
   );
 }

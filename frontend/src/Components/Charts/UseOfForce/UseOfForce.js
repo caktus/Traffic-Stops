@@ -65,7 +65,7 @@ function UseOfForce() {
       >
         <GroupedBar xTicks={availableYears} />
       </ChartBase>
-      <UseOfForceTable data={chartState.chartData[USE_OF_FORCE]} />
+      <UseOfForceTable data={chartState.data[USE_OF_FORCE]} />
     </>
   );
 }

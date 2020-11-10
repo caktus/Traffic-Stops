@@ -77,7 +77,7 @@ function CensusData() {
           <Pie />
         </ChartBase>
       </CensusDataStyled>
-      <CensusDataTable data={chartState.chartData[AGENCY_DETAIL]?.census_profile} />
+      <CensusDataTable data={chartState.data[AGENCY_DETAIL]?.census_profile} />
     </>
   );
 }

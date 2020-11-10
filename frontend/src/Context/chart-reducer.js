@@ -4,7 +4,7 @@ export const DATASET_FETCH_FAILURE = 'DATASET_FETCH_FAILURE';
 
 export const initialState = {
   loading: {},
-  chartErrors: {},
+  errors: {},
   data: {},
 };
 
@@ -14,7 +14,7 @@ const chartStateReducer = (state, action) => {
       return {
         ...state,
         loading: { ...state.loading, [action.dataset]: true },
-        chartErrors: { ...state.chartErrors, [action.dataset]: false },
+        errors: { ...state.errors, [action.dataset]: false },
       };
     }
     case DATASET_FETCH_SUCCESS: {
@@ -22,14 +22,14 @@ const chartStateReducer = (state, action) => {
         ...state,
         loading: { ...state.loading, [action.dataset]: false },
         data: { ...state.data, [action.dataset]: action.payload },
-        chartErrors: { ...state.chartErrors, [action.dataset]: false },
+        errors: { ...state.errors, [action.dataset]: false },
       };
     }
     case DATASET_FETCH_FAILURE: {
       return {
         ...state,
         loading: { ...state.loading, [action.dataset]: false },
-        chartErrors: { ...state.data, [action.dataset]: action.payload },
+        errors: { ...state.data, [action.dataset]: action.payload },
       };
     }
 

@@ -92,8 +92,8 @@ function DepartmentalSearchRate() {
         <Line xTicks={availableYears} />
       </ChartBase>
       <DepartmentalSearchRateTable
-        stops={chartState.chartData[STOPS]}
-        searches={chartState.chartData[SEARCHES]}
+        stops={chartState.data[STOPS]}
+        searches={chartState.data[SEARCHES]}
       />
     </>
   );

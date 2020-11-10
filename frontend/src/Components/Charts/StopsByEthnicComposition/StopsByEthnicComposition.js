@@ -87,7 +87,7 @@ function StopsByEthnicComposition() {
         <StackedBar horizontal={true} />
       </ChartBase>
 
-      <StopsByEthnicCompositionTable data={chartState.chartData[STOPS]} />
+      <StopsByEthnicCompositionTable data={chartState.data[STOPS]} />
     </StopsByEthnicCompositionStyled>
   );
 }

@@ -113,7 +113,7 @@ function DepartmentalStopCount() {
   };
 
   // DELETE ME
-  useEffect(() => {}, [chartState.chartData[STOPS_BY_REASON]]);
+  useEffect(() => {}, [chartState.data[STOPS_BY_REASON]]);
 
   return (
     <>
@@ -137,7 +137,7 @@ function DepartmentalStopCount() {
       >
         <Line xTicks={availableYears} />
       </ChartBase>
-      <DepartmentalStopCountTable data={chartState.chartData[STOPS_BY_REASON]?.stops} />
+      <DepartmentalStopCountTable data={chartState.data[STOPS_BY_REASON]?.stops} />
     </>
   );
 }
