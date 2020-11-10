@@ -8,8 +8,8 @@ export const SidebarStyled = styled(motion.div)`
   background: ${(props) => props.theme.colorPrimaryDark};
   color: ${(props) => props.theme.colorWhite};
 
-  border-right: ${(props) => props.theme.elementBorder};
-  width: 125px;
+  border-right: ${(props) => props.theme.elementBorder} ${props => props.theme.colorBlack};
+  width: 140px;
   height: 100%;
 
   overflow-x: hidden;
@@ -32,6 +32,9 @@ export const SidebarNav = styled.ul`
   flex-direction: column;
   align-items: center;
   padding: 1rem 0.5rem;
+  @media (${smallerThanTabletLandscape}) {
+    flex-direction: row;
+  }
 `;
 
 export const NavLinkStyled = styled(NavLink)`
@@ -43,5 +46,9 @@ export const NavLinkStyled = styled(NavLink)`
 
   &.active {
     color: ${(props) => props.theme.colorSecondary};
+  }
+
+  @media (${smallerThanTabletLandscape}) {
+    margin-left: 1rem;
   }
 `;
