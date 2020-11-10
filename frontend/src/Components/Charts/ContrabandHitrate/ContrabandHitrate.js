@@ -13,7 +13,8 @@ import useDataset, { CONTRABAND_HIT_RATE } from 'hooks/useDataset';
 // Children
 import ChartBase from 'Components/Charts/ChartBase';
 import Select from 'Components/Elements/Inputs/Select';
-import Bar from '../ChartTypes/Bar';
+import Bar from 'Components/Charts/ChartTypes/Bar';
+import ContrabandHitrateTable from 'Components/Tables/ContrabandHitrateTable';
 
 const CHART_TITLE = 'Contraband Hit-rate';
 
@@ -84,38 +85,41 @@ function ContrabandHitrate() {
   };
 
   return (
-    <ChartBase
-      mapData={mapData}
-      groupKeys={GROUP_KEYS}
-      hideLegend
-      getLabelFromKey={(key) => toTitleCase(key)}
-      renderAdditionalFilter={() => (
-        <Select
-          label="Year"
-          value={yearSelected}
-          onChange={(e) => setYearSelected(e.target.value)}
-          options={availableYears.map((year) => ({ name: year, value: year }))}
-          nullValue={{ name: 'Total', value: YEARS_ALL }}
+    <>
+      <ChartBase
+        mapData={mapData}
+        groupKeys={GROUP_KEYS}
+        hideLegend
+        getLabelFromKey={(key) => toTitleCase(key)}
+        renderAdditionalFilter={() => (
+          <Select
+            label="Year"
+            value={yearSelected}
+            onChange={(e) => setYearSelected(e.target.value)}
+            options={availableYears.map((year) => ({ name: year, value: year }))}
+            nullValue={{ name: 'Total', value: YEARS_ALL }}
+          />
+        )}
+        chartTitle={CHART_TITLE}
+        datasetKey={CONTRABAND_HIT_RATE}
+        chartState={chartState}
+        data-testid={CHART_TITLE}
+      >
+        <Bar
+          chartProps={{ horizontal: true, domainPadding: { x: 10 } }}
+          xAxisProps={{ tickValues: GROUP_KEYS.map((k) => toTitleCase(k)), crossAxis: false }}
+          yAxisProps={{ domain: [0, 100], tickFormat: (t) => `${t}%`, crossAxis: false }}
+          barProps={{
+            labels: ({ datum }) => `${datum.y}%`,
+            style: {
+              labels: { fontSize: 10 },
+              data: { fill: ({ datum }) => datum.color },
+            },
+          }}
         />
-      )}
-      chartTitle={CHART_TITLE}
-      datasetKey={CONTRABAND_HIT_RATE}
-      chartState={chartState}
-      data-testid={CHART_TITLE}
-    >
-      <Bar
-        chartProps={{ horizontal: true, domainPadding: { x: 10 } }}
-        xAxisProps={{ tickValues: GROUP_KEYS.map((k) => toTitleCase(k)), crossAxis: false }}
-        yAxisProps={{ domain: [0, 100], tickFormat: (t) => `${t}%`, crossAxis: false }}
-        barProps={{
-          labels: ({ datum }) => `${datum.y}%`,
-          style: {
-            labels: { fontSize: 10 },
-            data: { fill: ({ datum }) => datum.color },
-          },
-        }}
-      />
-    </ChartBase>
+      </ChartBase>
+      <ContrabandHitrateTable data={chartState.data[CONTRABAND_HIT_RATE]} />
+    </>
   );
 }
 

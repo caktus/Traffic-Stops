@@ -14,6 +14,7 @@ import useDataset, { SEARCHES_BY_TYPE } from 'hooks/useDataset';
 import ChartBase from 'Components/Charts/ChartBase';
 import Select from 'Components/Elements/Inputs/Select';
 import Line from 'Components/Charts/ChartTypes/Line';
+import DepartmentalSearchCountTable from 'Components/Tables/DepartmentalSearchCountTable';
 
 const CHART_TITLE = 'Departmental Search Count';
 
@@ -114,26 +115,29 @@ function DepartmentalSearchCount() {
   };
 
   return (
-    <ChartBase
-      mapData={mapData}
-      groupKeys={GROUP_KEYS}
-      getLabelFromKey={(key) => toTitleCase(key)}
-      renderAdditionalFilter={() => (
-        <Select
-          label="Search Type"
-          value={searchTypeFilter}
-          onChange={handleSelectSearchType}
-          options={availableSearchTypes}
-          nullValue={{ name: 'All', value: STOPS_ALL }}
-        />
-      )}
-      chartTitle={CHART_TITLE}
-      datasetKey={SEARCHES_BY_TYPE}
-      chartState={chartState}
-      data-testid={SEARCHES_BY_TYPE}
-    >
-      <Line xTicks={availableYears} />
-    </ChartBase>
+    <>
+      <ChartBase
+        mapData={mapData}
+        groupKeys={GROUP_KEYS}
+        getLabelFromKey={(key) => toTitleCase(key)}
+        renderAdditionalFilter={() => (
+          <Select
+            label="Search Type"
+            value={searchTypeFilter}
+            onChange={handleSelectSearchType}
+            options={availableSearchTypes}
+            nullValue={{ name: 'All', value: STOPS_ALL }}
+          />
+        )}
+        chartTitle={CHART_TITLE}
+        datasetKey={SEARCHES_BY_TYPE}
+        chartState={chartState}
+        data-testid={SEARCHES_BY_TYPE}
+      >
+        <Line xTicks={availableYears} />
+      </ChartBase>
+      <DepartmentalSearchCountTable data={chartState.data[SEARCHES_BY_TYPE]} />
+    </>
   );
 }
 

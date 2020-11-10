@@ -4,36 +4,34 @@ import { VictoryPie, VictoryLabel, VictoryTooltip } from 'victory';
 
 const PIE_STYLES = {
   data: {
-    fill: ({ datum }) => datum.color
+    fill: ({ datum }) => datum.color,
   },
-  labels: { 
-    fill: "white", 
-    fontSize: 20, 
-    fontWeight: "bold"
-  }
-}
+  labels: {
+    fill: 'white',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+};
 
-const LABEL_SKIP_ANGLE = .4;
+const LABEL_SKIP_ANGLE = 0.4;
 
-const _getLabel = props => {
+const _getLabel = (props) => {
   const { slice, datum } = props;
   const { startAngle, endAngle } = slice;
-  const sliceAngle = endAngle - startAngle
-  console.log('sliceAngle: ', sliceAngle)
-  console.log(LABEL_SKIP_ANGLE)
-  if (sliceAngle <= LABEL_SKIP_ANGLE) return ""
-  return `${datum.y}%`
-}
+  const sliceAngle = endAngle - startAngle;
+  if (sliceAngle <= LABEL_SKIP_ANGLE) return '';
+  return `${datum.y}%`;
+};
 
 function Pie({ data }) {
   const theme = useTheme();
 
   return (
-    <VictoryPie 
+    <VictoryPie
       data={data}
       style={PIE_STYLES}
       labelComponent={<PieLabel theme={theme} />}
-      labelRadius={({ innerRadius }) => innerRadius + 30 }
+      labelRadius={({ innerRadius }) => innerRadius + 30}
       padAngle={2}
       cornerRadius={5}
       innerRadius={50}
@@ -41,15 +39,15 @@ function Pie({ data }) {
   );
 }
 
-const PieLabel = props => {
+const PieLabel = (props) => {
   const { datum, style, slice, theme } = props;
   const { startAngle, endAngle } = slice;
-  const sliceAngle = endAngle - startAngle
+  const sliceAngle = endAngle - startAngle;
   return (
     <g>
       <VictoryLabel
         {...props}
-        text={sliceAngle <= LABEL_SKIP_ANGLE ? "" : `${datum.y}%`}
+        text={sliceAngle <= LABEL_SKIP_ANGLE ? '' : `${datum.y}%`}
         // text={datum.y < 5 ? '' : `${Math.floor(datum.y)}%`}
       />
       <VictoryTooltip
@@ -62,9 +60,9 @@ const PieLabel = props => {
         height={40}
       />
     </g>
-  )
-}
+  );
+};
 
-PieLabel.defaultEvents = VictoryTooltip.defaultEvents
+PieLabel.defaultEvents = VictoryTooltip.defaultEvents;
 
 export default Pie;
