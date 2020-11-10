@@ -7,20 +7,32 @@ export default Object.freeze({
   ForwardJusticeLight: {
     /* Colors */
     colorPrimary: '#272973',
-    colorSecondary: '#e49a43',
-    colorTertiary: '#02bcbb',
+    colorSecondary: '#02BCBB',
+    colorTertiary: '#9E7B9B',
 
-    // Color Variants
-    colorPrimaryLight: lighten('#272973'),
-    colorPrimaryDark: darken('#272973'),
+    // Color States
+    colorWarning: '#FFE066',
+    colorError: '#F25F5C',
 
     // Greyscale
-    colorBlack: '#111111',
+    colorBlack: '#000',
+    colorGreyDark: '#666666',
     colorGrey: '#ACACAC',
+    colorGreySemi: '#E6E6E6',
+    colorGreyLight: '#F5F5F5',
     colorWhite: '#fff',
+
+    // Color Variants
+    colorPrimaryLight: '#4BA6FF',
+    colorPrimaryDark: '#1565B3',
+    colorTertiaryLight: '#8879FC',
+    colorWarningLight: '#FFCF74',
+    colorErrorLight: '#E95C7B',
+    colorErrorDark: '#9C0F2E',
 
     /* Fonts */
     fontHeading: "'Bebas Neue', sans-serif",
+    fontSubHeading: "'Oxygen', sans-serif",
     fontBody: "'Montserrat', sans-serif",
 
     // Elements
