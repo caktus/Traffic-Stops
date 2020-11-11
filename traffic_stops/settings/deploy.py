@@ -52,6 +52,7 @@ SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
 FRONTEND_BUILD_DIR = Path(BASE_DIR) / "build"
 TEMPLATES[0]["DIRS"] = [os.path.join(PROJECT_DIR, "templates"), FRONTEND_BUILD_DIR]
+STATICFILES_DIRS = [os.path.join(PROJECT_DIR, "static"), str(FRONTEND_BUILD_DIR / "static")]
 
 
 ### HTTPS
