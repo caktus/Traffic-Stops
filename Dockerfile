@@ -1,10 +1,10 @@
-FROM node:10-alpine as static_files
+FROM node:12.16-alpine as static_files
 
 WORKDIR /code
 ENV PATH /code/node_modules/.bin:$PATH
-COPY package.json package-lock.json gulpfile.js /code/
+COPY frontend/package.json frontend/package-lock.json /code/
 RUN npm install --silent
-COPY . /code/
+COPY frontend/ /code/
 RUN npm run build
 
 FROM python:3.8-slim as base
@@ -56,8 +56,8 @@ RUN mkdir /code/
 WORKDIR /code/
 ADD . /code/
 
-COPY --from=static_files /code/traffic_stops/static /code/traffic_stops/static
-COPY --from=static_files /code/node_modules/bootstrap /code/node_modules/bootstrap
+# Copy React SPA build into final image
+COPY --from=static_files /code/build /code/build
 
 # uWSGI will listen on this port
 EXPOSE 8000
