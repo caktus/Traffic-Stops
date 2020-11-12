@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import * as Styled from './FindAStopPage.styled';
 
 // Children
-import Input, { iconPositions, icons } from 'Components/Elements/Inputs/Input';
+import Input, { iconPositions } from 'Components/Elements/Inputs/Input';
 import DatePicker from 'Components/Elements/Inputs/DatePicker';
+import DepartmentSearch from 'Components/Elements/DepartmentSearch';
 
-function FindAStopPage(props) {
+function FindAStopPage() {
   const [department, setDepartment] = useState('');
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -18,13 +19,10 @@ function FindAStopPage(props) {
           <Styled.Legend>1. Choose the police or sheriff's department</Styled.Legend>
           <Styled.FormGroup>
             <Styled.SearchInputWrapper>
-              <Input
-                value={department}
+              <DepartmentSearch
                 onChange={(value) => setDepartment(value)}
                 label="Department"
                 required
-                iconPosition={iconPositions.LEFT}
-                Icon={icons.search}
                 helpText="ex: Durham Police Department"
               />
             </Styled.SearchInputWrapper>

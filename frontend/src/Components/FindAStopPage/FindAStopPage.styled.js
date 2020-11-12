@@ -42,4 +42,6 @@ export const InputWrapper = styled.div`
 
 export const SearchInputWrapper = styled(InputWrapper)`
   flex: 3;
+  position: relative;
+  z-index: 1;
 `;

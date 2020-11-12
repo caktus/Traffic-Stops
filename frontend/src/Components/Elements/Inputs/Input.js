@@ -4,7 +4,7 @@ import * as Styled from './Input.styled';
 
 // Icons
 import QuestionMark from 'img/icons/question-mark';
-console.log('questionmark: ', QuestionMark);
+
 export const icons = {
   search: QuestionMark,
   calendar: QuestionMark,
@@ -15,7 +15,17 @@ export const iconPositions = {
   RIGHT: 'right',
 };
 
-function Input({ label, iconPosition, Icon, invertIcon, required, optional, helpText, ...props }) {
+function Input({
+  label,
+  loading,
+  iconPosition,
+  Icon,
+  invertIcon,
+  required,
+  optional,
+  helpText,
+  ...props
+}) {
   return (
     <Styled.Wrapper>
       {label && (
@@ -33,7 +43,7 @@ function Input({ label, iconPosition, Icon, invertIcon, required, optional, help
             <Icon />
           </Styled.IconContainer>
         )}
-        <Styled.Input {...props} iconPosition={iconPosition} />
+        <Styled.Input {...props} loading={loading} iconPosition={iconPosition} />
       </Styled.InnerWrapper>
       {helpText && <Styled.HelpText>{helpText}</Styled.HelpText>}
     </Styled.Wrapper>

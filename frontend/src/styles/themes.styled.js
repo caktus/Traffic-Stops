@@ -1,3 +1,4 @@
+import { css } from 'styled-components';
 import { lighten, darken } from './styleUtils/lighten-darken';
 
 export default Object.freeze({
@@ -34,9 +35,24 @@ export default Object.freeze({
 
     // Elements
     elementBorder: '1px solid',
-    toolTipBorder: '6px solid #272973',
-    toolTipBorderRadius: '10px',
+    toolTipBorder: '1px solid #272973',
+    toolTipBorderRadius: '6px',
     commonBorderRadius: '6px',
+
+    // Shadows
+    boxShadowLight: '0px 0px 1px rgba(48, 49, 51, 0.05), 0px 2px 4px rgba(48, 49, 51, 0.1)',
+    boxShadowDark: '0px 0px 1px rgba(13, 13, 13, 0.9), 0px 2px 4px #0D0D0D',
+    boxShadowDarkDeep: '0px 0px 1px rgba(13, 13, 13, 0.9), 0px 4px 8px #0D0D0D',
+
+    // Presets
+    fontBody18: css`
+      font-family: 'Montserrat', sans-serif;
+      font-style: normal;
+      font-weight: normal;
+      font-size: 18px;
+      line-height: 32px;
+      color: #000;
+    `,
 
     // Racial group colors
     ethnicGroup: {

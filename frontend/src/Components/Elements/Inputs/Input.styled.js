@@ -27,10 +27,6 @@ export const Input = styled.input`
   padding-left: ${(props) => (props.icon ? '2rem' : '1rem')};
   height: 48px;
 
-  /* &::-webkit-calendar-picker-indicator {
-    display: none;
-  } */
-
   ${(props) => {
     if (props.iconPosition === 'left') {
       return css`
@@ -48,7 +44,7 @@ export const Input = styled.input`
 
   &:focus {
     outline-color: ${(props) => props.theme.colorSecondary};
-    outline-offset: -5px;
+    outline-offset: 5px;
   }
 `;
 

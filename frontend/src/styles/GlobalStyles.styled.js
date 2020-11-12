@@ -53,9 +53,7 @@ export default createGlobalStyle`
       color: ${(props) => props.theme.colorGrey};
     }
 
-    fieldset {;
+    fieldset {
       border: none;
     }
-
-
 `;

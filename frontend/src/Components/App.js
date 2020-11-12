@@ -16,6 +16,7 @@ import { LayoutStyled } from './Layout.styled';
 
 // Context
 import { RootContextProvider } from 'Context/root-context';
+import rootReducer, { initialState } from 'Context/root-reducer';
 
 // Routes
 import About from 'Components/AboutPage/AboutPage';
@@ -29,7 +30,7 @@ function App() {
       <GlobalStyles />
       <AppStyled>
         <BrowserRouter>
-          <RootContextProvider>
+          <RootContextProvider reducer={rootReducer} initialState={initialState}>
             <LayoutStyled>
               <Header />
               <Switch>

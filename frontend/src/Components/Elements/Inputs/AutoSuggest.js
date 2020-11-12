@@ -3,15 +3,17 @@ import PropTypes from 'prop-types';
 import {
   Suggestion,
   SuggestionPart,
-  InputWrapper,
-  InputStyled,
   AutoSuggestionContainerStyled,
+  ContainerList,
 } from './AutoSuggest.styled';
 
 // Deps
 import Autosuggest from 'react-autosuggest';
 import AutosuggestHighlightMatch from 'autosuggest-highlight/match';
 import AutosuggestHighlightParse from 'autosuggest-highlight/parse';
+
+// Children
+import Input from './Input';
 
 // https://developer.mozilla.org/en/docs/Web/JavaScript/Guide/Regular_Expressions#Using_Special_Characters
 function escapeRegexCharacters(str) {
@@ -40,23 +42,22 @@ function renderSuggestion(suggestion, { query, isHighlighted }) {
 }
 
 function AutoSuggestInput(inputProps) {
-  return (
-    <InputWrapper>
-      <InputStyled autoFocus {...inputProps} />
-    </InputWrapper>
-  );
+  return <Input {...inputProps} />;
 }
 
-const AutoSuggestionContainer = ({ containerProps, children }) => {
+const AutoSuggestionContainer = ({ containerProps, children, dropdownSubComponent }) => {
   const { className } = containerProps;
   if (className.includes('--open')) {
     return (
-      <AutoSuggestionContainerStyled {...containerProps}>{children}</AutoSuggestionContainerStyled>
+      <AutoSuggestionContainerStyled {...containerProps}>
+        <ContainerList>{children}</ContainerList>
+        {dropdownSubComponent}
+      </AutoSuggestionContainerStyled>
     );
   } else return null;
 };
 
-function AutoSuggest({ data, placeholder, accessor, onSuggestionSelected }) {
+function AutoSuggest({ data, accessor, onSuggestionSelected, dropdownSubComponent, inputProps }) {
   const [value, setValue] = useState('');
   const [suggestions, setSuggestions] = useState([]);
 
@@ -75,12 +76,16 @@ function AutoSuggest({ data, placeholder, accessor, onSuggestionSelected }) {
     });
   }
 
-  const onChange = (event, { newValue, method }) => setValue(newValue);
+  const onChange = (_, { newValue }) => setValue(newValue);
 
-  const onSuggestionsFetchRequested = ({ value }) =>
-    setSuggestions(getSuggestions(value, accessor));
+  const onSuggestionsFetchRequested = ({ value }) => {
+    if (!value) setSuggestions(data);
+    else setSuggestions(getSuggestions(value, accessor));
+  };
 
   const onSuggestionsClearRequested = () => setSuggestions([]);
+
+  const shouldRenderSuggestions = () => true;
 
   return (
     <Autosuggest
@@ -88,12 +93,15 @@ function AutoSuggest({ data, placeholder, accessor, onSuggestionSelected }) {
       onSuggestionsFetchRequested={onSuggestionsFetchRequested}
       onSuggestionsClearRequested={onSuggestionsClearRequested}
       getSuggestionValue={(val) => getSuggestionValue(val, accessor)}
+      shouldRenderSuggestions={shouldRenderSuggestions}
       onSuggestionSelected={onSuggestionSelected}
       renderSuggestion={renderSuggestion}
       renderInputComponent={AutoSuggestInput}
-      renderSuggestionsContainer={AutoSuggestionContainer}
+      renderSuggestionsContainer={(props) => (
+        <AutoSuggestionContainer {...props} dropdownSubComponent={dropdownSubComponent} />
+      )}
       inputProps={{
-        placeholder,
+        ...inputProps,
         onChange,
         value,
       }}

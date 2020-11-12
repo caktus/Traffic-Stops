@@ -1,13 +1,12 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useReducer, useContext } from 'react';
 
 const Context = createContext();
 
-export function RootContextProvider({ children }) {
-  const [showHeaderSearch, setShowHeaderSearch] = useState(false);
-  const context = { showHeaderSearch, setShowHeaderSearch };
-  return <Context.Provider value={context} children={children} />;
+export function RootContextProvider({ reducer, initialState = {}, children }) {
+  const value = useReducer(reducer, initialState);
+  return <Context.Provider value={value} children={children} />;
 }
 
-export function useRootContext(endpoints) {
+export function useRootContext() {
   return useContext(Context);
 }
