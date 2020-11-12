@@ -1,10 +1,10 @@
-import { AGENCY_DATA_SLUG, AGENCY_SEARCH_SLUG } from '../../src/Routes/slugs';
+import { AGENCY_DATA_SLUG, AGENCY_LIST_SLUG } from '../../src/Routes/slugs';
 import { MIN_DELAY } from '../../src/Components/Containers/AsyncRoute';
 import { getStopsByReasonURL } from '../../src/Services/endpoints';
 
 describe('Chart behavior', () => {
   beforeEach(() => {
-    cy.visit(`${AGENCY_SEARCH_SLUG}${AGENCY_DATA_SLUG}/**`);
+    cy.visit(`${AGENCY_LIST_SLUG}${AGENCY_DATA_SLUG}/**`);
   });
 
   describe('Stops By Reason Chart', () => {

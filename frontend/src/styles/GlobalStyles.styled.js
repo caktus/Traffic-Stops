@@ -17,7 +17,7 @@ export default createGlobalStyle`
         box-sizing: border-box;
     }
 
-    h1, h2, h3, h4 {
+    h1, h2, h3{
         font-family: ${(props) => props.theme.fontHeading};
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
@@ -25,6 +25,35 @@ export default createGlobalStyle`
 
     h1 {
         margin: 1rem;
+        font-size: 48px;
+        font-style: normal;
+        font-weight: normal;
+        color: ${(props) => props.theme.colorBlack};
     }
 
+    h2 {
+      font-style: normal;
+      font-weight: normal;
+      font-size: 31px;
+      color: ${(props) => props.theme.colorGrey};
+    }
+
+    h3 {
+      font-style: normal;
+      font-weight: normal;
+      font-size: 26px;
+      color: ${(props) => props.theme.colorGrey};
+    }
+
+    h4 {
+      font-family: ${(props) => props.theme.fontSubHeading};
+      font-style: normal;
+      font-weight: bold;
+      font-size: 21px;
+      color: ${(props) => props.theme.colorGrey};
+    }
+
+    fieldset {
+      border: none;
+    }
 `;

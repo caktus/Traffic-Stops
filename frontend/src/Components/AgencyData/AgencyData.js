@@ -21,25 +21,25 @@ function AgencyData(props) {
 
   return (
     <AgencyDataStyled data-testid="AgencyData" {...props}>
-        <ContentWrapper >
-          <AnimatePresence>
-            {sidebarOpen && (
-              <motion.div
-                key="DataSidebar"
-                initial={{ opacity: 0.35, x: '-100%', duration: 750 }}
-                animate={{ opacity: 1, x: 0, duration: 750 }}
-                exit={{ opacity: 0.35, x: '-100%', duration: 750 }}
-                transition={{ ease: 'easeIn' }}
-              >
-                <Sidebar open={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-              </motion.div>
-            )}
-          </AnimatePresence>
-          
-          <ChartStateProvider reducer={chartStateReducer} initialState={initialState}>
-            <Charts />
-          </ChartStateProvider>
-        </ContentWrapper>
+      <ContentWrapper>
+        <AnimatePresence>
+          {sidebarOpen && (
+            <motion.div
+              key="DataSidebar"
+              initial={{ opacity: 0.35, x: '-100%', duration: 750 }}
+              animate={{ opacity: 1, x: 0, duration: 750 }}
+              exit={{ opacity: 0.35, x: '-100%', duration: 750 }}
+              transition={{ ease: 'easeIn' }}
+            >
+              <Sidebar open={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <ChartStateProvider reducer={chartStateReducer} initialState={initialState}>
+          <Charts />
+        </ChartStateProvider>
+      </ContentWrapper>
     </AgencyDataStyled>
   );
 }

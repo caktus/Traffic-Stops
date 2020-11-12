@@ -39,4 +39,4 @@ Philosophically, this project utilizes animation to ease transitions for the use
 
 ## Absolute Imports
 
-Javascript tooling typically requires relative imports. We've configured this project a little differently using [create-react-app bootstrapping and the `jsconfig.json` file](https://create-react-app.dev/docs/importing-a-component/#absolute-imports). Imports can be either relative or absolute based on the baseUrl set in `jsconfig.json`. This is currently set to the `src` directory.
+Javascript tooling typically requires relative imports. We've configured this project a little differently using [create-react-app bootstrapping and the `jsconfig.json` file](https://create-react-app.dev/docs/importing-a-component/#absolute-imports). This was done to make dynamic bundle imports a little more modular. Imports can be either relative or absolute based on the baseUrl set in `jsconfig.json`. This is currently set to the `src` directory. For consistency's sake, let's use absolute imports.
