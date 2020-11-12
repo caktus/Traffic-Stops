@@ -1,29 +1,58 @@
+import { css } from 'styled-components';
 import { lighten, darken } from './styleUtils/lighten-darken';
 
 export default Object.freeze({
   ForwardJusticeLight: {
     // Colors
     colorPrimary: '#272973',
-    colorSecondary: '#e49a43',
-    colorTertiary: '#02bcbb',
+    colorSecondary: '#02BCBB',
+    colorTertiary: '#9E7B9B',
 
-    // Color Variants
-    colorPrimaryLight: lighten('#272973'),
-    colorPrimaryDark: darken('#272973'),
+    // Color States
+    colorWarning: '#FFE066',
+    colorError: '#F25F5C',
 
     // Greyscale
-    colorBlack: '#111111',
+    colorBlack: '#000',
+    colorGreyDark: '#666666',
     colorGrey: '#ACACAC',
+    colorGreySemi: '#E6E6E6',
+    colorGreyLight: '#F5F5F5',
     colorWhite: '#fff',
 
-    // Fonts
+    // Color Variants
+    colorPrimaryLight: '#4BA6FF',
+    colorPrimaryDark: '#1565B3',
+    colorTertiaryLight: '#8879FC',
+    colorWarningLight: '#FFCF74',
+    colorErrorLight: '#E95C7B',
+    colorErrorDark: '#9C0F2E',
+
+    /* Fonts */
     fontHeading: "'Bebas Neue', sans-serif",
+    fontSubHeading: "'Oxygen', sans-serif",
     fontBody: "'Montserrat', sans-serif",
 
     // Elements
     elementBorder: '1px solid',
-    toolTipBorder: '6px solid #272973',
-    toolTipBorderRadius: '10px',
+    toolTipBorder: '1px solid #272973',
+    toolTipBorderRadius: '6px',
+    commonBorderRadius: '6px',
+
+    // Shadows
+    boxShadowLight: '0px 0px 1px rgba(48, 49, 51, 0.05), 0px 2px 4px rgba(48, 49, 51, 0.1)',
+    boxShadowDark: '0px 0px 1px rgba(13, 13, 13, 0.9), 0px 2px 4px #0D0D0D',
+    boxShadowDarkDeep: '0px 0px 1px rgba(13, 13, 13, 0.9), 0px 4px 8px #0D0D0D',
+
+    // Presets
+    fontBody18: css`
+      font-family: 'Montserrat', sans-serif;
+      font-style: normal;
+      font-weight: normal;
+      font-size: 18px;
+      line-height: 32px;
+      color: #000;
+    `,
 
     // Racial group colors
     ethnicGroup: {

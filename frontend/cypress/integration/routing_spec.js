@@ -1,4 +1,4 @@
-import { ABOUT_SLUG, AGENCY_SEARCH_SLUG } from '../../src/Routes/slugs';
+import { ABOUT_SLUG, AGENCY_LIST_SLUG } from '../../src/Routes/slugs';
 
 describe('Component Routing', () => {
   it('visiting "/" renders the About page', () => {
@@ -9,16 +9,16 @@ describe('Component Routing', () => {
     cy.get('[data-testid="Header"]');
   });
 
-  it('visiting "/agencies" renders the AgencySearch page', () => {
-    cy.visit(AGENCY_SEARCH_SLUG);
-    cy.get('[data-testid="AgencySearch"]');
+  it('visiting "/agencies" renders the AgencyList page', () => {
+    cy.visit(AGENCY_LIST_SLUG);
+    cy.get('[data-testid="AgencyList"]');
   });
   it('...and the Header is visible.', () => {
     cy.get('[data-testid="Header"]');
   });
 
   it('visiting "/agencies/:agencyId" renders AgencyData page', () => {
-    cy.visit(`${AGENCY_SEARCH_SLUG}/**`);
+    cy.visit(`${AGENCY_LIST_SLUG}/**`);
     cy.get('[data-testid="AgencyData"]');
   });
   it('...and the Header is visible.', () => {
