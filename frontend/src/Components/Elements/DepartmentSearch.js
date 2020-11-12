@@ -17,24 +17,24 @@ import { getAgenciesURL } from 'Services/endpoints';
 import AutoSuggest from './Inputs/AutoSuggest';
 import { iconPositions, icons } from './Inputs/Input';
 import { AGENCY_LIST_SLUG } from 'Routes/slugs';
+import Select from './Inputs/Select';
 
 const DATA_SET = 'AGENCIES_LIST';
 
 function SeeAllDepartments() {
   const history = useHistory();
-  const handleClicked = (e) => {
+  const handleClick = (e) => {
     e.preventDefault();
-    console.log(e);
+    history.push(AGENCY_LIST_SLUG);
   };
   return (
-    <Styled.SeeAllDepartments onClick={handleClicked}>
-      <Styled.SeeAllText>View all departments</Styled.SeeAllText>
+    <Styled.SeeAllDepartments>
+      <Styled.SeeAllText onClick={handleClick}>View all departments</Styled.SeeAllText>
     </Styled.SeeAllDepartments>
   );
 }
 
 function DepartmentSearch({ onChange, navigateOnSelect, invertIcon, showIndexList, ...props }) {
-  const { match } = useRouteMatch();
   const history = useHistory();
   const [state, dispatch] = useRootContext();
   // const [sortedAgencies, setSortedAgencies] = useState({});
@@ -56,12 +56,10 @@ function DepartmentSearch({ onChange, navigateOnSelect, invertIcon, showIndexLis
     }
   }, []);
 
-  const handleSuggestionSelected = (_, doodle) => {
+  const handleSuggestionSelected = (_, { suggestion }) => {
     if (navigateOnSelect) {
-      console.log('suggestion: ', doodle);
-      console.log('match: ', match);
-      console.log('history', history);
-    } else onChange(doodle);
+      history.push(`${AGENCY_LIST_SLUG}/${suggestion.id}`);
+    } else onChange(suggestion);
   };
 
   // /* SORT AGENCIES */
@@ -82,20 +80,21 @@ function DepartmentSearch({ onChange, navigateOnSelect, invertIcon, showIndexLis
   // }, [state.data[DATA_SET]]);
 
   return (
-    <AutoSuggest
-      loading={state.loading[DATA_SET]}
-      data={state.data[DATA_SET]}
-      accessor="name"
-      dropdownSubComponent={showIndexList ? <SeeAllDepartments /> : null}
-      onSuggestionSelected={handleSuggestionSelected}
-      focusInputOnSuggestionClick={false}
-      inputProps={{
-        iconPosition: iconPositions.LEFT,
-        Icon: icons.search,
-        invertIcon,
-        ...props,
-      }}
-    />
+    <Select options={state.data[DATA_SET] || []} />
+    // <AutoSuggest
+    //   loading={state.loading[DATA_SET]}
+    //   data={state.data[DATA_SET]}
+    //   accessor="name"
+    //   dropdownSubComponent={showIndexList ? <SeeAllDepartments /> : null}
+    //   onSuggestionSelected={handleSuggestionSelected}
+    //   focusInputOnSuggestionClick={false}
+    //   inputProps={{
+    //     iconPosition: iconPositions.LEFT,
+    //     Icon: icons.search,
+    //     invertIcon,
+    //     ...props,
+    //   }}
+    // />
   );
 }
 

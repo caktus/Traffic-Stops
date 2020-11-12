@@ -9,7 +9,11 @@ function Select({ label, nullValue, options, ...props }) {
       {label && <SelectLabel>{label}</SelectLabel>}
       <SelectInput {...props}>
         {nullValue && <SelectOption value={nullValue.value}>{nullValue.name}</SelectOption>}
-        {options.map(option => <SelectOption key={option.value} value={option.value}>{option.name}</SelectOption>)}
+        {options.map((option) => (
+          <SelectOption key={option.value} value={option.value}>
+            {option.name}
+          </SelectOption>
+        ))}
       </SelectInput>
     </SelectStyled>
   );
@@ -21,10 +25,12 @@ Select.propTypes = {
     value: PropTypes.string,
     name: PropTypes.string,
   }),
-  options: PropTypes.arrayOf(PropTypes.shape({
-    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-    name: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-  })).isRequired,
+  options: PropTypes.arrayOf(
+    PropTypes.shape({
+      value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      name: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    })
+  ).isRequired,
   value: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
 };

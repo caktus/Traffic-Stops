@@ -89,7 +89,7 @@ function AutoSuggest({ data, accessor, onSuggestionSelected, dropdownSubComponen
 
   return (
     <Autosuggest
-      suggestions={suggestions}
+      suggestions={[{ name: 'test 1' }, { name: 'test 2' }, { name: 'test 3' }]}
       onSuggestionsFetchRequested={onSuggestionsFetchRequested}
       onSuggestionsClearRequested={onSuggestionsClearRequested}
       getSuggestionValue={(val) => getSuggestionValue(val, accessor)}
@@ -100,6 +100,7 @@ function AutoSuggest({ data, accessor, onSuggestionSelected, dropdownSubComponen
       renderSuggestionsContainer={(props) => (
         <AutoSuggestionContainer {...props} dropdownSubComponent={dropdownSubComponent} />
       )}
+      // alwaysRenderSuggestions={true}
       inputProps={{
         ...inputProps,
         onChange,

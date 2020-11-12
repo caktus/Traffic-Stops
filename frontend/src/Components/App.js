@@ -39,11 +39,14 @@ function App() {
               <IconDefs />
               <Header />
               <Switch>
-                <Route path={`${AGENCY_SEARCH_SLUG}/:agencyId`}>
+                <Route path={`${AGENCY_LIST_SLUG}/:agencyId`}>
                   <AgencyData />
                 </Route>
-                <Route path={AGENCY_SEARCH_SLUG}>
-                  <AgencySearch />
+                <Route path={AGENCY_LIST_SLUG}>
+                  <AgencyList />
+                </Route>
+                <Route path={FIND_A_STOP_SLUG}>
+                  <FindAStopPage />
                 </Route>
                 <Route exact path={ABOUT_SLUG}>
                   <About />
