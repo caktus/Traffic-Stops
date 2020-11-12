@@ -3,7 +3,7 @@ import datetime
 import pytz
 from django.conf import settings
 from django.urls import reverse
-from nc.api import GROUPS
+from nc.views import GROUPS
 from nc.models import PURPOSE_CHOICES, RACE_CHOICES, SEARCH_TYPE_CHOICES
 from nc.tests import factories
 from rest_framework import status

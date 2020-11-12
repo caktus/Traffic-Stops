@@ -1,9 +1,9 @@
-.. NC Traffic Stops documentation master file, created by
+.. NC CopWatch documentation master file, created by
    sphinx-quickstart on Sat Sep  6 15:13:52 2014.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to NC Traffic Stop's documentation!
+Welcome to NC CopWatch's documentation!
 =================================================
 
 Traffic Stops is a project of `Forward Justice`_.

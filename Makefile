@@ -22,12 +22,6 @@ setup:
 	@echo 'Setting up the environment...'
 	make install_requirements
 
-run-dev:
-	@echo 'Running local development'
-	docker-compose up -d --remove-orphans
-	npm run dev &
-	python manage.py runserver
-
 run-tests:
 	@echo 'Checking for migrations'
 	python manage.py makemigrations --dry-run | grep 'No changes detected' || (echo 'There are changes which require migrations.' && exit 1)
