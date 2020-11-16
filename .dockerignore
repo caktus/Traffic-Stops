@@ -6,8 +6,8 @@ docker-compose.yml
 jgdc.yml
 Dockerfile
 setup.cfg
-node_modules
 *.dump
 *.env
 .git
 ncdata
+frontend/node_modules
