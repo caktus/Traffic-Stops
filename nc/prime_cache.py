@@ -94,11 +94,11 @@ def run(cutoff_duration_secs=None):
             start_time = time.time()
             req(uri)
             elapsed.append(time.time() - start_time)
-        # prime first search page
-        payload = {"agency": agency_name}
-        search_uri = reverse("nc:stops-search")
-        start_time = time.time()
-        req(search_uri, payload)
+        # # prime first search page
+        # payload = {"agency": agency_name}
+        # search_uri = reverse("nc:stops-search")
+        # start_time = time.time()
+        # req(search_uri, payload)
         elapsed.append(time.time() - start_time)
         elapsed = sum(elapsed)
         logger.info(

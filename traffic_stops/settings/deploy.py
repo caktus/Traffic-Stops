@@ -1,4 +1,6 @@
 # Settings for live deployed environments: staging, production, etc
+from pathlib import Path
+
 from .base import *  # noqa
 
 # This is NOT a complete production settings file. For more, see:
@@ -45,6 +47,13 @@ EMAIL_PORT = os.getenv("EMAIL_PORT", default_smtp_port)
 EMAIL_SUBJECT_PREFIX = "[trafficstops %s] " % ENVIRONMENT.title()
 DEFAULT_FROM_EMAIL = f"noreply@{os.getenv('DOMAIN', os.environ)}"
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
+
+### React SPA index.html
+
+FRONTEND_BUILD_DIR = Path(BASE_DIR) / "build"
+TEMPLATES[0]["DIRS"] = [os.path.join(PROJECT_DIR, "templates"), FRONTEND_BUILD_DIR]
+STATICFILES_DIRS = [os.path.join(PROJECT_DIR, "static"), str(FRONTEND_BUILD_DIR / "static")]
+
 
 ### HTTPS
 

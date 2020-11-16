@@ -97,7 +97,6 @@ STATICFILES_FINDERS = [
 
 STATICFILES_DIRS = [
     os.path.join(PROJECT_DIR, "static"),
-    os.path.join(BASE_DIR, "node_modules/bootstrap"),
 ]
 
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
@@ -150,7 +149,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "traffic_stops.middleware.StateMiddleware",
 ]
 
 ROOT_URLCONF = "traffic_stops.urls"
