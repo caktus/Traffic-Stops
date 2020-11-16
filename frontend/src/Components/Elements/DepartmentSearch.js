@@ -24,7 +24,7 @@ function SeeAllDepartments() {
   const history = useHistory();
   const handleClicked = (e) => {
     e.preventDefault();
-    console.log(e);
+    history.push(AGENCY_LIST_SLUG);
   };
   return (
     <Styled.SeeAllDepartments onClick={handleClicked}>
@@ -37,8 +37,6 @@ function DepartmentSearch({ onChange, navigateOnSelect, invertIcon, showIndexLis
   const { match } = useRouteMatch();
   const history = useHistory();
   const [state, dispatch] = useRootContext();
-  // const [sortedAgencies, setSortedAgencies] = useState({});
-  // const [searchedAgency, setSearchedAgency] = useState();
 
   /* FETCH AGENCIES */
   useEffect(() => {
@@ -56,30 +54,11 @@ function DepartmentSearch({ onChange, navigateOnSelect, invertIcon, showIndexLis
     }
   }, []);
 
-  const handleSuggestionSelected = (_, doodle) => {
+  const handleSuggestionSelected = (_, { suggestion }) => {
     if (navigateOnSelect) {
-      console.log('suggestion: ', doodle);
-      console.log('match: ', match);
-      console.log('history', history);
-    } else onChange(doodle);
+      history.push(`${AGENCY_LIST_SLUG}/${suggestion.id}`);
+    } else onChange(suggestion);
   };
-
-  // /* SORT AGENCIES */
-  // useEffect(() => {
-  //   if (state.data[DATA_SET]) {
-  //     const agenciesByChar = {};
-  //     ALPHABET.map((char) => {
-  //       const agenciesForChar = state.data[DATA_SET].filter(
-  //         (agency) => agency.name[0].toLowerCase() === char
-  //       );
-  //       if (agenciesForChar.length > 0) {
-  //         agenciesByChar[char.toUpperCase()] = agenciesForChar;
-  //       }
-  //     });
-  //     console.log('agenciesByChar: ', agenciesByChar);
-  //     setSortedAgencies(agenciesByChar);
-  //   }
-  // }, [state.data[DATA_SET]]);
 
   return (
     <AutoSuggest
@@ -114,32 +93,3 @@ DepartmentSearch.defaultProps = {
 };
 
 export default DepartmentSearch;
-
-// const ALPHABET = [
-//   'a',
-//   'b',
-//   'c',
-//   'd',
-//   'e',
-//   'f',
-//   'g',
-//   'h',
-//   'i',
-//   'j',
-//   'k',
-//   'l',
-//   'm',
-//   'n',
-//   'o',
-//   'p',
-//   'q',
-//   'r',
-//   's',
-//   't',
-//   'u',
-//   'v',
-//   'w',
-//   'x',
-//   'y',
-//   'z',
-// ];
