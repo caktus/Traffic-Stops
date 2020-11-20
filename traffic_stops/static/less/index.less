@@ -15,7 +15,7 @@
 ==================== */
 @desktop:   ~"only screen and (min-width: 960px) and (max-width: 1199px)";
 @tablet:    ~"only screen and (min-width: 720px) and (max-width: 959px)";
-@phone:     ~"only screen and (min-width: 375px) and (max-width: 719px)";
+@phone:     ~"only screen and (min-width: 200px) and (max-width: 719px)";
 
 // Forward Justice colors from forwardjustice.org
 @brand-primary: #272973;
@@ -421,6 +421,22 @@ code {
   .links a {
     font-size: 16px;
   }
+}
+
+.about-flex-container {
+  display: flex; 
+  flex-direction: row; 
+  align-items: center;
+
+  @media @phone {
+    flex-wrap: wrap;
+  }
+}
+
+.about-flex-image {
+  width: 300px;
+  height: auto;
+
 }
 
 /* State homepage
