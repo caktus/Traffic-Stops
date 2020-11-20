@@ -12,12 +12,9 @@
   <div class="container">
     <div class="banner-flex-container">
       <div class="banner-flex-image">
-        <img src="{% static 'img/nc-copwatch-transparent-small--tayetheartist.png' %}" alt="woman photographing a traffic stop" height="200vw" />
+        <img src="{% static 'img/nc-copwatch-transparent--tayetheartist-968.png' %}" alt="woman photographing a traffic stop" />
       </div>
       <div class="banner-stack-cell">
-        <div class="col-xs-12">
-          <a class="back" href="{% block agency-list-url %}{% endblock %}">◀ Back to "Find An Agency"</a>
-        </div>
         {% if officer_id %}
           <div class="col-sm-12 col-xs-12 title-container">
             <h1>Data for Officer ID: {{officer_id}}</h1>
@@ -29,6 +26,9 @@
             <h4 class="agency-last-stop">Date of last reported stop: {%if object.last_reported_stop %}{{ object.last_reported_stop }}{% else %}No stops reported{%endif%}</h4>
           </div>
         {% endif %}
+        <div class="col-xs-12">
+          <a class="back" href="{% block agency-list-url %}{% endblock %}">◀ Back to "Find An Agency"</a>
+        </div>
       </div>
       {% block find-a-stop-button %}
         <div class="banner-button">
@@ -36,7 +36,7 @@
         </div>
       {% endblock find-a-stop-button %}
     </div>
-    
+
   </div>
 </div>
 
