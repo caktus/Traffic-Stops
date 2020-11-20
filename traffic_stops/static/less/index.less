@@ -424,19 +424,21 @@ code {
 }
 
 .about-flex-container {
-  display: flex; 
-  flex-direction: row; 
+  display: flex;
+  flex-direction: row;
   align-items: center;
 
   @media @phone {
     flex-wrap: wrap;
+    .about-flex-image {
+      width: 100%;
+    }
   }
 }
 
 .about-flex-image {
-  width: 300px;
+  width: 400px;
   height: auto;
-
 }
 
 /* State homepage
@@ -456,8 +458,17 @@ code {
   color: @brand-secondary;
   text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
 
+  p {
+    padding-left: 0;
+  }
+
   &.agency-detail {
-    padding: 70px 40px 60px 40px;
+    padding-bottom: 0px;
+
+    img.hero {
+      width: 100%;
+      margin-top: -60px;
+    }
   }
 
   &.agency-list,
@@ -482,6 +493,7 @@ code {
 
     p {
       font-size: 18px;
+      padding-left: 1em;
     }
   }
 
@@ -646,20 +658,26 @@ p.agency-intro a {
 ========================================= */
 
 .banner-flex-container {
-  display: flex; 
-  flex-direction: row; 
+  display: flex;
+  flex-direction: row;
   flex-wrap: wrap;
 }
 
 .banner-flex-image {
+  img {
+    margin-left: -20px;
+    margin-top: -50px;
+    width: 300px;
+  }
+
   @media @phone {
     display: none;
   }
 }
 
 .banner-stack-cell {
-  flex-direction: column; 
-  flex-grow: 2; 
+  flex-direction: column;
+  flex-grow: 2;
   margin-top: 40px;
 }
 
