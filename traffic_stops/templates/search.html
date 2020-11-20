@@ -1,16 +1,22 @@
 {% extends "base.html" %}
+{% load static  %}
 
 {% block pre-content %}
   <div class="state-banner affix-offset-top-pos find-a-stop">
     <div class="container">
-      <div class="row vertical-align">
-        <div class="col-sm-10 col-xs-12 title-container">
-          <h1>
-            Find a traffic stop
-          </h1>
+      <div class="row horizontal-align">
+        <div class="col-md-2 col-xs-12 title-container hidden-sm hidden-xs">
+          <img class="hero" src="{% static 'img/nc-copwatch-transparent--tayetheartist-968.png' %}" alt="woman photographing a traffic stop" />
         </div>
-        <div class="col-sm-2 col-xs-12">
-          <a class="btn brand pull-right" href="{% block agency-list-url %}{% endblock %}">Find an Agency</a>
+        <div class="col-md-8 col-sm-12">
+          <div class="col-md-10 col-xs-12 title-container">
+            <h1>
+              Find a traffic stop
+            </h1>
+          </div>
+          <div class="col-md-2 col-xs-12">
+            <a class="btn brand pull-right" href="{% block agency-list-url %}{% endblock %}">Find an Agency</a>
+          </div>
         </div>
       </div>
     </div>
