@@ -60,22 +60,21 @@ function DepartmentSearch({ onChange, navigateOnSelect, invertIcon, showIndexLis
     } else onChange(suggestion);
   };
 
-  return (
-    <AutoSuggest
-      loading={state.loading[DATA_SET]}
-      data={state.data[DATA_SET]}
-      accessor="name"
-      dropdownSubComponent={showIndexList ? <SeeAllDepartments /> : null}
-      onSuggestionSelected={handleSuggestionSelected}
-      focusInputOnSuggestionClick={false}
-      inputProps={{
-        iconPosition: iconPositions.LEFT,
-        Icon: icons.search,
-        invertIcon,
-        ...props,
-      }}
-    />
-  );
+  return null;
+  // <AutoSuggest
+  //   loading={state.loading[DATA_SET]}
+  //   data={state.data[DATA_SET]}
+  //   accessor="name"
+  //   dropdownSubComponent={showIndexList ? <SeeAllDepartments /> : null}
+  //   onSuggestionSelected={handleSuggestionSelected}
+  //   focusInputOnSuggestionClick={false}
+  //   inputProps={{
+  //     iconPosition: iconPositions.LEFT,
+  //     Icon: icons.search,
+  //     invertIcon,
+  //     ...props,
+  //   }}
+  // />
 }
 
 DepartmentSearch.propTypes = {

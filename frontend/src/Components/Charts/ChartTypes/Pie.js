@@ -15,13 +15,13 @@ const PIE_STYLES = {
 
 const LABEL_SKIP_ANGLE = 0.4;
 
-const _getLabel = (props) => {
-  const { slice, datum } = props;
-  const { startAngle, endAngle } = slice;
-  const sliceAngle = endAngle - startAngle;
-  if (sliceAngle <= LABEL_SKIP_ANGLE) return '';
-  return `${datum.y}%`;
-};
+// const _getLabel = (props) => {
+//   const { slice, datum } = props;
+//   const { startAngle, endAngle } = slice;
+//   const sliceAngle = endAngle - startAngle;
+//   if (sliceAngle <= LABEL_SKIP_ANGLE) return '';
+//   return `${datum.y}%`;
+// };
 
 function Pie({ data }) {
   const theme = useTheme();

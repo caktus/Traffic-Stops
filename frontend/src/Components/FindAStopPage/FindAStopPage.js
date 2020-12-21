@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import * as Styled from './FindAStopPage.styled';
 
 // Children
-import Input, { iconPositions } from 'Components/Elements/Inputs/Input';
 import DatePicker from 'Components/Elements/Inputs/DatePicker';
 import DepartmentSearch from 'Components/Elements/DepartmentSearch';
 
