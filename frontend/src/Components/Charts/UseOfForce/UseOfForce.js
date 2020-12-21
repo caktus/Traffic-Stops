@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useTheme } from 'styled-components';
 
 // Router
+import { USE_OF_FORCE_HASH } from 'Routes/slugs';
 import { useParams } from 'react-router-dom';
 
 // Util
 import toTitleCase from 'util/toTitleCase';
 
 // State
-import useDataset, { USE_OF_FORCE } from 'hooks/useDataset';
+import useDataset, { USE_OF_FORCE } from 'Hooks/useDataset';
 
 // Children
 import ChartBase from 'Components/Charts/ChartBase';
@@ -59,6 +60,7 @@ function UseOfForce() {
         groupKeys={GROUP_KEYS}
         getLabelFromKey={(key) => toTitleCase(key)}
         chartTitle={CHART_TITLE}
+        chartHash={USE_OF_FORCE_HASH}
         datasetKey={USE_OF_FORCE}
         chartState={chartState}
         data-testid={CHART_TITLE}

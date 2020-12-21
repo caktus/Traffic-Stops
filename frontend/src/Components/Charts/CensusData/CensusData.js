@@ -1,9 +1,12 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { CensusDataStyled } from './CensusData.styled';
 import { useTheme } from 'styled-components';
 
+// Const
+import { CENSUS_DATA_HASH } from 'Routes/slugs';
+
 // State
-import { AGENCY_DETAIL } from 'hooks/useDataset';
+import { AGENCY_DETAIL } from 'Hooks/useDataset';
 import { useChartState } from 'Context/chart-state';
 
 // Util
@@ -70,6 +73,7 @@ function CensusData() {
           groupKeys={KEY_IDS}
           getLabelFromKey={(key) => toTitleCase(key)}
           chartTitle={CHART_TITLE}
+          chartHash={CENSUS_DATA_HASH}
           datasetKey={DATSET_KEY}
           chartState={chartState}
           data-testid={DATSET_KEY}

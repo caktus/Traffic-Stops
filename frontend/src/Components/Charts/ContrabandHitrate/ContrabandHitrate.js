@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useTheme } from 'styled-components';
 
 // Router
+import { CONTRABAND_HITRATE_HASH } from 'Routes/slugs';
 import { useParams } from 'react-router-dom';
 
 // Util
 import toTitleCase from 'util/toTitleCase';
 
 // State
-import useDataset, { CONTRABAND_HIT_RATE } from 'hooks/useDataset';
+import useDataset, { CONTRABAND_HIT_RATE } from 'Hooks/useDataset';
 
 // Children
 import ChartBase from 'Components/Charts/ChartBase';
@@ -101,6 +102,7 @@ function ContrabandHitrate() {
           />
         )}
         chartTitle={CHART_TITLE}
+        chartHash={CONTRABAND_HITRATE_HASH}
         datasetKey={CONTRABAND_HIT_RATE}
         chartState={chartState}
         data-testid={CHART_TITLE}

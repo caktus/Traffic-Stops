@@ -2,7 +2,7 @@ import React, { useState, createRef } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
-import useObservable from 'hooks/useObservable';
+import useObservable from 'Hooks/useObservable';
 
 /**
  * ObservableRender asynchronously loads a bundle when it comes in to view
@@ -15,6 +15,7 @@ function ObservableRender({ renderChild, scrollAreaRef }) {
 
   useObservable({
     observableRef,
+    scrollAreaRef,
     onIntersect: () => setShouldRenderChild(true),
   });
 
@@ -35,3 +36,7 @@ const StyledObservable = styled.div`
 `;
 
 export default ObservableRender;
+
+/**
+ * when url == "#myChart"
+ */

@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { smallerThanTabletLandscape } from 'styles/breakpoints';
-import { NavLink } from 'react-router-dom';
+// import { NavLink } from 'react-router-dom';
+import { NavHashLink } from 'react-router-hash-link';
 import { motion } from 'framer-motion';
 
 export const SidebarStyled = styled(motion.div)`
@@ -8,7 +9,7 @@ export const SidebarStyled = styled(motion.div)`
   background: ${(props) => props.theme.colorPrimaryDark};
   color: ${(props) => props.theme.colorWhite};
 
-  border-right: ${(props) => props.theme.elementBorder} ${props => props.theme.colorBlack};
+  border-right: ${(props) => props.theme.elementBorder} ${(props) => props.theme.colorBlack};
   width: 140px;
   height: 100%;
 
@@ -37,7 +38,7 @@ export const SidebarNav = styled.ul`
   }
 `;
 
-export const NavLinkStyled = styled(NavLink)`
+export const NavLinkStyled = styled(NavHashLink)`
   margin: 1rem 0;
   text-decoration: none;
   text-align: center;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useTheme } from 'styled-components';
 import { StopsByEthnicCompositionStyled } from './StopsByEthnicComposition.styled';
 
@@ -7,11 +7,12 @@ import toTitleCase from 'util/toTitleCase';
 import decimalToFixedPercent from 'util/decimalToFixedPercent';
 
 // Router
+import { STOPS_BY_ETHNIC_COMPOSITION_HASH } from 'Routes/slugs';
 import { useParams } from 'react-router-dom';
 
 // State
 
-import useDataset, { STOPS } from 'hooks/useDataset';
+import useDataset, { STOPS } from 'Hooks/useDataset';
 
 // Children
 import ChartBase from 'Components/Charts/ChartBase';
@@ -80,6 +81,7 @@ function StopsByEthnicComposition() {
         groupKeys={GROUP_KEYS}
         getLabelFromKey={(key) => toTitleCase(key)}
         chartTitle={CHART_TITLE}
+        chartHash={STOPS_BY_ETHNIC_COMPOSITION_HASH}
         datasetKey={DATSET_KEY}
         chartState={chartState}
         data-testid={DATSET_KEY}

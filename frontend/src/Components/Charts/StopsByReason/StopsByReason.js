@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { useTheme } from 'styled-components';
 import { StopsByReasonStyled } from './StopsByReason.styled';
 
 // Router
+import { STOPS_BY_REASON_HASH } from 'Routes/slugs';
 import { useParams } from 'react-router-dom';
 
 // Util
 import toTitleCase from 'util/toTitleCase';
 
 // State
-import useDataset, { STOPS_BY_REASON } from 'hooks/useDataset';
+import useDataset, { STOPS_BY_REASON } from 'Hooks/useDataset';
 
 // Children
 import GroupedBar from 'Components/Charts/ChartTypes/GroupedBar';
@@ -18,16 +18,16 @@ import Select from 'Components/Elements/Inputs/Select';
 
 const CHART_TITLE = 'Likelihood of Search by "Stop Cause"';
 
-const STOP_REASON_KEYS = [
-  'Driving While Impaired',
-  'Safe Movement Violation',
-  'Vehicle Equipment Violation',
-  'Other Motor Vehicle Violation',
-  'Stop Light/Sign Violation',
-  'Speed Limit Violation',
-  'Vehicle Regulatory Violation',
-  'Seat Belt Violation',
-];
+// const STOP_REASON_KEYS = [
+//   'Driving While Impaired',
+//   'Safe Movement Violation',
+//   'Vehicle Equipment Violation',
+//   'Other Motor Vehicle Violation',
+//   'Stop Light/Sign Violation',
+//   'Speed Limit Violation',
+//   'Vehicle Regulatory Violation',
+//   'Seat Belt Violation',
+// ];
 
 const DEFAULT_BASE_GROUP = 'white';
 
@@ -48,7 +48,6 @@ function StopsByReason() {
       setAvailableYears([...uniqueYears]);
     }
   }, [chartState.data[STOPS_BY_REASON]]);
-
 
   const mapData = (filteredKeys = []) => {
     const mappedData = [];
@@ -77,6 +76,7 @@ function StopsByReason() {
           />
         )}
         chartTitle={CHART_TITLE}
+        chartHash={STOPS_BY_REASON_HASH}
         datasetKey={STOPS_BY_REASON}
         chartState={chartState}
         data-testid={STOPS_BY_REASON}

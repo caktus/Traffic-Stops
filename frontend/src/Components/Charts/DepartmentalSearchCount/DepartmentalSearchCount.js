@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useTheme } from 'styled-components';
 
 // Router
+import { DEPARTMENTAL_SEARCH_COUNT_HASH } from 'Routes/slugs';
 import { useParams } from 'react-router-dom';
 
 // Util
 import toTitleCase from 'util/toTitleCase';
 
 // State
-import useDataset, { SEARCHES_BY_TYPE } from 'hooks/useDataset';
+import useDataset, { SEARCHES_BY_TYPE } from 'Hooks/useDataset';
 
 // Children
 import ChartBase from 'Components/Charts/ChartBase';
@@ -130,6 +131,7 @@ function DepartmentalSearchCount() {
           />
         )}
         chartTitle={CHART_TITLE}
+        charHash={DEPARTMENTAL_SEARCH_COUNT_HASH}
         datasetKey={SEARCHES_BY_TYPE}
         chartState={chartState}
         data-testid={SEARCHES_BY_TYPE}

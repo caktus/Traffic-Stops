@@ -8,9 +8,11 @@ import AboutCharts from './AboutCharts/AboutCharts';
 // Route
 import AsyncRoute from 'Components/Containers/AsyncRoute';
 import { useParams } from 'react-router-dom';
+import HashObserver from 'Components/Containers/HashObserver';
+import * as slugs from 'Routes/slugs';
 
 // State
-import useDataset, { AGENCY_DETAIL } from 'hooks/useDataset';
+import useDataset, { AGENCY_DETAIL } from 'Hooks/useDataset';
 
 // Children
 import HR from 'Components/Elements/HR';
@@ -35,74 +37,90 @@ function Charts() {
       >
         <AboutCharts />
         <HR />
-        <AsyncRoute
-          importComponent={() =>
-            import(
-              /* webpackChunkName: 'StopsByReason' */ 'Components/Charts/StopsByReason/StopsByReason'
-            )
-          }
-          renderLoading={() => <ChartSkeleton />}
-          renderError={() => <ChartError chartName="Stops by Reason" />}
-        />
-        <AsyncRoute
-          importComponent={() =>
-            import(/* webpackChunkName: 'CensusData' */ 'Components/Charts/CensusData/CensusData')
-          }
-          renderLoading={() => <ChartSkeleton />}
-          renderError={() => <ChartError chartName="Census Data" />}
-        />
-        <AsyncRoute
-          importComponent={() =>
-            import(
-              /* webpackChunkName: 'StopsByEthnicComposition' */ 'Components/Charts/StopsByEthnicComposition/StopsByEthnicComposition'
-            )
-          }
-          renderLoading={() => <ChartSkeleton />}
-          renderError={() => <ChartError chartName="Stops by Ethnic Composition" />}
-        />
-        <AsyncRoute
-          importComponent={() =>
-            import(
-              /* webpackChunkName: 'DepartmentalStopCount' */ 'Components/Charts/DepartmentalStopCount/DepartmentalStopCount'
-            )
-          }
-          renderLoading={() => <ChartSkeleton />}
-          renderError={() => <ChartError chartName="Department Search Count" />}
-        />
-        <AsyncRoute
-          importComponent={() =>
-            import(
-              /* webpackChunkName: 'DepartmentalSearchCount' */ 'Components/Charts/DepartmentalSearchCount/DepartmentalSearchCount'
-            )
-          }
-          renderLoading={() => <ChartSkeleton />}
-          renderError={() => <ChartError chartName="Department Search Count" />}
-        />
-        <AsyncRoute
-          importComponent={() =>
-            import(
-              /* webpackChunkName: 'DepartmentalSearchRate' */ 'Components/Charts/DepartmentalSearchRate/DepartmentalSearchRate'
-            )
-          }
-          renderLoading={() => <ChartSkeleton />}
-          renderError={() => <ChartError chartName="Department Search Rate" />}
-        />
-        <AsyncRoute
-          importComponent={() =>
-            import(/* webpackChunkName: 'UseOfForce' */ 'Components/Charts/UseOfForce/UseOfForce')
-          }
-          renderLoading={() => <ChartSkeleton />}
-          renderError={() => <ChartError chartName="Use of Force" />}
-        />
-        <AsyncRoute
-          importComponent={() =>
-            import(
-              /* webpackChunkName: 'ContrabandHitrate' */ 'Components/Charts/ContrabandHitrate/ContrabandHitrate'
-            )
-          }
-          renderLoading={() => <ChartSkeleton />}
-          renderError={() => <ChartError chartName="Contraband Hit-rate" />}
-        />
+        <HashObserver hashId={slugs.STOPS_BY_REASON_HASH}>
+          <AsyncRoute
+            importComponent={() =>
+              import(
+                /* webpackChunkName: 'StopsByReason' */ 'Components/Charts/StopsByReason/StopsByReason'
+              )
+            }
+            renderLoading={() => <ChartSkeleton />}
+            renderError={() => <ChartError chartName="Stops by Reason" />}
+          />
+        </HashObserver>
+        <HashObserver hashId={slugs.CENSUS_DATA_HASH}>
+          <AsyncRoute
+            importComponent={() =>
+              import(/* webpackChunkName: 'CensusData' */ 'Components/Charts/CensusData/CensusData')
+            }
+            renderLoading={() => <ChartSkeleton />}
+            renderError={() => <ChartError chartName="Census Data" />}
+          />
+        </HashObserver>
+        <HashObserver hashId={slugs.STOPS_BY_ETHNIC_COMPOSITION_HASH}>
+          <AsyncRoute
+            importComponent={() =>
+              import(
+                /* webpackChunkName: 'StopsByEthnicComposition' */ 'Components/Charts/StopsByEthnicComposition/StopsByEthnicComposition'
+              )
+            }
+            renderLoading={() => <ChartSkeleton />}
+            renderError={() => <ChartError chartName="Stops by Ethnic Composition" />}
+          />
+        </HashObserver>
+        <HashObserver hashId={slugs.DEPARTMENTAL_STOP_COUNT_HASH}>
+          <AsyncRoute
+            importComponent={() =>
+              import(
+                /* webpackChunkName: 'DepartmentalStopCount' */ 'Components/Charts/DepartmentalStopCount/DepartmentalStopCount'
+              )
+            }
+            renderLoading={() => <ChartSkeleton />}
+            renderError={() => <ChartError chartName="Departmental Search Count" />}
+          />
+        </HashObserver>
+        <HashObserver hashId={slugs.DEPARTMENTAL_SEARCH_COUNT_HASH}>
+          <AsyncRoute
+            importComponent={() =>
+              import(
+                /* webpackChunkName: 'DepartmentalSearchCount' */ 'Components/Charts/DepartmentalSearchCount/DepartmentalSearchCount'
+              )
+            }
+            renderLoading={() => <ChartSkeleton />}
+            renderError={() => <ChartError chartName="Departmental Search Count" />}
+          />
+        </HashObserver>
+        <HashObserver hashId={slugs.DEPARTMENTAL_SEARCH_RATE_HASH}>
+          <AsyncRoute
+            importComponent={() =>
+              import(
+                /* webpackChunkName: 'DepartmentalSearchRate' */ 'Components/Charts/DepartmentalSearchRate/DepartmentalSearchRate'
+              )
+            }
+            renderLoading={() => <ChartSkeleton />}
+            renderError={() => <ChartError chartName="Departmental Search Rate" />}
+          />
+        </HashObserver>
+        <HashObserver hashId={slugs.USE_OF_FORCE_HASH}>
+          <AsyncRoute
+            importComponent={() =>
+              import(/* webpackChunkName: 'UseOfForce' */ 'Components/Charts/UseOfForce/UseOfForce')
+            }
+            renderLoading={() => <ChartSkeleton />}
+            renderError={() => <ChartError chartName="Use of Force" />}
+          />
+        </HashObserver>
+        <HashObserver hashId={slugs.CONTRABAND_HITRATE_HASH}>
+          <AsyncRoute
+            importComponent={() =>
+              import(
+                /* webpackChunkName: 'ContrabandHitrate' */ 'Components/Charts/ContrabandHitrate/ContrabandHitrate'
+              )
+            }
+            renderLoading={() => <ChartSkeleton />}
+            renderError={() => <ChartError chartName="Contraband Hit-rate" />}
+          />
+        </HashObserver>
       </ChartsStyled>
     </AnimatePresence>
   );

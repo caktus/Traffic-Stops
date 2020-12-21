@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useTheme } from 'styled-components';
 
 // Router
+import { DEPARTMENTAL_SEARCH_RATE_HASH } from 'Routes/slugs';
 import { useParams } from 'react-router-dom';
 
 // Util
 import toTitleCase from 'util/toTitleCase';
 
 // State
-import useDataset, { SEARCHES, STOPS } from 'hooks/useDataset';
+import useDataset, { SEARCHES, STOPS } from 'Hooks/useDataset';
 
 // Children
 import ChartBase from 'Components/Charts/ChartBase';
@@ -85,6 +86,7 @@ function DepartmentalSearchRate() {
         groupKeys={GROUP_KEYS}
         getLabelFromKey={(key) => toTitleCase(key)}
         chartTitle={CHART_TITLE}
+        chartHash={DEPARTMENTAL_SEARCH_RATE_HASH}
         datasetKey={[STOPS, SEARCHES]}
         chartState={chartState}
         data-testid={CHART_TITLE}

@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useTheme } from 'styled-components';
 
 // Router
+import { DEPARTMENTAL_STOP_COUNT_HASH } from 'Routes/slugs';
 import { useParams } from 'react-router-dom';
 
 // Util
 import toTitleCase from 'util/toTitleCase';
 
 // State
-import useDataset, { STOPS_BY_REASON } from 'hooks/useDataset';
+import useDataset, { STOPS_BY_REASON } from 'Hooks/useDataset';
 
 // Children
 import ChartBase from 'Components/Charts/ChartBase';
@@ -131,6 +132,7 @@ function DepartmentalStopCount() {
           />
         )}
         chartTitle={CHART_TITLE}
+        chartHash={DEPARTMENTAL_STOP_COUNT_HASH}
         datasetKey={STOPS_BY_REASON}
         chartState={chartState}
         data-testid={CHART_TITLE}
