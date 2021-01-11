@@ -14,8 +14,8 @@ import axios from 'Services/Axios';
 import { getAgenciesURL } from 'Services/endpoints';
 
 // Components
-import AutoSuggest from './Inputs/AutoSuggest';
-import { iconPositions, icons } from './Inputs/Input';
+import AutoSuggest from 'Components/Elements/Inputs/AutoSuggest';
+import { iconPositions, icons } from 'Components/Elements/Inputs/Input';
 import { AGENCY_LIST_SLUG } from 'Routes/slugs';
 
 const DATA_SET = 'AGENCIES_LIST';
