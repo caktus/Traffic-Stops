@@ -105,7 +105,7 @@ function DepartmentalSearchCount() {
       filteredKeys.forEach((ethnicGroup) => {
         const group = {};
         group.id = ethnicGroup;
-        group.color = theme.ethnicGroup[ethnicGroup];
+        group.color = theme.colors.ethnicGroup[ethnicGroup];
         const groupData = _reduceStopReasonsByEthnicity(dataByStopReason, yearsSet, ethnicGroup);
         group.data = groupData;
         mappedData.push(group);

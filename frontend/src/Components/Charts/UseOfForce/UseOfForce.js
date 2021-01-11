@@ -40,7 +40,7 @@ function UseOfForce() {
       filteredKeys.forEach((ethnicGroup, i) => {
         const groupData = {};
         groupData.id = ethnicGroup;
-        groupData.color = theme.ethnicGroup[ethnicGroup];
+        groupData.color = theme.colors.ethnicGroup[ethnicGroup];
         groupData.data = data.map((d) => ({
           x: d.year,
           y: d[ethnicGroup],

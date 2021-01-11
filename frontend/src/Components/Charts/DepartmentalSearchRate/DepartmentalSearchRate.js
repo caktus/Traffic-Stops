@@ -64,7 +64,7 @@ function DepartmentalSearchRate() {
       filteredKeys.forEach((ethnicGroup) => {
         const groupData = {};
         groupData.id = ethnicGroup;
-        groupData.color = theme.ethnicGroup[ethnicGroup];
+        groupData.color = theme.colors.ethnicGroup[ethnicGroup];
         groupData.data = availableYears.map((year) => {
           const tick = {};
           tick.x = year;

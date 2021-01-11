@@ -5,10 +5,12 @@ import { motion } from 'framer-motion';
 
 export const SidebarStyled = styled(motion.div)`
   display: flex;
-  background: ${(props) => props.theme.colorPrimaryDark};
-  color: ${(props) => props.theme.colorWhite};
+  background: ${(props) => props.theme.colors.grey};
+  color: ${(props) => props.theme.colors.text};
 
-  border-right: ${(props) => props.theme.elementBorder} ${props => props.theme.colorBlack};
+  border-right: ${(props) => props.theme.borders.standard};
+  border-right-color: ${(props) => props.theme.colors.border};
+
   width: 140px;
   height: 100%;
 

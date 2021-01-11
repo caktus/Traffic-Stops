@@ -7,11 +7,11 @@ export const NavbarStyled = styled.nav`
 `;
 
 export const Navlink = styled(NavLink)`
-  color: ${(props) => props.theme.colorWhite};
+  color: ${(props) => props.theme.colors.white};
   list-style: none;
   margin: 0 1rem;
 
   &.active {
-    color: ${(props) => props.theme.colorSecondary};
+    color: ${(props) => props.theme.colors.secondary};
   }
 `;

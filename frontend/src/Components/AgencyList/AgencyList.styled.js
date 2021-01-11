@@ -18,10 +18,10 @@ export const AlphaSection = styled.li`
 
 export const AlphaTitle = styled.h3`
   width: 100%;
-  border-bottom: 1px solid ${(props) => props.theme.colorBlack};
+  border-bottom: 1px solid ${(props) => props.theme.colors.black};
   padding-left: 1em;
   font-size: 2rem;
-  color: ${(props) => props.theme.colorPrimary};
+  color: ${(props) => props.theme.colors.primary};
 `;
 
 export const List = styled.ul`
@@ -37,7 +37,7 @@ export const List = styled.ul`
 export const ListItem = styled.li`
   padding: 0.75rem;
   a {
-    color: ${(props) => props.theme.colorPrimary};
+    color: ${(props) => props.theme.colors.primary};
     text-decoration: none;
   }
 `;

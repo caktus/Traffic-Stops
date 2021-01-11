@@ -17,9 +17,11 @@ export default Object.freeze({
 
     // aliased colors
     primary: '#272973',
+    primaryDark: '#1565B3',
     secondary: '#02BCBB',
     background: '#ffffff',
     disabled: '#ACACAC',
+
     text: '#000000',
     border: '#666666',
 
@@ -42,11 +44,12 @@ export default Object.freeze({
   /* Borders */
   borders: {
     standard: '1px solid',
+    tooltip: '1px solid',
   },
   radii: {
     none: 0,
     standard: 6,
-    rounded: 20,
+    rounded: '10%',
   },
 
   /* Shadows */

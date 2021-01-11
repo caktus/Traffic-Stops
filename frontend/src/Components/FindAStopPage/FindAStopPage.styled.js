@@ -11,16 +11,16 @@ export const FieldSet = styled.fieldset`
 `;
 
 export const Legend = styled.legend`
-  font-family: ${(props) => props.theme.fontBody};
+  font-family: ${(props) => props.theme.fonts.body};
   font-weight: bold;
   font-size: 21px;
 `;
 
 export const LegendSpan = styled.span`
-  font-family: ${(props) => props.theme.fontBody};
+  font-family: ${(props) => props.theme.fonts.body};
   font-weight: normal;
   font-size: 21px;
-  color: ${(props) => props.theme.colorGreyDark};
+  color: ${(props) => props.theme.colors.darkGrey};
 `;
 
 export const FormGroup = styled.div`

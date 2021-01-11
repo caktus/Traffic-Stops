@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { HeaderStyled, LogosStyled, HeaderNavWrapper } from './Header.styled';
+import * as Styled from './Header.styled';
 
 // Routing
 import { HOME_SLUG } from 'Routes/slugs';
@@ -29,15 +29,15 @@ function Header(props) {
   }, [pathname]);
 
   return (
-    <HeaderStyled data-testid="Header">
-      <HeaderNavWrapper>
-        <LogosStyled>
+    <Styled.Header data-testid="Header">
+      <Styled.HeaderNavWrapper>
+        <Styled.Logos>
           <LogoFull />
-        </LogosStyled>
+        </Styled.Logos>
         <Navbar />
-      </HeaderNavWrapper>
+      </Styled.HeaderNavWrapper>
       <HeaderSearch showHeaderSearch={showHeaderSearch} />
-    </HeaderStyled>
+    </Styled.Header>
   );
 }
 

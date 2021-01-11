@@ -5,15 +5,16 @@ export const ButtonStyled = styled.button`
   font-weight: bold;
   font-size: 1.2rem;
 
-  background: ${(props) => props.theme.colorWhite};
-  border: ${(props) => props.theme.toolTipBorder};
+  background: ${(props) => props.theme.colors.white};
+  border: ${(props) => props.theme.borders.toolTip};
+
   border-radius: ${(props) => props.theme.toolTipBorderRadius};
 
   color: ${(props) => props.theme.colorPrimary};
 
   &:active {
     background: ${(props) => props.theme.colorPrimary};
-    color: ${(props) => props.theme.colorWhite};
+    color: ${(props) => props.theme.colors.white};
   }
 
   transition: all 0.08s linear;

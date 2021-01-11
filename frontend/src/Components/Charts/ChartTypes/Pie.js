@@ -53,7 +53,7 @@ const PieLabel = (props) => {
       <VictoryTooltip
         {...props}
         style={{ ...style, fill: datum.color }}
-        flyoutStyle={{ stroke: theme.colorPrimary, fill: theme.colorWhite, strokeWidth: 2 }}
+        flyoutStyle={{ stroke: theme.colors.primary, fill: theme.colors.white, strokeWidth: 2 }}
         text={`${datum.displayName}\n${datum.y}%`}
         orientation="top"
         pointerLength={5}

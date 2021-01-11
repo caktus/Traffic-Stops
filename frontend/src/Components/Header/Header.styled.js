@@ -1,19 +1,16 @@
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 
-export const HeaderStyled = styled.header`
-  /* display: flex; */
-  /* flex-direction: row; */
-  /* align-items: center; */
-  /* justify-content: space-between; */
+export const Header = styled.header`
   position: relative;
   width: 100%;
-  border-bottom: ${(props) => props.theme.elementBorder};
-  background: ${(props) => props.theme.colorPrimary};
+  border-bottom: ${(props) => props.theme.borders.standard};
+  border-bottom-color: ${(props) => props.theme.colors.border};
+  background: ${(props) => props.theme.colors.primary};
   padding: 1.2rem 2.5rem;
 `;
 
-export const LogosStyled = styled.div`
+export const Logos = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;

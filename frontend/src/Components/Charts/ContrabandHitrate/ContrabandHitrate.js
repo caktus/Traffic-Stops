@@ -66,7 +66,7 @@ function ContrabandHitrate() {
         const groupBar = {};
         const displaName = toTitleCase(ethnicGroup);
         groupBar.displayName = displaName;
-        groupBar.color = theme.ethnicGroup[ethnicGroup];
+        groupBar.color = theme.colors.ethnicGroup[ethnicGroup];
         groupBar.x = displaName;
         if (yearSelected === YEARS_ALL) {
           const groupContraband = _reduceDataByEthnicity(contraband, ethnicGroup)[ethnicGroup];

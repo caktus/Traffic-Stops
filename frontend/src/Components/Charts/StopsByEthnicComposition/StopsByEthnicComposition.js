@@ -59,7 +59,7 @@ function StopsByEthnicComposition() {
       filteredKeys.forEach((ethnicGroup) => {
         const groupSet = {};
         groupSet.id = toTitleCase(ethnicGroup);
-        groupSet.color = theme.ethnicGroup[ethnicGroup];
+        groupSet.color = theme.colors.ethnicGroup[ethnicGroup];
         groupSet.data = data.map((datum) => {
           return {
             x: datum.year,

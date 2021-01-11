@@ -54,7 +54,7 @@ function CensusData() {
             x: ethnicGroup,
             y: decimalToFixedPercent(datum, total),
             displayName: toTitleCase(ethnicGroup),
-            color: theme.ethnicGroup[ethnicGroup],
+            color: theme.colors.ethnicGroup[ethnicGroup],
           });
         }
       }
