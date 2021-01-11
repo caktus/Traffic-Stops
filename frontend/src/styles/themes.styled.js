@@ -1,60 +1,29 @@
-import { css } from 'styled-components';
-import { lighten, darken } from './styleUtils/lighten-darken';
-
 export default Object.freeze({
-  ForwardJusticeLight: {
-    // Colors
-    colorPrimary: '#272973',
-    colorSecondary: '#02BCBB',
-    colorTertiary: '#9E7B9B',
-
-    // Color States
-    colorWarning: '#FFE066',
-    colorError: '#F25F5C',
+  /* Colors */
+  colors: {
+    blue: '#272973',
+    teal: '#02BCBB',
+    purple: '#9E7B9B',
+    yellow: '#FFE066',
+    red: '#F25F5C',
 
     // Greyscale
-    colorBlack: '#000',
-    colorGreyDark: '#666666',
-    colorGrey: '#ACACAC',
-    colorGreySemi: '#E6E6E6',
-    colorGreyLight: '#F5F5F5',
-    colorWhite: '#fff',
+    black: '#000',
+    darkGrey: '#666666',
+    grey: '#ACACAC',
+    greySemi: '#E6E6E6',
+    greyLight: '#F5F5F5',
+    white: '#fff',
 
-    // Color Variants
-    colorPrimaryLight: '#4BA6FF',
-    colorPrimaryDark: '#1565B3',
-    colorTertiaryLight: '#8879FC',
-    colorWarningLight: '#FFCF74',
-    colorErrorLight: '#E95C7B',
-    colorErrorDark: '#9C0F2E',
+    // aliased colors
+    primary: '#272973',
+    secondary: '#02BCBB',
+    background: '#ffffff',
+    disabled: '#ACACAC',
+    text: '#000000',
+    border: '#666666',
 
-    /* Fonts */
-    fontHeading: "'Bebas Neue', sans-serif",
-    fontSubHeading: "'Oxygen', sans-serif",
-    fontBody: "'Montserrat', sans-serif",
-
-    // Elements
-    elementBorder: '1px solid',
-    toolTipBorder: '1px solid #272973',
-    toolTipBorderRadius: '6px',
-    commonBorderRadius: '6px',
-
-    // Shadows
-    boxShadowLight: '0px 0px 1px rgba(48, 49, 51, 0.05), 0px 2px 4px rgba(48, 49, 51, 0.1)',
-    boxShadowDark: '0px 0px 1px rgba(13, 13, 13, 0.9), 0px 2px 4px #0D0D0D',
-    boxShadowDarkDeep: '0px 0px 1px rgba(13, 13, 13, 0.9), 0px 4px 8px #0D0D0D',
-
-    // Presets
-    fontBody18: css`
-      font-family: 'Montserrat', sans-serif;
-      font-style: normal;
-      font-weight: normal;
-      font-size: 18px;
-      line-height: 32px;
-      color: #000;
-    `,
-
-    // Racial group colors
+    // Charting
     ethnicGroup: {
       asian: '#1b9e77',
       black: '#e7298a',
@@ -64,43 +33,72 @@ export default Object.freeze({
       white: '#e6ab02',
     },
   },
+
+  /* Layout, spacing */
+  layout: [],
+  space: [0, 4, 8, 16, 32, 64, 128, 256],
+  sizes: ['1em', '2em', '4em', '8em', '16em', '24em', '32em', '48em', '64em'],
+
+  /* Borders */
+  borders: {
+    standard: '1px solid',
+  },
+  radii: {
+    none: 0,
+    standard: 6,
+    rounded: 20,
+  },
+
+  /* Shadows */
+  shadows: {
+    depth1: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
+    depth2: '0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)',
+    depth3: '0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23)',
+    depth4: '0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22)',
+    depth5: '0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22)',
+  },
+
+  /* Typography */
+  fontSizes: [12, 14, 16, 24, 32, 48, 64, 96, 128],
+  fonts: {
+    heading: "'Bebas Neue', sans-serif",
+    subheading: "'Oxygen', sans-serif",
+    body: "'Montserrat', sans-serif",
+  },
+  fontWeights: ['light', 'normal', 'bold'],
 });
 
-/*
-What IS the best color scheme??
-{
-  asian: "#1b9e77",
-  black: "#e7298a",
-  hispanic: "#7570b3",
-  native_american: "#d95f02",
-  other: "#66a61e",
-  white: "#e6ab02",
-}
+// /*
 
-{
-  asian: #003f5c,
-  black: #444e86,
-  hispanic: #955196,
-  native_american: #dd5182,
-  other: #ff6e54,
-  white: #ffa600,
-}
+//     // Elements
+//     // elementBorder: '1px solid',
+//     // toolTipBorder: '1px solid #272973',
+//     toolTipBorderRadius: '6px',
+//     commonBorderRadius: '6px',
 
-{
-  asian: "#72e5ef", 
-  black: "#cb907b", 
-  hispanic: "#58df8c", 
-  native_american: "#eb6756", 
-  other: "#579ba1", 
-  white: "#f6dce3",
-}
+//     // Shadows
+//     boxShadowLight: '0px 0px 1px rgba(48, 49, 51, 0.05), 0px 2px 4px rgba(48, 49, 51, 0.1)',
+//     boxShadowDark: '0px 0px 1px rgba(13, 13, 13, 0.9), 0px 2px 4px #0D0D0D',
+//     boxShadowDarkDeep: '0px 0px 1px rgba(13, 13, 13, 0.9), 0px 4px 8px #0D0D0D',
 
-{
-    asian: "#FF1DC0",
-    black: "#0CEEFF",
-    hispanic: "#FFF600",
-    native_american: "#1AFF00",
-    other: "#FF0046",
-    white: "#0161FF",
-}
-*/
+//     // Presets
+//     fontBody18: css`
+//       font-family: 'Montserrat', sans-serif;
+//       font-style: normal;
+//       font-weight: normal;
+//       font-size: 18px;
+//       line-height: 32px;
+//       color: #000;
+//     `,
+
+//     // Racial group colors
+//     ethnicGroup: {
+//       asian: '#1b9e77',
+//       black: '#e7298a',
+//       hispanic: '#7570b3',
+//       native_american: '#d95f02',
+//       other: '#66a61e',
+//       white: '#e6ab02',
+//     },
+//   },
+// });

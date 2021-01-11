@@ -4,7 +4,7 @@ import React from 'react';
 import { AppStyled } from './App.styled';
 import { ThemeProvider } from 'styled-components';
 import GlobalStyles from '../styles/GlobalStyles.styled';
-import themes from '../styles/themes.styled';
+import defaultTheme from '../styles/themes.styled';
 
 // Router
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
@@ -26,7 +26,7 @@ import FindAStopPage from 'Components/FindAStopPage/FindAStopPage';
 
 function App() {
   return (
-    <ThemeProvider theme={themes.ForwardJusticeLight}>
+    <ThemeProvider theme={defaultTheme}>
       <GlobalStyles />
       <AppStyled>
         <BrowserRouter>
