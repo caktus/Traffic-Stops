@@ -10,7 +10,6 @@ function Navbar() {
       <Navlink exact to={ABOUT_SLUG}>
         About
       </Navlink>
-      <Navlink to={AGENCY_LIST_SLUG}>[temp]list agencies</Navlink>
     </NavbarStyled>
   );
 }

@@ -1,5 +1,11 @@
 import styled from 'styled-components';
 
+export const Option = styled.p`
+  width: 100%;
+  padding: 1em 0.5em;
+  margin: 0;
+`;
+
 export const Suggestion = styled.p`
   background: ${(props) => (props.isHighlighted ? '#ddd' : 'inherit')};
 `;

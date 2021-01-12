@@ -48,7 +48,7 @@ export default Object.freeze({
   },
   radii: {
     none: 0,
-    standard: 6,
+    standard: 4,
     rounded: '10%',
   },
 
@@ -62,46 +62,29 @@ export default Object.freeze({
   },
 
   /* Typography */
-  fontSizes: [12, 14, 16, 24, 32, 48, 64, 96, 128],
+  fontSizes: ['12px', '16px', '18px', '24px', '32px', '48px', '64px', '96px', '128px'],
   fonts: {
     heading: "'Bebas Neue', sans-serif",
     subheading: "'Oxygen', sans-serif",
     body: "'Montserrat', sans-serif",
   },
   fontWeights: ['light', 'normal', 'bold'],
+
+  /* Variants */
+  buttons: {
+    positive: {
+      color: 'white',
+      bg: 'secondary',
+      borderColor: 'secondary',
+    },
+    neutral: {
+      color: 'secondary',
+      bg: 'white',
+      borderColor: 'secondary',
+    },
+    caution: {
+      color: 'white',
+      bg: 'caution',
+    },
+  },
 });
-
-// /*
-
-//     // Elements
-//     // elementBorder: '1px solid',
-//     // toolTipBorder: '1px solid #272973',
-//     toolTipBorderRadius: '6px',
-//     commonBorderRadius: '6px',
-
-//     // Shadows
-//     boxShadowLight: '0px 0px 1px rgba(48, 49, 51, 0.05), 0px 2px 4px rgba(48, 49, 51, 0.1)',
-//     boxShadowDark: '0px 0px 1px rgba(13, 13, 13, 0.9), 0px 2px 4px #0D0D0D',
-//     boxShadowDarkDeep: '0px 0px 1px rgba(13, 13, 13, 0.9), 0px 4px 8px #0D0D0D',
-
-//     // Presets
-//     fontBody18: css`
-//       font-family: 'Montserrat', sans-serif;
-//       font-style: normal;
-//       font-weight: normal;
-//       font-size: 18px;
-//       line-height: 32px;
-//       color: #000;
-//     `,
-
-//     // Racial group colors
-//     ethnicGroup: {
-//       asian: '#1b9e77',
-//       black: '#e7298a',
-//       hispanic: '#7570b3',
-//       native_american: '#d95f02',
-//       other: '#66a61e',
-//       white: '#e6ab02',
-//     },
-//   },
-// });

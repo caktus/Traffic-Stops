@@ -38,12 +38,16 @@ function Input({
         </Styled.Label>
       )}
       <Styled.InnerWrapper>
-        {Icon && (
-          <Styled.IconContainer iconPosition={iconPosition} invertIcon={invertIcon}>
-            <Icon />
-          </Styled.IconContainer>
-        )}
-        <Styled.Input {...props} loading={loading} iconPosition={iconPosition} />
+        <Styled.Input
+          {...props}
+          icon={
+            Icon && (
+              <Styled.IconContainer iconPosition={iconPosition} invertIcon={invertIcon}>
+                <Icon />
+              </Styled.IconContainer>
+            )
+          }
+        />
       </Styled.InnerWrapper>
       {helpText && <Styled.HelpText>{helpText}</Styled.HelpText>}
     </Styled.Wrapper>

@@ -5,6 +5,7 @@ import * as Styled from './FindAStopPage.styled';
 import Input, { iconPositions } from 'Components/Elements/Inputs/Input';
 import DatePicker from 'Components/Elements/Inputs/DatePicker';
 import DepartmentSearch from 'Components/Elements/DepartmentSearch';
+import Button from 'Components/Elements/Button';
 
 function FindAStopPage() {
   const [department, setDepartment] = useState('');
@@ -69,6 +70,9 @@ function FindAStopPage() {
             <Styled.LegendSpan> (optional)</Styled.LegendSpan>
           </Styled.Legend>
         </Styled.FieldSet>
+        <Button variant="positive" width="100%" py="2" fontSize="3">
+          Search
+        </Button>
       </Styled.Form>
     </Styled.Page>
   );

@@ -13,7 +13,7 @@ function HeaderSearch(showHeaderSearch) {
       <AnimatePresence>
         <SearchWrapper
           initial={{ opacity: 0.35, y: -20, x: '-50%', duration: 750 }}
-          animate={{ opacity: 1, y: 10, x: '-50%', duration: 750 }}
+          animate={{ opacity: 1, y: 20, x: '-50%', duration: 750 }}
           exit={{ opacity: 0.35, y: -20, x: '-50%', duration: 750 }}
           transition={{ ease: 'easeIn' }}
         >

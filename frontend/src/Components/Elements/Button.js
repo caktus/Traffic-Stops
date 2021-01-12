@@ -1,8 +1,12 @@
 import React from 'react';
-import { ButtonStyled } from './Button.styled';
+import { Button } from 'reaktus';
 
-function Button({ children, ...props }) {
-  return <ButtonStyled {...props}>{children}</ButtonStyled>;
+function FjButton({ children, ...props }) {
+  return (
+    <Button boxShadow="none" borderRadius="standard" fontFamily="body" {...props}>
+      {children}
+    </Button>
+  );
 }
 
-export default Button;
+export default FjButton;

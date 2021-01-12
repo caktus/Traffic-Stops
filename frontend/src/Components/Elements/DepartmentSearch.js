@@ -3,7 +3,7 @@ import * as Styled from './DepartmentSearch.styled';
 import PropTypes from 'prop-types';
 
 // Router
-import { useHistory, useRouteMatch } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 // Context
 import { FETCH_START, FETCH_SUCCESS, FETCH_FAILURE } from 'Context/root-reducer';
@@ -14,9 +14,8 @@ import axios from 'Services/Axios';
 import { getAgenciesURL } from 'Services/endpoints';
 
 // Components
-import AutoSuggest from 'Components/Elements/Inputs/AutoSuggest';
-import { iconPositions, icons } from 'Components/Elements/Inputs/Input';
 import { AGENCY_LIST_SLUG } from 'Routes/slugs';
+import AutoSuggest from './Inputs/AutoSuggest';
 
 const DATA_SET = 'AGENCIES_LIST';
 
@@ -34,7 +33,6 @@ function SeeAllDepartments() {
 }
 
 function DepartmentSearch({ onChange, navigateOnSelect, invertIcon, showIndexList, ...props }) {
-  const { match } = useRouteMatch();
   const history = useHistory();
   const [state, dispatch] = useRootContext();
 
@@ -45,6 +43,7 @@ function DepartmentSearch({ onChange, navigateOnSelect, invertIcon, showIndexLis
       async function _fetchAgencyList() {
         try {
           const { data } = await axios.get(getAgenciesURL());
+          console.log('data: ', data);
           dispatch({ type: FETCH_SUCCESS, dataSet: DATA_SET, payload: data });
         } catch (error) {
           dispatch({ type: FETCH_FAILURE, dataSet: DATA_SET, payload: error.message });
@@ -54,26 +53,21 @@ function DepartmentSearch({ onChange, navigateOnSelect, invertIcon, showIndexLis
     }
   }, []);
 
-  const handleSuggestionSelected = (_, { suggestion }) => {
+  const handleSuggestionSelected = (department) => {
     if (navigateOnSelect) {
-      history.push(`${AGENCY_LIST_SLUG}/${suggestion.id}`);
-    } else onChange(suggestion);
+      history.push(`${AGENCY_LIST_SLUG}/${department.id}`);
+    } else onChange(department);
   };
 
   return (
     <AutoSuggest
-      loading={state.loading[DATA_SET]}
       data={state.data[DATA_SET]}
-      accessor="name"
-      dropdownSubComponent={showIndexList ? <SeeAllDepartments /> : null}
-      onSuggestionSelected={handleSuggestionSelected}
-      focusInputOnSuggestionClick={false}
-      inputProps={{
-        iconPosition: iconPositions.LEFT,
-        Icon: icons.search,
-        invertIcon,
-        ...props,
-      }}
+      onSelection={handleSuggestionSelected}
+      {...props}
+      keyAccessor="id"
+      valueAccessor="id"
+      labelAccessor="name"
+      renderBonusContent={() => <SeeAllDepartments />}
     />
   );
 }
