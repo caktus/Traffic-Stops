@@ -21,13 +21,13 @@ const DATA_SET = 'AGENCIES_LIST';
 
 function SeeAllDepartments() {
   const history = useHistory();
-  const handleClicked = (e) => {
+  const handleClick = (e) => {
     e.preventDefault();
     history.push(AGENCY_LIST_SLUG);
   };
   return (
-    <Styled.SeeAllDepartments onClick={handleClicked}>
-      <Styled.SeeAllText>View all departments</Styled.SeeAllText>
+    <Styled.SeeAllDepartments>
+      <Styled.SeeAllText onClick={handleClick}>View all departments</Styled.SeeAllText>
     </Styled.SeeAllDepartments>
   );
 }

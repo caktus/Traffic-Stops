@@ -8,6 +8,10 @@ export const Option = styled.p`
 
 export const Suggestion = styled.p`
   background: ${(props) => (props.isHighlighted ? '#ddd' : 'inherit')};
+  white-space: nowrap;
+  ${(props) => props.theme.fontBody18}
+  padding: 0.25rem 1rem;
+  cursor: pointer;
 `;
 
 export const SuggestionPart = styled.span`
@@ -24,8 +28,8 @@ export const InputStyled = styled.input`
 
 export const AutoSuggestionContainerStyled = styled.div`
   position: absolute;
-  top: 73%;
-  z-index: 10000;
+  top: 100%;
+  z-index: 10;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -35,17 +39,17 @@ export const AutoSuggestionContainerStyled = styled.div`
   box-shadow: ${(props) => props.theme.boxShadowDark};
   background-color: ${(props) => props.theme.colorWhite};
 
-  & p {
+  /* & p {
     margin: 1rem 0;
     white-space: nowrap;
     padding: 0 1.5rem;
     font-size: 16px;
     color: ${(props) => props.theme.colorBlack};
-  }
+  } */
 `;
 
 export const ContainerList = styled.div`
   max-height: 500px;
   overflow-y: scroll;
-  z-index: 10;
+  z-index: 11;
 `;

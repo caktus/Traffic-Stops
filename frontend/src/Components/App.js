@@ -14,6 +14,9 @@ import { AGENCY_LIST_SLUG, ABOUT_SLUG, FIND_A_STOP_SLUG } from 'Routes/slugs';
 import Header from 'Components/Header/Header';
 import { LayoutStyled } from './Layout.styled';
 
+// Meta
+import AppMeta from 'Meta/AppMeta';
+import IconDefs from 'img/icons/IconDefs';
 // Context
 import { RootContextProvider } from 'Context/root-context';
 import rootReducer, { initialState } from 'Context/root-reducer';
@@ -27,11 +30,13 @@ import FindAStopPage from 'Components/FindAStopPage/FindAStopPage';
 function App() {
   return (
     <ThemeProvider theme={defaultTheme}>
+      <AppMeta />
       <GlobalStyles />
       <AppStyled>
         <BrowserRouter>
           <RootContextProvider reducer={rootReducer} initialState={initialState}>
             <LayoutStyled>
+              <IconDefs />
               <Header />
               <Switch>
                 <Route path={`${AGENCY_LIST_SLUG}/:agencyId`}>
