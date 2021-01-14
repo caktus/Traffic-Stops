@@ -1,73 +1,100 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { useTheme } from 'styled-components';
 import * as Styled from './Input.styled';
 
-// Icons
-import QuestionMark from 'img/icons/question-mark';
-
-export const icons = {
-  search: QuestionMark,
-  calendar: QuestionMark,
-};
+import Icon, { ICONS } from 'img/icons/Icon';
+import { Input } from 'reaktus';
 
 export const iconPositions = {
   LEFT: 'left',
   RIGHT: 'right',
 };
 
-function Input({
+function _renderIcon(icon, { iconPosition, invertIcon }) {
+  const theme = useTheme();
+  return (
+    <Styled.IconContainer invertIcon={invertIcon} iconPosition={iconPosition}>
+      <Icon
+        icon={icon}
+        width="25px"
+        height="25px"
+        fill={invertIcon ? theme.colors.primary : theme.colors.white}
+      />
+    </Styled.IconContainer>
+  );
+}
+
+function FJInput({
   label,
+  errors = [],
   loading,
+  icon,
   iconPosition,
-  Icon,
   invertIcon,
   required,
   optional,
   helpText,
   ...props
 }) {
+  function _getPaddingProps(iconPosition) {
+    const paddingProps = {
+      py: 2,
+      px: 3,
+    };
+    if (iconPosition === iconPositions.LEFT) {
+      paddingProps['pl'] = 5;
+    } else if (iconPosition === iconPositions.RIGHT) {
+      paddingProps['pr'] = 5;
+    }
+    return paddingProps;
+  }
+
   return (
     <Styled.Wrapper>
       {label && (
-        <Styled.Label required={required} optional={optional}>
+        <Input.Label errors={errors} py="2">
           {label}{' '}
-          <span>
+          <Styled.LableSpan required={required} optional={optional}>
             {required && '(required)'}
             {optional && '(optional)'}
-          </span>
-        </Styled.Label>
+          </Styled.LableSpan>
+        </Input.Label>
       )}
-      <Styled.InnerWrapper>
-        <Styled.Input
-          {...props}
-          icon={
-            Icon && (
-              <Styled.IconContainer iconPosition={iconPosition} invertIcon={invertIcon}>
-                <Icon />
-              </Styled.IconContainer>
-            )
-          }
-        />
-      </Styled.InnerWrapper>
+      <Input
+        type="text"
+        icon={
+          icon ? (iconProps) => _renderIcon(icon, { ...iconProps, iconPosition, invertIcon }) : null
+        }
+        errors={errors}
+        {..._getPaddingProps(iconPosition)}
+        color="text"
+        border="standard"
+        borderColor="primary"
+        borderRadius="standard"
+        fontSize="2"
+        {...props}
+      />
+      <Input.Errors errors={errors} />
       {helpText && <Styled.HelpText>{helpText}</Styled.HelpText>}
     </Styled.Wrapper>
   );
 }
 
-Input.propTypes = {
+FJInput.propTypes = {
   label: PropTypes.string,
-  icon: PropTypes.oneOf(Object.values(icons)),
+  icon: PropTypes.oneOf(Object.values(ICONS)),
   iconPosition: PropTypes.oneOf(Object.values(iconPositions)),
   invertIcon: PropTypes.bool,
   required: PropTypes.bool,
   optional: PropTypes.bool,
+  onChange: PropTypes.func,
 };
 
-Input.defaultProps = {
-  iconPosition: iconPositions.RIGHT,
+FJInput.defaultProps = {
   invertIcon: false,
   required: false,
   optional: false,
 };
 
-export default Input;
+export default FJInput;
