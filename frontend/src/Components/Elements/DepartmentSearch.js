@@ -16,6 +16,8 @@ import { getAgenciesURL } from 'Services/endpoints';
 // Components
 import { AGENCY_LIST_SLUG } from 'Routes/slugs';
 import AutoSuggest from './Inputs/AutoSuggest';
+import Input, { iconPositions } from 'Components/Elements/Inputs/Input';
+import { ICONS } from 'img/icons/Icon';
 
 const DATA_SET = 'AGENCIES_LIST';
 
@@ -32,7 +34,15 @@ function SeeAllDepartments() {
   );
 }
 
-function DepartmentSearch({ onChange, navigateOnSelect, invertIcon, showIndexList, ...props }) {
+function DepartmentSearch({
+  onChange,
+  navigateOnSelect,
+  invertIcon,
+  showIndexList,
+  helpText,
+  errors,
+  ...props
+}) {
   const history = useHistory();
   const [state, dispatch] = useRootContext();
 
@@ -43,7 +53,6 @@ function DepartmentSearch({ onChange, navigateOnSelect, invertIcon, showIndexLis
       async function _fetchAgencyList() {
         try {
           const { data } = await axios.get(getAgenciesURL());
-          console.log('data: ', data);
           dispatch({ type: FETCH_SUCCESS, dataSet: DATA_SET, payload: data });
         } catch (error) {
           dispatch({ type: FETCH_FAILURE, dataSet: DATA_SET, payload: error.message });
@@ -61,13 +70,24 @@ function DepartmentSearch({ onChange, navigateOnSelect, invertIcon, showIndexLis
 
   return (
     <AutoSuggest
+      {...props}
       data={state.data[DATA_SET]}
       onSelection={handleSuggestionSelected}
-      {...props}
+      helpText={helpText}
+      renderInput={(inputProps) => (
+        <Input
+          errors={errors}
+          icon={ICONS.search}
+          iconPosition={iconPositions.LEFT}
+          invertIcon={invertIcon}
+          borderColor={invertIcon ? 'white' : 'primary'}
+          {...inputProps}
+        />
+      )}
       keyAccessor="id"
       valueAccessor="id"
       labelAccessor="name"
-      renderBonusContent={() => <SeeAllDepartments />}
+      renderBonusContent={showIndexList ? () => <SeeAllDepartments /> : () => {}}
     />
   );
 }

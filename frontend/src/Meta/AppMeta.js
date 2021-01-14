@@ -15,12 +15,12 @@ function AppMeta() {
 
       {/* Possibly temporary? Get fonts from gapi */}
       <link
-        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;700&family=Oxygen:wght@300;400;700&display=swap"
         rel="stylesheet"
       />
 
       {/* Default site title */}
-      <title>Traffic Stops</title>
+      <title>NC CopWatch</title>
     </Helmet>
   );
 }

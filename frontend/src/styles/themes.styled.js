@@ -8,7 +8,7 @@ export default Object.freeze({
     red: '#F25F5C',
 
     // Greyscale
-    black: '#000',
+    black: '#212121',
     darkGrey: '#666666',
     grey: '#ACACAC',
     greySemi: '#E6E6E6',
@@ -21,8 +21,9 @@ export default Object.freeze({
     secondary: '#02BCBB',
     background: '#ffffff',
     disabled: '#ACACAC',
+    caution: '#F25F5C',
 
-    text: '#000000',
+    text: '#212121',
     border: '#666666',
 
     // Charting
