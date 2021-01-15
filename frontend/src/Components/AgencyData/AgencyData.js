@@ -1,27 +1,69 @@
-import React, { useState, useEffect } from 'react';
-import { AgencyDataStyled, ContentWrapper } from './AgencyData.styled';
+import React, { useState, useEffect, useReducer } from 'react';
+import * as S from './AgencyData.styled';
 
-// Animationg
+// Animating
 import { AnimatePresence, motion } from 'framer-motion';
 
-// Context
+// Routing
+import { useParams } from 'react-router-dom';
+
+// Context/State
 import { ChartStateProvider } from 'Context/chart-state';
-import chartStateReducer, { initialState } from 'Context/chart-reducer';
+import { initialState as initialChartState } from 'Context/chart-reducer';
+import fetchReducer, {
+  initialState,
+  FETCH_START,
+  FETCH_SUCCESS,
+  FETCH_FAILURE,
+} from 'Context/fetch-reducer';
+
+// Ajax
+import axios from 'Services/Axios';
+import { getAgencyURL } from 'Services/endpoints';
 
 // Children
+import AgencyHeader from 'Components/AgencyData/AgencyHeader';
 import Sidebar from 'Components/Sidebar/Sidebar';
 import Charts from 'Components/Charts/Charts';
 
 function AgencyData(props) {
+  const { agencyId } = useParams();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [agencyHeaderOpen, setAgencyHeaderOpen] = useState(false);
+
+  // agency details state
+  const [state, dispatch] = useReducer(fetchReducer, initialState);
 
   useEffect(() => {
-    setSidebarOpen(true);
-  }, []);
+    if (state.data) setSidebarOpen(true);
+  }, [state.data]);
+
+  useEffect(() => {
+    console.log('state.data: ', state.data);
+    if (state.data) setAgencyHeaderOpen(true);
+  }, [state.data]);
+
+  useEffect(() => {
+    const _fetchData = async () => {
+      dispatch({ type: FETCH_START });
+      try {
+        const { data } = await axios.get(getAgencyURL(agencyId));
+        dispatch({ type: FETCH_SUCCESS, payload: data });
+      } catch (error) {
+        console.error(error);
+        dispatch({
+          type: FETCH_FAILURE,
+          payload: "Could not fetch this agency's details. Please try again.",
+        });
+      }
+    };
+    _fetchData();
+  }, [agencyId]);
 
   return (
-    <AgencyDataStyled data-testid="AgencyData" {...props}>
-      <ContentWrapper>
+    <S.AgencyData data-testid="AgencyData" {...props}>
+      <AgencyHeader agencyHeaderOpen={agencyHeaderOpen} agencyDetails={state.data} />
+      <S.ContentWrapper>
         <AnimatePresence>
           {sidebarOpen && (
             <motion.div
@@ -36,11 +78,11 @@ function AgencyData(props) {
           )}
         </AnimatePresence>
 
-        <ChartStateProvider reducer={chartStateReducer} initialState={initialState}>
+        <ChartStateProvider reducer={initialChartState} initialState={initialState}>
           <Charts />
         </ChartStateProvider>
-      </ContentWrapper>
-    </AgencyDataStyled>
+      </S.ContentWrapper>
+    </S.AgencyData>
   );
 }
 

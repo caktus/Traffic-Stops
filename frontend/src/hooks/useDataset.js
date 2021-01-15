@@ -11,7 +11,6 @@ import {
   DATASET_FETCH_FAILURE,
 } from 'Context/chart-reducer';
 
-export const AGENCY_DETAIL = 'AGENCY_DETAIL';
 export const STOPS = 'STOPS';
 export const SEARCHES = 'SEARCHES';
 export const STOPS_BY_REASON = 'STOPS_BY_REASON';

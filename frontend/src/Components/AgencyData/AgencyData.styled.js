@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import MainBase from 'styles/MainBase';
 import { smallerThanTabletLandscape } from 'styles/breakpoints';
 
-export const AgencyDataStyled = styled(MainBase)``;
+export const AgencyData = styled(MainBase)``;
 
 export const ContentWrapper = styled.div`
   flex: 1;

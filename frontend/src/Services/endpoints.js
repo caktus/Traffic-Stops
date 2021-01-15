@@ -30,9 +30,6 @@ export const getContrabandHitrateURL = (agencyId) =>
 
 export default function mapDatasetKeyToEndpoint(datasetKey) {
   switch (datasetKey) {
-    case AGENCY_DETAIL: {
-      return getAgencyURL;
-    }
     case STOPS: {
       return getStopsURL;
     }

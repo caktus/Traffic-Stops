@@ -1,27 +1,19 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import { ChartsStyled } from './Charts.styled';
 import { AnimatePresence } from 'framer-motion';
 
-import AboutCharts from './AboutCharts/AboutCharts';
-
 // Route
 import AsyncRoute from 'Components/Containers/AsyncRoute';
-import { useRouteMatch, useParams } from 'react-router-dom';
+import { useRouteMatch } from 'react-router-dom';
 import * as slugs from 'Routes/slugs';
 
-// State
-import useDataset, { AGENCY_DETAIL } from 'hooks/useDataset';
-
 // Children
-import HR from 'Components/Elements/HR';
 import ChartSkeleton from 'Components/Elements/Skeletons/ChartSkeleton';
 import ChartError from 'Components/Elements/ChartError';
 
 function Charts() {
-  let { agencyId } = useParams();
   const match = useRouteMatch();
-  useDataset(agencyId, AGENCY_DETAIL);
 
   // NOTE: We should consider lumping everything together into a JSON or JS file
   // with definitions for each chart.
@@ -35,8 +27,6 @@ function Charts() {
         exit={{ opacity: 0.35, x: 250, duration: 750 }}
         transition={{ ease: 'easeIn' }}
       >
-        <AboutCharts />
-        <HR />
         <AsyncRoute
           path={`${match.path}${slugs.STOPS_BY_REASON_SLUG}`}
           importComponent={() =>
@@ -46,14 +36,6 @@ function Charts() {
           }
           renderLoading={() => <ChartSkeleton />}
           renderError={() => <ChartError chartName="Stops by Reason" />}
-        />
-        <AsyncRoute
-          path={`${match.path}${slugs.CENSUS_DATA_SLUG}`}
-          importComponent={() =>
-            import(/* webpackChunkName: 'CensusData' */ 'Components/Charts/CensusData/CensusData')
-          }
-          renderLoading={() => <ChartSkeleton />}
-          renderError={() => <ChartError chartName="Census Data" />}
         />
         <AsyncRoute
           path={`${match.path}${slugs.STOPS_BY_ETHNIC_COMPOSITION_SLUG}`}
