@@ -1,10 +1,13 @@
 import React from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import * as S from './AgencyHeader.styled';
+import { P, SIZES, WEIGHTS, COLORS } from 'styles/StyledComponents/Typography';
 
 // Util
-import { getCensusPercentage } from 'Components/Charts/chartUtils';
+import { getCensusPercentage, RACES } from 'Components/Charts/chartUtils';
 import toTitleCase from 'util/toTitleCase';
+
+import BackButton from 'Components/Elements/BackButton';
 
 function AgencyHeader({ agencyHeaderOpen, agencyDetails }) {
   return (
@@ -19,32 +22,35 @@ function AgencyHeader({ agencyHeaderOpen, agencyDetails }) {
         >
           <S.AgencyHeader>
             <S.SubHeaderNavRow>
-              <p>back button</p>
+              <BackButton />
             </S.SubHeaderNavRow>
             <S.SubHeaderContentRow>
               <S.EntityDetails>
                 <S.AgencyTitle>{agencyDetails.name}</S.AgencyTitle>
-                <S.LastReported>
+                <P size={SIZES[0]} color={COLORS[0]} weight={WEIGHTS[0]}>
                   last reported stop {agencyDetails.last_stop_date && 'on'}{' '}
-                  <S.ReportedDate>{agencyDetails.last_stop_date || 'Unknown'}</S.ReportedDate>
-                </S.LastReported>
+                  <S.ReportedDate size={SIZES[0]} color={COLORS[0]} weight={WEIGHTS[1]}>
+                    {agencyDetails.last_stop_date || 'Unknown'}
+                  </S.ReportedDate>
+                </P>
               </S.EntityDetails>
               <S.CensusDemographics>
                 <S.CensusTitle>CENSUS DEMOGRAPHICS</S.CensusTitle>
                 <S.CensusRow>
                   {agencyDetails.census_profile ? (
-                    Object.keys(agencyDetails.census_profile).map((race) => (
-                      <S.CensusDatum key={race}>
-                        <S.CensusRace>{toTitleCase(race)}</S.CensusRace>
-                        <S.CensusPercentage>
-                          {getCensusPercentage(
-                            agencyDetails.census_profile[race],
-                            agencyDetails.census_profile.total
-                          )}
-                          %
-                        </S.CensusPercentage>
-                      </S.CensusDatum>
-                    ))
+                    RACES.map((race) => {
+                      const profile = agencyDetails.census_profile;
+                      return (
+                        <S.CensusDatum key={race}>
+                          <S.CensusRace color={COLORS[0]} size={SIZES[0]}>
+                            {toTitleCase(race)}*
+                          </S.CensusRace>
+                          <P size={SIZES[0]}>
+                            {getCensusPercentage(profile[race], profile.total)}%
+                          </P>
+                        </S.CensusDatum>
+                      );
+                    })
                   ) : (
                     <S.NoCensus>Census data for {agencyDetails.name} could not be found</S.NoCensus>
                   )}

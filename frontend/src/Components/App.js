@@ -3,7 +3,7 @@ import React from 'react';
 // Styles
 import { AppStyled } from './App.styled';
 import { ThemeProvider } from 'styled-components';
-import GlobalStyles from '../styles/GlobalStyles.styled';
+import GlobalStyles from '../styles/StyledComponents/GlobalStyles.styled';
 import defaultTheme from '../styles/themes.styled';
 
 // Router

@@ -9,7 +9,7 @@ import { useParams } from 'react-router-dom';
 
 // Context/State
 import { ChartStateProvider } from 'Context/chart-state';
-import { initialState as initialChartState } from 'Context/chart-reducer';
+import chartReducer, { initialState as initialChartState } from 'Context/chart-reducer';
 import fetchReducer, {
   initialState,
   FETCH_START,
@@ -78,7 +78,7 @@ function AgencyData(props) {
           )}
         </AnimatePresence>
 
-        <ChartStateProvider reducer={initialChartState} initialState={initialState}>
+        <ChartStateProvider reducer={chartReducer} initialState={initialChartState}>
           <Charts />
         </ChartStateProvider>
       </S.ContentWrapper>

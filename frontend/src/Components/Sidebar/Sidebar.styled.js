@@ -1,21 +1,19 @@
 import styled from 'styled-components';
 import { smallerThanTabletLandscape } from 'styles/breakpoints';
-import { NavLink } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
-export const SidebarStyled = styled(motion.div)`
+export const Sidebar = styled(motion.div)`
   display: flex;
-  background: ${(props) => props.theme.colors.grey};
-  color: ${(props) => props.theme.colors.text};
+  flex-direction: column;
+  background: ${(props) => props.theme.colors.greySemi};
 
-  border-right: ${(props) => props.theme.borders.standard};
-  border-right-color: ${(props) => props.theme.colors.border};
-
-  width: 140px;
+  width: 204px;
   height: 100%;
 
   overflow-x: hidden;
   overflow-y: scroll;
+
+  padding: 2em 0 0 2em;
 
   @media (${smallerThanTabletLandscape}) {
     width: 100%;
@@ -28,29 +26,18 @@ export const SidebarStyled = styled(motion.div)`
   }
 `;
 
+export const Heading = styled.p`
+  text-transform: uppercase;
+  font-family: ${(props) => props.theme.fonts.heading};
+  font-size: 16px;
+  margin-bottom: 1em;
+`;
+
 export const SidebarNav = styled.ul`
   flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 1rem 0.5rem;
   @media (${smallerThanTabletLandscape}) {
     flex-direction: row;
-  }
-`;
-
-export const NavLinkStyled = styled(NavLink)`
-  margin: 1rem 0;
-  text-decoration: none;
-  text-align: center;
-  color: ${(props) => props.theme.colorWhite};
-  font-weight: bold;
-
-  &.active {
-    color: ${(props) => props.theme.colorSecondary};
-  }
-
-  @media (${smallerThanTabletLandscape}) {
-    margin-left: 1rem;
   }
 `;

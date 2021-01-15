@@ -1,9 +1,9 @@
-export const RACES = ['asian', 'black', 'hispanic', 'native_american', 'other', 'white'];
+export const RACES = ['white', 'black', 'hispanic', 'asian', 'native_american', 'other'];
 
-export function roundToInt(num) {
-  return num.toFixed();
+export function roundToInt(num, dec) {
+  return num.toFixed(dec);
 }
 
 export function getCensusPercentage(raceCount, total) {
-  return roundToInt((raceCount / total) * 100);
+  return roundToInt((raceCount / total) * 100, 1);
 }

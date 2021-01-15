@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { P, H2 } from 'styles/StyledComponents/Typography';
 
 export const AgencyHeader = styled.div`
   box-shadow: ${(props) => props.theme.shadows.depth1};
@@ -25,13 +26,19 @@ export const CensusDemographics = styled.div`
   flex-direction: column;
 `;
 
-export const AgencyTitle = styled.h2``;
+export const AgencyTitle = styled(H2)`
+  margin-bottom: 1rem;
+`;
 
-export const LastReported = styled.h4``;
+// export const LastReported = styled.h4``;
 
-export const ReportedDate = styled.h4``;
+export const ReportedDate = styled(P)`
+  display: inline;
+`;
 
-export const CensusTitle = styled.h2``;
+export const CensusTitle = styled(H2)`
+  margin-bottom: 1rem;
+`;
 
 export const CensusRow = styled.ul`
   margin: 0;
@@ -41,10 +48,20 @@ export const CensusRow = styled.ul`
   list-style-type: none;
 `;
 
-export const CensusDatum = styled.li``;
+export const CensusDatum = styled.li`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
-export const CensusRace = styled.h4``;
+  &:not(:last-child) {
+    margin-right: 2em;
+  }
+`;
 
-export const CensusPercentage = styled.p``;
+export const CensusRace = styled(P)`
+  text-transform: uppercase;
+`;
+
+export const Other = styled(P)``;
 
 export const NoCensus = styled.h4``;

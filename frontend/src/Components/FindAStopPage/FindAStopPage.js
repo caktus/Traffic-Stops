@@ -5,7 +5,7 @@ import * as S from './FindAStopPage.styled';
 import * as chartFields from './stopSearchFields';
 
 // Children
-import { ResponsiveInnerPage } from 'styles/FullWidthPage.styled';
+import { ResponsiveInnerPage } from 'styles/StyledComponents/FullWidthPage.styled';
 import { HelpText } from 'Components/Elements/Inputs/Input.styled';
 import Input from 'Components/Elements/Inputs/Input';
 import DatePicker from 'Components/Elements/Inputs/DatePicker';

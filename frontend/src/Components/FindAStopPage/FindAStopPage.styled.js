@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import * as breakpoints from 'styles/breakpoints';
-import { FullWidthPage } from 'styles/FullWidthPage.styled';
+import { FullWidthPage } from 'styles/StyledComponents/FullWidthPage.styled';
 
 export const Page = styled(FullWidthPage)`
   padding-bottom: 2em;

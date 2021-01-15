@@ -24,6 +24,7 @@ export default Object.freeze({
     caution: '#F25F5C',
 
     text: '#212121',
+    textLight: '#666666',
     border: '#666666',
 
     // Charting
@@ -70,8 +71,6 @@ export default Object.freeze({
     body: "'Montserrat', sans-serif",
   },
   fontWeights: ['light', 'normal', 'bold'],
-
-  // typography variants
 
   /* Variants */
   buttons: {
