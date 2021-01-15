@@ -71,6 +71,8 @@ export default Object.freeze({
   },
   fontWeights: ['light', 'normal', 'bold'],
 
+  // typography variants
+
   /* Variants */
   buttons: {
     positive: {

@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import * as S from './AgencyHeader.styled';
 
 // Util
-import { getCensusPercentages } from 'Components/Charts/chartUtils';
+import { getCensusPercentage } from 'Components/Charts/chartUtils';
 import toTitleCase from 'util/toTitleCase';
 
 function AgencyHeader({ agencyHeaderOpen, agencyDetails }) {
@@ -36,9 +36,13 @@ function AgencyHeader({ agencyHeaderOpen, agencyDetails }) {
                     Object.keys(agencyDetails.census_profile).map((race) => (
                       <S.CensusDatum key={race}>
                         <S.CensusRace>{toTitleCase(race)}</S.CensusRace>
-                        {/* <S.CensusPercentage>
-                          {getCensusPercentages(agencyDetails.census_profile[race])}
-                        </S.CensusPercentage> */}
+                        <S.CensusPercentage>
+                          {getCensusPercentage(
+                            agencyDetails.census_profile[race],
+                            agencyDetails.census_profile.total
+                          )}
+                          %
+                        </S.CensusPercentage>
                       </S.CensusDatum>
                     ))
                   ) : (
