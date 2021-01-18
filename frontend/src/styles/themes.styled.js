@@ -50,7 +50,7 @@ export default Object.freeze({
   },
   radii: {
     none: 0,
-    standard: 4,
+    standard: 6,
     rounded: '10%',
   },
 

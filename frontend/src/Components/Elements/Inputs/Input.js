@@ -11,10 +11,11 @@ export const iconPositions = {
   RIGHT: 'right',
 };
 
-function _renderIcon(icon, { iconPosition, invertIcon }) {
+function _renderIcon(icon, { iconPosition, invertIcon, iconStyles }) {
   const theme = useTheme();
+  console.log('iconStyles: ', iconStyles);
   return (
-    <Styled.IconContainer invertIcon={invertIcon} iconPosition={iconPosition}>
+    <Styled.IconContainer style={iconStyles} invertIcon={invertIcon} iconPosition={iconPosition}>
       <Icon
         icon={icon}
         width="25px"
@@ -32,6 +33,7 @@ function FJInput({
   icon,
   iconPosition,
   invertIcon,
+  iconStyles,
   required,
   optional,
   helpText,
@@ -64,7 +66,10 @@ function FJInput({
       <Input
         type="text"
         icon={
-          icon ? (iconProps) => _renderIcon(icon, { ...iconProps, iconPosition, invertIcon }) : null
+          icon
+            ? (iconProps) =>
+                _renderIcon(icon, { ...iconProps, iconPosition, invertIcon, iconStyles })
+            : null
         }
         errors={errors}
         {..._getPaddingProps(iconPosition)}

@@ -42,6 +42,7 @@ function AutoSuggest({
   labelAccessor,
   valueAccessor,
   renderBonusContent,
+  onDropdownChange,
   renderInput,
   helpText,
 }) {
@@ -56,6 +57,7 @@ function AutoSuggest({
     <>
       <Select
         onSelection={(s) => onSelection(s)}
+        onDropdownChange={onDropdownChange}
         filterOption={filterOption}
         labelAccessor={labelAccessor}
         width="100%"

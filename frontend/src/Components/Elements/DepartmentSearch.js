@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useTheme } from 'styled-components';
 import * as Styled from './DepartmentSearch.styled';
 import PropTypes from 'prop-types';
 
@@ -36,6 +37,7 @@ function SeeAllDepartments() {
 
 function DepartmentSearch({
   onChange,
+  onDropdownChange,
   navigateOnSelect,
   invertIcon,
   showIndexList,
@@ -43,7 +45,9 @@ function DepartmentSearch({
   errors,
   ...props
 }) {
+  const theme = useTheme();
   const history = useHistory();
+  const [dropdownOpen, setDropdownOpen] = useState();
   const [state, dispatch] = useRootContext();
 
   /* FETCH AGENCIES */
@@ -68,20 +72,46 @@ function DepartmentSearch({
     } else onChange(department);
   };
 
+  const _handleDropdownOpen = (open) => {
+    console.log('open tho? ', open);
+    setDropdownOpen(open);
+  };
+  // ! needed? ^
+
+  const _getInputStyles = (inverted) => {
+    if (inverted) {
+      return {
+        borderBottomLeftRadius: dropdownOpen ? 0 : '6px',
+        borderBottomRightRadius: dropdownOpen ? 0 : '6px',
+      };
+    }
+  };
+  const _getIconStyles = (inverted) => {
+    const styles = {
+      borderColor: theme.colors.primary,
+    };
+    if (inverted) {
+      styles.borderBottomLeftRadius = dropdownOpen ? 0 : theme.radii.standard;
+    }
+    return styles;
+  };
+
   return (
     <AutoSuggest
-      {...props}
       data={state.data[DATA_SET]}
       onSelection={handleSuggestionSelected}
       helpText={helpText}
-      renderInput={(inputProps) => (
+      onDropdownChange={onDropdownChange || _handleDropdownOpen}
+      renderInput={(innerProps) => (
         <Input
           errors={errors}
           icon={ICONS.search}
           iconPosition={iconPositions.LEFT}
           invertIcon={invertIcon}
-          borderColor={invertIcon ? 'white' : 'primary'}
-          {...inputProps}
+          iconStyles={_getIconStyles(invertIcon)}
+          {..._getInputStyles(invertIcon)}
+          {...innerProps}
+          {...props}
         />
       )}
       keyAccessor="id"
