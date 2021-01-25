@@ -22,11 +22,12 @@ import { ICONS } from 'img/icons/Icon';
 
 const DATA_SET = 'AGENCIES_LIST';
 
-function SeeAllDepartments() {
+function SeeAllDepartments({ selectRef }) {
   const history = useHistory();
   const handleClick = (e) => {
     e.preventDefault();
     history.push(AGENCY_LIST_SLUG);
+    if (selectRef?.current) selectRef.current.closeDropdown();
   };
   return (
     <Styled.SeeAllDepartments>
@@ -73,10 +74,8 @@ function DepartmentSearch({
   };
 
   const _handleDropdownOpen = (open) => {
-    console.log('open tho? ', open);
     setDropdownOpen(open);
   };
-  // ! needed? ^
 
   const _getInputStyles = (inverted) => {
     if (inverted) {
@@ -117,7 +116,9 @@ function DepartmentSearch({
       keyAccessor="id"
       valueAccessor="id"
       labelAccessor="name"
-      renderBonusContent={showIndexList ? () => <SeeAllDepartments /> : () => {}}
+      renderBonusContent={
+        showIndexList ? (bonusProps) => <SeeAllDepartments {...bonusProps} /> : () => {}
+      }
     />
   );
 }

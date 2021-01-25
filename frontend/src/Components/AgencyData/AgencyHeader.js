@@ -4,7 +4,7 @@ import * as S from './AgencyHeader.styled';
 import { P, SIZES, WEIGHTS, COLORS } from 'styles/StyledComponents/Typography';
 
 // Util
-import { getCensusPercentage, RACES } from 'Components/Charts/chartUtils';
+import { calculatePercentage, RACES } from 'Components/Charts/chartUtils';
 import toTitleCase from 'util/toTitleCase';
 
 import BackButton from 'Components/Elements/BackButton';
@@ -46,7 +46,7 @@ function AgencyHeader({ agencyHeaderOpen, agencyDetails }) {
                             {toTitleCase(race)}*
                           </S.CensusRace>
                           <P size={SIZES[0]}>
-                            {getCensusPercentage(profile[race], profile.total)}%
+                            {calculatePercentage(profile[race], profile.total)}%
                           </P>
                         </S.CensusDatum>
                       );

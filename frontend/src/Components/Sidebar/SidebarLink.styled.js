@@ -21,10 +21,8 @@ export const SidebarLink = styled(NavLink)`
   color: ${(props) => props.theme.colors.text};
   text-decoration: none;
 
-  &.active {
-    font-weight: bold;
-    color: ${(props) => props.theme.colors.primaryDark};
-  }
+  font-weight: ${(props) => (props.active ? 'bold' : 'normal')};
+  color: ${(props) => (props.active ? props.theme.colors.primaryDark : props.theme.colors.text)};
 
   @media (${smallerThanTabletLandscape}) {
     margin-left: 1rem;

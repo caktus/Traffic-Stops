@@ -45,7 +45,10 @@ function AutoSuggest({
   onDropdownChange,
   renderInput,
   helpText,
+  ...props
 }) {
+  const selectRef = React.useRef();
+
   const filterOption = (value, option) => {
     const inputValue = value.trim().toLowerCase();
     const inputLength = inputValue.length;
@@ -56,11 +59,13 @@ function AutoSuggest({
   return (
     <>
       <Select
+        ref={selectRef}
         onSelection={(s) => onSelection(s)}
         onDropdownChange={onDropdownChange}
         filterOption={filterOption}
         labelAccessor={labelAccessor}
         width="100%"
+        {...props}
       >
         {label && (
           <Select.Label py={2} display="block">
@@ -78,7 +83,7 @@ function AutoSuggest({
               </Select.Option>
             ))}
           </Select.OptionsList>
-          {renderBonusContent && renderBonusContent()}
+          {renderBonusContent && renderBonusContent({ selectRef })}
         </Select.Dropdown>
       </Select>
 

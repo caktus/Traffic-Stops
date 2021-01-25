@@ -3,7 +3,7 @@ import { Button } from 'reaktus';
 
 function FjButton({ children, ...props }) {
   return (
-    <Button boxShadow="none" borderRadius="standard" fontFamily="body" {...props}>
+    <Button boxShadow="none" py="8px" fontFamily="body" {...props}>
       {children}
     </Button>
   );

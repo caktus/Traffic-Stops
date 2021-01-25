@@ -1,10 +1,10 @@
 import React from 'react';
-import * as S from './UseOfForce.styled';
+import * as S from './Contraband.styled';
 
 // Children
 import ChartHeader from 'Components/Charts/ChartSections/ChartHeader';
 
-function UseOfForce() {
+function Contraband() {
   const handleViewData = () => {
     alert('view data');
   };
@@ -14,14 +14,14 @@ function UseOfForce() {
   };
 
   return (
-    <S.UseOfForce>
+    <S.Contraband>
       <ChartHeader
-        chartTitle="Use of Force"
+        chartTitle="Contraband"
         handleViewData={handleViewData}
         handleShareGraph={handleShareGraph}
       />
-    </S.UseOfForce>
+    </S.Contraband>
   );
 }
 
-export default UseOfForce;
+export default Contraband;

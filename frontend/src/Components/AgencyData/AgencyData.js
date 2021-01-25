@@ -7,62 +7,40 @@ import { AnimatePresence, motion } from 'framer-motion';
 // Routing
 import { useParams } from 'react-router-dom';
 
-// Context/State
-import { ChartStateProvider } from 'Context/chart-state';
-import chartReducer, { initialState as initialChartState } from 'Context/chart-reducer';
-import fetchReducer, {
-  initialState,
-  FETCH_START,
-  FETCH_SUCCESS,
-  FETCH_FAILURE,
-} from 'Context/fetch-reducer';
-
-// Ajax
-import axios from 'Services/Axios';
-import { getAgencyURL } from 'Services/endpoints';
+// State
+import useDataset, { AGENCY_DETAILS } from 'Hooks/useDataset';
 
 // Children
 import AgencyHeader from 'Components/AgencyData/AgencyHeader';
 import Sidebar from 'Components/Sidebar/Sidebar';
-import Charts from 'Components/Charts/Charts';
+import ChartRoutes from 'Components/Charts/ChartRoutes';
 
 function AgencyData(props) {
   const { agencyId } = useParams();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [agencyHeaderOpen, setAgencyHeaderOpen] = useState(false);
+  const [chartsOpen, setChartsOpen] = useState(false);
 
-  // agency details state
-  const [state, dispatch] = useReducer(fetchReducer, initialState);
-
-  useEffect(() => {
-    if (state.data) setSidebarOpen(true);
-  }, [state.data]);
+  const [chartState] = useDataset(agencyId, AGENCY_DETAILS);
 
   useEffect(() => {
-    console.log('state.data: ', state.data);
-    if (state.data) setAgencyHeaderOpen(true);
-  }, [state.data]);
+    if (chartState.data[AGENCY_DETAILS]) setSidebarOpen(true);
+  }, [chartState.data[AGENCY_DETAILS]]);
 
   useEffect(() => {
-    const _fetchData = async () => {
-      dispatch({ type: FETCH_START });
-      try {
-        const { data } = await axios.get(getAgencyURL(agencyId));
-        dispatch({ type: FETCH_SUCCESS, payload: data });
-      } catch (error) {
-        console.error(error);
-        dispatch({
-          type: FETCH_FAILURE,
-          payload: "Could not fetch this agency's details. Please try again.",
-        });
-      }
-    };
-    _fetchData();
-  }, [agencyId]);
+    if (chartState.data[AGENCY_DETAILS]) setAgencyHeaderOpen(true);
+  }, [chartState.data[AGENCY_DETAILS]]);
+
+  useEffect(() => {
+    if (chartState.data[AGENCY_DETAILS]) setChartsOpen(true);
+  }, [chartState.data[AGENCY_DETAILS]]);
 
   return (
     <S.AgencyData data-testid="AgencyData" {...props}>
-      <AgencyHeader agencyHeaderOpen={agencyHeaderOpen} agencyDetails={state.data} />
+      <AgencyHeader
+        agencyHeaderOpen={agencyHeaderOpen}
+        agencyDetails={chartState.data[AGENCY_DETAILS]}
+      />
       <S.ContentWrapper>
         <AnimatePresence>
           {sidebarOpen && (
@@ -77,10 +55,7 @@ function AgencyData(props) {
             </motion.div>
           )}
         </AnimatePresence>
-
-        <ChartStateProvider reducer={chartReducer} initialState={initialChartState}>
-          <Charts />
-        </ChartStateProvider>
+        {chartsOpen && <ChartRoutes />}
       </S.ContentWrapper>
     </S.AgencyData>
   );

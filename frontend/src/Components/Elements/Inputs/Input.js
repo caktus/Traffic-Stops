@@ -13,7 +13,6 @@ export const iconPositions = {
 
 function _renderIcon(icon, { iconPosition, invertIcon, iconStyles }) {
   const theme = useTheme();
-  console.log('iconStyles: ', iconStyles);
   return (
     <Styled.IconContainer style={iconStyles} invertIcon={invertIcon} iconPosition={iconPosition}>
       <Icon

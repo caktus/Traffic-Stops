@@ -13,6 +13,7 @@ export const Sidebar = styled(motion.div)`
   overflow-x: hidden;
   overflow-y: scroll;
 
+  margin-top: 2px;
   padding: 2em 0 0 2em;
 
   @media (${smallerThanTabletLandscape}) {

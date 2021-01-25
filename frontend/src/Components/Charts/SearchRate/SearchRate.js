@@ -1,10 +1,10 @@
 import React from 'react';
-import * as S from './UseOfForce.styled';
+import * as S from './SearchRate.styled';
 
 // Children
 import ChartHeader from 'Components/Charts/ChartSections/ChartHeader';
 
-function UseOfForce() {
+function SearchRate() {
   const handleViewData = () => {
     alert('view data');
   };
@@ -14,14 +14,14 @@ function UseOfForce() {
   };
 
   return (
-    <S.UseOfForce>
+    <S.SearchRate>
       <ChartHeader
-        chartTitle="Use of Force"
+        chartTitle="Search Rate"
         handleViewData={handleViewData}
         handleShareGraph={handleShareGraph}
       />
-    </S.UseOfForce>
+    </S.SearchRate>
   );
 }
 
-export default UseOfForce;
+export default SearchRate;

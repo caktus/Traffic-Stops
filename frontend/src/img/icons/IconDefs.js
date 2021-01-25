@@ -43,6 +43,11 @@ function IconDefs() {
         />
       </symbol>
 
+      <symbol id="rounded-box" viewBox="0 0 24 24">
+        <rect width="24" height="24" rx="4" stroke="none" />
+        <rect x="0.5" y="0.5" width="23" height="23" rx="3.5" fill="none" />
+      </symbol>
+
       <symbol id="chevron-left" viewBox="0 0 24 24">
         <path
           fillRule="evenodd"
