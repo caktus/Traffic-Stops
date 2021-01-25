@@ -7,15 +7,13 @@ import { useParams } from 'react-router-dom';
 
 // Util
 import {
-  reduceFullDataset,
-  calculatePercentage,
-  calculateYearTotal,
   getAvailableReasons,
   getSearchRateForYearByGroup,
   STATIC_LEGEND_KEYS,
   YEARS_DEFAULT,
   SEARCH_TYPE_DEFAULT,
   RACES,
+  AVERAGE,
 } from 'Components/Charts/chartUtils';
 
 // State
@@ -46,10 +44,10 @@ function Searches() {
   const [searchType, setSearchType] = useState(SEARCH_TYPE_DEFAULT);
 
   const [percentageEthnicGroups, setPercentageEthnicGroups] = useState(() =>
-    STATIC_LEGEND_KEYS.map((k) => ({ ...k }))
+    STATIC_LEGEND_KEYS.map((k) => ({ ...k })).concat([AVERAGE])
   );
   const [countEthnicGroups, setCountEthnicGroups] = useState(() =>
-    STATIC_LEGEND_KEYS.map((k) => ({ ...k }))
+    STATIC_LEGEND_KEYS.map((k) => ({ ...k })).concat([AVERAGE])
   );
 
   const [byPercentageLineData, setByPercentageLineData] = useState([]);
@@ -84,14 +82,21 @@ function Searches() {
     if (searches && stops && availableYears) {
       const mappedData = [];
       percentageEthnicGroups.forEach((eg) => {
+        const ethnicGroup = eg.value;
         const groupData = {};
-        groupData.id = eg;
-        groupData.color = theme.colors.ethnicGroup[eg];
+        groupData.id = ethnicGroup;
+        groupData.color = theme.colors.ethnicGroup[ethnicGroup];
         groupData.data = availableYears.map((year) => {
           const tick = {};
           tick.x = year;
-          tick.y = getSearchRateForYearByGroup(searches, stops, year, eg, percentageEthnicGroups);
-          tick.displayName = eg;
+          tick.y = getSearchRateForYearByGroup(
+            searches,
+            stops,
+            year,
+            ethnicGroup,
+            percentageEthnicGroups
+          );
+          tick.displayName = eg.label;
           return tick;
         });
         mappedData.push(groupData);

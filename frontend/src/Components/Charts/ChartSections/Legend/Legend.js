@@ -13,7 +13,7 @@ function Legend({ keys, onKeySelect, isStatic, showNonHispanic, heading, row }) 
       {heading && <S.LegendHeading weight={WEIGHTS[1]}>{heading}</S.LegendHeading>}
       <S.KeysList row={row}>
         {keys?.map((key) => {
-          console.log('OH: ', key.test);
+          console.log('OH: ', key.value);
           const fill = key.selected ? theme.colors.ethnicGroup[key.value] : theme.colors.grey;
           const iconProps = {
             fill,
