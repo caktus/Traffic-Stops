@@ -9,7 +9,7 @@ import { useParams } from 'react-router-dom';
 import toTitleCase from '../UseOfForce/node_modules/util/toTitleCase';
 
 // State
-import useDataset, { STOPS_BY_REASON } from '../UseOfForce/node_modules/hooks/useDataset';
+import useDataset, { STOPS_BY_REASON } from 'Hooks/useDataset';
 
 // Children
 import GroupedBar from 'Components/Charts/ChartPrimitives/GroupedBar';

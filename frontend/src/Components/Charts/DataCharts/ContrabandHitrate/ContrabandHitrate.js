@@ -8,7 +8,7 @@ import { useParams } from 'react-router-dom';
 import toTitleCase from '../UseOfForce/node_modules/util/toTitleCase';
 
 // State
-import useDataset, { CONTRABAND_HIT_RATE } from '../UseOfForce/node_modules/hooks/useDataset';
+import useDataset, { CONTRABAND_HIT_RATE } from 'Hooks/useDataset';
 
 // Children
 import ChartBase from 'Components/Charts/ChartPrimitives/ChartBase';
