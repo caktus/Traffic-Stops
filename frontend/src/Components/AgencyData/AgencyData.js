@@ -1,27 +1,47 @@
-import React, { useState, useEffect } from 'react';
-import { AgencyDataStyled, ContentWrapper } from './AgencyData.styled';
+import React, { useState, useEffect, useReducer } from 'react';
+import * as S from './AgencyData.styled';
 
-// Animationg
+// Animating
 import { AnimatePresence, motion } from 'framer-motion';
 
-// Context
-import { ChartStateProvider } from 'Context/chart-state';
-import chartStateReducer, { initialState } from 'Context/chart-reducer';
+// Routing
+import { useParams } from 'react-router-dom';
+
+// State
+import useDataset, { AGENCY_DETAILS } from 'Hooks/useDataset';
 
 // Children
+import AgencyHeader from 'Components/AgencyData/AgencyHeader';
 import Sidebar from 'Components/Sidebar/Sidebar';
-import Charts from 'Components/Charts/Charts';
+import ChartRoutes from 'Components/Charts/ChartRoutes';
 
 function AgencyData(props) {
+  const { agencyId } = useParams();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [agencyHeaderOpen, setAgencyHeaderOpen] = useState(false);
+  const [chartsOpen, setChartsOpen] = useState(false);
+
+  const [chartState] = useDataset(agencyId, AGENCY_DETAILS);
 
   useEffect(() => {
-    setSidebarOpen(true);
-  }, []);
+    if (chartState.data[AGENCY_DETAILS]) setSidebarOpen(true);
+  }, [chartState.data[AGENCY_DETAILS]]);
+
+  useEffect(() => {
+    if (chartState.data[AGENCY_DETAILS]) setAgencyHeaderOpen(true);
+  }, [chartState.data[AGENCY_DETAILS]]);
+
+  useEffect(() => {
+    if (chartState.data[AGENCY_DETAILS]) setChartsOpen(true);
+  }, [chartState.data[AGENCY_DETAILS]]);
 
   return (
-    <AgencyDataStyled data-testid="AgencyData" {...props}>
-      <ContentWrapper>
+    <S.AgencyData data-testid="AgencyData" {...props}>
+      <AgencyHeader
+        agencyHeaderOpen={agencyHeaderOpen}
+        agencyDetails={chartState.data[AGENCY_DETAILS]}
+      />
+      <S.ContentWrapper>
         <AnimatePresence>
           {sidebarOpen && (
             <motion.div
@@ -35,12 +55,9 @@ function AgencyData(props) {
             </motion.div>
           )}
         </AnimatePresence>
-
-        <ChartStateProvider reducer={chartStateReducer} initialState={initialState}>
-          <Charts />
-        </ChartStateProvider>
-      </ContentWrapper>
-    </AgencyDataStyled>
+        {chartsOpen && <ChartRoutes />}
+      </S.ContentWrapper>
+    </S.AgencyData>
   );
 }
 

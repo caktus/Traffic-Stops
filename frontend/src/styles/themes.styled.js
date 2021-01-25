@@ -24,16 +24,25 @@ export default Object.freeze({
     caution: '#F25F5C',
 
     text: '#212121',
+    textLight: '#666666',
     border: '#666666',
 
     // Charting
     ethnicGroup: {
-      asian: '#1b9e77',
-      black: '#e7298a',
-      hispanic: '#7570b3',
-      native_american: '#d95f02',
-      other: '#66a61e',
-      white: '#e6ab02',
+      asian: '#ffe066',
+      black: '#8879fc',
+      hispanic: '#9c0f2e',
+      native_american: '#0c3a66',
+      other: '#9e7b9b',
+      white: '#02bcbb',
+    },
+    fontColorsByEthnicGroup: {
+      asian: '#212121',
+      black: '#212121',
+      hispanic: '#ffffff',
+      native_american: '#ffffff',
+      other: '#212121',
+      white: '#212121',
     },
   },
 
@@ -46,10 +55,11 @@ export default Object.freeze({
   borders: {
     standard: '1px solid',
     tooltip: '1px solid',
+    thick: '2px solid',
   },
   radii: {
     none: 0,
-    standard: 4,
+    standard: 6,
     rounded: '10%',
   },
 
@@ -75,17 +85,20 @@ export default Object.freeze({
   buttons: {
     positive: {
       color: 'white',
-      bg: 'secondary',
-      borderColor: 'secondary',
+      bg: 'primary',
+      borderColor: 'primary',
+      cursor: 'pointer',
     },
     neutral: {
-      color: 'secondary',
+      color: 'primary',
       bg: 'white',
-      borderColor: 'secondary',
+      borderColor: 'primary',
+      cursor: 'pointer',
     },
     caution: {
       color: 'white',
       bg: 'caution',
+      cursor: 'pointer',
     },
   },
 });

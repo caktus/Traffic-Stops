@@ -3,7 +3,7 @@ import React from 'react';
 // Styles
 import { AppStyled } from './App.styled';
 import { ThemeProvider } from 'styled-components';
-import GlobalStyles from '../styles/GlobalStyles.styled';
+import GlobalStyles from '../styles/StyledComponents/GlobalStyles.styled';
 import defaultTheme from '../styles/themes.styled';
 
 // Router
@@ -19,7 +19,9 @@ import AppMeta from 'Meta/AppMeta';
 import IconDefs from 'img/icons/IconDefs';
 // Context
 import { RootContextProvider } from 'Context/root-context';
-import rootReducer, { initialState } from 'Context/root-reducer';
+import rootReducer, { initialState as initialRootState } from 'Context/root-reducer';
+import { ChartStateProvider } from 'Context/chart-state';
+import chartReducer, { initialState as initialChartState } from 'Context/chart-reducer';
 
 // Routes
 import About from 'Components/AboutPage/AboutPage';
@@ -34,13 +36,15 @@ function App() {
       <GlobalStyles />
       <AppStyled>
         <BrowserRouter>
-          <RootContextProvider reducer={rootReducer} initialState={initialState}>
+          <RootContextProvider reducer={rootReducer} initialState={initialRootState}>
             <LayoutStyled>
               <IconDefs />
               <Header />
               <Switch>
                 <Route path={`${AGENCY_LIST_SLUG}/:agencyId`}>
-                  <AgencyData />
+                  <ChartStateProvider reducer={chartReducer} initialState={initialChartState}>
+                    <AgencyData />
+                  </ChartStateProvider>
                 </Route>
                 <Route path={AGENCY_LIST_SLUG}>
                   <AgencyList />

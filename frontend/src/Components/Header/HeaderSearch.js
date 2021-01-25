@@ -3,11 +3,16 @@ import ReactDOM from 'react-dom';
 import { SearchWrapper } from './Header.styled';
 import { AnimatePresence } from 'framer-motion';
 
-import usePortal from 'hooks/usePortal';
+import usePortal from 'Hooks/usePortal';
 import DepartmentSearch from 'Components/Elements/DepartmentSearch';
 
 function HeaderSearch(showHeaderSearch) {
   const portalTarget = usePortal('searchbar-root');
+
+  // const _handleDropdownOpen = (open) => {
+  //   console.log('open tho? ', open);
+  // };
+
   return ReactDOM.createPortal(
     showHeaderSearch && (
       <AnimatePresence>

@@ -1,12 +1,12 @@
 import {
-  AGENCY_DETAIL,
+  AGENCY_DETAILS,
   STOPS,
   SEARCHES,
   STOPS_BY_REASON,
   SEARCHES_BY_TYPE,
   USE_OF_FORCE,
   CONTRABAND_HIT_RATE,
-} from 'hooks/useDataset';
+} from 'Hooks/useDataset';
 
 const API_BASE = '/api';
 
@@ -30,7 +30,7 @@ export const getContrabandHitrateURL = (agencyId) =>
 
 export default function mapDatasetKeyToEndpoint(datasetKey) {
   switch (datasetKey) {
-    case AGENCY_DETAIL: {
+    case AGENCY_DETAILS: {
       return getAgencyURL;
     }
     case STOPS: {

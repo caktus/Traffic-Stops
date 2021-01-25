@@ -12,6 +12,7 @@ export const ICONS = {
   download: 'download',
   externalLink: 'external-link',
   info: 'info',
+  roundedBox: 'rounded-box',
   search: 'search',
   share: 'share',
   view: 'view',

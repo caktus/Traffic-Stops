@@ -24,11 +24,13 @@ export const IconContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  border: 1px solid;
 
   ${(props) => {
     if (props.iconPosition === 'left') {
       return css`
         left: 0;
+        border-right: none;
         border-top-left-radius: 6px;
         border-bottom-left-radius: 6px;
       `;
@@ -37,6 +39,7 @@ export const IconContainer = styled.div`
     if (props.iconPosition === 'right') {
       return css`
         right: 0;
+        border-left: none;
         border-top-right-radius: 6px;
         border-bottom-right-radius: 6px;
       `;
