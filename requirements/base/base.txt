@@ -19,10 +19,11 @@ django-click==2.1.1       # via -r requirements/base/base.in
 django-dotenv==1.4.2      # via -r requirements/base/base.in
 django-el-pagination==3.3.0  # via -r requirements/base/base.in
 django-extensions==3.0.1  # via -r requirements/base/base.in
+django-filter==2.4.0      # via -r requirements/base/base.in
 django-memoize==2.3.1     # via -r requirements/base/base.in
 django-redis==4.12.1      # via -r requirements/base/base.in
 django-selectable==1.3.0  # via -r requirements/base/base.in
-django==2.2.16            # via -r requirements/base/base.in, django-bootstrap3, django-el-pagination, django-memoize, django-redis, djangorestframework
+django==2.2.16            # via -r requirements/base/base.in, django-bootstrap3, django-el-pagination, django-filter, django-memoize, django-redis, djangorestframework
 djangorestframework==3.11.0  # via -r requirements/base/base.in, drf-extensions
 drf-extensions==0.6.0     # via -r requirements/base/base.in
 future==0.18.2            # via celery, census

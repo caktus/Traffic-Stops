@@ -10,6 +10,7 @@ django-click
 django-dotenv
 django-el-pagination
 django-extensions
+django-filter
 django-memoize
 django-redis
 django-selectable
