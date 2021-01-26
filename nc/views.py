@@ -173,7 +173,23 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class DriverStopsViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Person.objects.filter(type="D").select_related("stop").order_by("stop__date")
+    queryset = (
+        Person.objects.filter(type="D")
+        .select_related("stop")
+        .order_by("stop__date")
+        .only(
+            "stop__stop_id",
+            "stop__date",
+            "stop__agency_id",
+            "stop__purpose",
+            "stop__action",
+            "stop__officer_id",
+            "gender",
+            "race",
+            "ethnicity",
+            "age",
+        )
+    )
     pagination_class = NoCountPagination
     serializer_class = serializers.PersonStopSerializer
     filter_backends = [DjangoFilterBackend]
