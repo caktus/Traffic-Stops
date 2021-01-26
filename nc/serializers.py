@@ -16,3 +16,34 @@ class AgencySerializer(serializers.ModelSerializer):
             "id",
             "name",
         )
+
+
+class PersonStopSerializer(serializers.ModelSerializer):
+    date = serializers.SerializerMethodField()
+    gender = serializers.CharField(source="get_gender_display")
+    race = serializers.CharField(source="get_race_display")
+    ethnicity = serializers.CharField(source="get_ethnicity_display")
+    department = serializers.SerializerMethodField()
+    officer_id = serializers.SerializerMethodField()
+
+    class Meta:
+        model = stops.Person
+        fields = (
+            "person_id",
+            "date",
+            "gender",
+            "race",
+            "ethnicity",
+            "age",
+            "department",
+            "officer_id",
+        )
+
+    def get_date(self, obj):
+        return obj.stop.date
+
+    def get_department(self, obj):
+        return obj.stop.agency.name
+
+    def get_officer_id(self, obj):
+        return obj.stop.officer_id
