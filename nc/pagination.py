@@ -5,7 +5,7 @@ from rest_framework.response import Response
 
 
 class NoCountPagination(LimitOffsetPagination):
-    """LimitOffsetPagination withing queryset counting"""
+    """LimitOffsetPagination without queryset counting"""
 
     default_limit = 10
     max_limit = 20
