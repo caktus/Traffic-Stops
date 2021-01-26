@@ -9,10 +9,11 @@ import { useParams } from 'react-router-dom';
 import {
   getAvailableReasons,
   getSearchRateForYearByGroup,
+  filterDataBySearchType,
+  reduceStopReasonsByEthnicity,
   STATIC_LEGEND_KEYS,
   YEARS_DEFAULT,
   SEARCH_TYPE_DEFAULT,
-  RACES,
   AVERAGE,
 } from 'Components/Charts/chartUtils';
 
@@ -27,7 +28,6 @@ import Line from 'Components/Charts/ChartPrimitives/Line';
 import Legend from 'Components/Charts/ChartSections/Legend/Legend';
 import ChartHeader from 'Components/Charts/ChartSections/ChartHeader';
 import DataSubsetPicker from 'Components/Charts/ChartSections/DataSubsetPicker/DataSubsetPicker';
-import toTitleCase from 'util/toTitleCase';
 
 function Searches() {
   let { agencyId } = useParams();
@@ -47,12 +47,12 @@ function Searches() {
     STATIC_LEGEND_KEYS.map((k) => ({ ...k })).concat([AVERAGE])
   );
   const [countEthnicGroups, setCountEthnicGroups] = useState(() =>
-    STATIC_LEGEND_KEYS.map((k) => ({ ...k })).concat([AVERAGE])
+    STATIC_LEGEND_KEYS.map((k) => ({ ...k }))
   );
 
-  const [byPercentageLineData, setByPercentageLineData] = useState([]);
+  const [byPercentageLineData, setByPercentageLineData] = useState();
 
-  const [byCountLineData, setByCountLineData] = useState([]);
+  const [byCountLineData, setByCountLineData] = useState();
 
   /* SET INITIAL STATE */
   // First, find out which years are available by
@@ -81,67 +81,63 @@ function Searches() {
     const searches = chartState.data[SEARCHES];
     if (searches && stops && availableYears) {
       const mappedData = [];
-      percentageEthnicGroups.forEach((eg) => {
-        const ethnicGroup = eg.value;
-        const groupData = {};
-        groupData.id = ethnicGroup;
-        groupData.color = theme.colors.ethnicGroup[ethnicGroup];
-        groupData.data = availableYears.map((year) => {
-          const tick = {};
-          tick.x = year;
-          tick.y = getSearchRateForYearByGroup(
-            searches,
-            stops,
-            year,
-            ethnicGroup,
-            percentageEthnicGroups
-          );
-          tick.displayName = eg.label;
-          return tick;
+      percentageEthnicGroups
+        .filter((g) => g.selected)
+        .forEach((eg) => {
+          const ethnicGroup = eg.value;
+          const groupData = {};
+          groupData.id = ethnicGroup;
+          groupData.color = theme.colors.ethnicGroup[ethnicGroup];
+          groupData.data = availableYears.map((year) => {
+            const tick = {};
+            tick.x = year;
+            tick.y = getSearchRateForYearByGroup(
+              searches,
+              stops,
+              year,
+              ethnicGroup,
+              percentageEthnicGroups
+            );
+            tick.displayName = eg.label;
+            return tick;
+          });
+          mappedData.push(groupData);
         });
-        mappedData.push(groupData);
-      });
       setByPercentageLineData(mappedData);
     }
   }, [chartState.data[STOPS], chartState.data[SEARCHES], percentageEthnicGroups, availableYears]);
 
-  // Build data for Searches By Count line chart ("All")
   useEffect(() => {
-    const data = chartState.data[STOPS];
-    if (data) {
-      const derivedData = RACES.map((race) => {
-        const rGroup = {
-          id: race,
-          color: theme.colors.ethnicGroup[race],
-        };
-        rGroup.data = data.map((d) => {
-          const group = {
-            displayName: toTitleCase(race),
-          };
-          group.x = d.year;
-          group.y = d[race];
-          return group;
-        });
-        return rGroup;
+    const data = chartState.data[SEARCHES_BY_TYPE];
+    if (data && availableYears?.length > 0) {
+      const mappedData = [];
+      const ethnicGroups = countEthnicGroups.filter((g) => g.selected).map((g) => g.value);
+      const dataBySearchReason = filterDataBySearchType(data, searchType);
+      ethnicGroups.forEach((ethnicGroup) => {
+        const group = {};
+        group.id = ethnicGroup;
+        group.color = theme.colors.ethnicGroup[ethnicGroup];
+        const groupData = reduceStopReasonsByEthnicity(
+          dataBySearchReason,
+          availableYears,
+          ethnicGroup,
+          searchType
+        );
+        group.data = groupData;
+        mappedData.push(group);
       });
-      setByCountLineData(derivedData);
+      setByCountLineData(mappedData);
     }
-  }, [chartState.data[SEARCHES_BY_TYPE], searchType]);
+  }, [chartState.data[SEARCHES_BY_TYPE], availableYears, countEthnicGroups, searchType]);
 
   // Build data for Searches By Count line chart (single type)
-  useEffect(() => {
-    const data = chartState.data[SEARCHES_BY_TYPE]?.stops;
-    if (data) {
-    }
-  }, [chartState.data[SEARCHES_BY_TYPE], searchType]);
+  // useEffect(() => {
+  //   const data = chartState.data[SEARCHES_BY_TYPE]?.stops;
+  //   if (data) {
+  //   }
+  // }, [chartState.data[SEARCHES_BY_TYPE], searchType]);
 
   /* INTERACTIONS */
-  // Handle year dropdown state
-  const handleYearSelect = (y) => {
-    if (y === year) return;
-    setYear(y);
-  };
-
   // Handle search type dropdown state
   const handleStopPurposeSelect = (s) => {
     if (s === searchType) return;

@@ -3,12 +3,20 @@ import PropTypes from 'prop-types';
 
 import { VictoryChart, VictoryGroup, VictoryBar, VictoryAxis } from 'victory';
 import { AXIS_STYLE } from './chartConstants';
+import ChartSkeleton from 'Components/Elements/Skeletons/ChartSkeleton';
 
-function GroupedBar({ data, horizontal, xTicks }) {
+function GroupedBar({ data, loading, horizontal, iTickValues, iTickFormat }) {
+  if (loading) return <ChartSkeleton />;
+
   return (
     <VictoryChart domainPadding={15} width={700}>
       <VictoryAxis dependentAxis style={AXIS_STYLE} />
-      <VictoryAxis label="Year" style={AXIS_STYLE} tickValues={xTicks} />
+      <VictoryAxis
+        label="Year"
+        style={AXIS_STYLE}
+        tickValues={iTickValues}
+        tickFormat={iTickFormat}
+      />
       <VictoryGroup offset={5}>
         {data.map((bar, i) => (
           <VictoryBar
