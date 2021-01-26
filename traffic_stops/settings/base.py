@@ -172,6 +172,7 @@ INSTALLED_APPS = [
     "selectable",
     "bootstrap3",
     "el_pagination",
+    "django_filters",
     "rest_framework",
     # Custom apps
     "tsdata",

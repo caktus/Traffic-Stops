@@ -5,12 +5,14 @@ from nc import serializers
 from nc.models import SEARCH_TYPE_CHOICES as SEARCH_TYPE_CHOICES_TUPLES
 from nc.models import Agency, Stop, Person
 from nc.pagination import NoCountPagination
+from nc.filters import DriverStopsFilter
 from rest_framework import viewsets, generics
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework_extensions.cache.decorators import cache_response
 from rest_framework_extensions.key_constructor import bits
 from rest_framework_extensions.key_constructor.constructors import DefaultObjectKeyConstructor
+from django_filters.rest_framework import DjangoFilterBackend
 from tsdata.utils import GroupedData
 
 GROUPS = {
@@ -174,3 +176,5 @@ class DriverStopsViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Person.objects.select_related("stop").order_by("stop__date")
     pagination_class = NoCountPagination
     serializer_class = serializers.PersonStopSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = DriverStopsFilter
