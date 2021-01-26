@@ -25,6 +25,8 @@ class PersonStopSerializer(serializers.ModelSerializer):
     ethnicity = serializers.CharField(source="get_ethnicity_display")
     department = serializers.SerializerMethodField()
     officer_id = serializers.SerializerMethodField()
+    stop_purpose = serializers.SerializerMethodField()
+    stop_action = serializers.SerializerMethodField()
 
     class Meta:
         model = stops.Person
@@ -37,6 +39,8 @@ class PersonStopSerializer(serializers.ModelSerializer):
             "age",
             "department",
             "officer_id",
+            "stop_purpose",
+            "stop_action",
         )
 
     def get_date(self, obj):
@@ -47,3 +51,9 @@ class PersonStopSerializer(serializers.ModelSerializer):
 
     def get_officer_id(self, obj):
         return obj.stop.officer_id
+
+    def get_stop_purpose(self, obj):
+        return obj.stop.get_purpose_display()
+
+    def get_stop_action(self, obj):
+        return obj.stop.get_action_display()
