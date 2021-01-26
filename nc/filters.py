@@ -14,7 +14,7 @@ class DriverStopsFilter(filters.FilterSet):
     gender = filters.MultipleChoiceFilter(choices=models.GENDER_CHOICES)
     race = filters.MultipleChoiceFilter(choices=models.RACE_CHOICES)
     ethnicity = filters.MultipleChoiceFilter(choices=models.ETHNICITY_CHOICES)
-    stop_officer_id = filters.CharFilter()
+    stop_officer_id = filters.CharFilter(label="Officer ID", method="filter_officer")
     stop_purpose = filters.MultipleChoiceFilter(
         label="Stop purpose", choices=models.PURPOSE_CHOICES, method="filter_stop_purpose"
     )
@@ -34,6 +34,9 @@ class DriverStopsFilter(filters.FilterSet):
         if end_date:
             query &= Q(stop__date__lte=end_date)
         return queryset.filter(query)
+
+    def filter_officer(self, queryset, name, value):
+        return queryset.filter(stop__officer_id=value)
 
     def filter_stop_purpose(self, queryset, name, value):
         return queryset.filter(stop__purpose__in=value)
