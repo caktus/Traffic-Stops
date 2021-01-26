@@ -7,6 +7,7 @@ dealer
 django-bootstrap3
 django-cache-machine
 django-click
+django-crispy-forms
 django-dotenv
 django-el-pagination
 django-extensions
