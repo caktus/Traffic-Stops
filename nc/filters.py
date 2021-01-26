@@ -1,10 +1,5 @@
-import datetime as dt
-
 from django.db.models import Q
-
-from rest_framework import generics
 from django_filters import rest_framework as filters
-
 from nc import models
 
 
@@ -41,7 +36,7 @@ class DriverStopsFilter(filters.FilterSet):
     def filter_stop_purpose(self, queryset, name, value):
         return queryset.filter(stop__purpose__in=value)
 
-    def filter_stop_purpose(self, queryset, name, value):
+    def filter_stop_action(self, queryset, name, value):
         return queryset.filter(stop__action__in=value)
 
     class Meta:
