@@ -28,9 +28,16 @@ function AgencyHeader({ agencyHeaderOpen, agencyDetails }) {
               <S.EntityDetails>
                 <S.AgencyTitle>{agencyDetails.name}</S.AgencyTitle>
                 <P size={SIZES[0]} color={COLORS[0]} weight={WEIGHTS[0]}>
-                  last reported stop {agencyDetails.last_stop_date && 'on'}{' '}
+                  last reported stop {agencyDetails.last_reported_stop && 'on'}{' '}
                   <S.ReportedDate size={SIZES[0]} color={COLORS[0]} weight={WEIGHTS[1]}>
-                    {agencyDetails.last_stop_date || 'Unknown'}
+                    <S.ReportedDate size={SIZES[0]} color={COLORS[0]} weight={WEIGHTS[1]}>
+                      {agencyDetails.last_reported_stop ? (new Intl.DateTimeFormat("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric"
+                      }).format(new Date(agencyDetails.last_reported_stop))
+                      ) : ('Unknown')}
+                    </S.ReportedDate>
                   </S.ReportedDate>
                 </P>
               </S.EntityDetails>
@@ -52,8 +59,8 @@ function AgencyHeader({ agencyHeaderOpen, agencyDetails }) {
                       );
                     })
                   ) : (
-                    <S.NoCensus>Census data for {agencyDetails.name} could not be found</S.NoCensus>
-                  )}
+                      <S.NoCensus>Census data for {agencyDetails.name} could not be found</S.NoCensus>
+                    )}
                 </S.CensusRow>
               </S.CensusDemographics>
             </S.SubHeaderContentRow>

@@ -27,4 +27,3 @@ repos:
       - id: detect-private-key
       - id: flake8
         exclude: settings|migrations|test
-      - id: no-commit-to-branch
