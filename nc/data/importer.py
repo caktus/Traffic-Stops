@@ -281,6 +281,12 @@ def copy_from(destination, nc_csv_path):
         set_time_zone(cur, settings.NC_TIME_ZONE)
         logger.info("Truncating tables")
         cur.execute(copy_nc.CLEAN_DATABASE)
+        # agencies
+        agency_path = Path(nc_csv_path)
+        with agency_path.open() as fh:
+            logger.info(f"COPY {nc_csv_path} into the database")
+            cur.copy_expert(copy_nc.NC_AGENCY_COPY_INSTRUCTIONS, fh)
+        # datasets
         path = Path(destination)
         for p in path.glob("*.csv"):
             if p.name in copy_nc.NC_COPY_INSTRUCTIONS.keys():
