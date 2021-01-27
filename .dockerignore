@@ -10,4 +10,7 @@ setup.cfg
 *.env
 .git
 ncdata
+frontend/build
 frontend/node_modules
+.direnv
+deploy/

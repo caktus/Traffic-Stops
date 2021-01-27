@@ -51,7 +51,7 @@ SERVER_EMAIL = DEFAULT_FROM_EMAIL
 ### React SPA index.html
 
 FRONTEND_BUILD_DIR = Path(BASE_DIR) / "build"
-TEMPLATES[0]["DIRS"] = [os.path.join(PROJECT_DIR, "templates"), FRONTEND_BUILD_DIR]
+TEMPLATES[0]["DIRS"] = [FRONTEND_BUILD_DIR, os.path.join(PROJECT_DIR, "templates")]
 STATICFILES_DIRS = [os.path.join(PROJECT_DIR, "static"), str(FRONTEND_BUILD_DIR / "static")]
 
 
