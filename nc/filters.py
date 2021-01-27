@@ -4,7 +4,12 @@ from nc import models
 
 
 class DriverStopsFilter(filters.FilterSet):
-    agency = filters.NumberFilter(label="Agency ID", method="filter_agency")
+    agency = filters.ModelChoiceFilter(
+        queryset=models.Agency.objects.no_cache().all(),
+        label="Agency",
+        method="filter_agency",
+        required=True,
+    )
     stop_date = filters.DateFromToRangeFilter(label="Stop date", method="filter_stop_date")
     gender = filters.MultipleChoiceFilter(choices=models.GENDER_CHOICES)
     race = filters.MultipleChoiceFilter(choices=models.RACE_CHOICES)
