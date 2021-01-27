@@ -14,3 +14,5 @@ frontend/build
 frontend/node_modules
 .direnv
 deploy/
+.env
+.envrc
