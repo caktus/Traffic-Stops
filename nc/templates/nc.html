@@ -100,21 +100,29 @@
 {% endblock agencies-table %}
 
 {% block about-text %}
-  <p>
-    According to the US Department of Justice, vehicle stops are the number one reason for contact 
-    between citizens and police. NC CopWatch aims to provide a platform for North Carolina community 
-    members to have access to law enforcement stop, search, and use of force data. The site displays 
-    this data in graphs and charts and incorporates features that allow the user to compare the traffic 
-    stop data to population data, as well as review traffic stop data for individual departments over 
-    time. 
-  </p>
-  <p>
-    NC CopWatch was created to serve as a resource to community members, organizers, and advocates 
-    across the state of North Carolina seeking transparency and accountability in our statewide policing 
-    practices. The site should operate as an advocacy tool for those seeking policy changes in law 
-    enforcement practices.
-  </p>
-  <p><a href="{% url "about" %}">Learn More</a></p>
+ <div class="about-flex-container">
+  <img class="about-flex-image" src="{% static 'img/nc-copwatch-transparent--tayetheartist.png' %}" alt="woman photographing a traffic stop" />
+  <div>
+    <h2 style="margin-left: 10px;">About</h2>
+    <p>
+      According to the US Department of Justice, vehicle stops are the number one reason for contact 
+      between citizens and police. NC CopWatch aims to provide a platform for North Carolina community 
+      members to have access to law enforcement stop, search, and use of force data. The site displays 
+      this data in graphs and charts and incorporates features that allow the user to compare the traffic 
+      stop data to population data, as well as review traffic stop data for individual departments over 
+      time. 
+    </p>
+    <p>
+      NC CopWatch was created to serve as a resource to community members, organizers, and advocates 
+      across the state of North Carolina seeking transparency and accountability in our statewide policing 
+      practices. The site should operate as an advocacy tool for those seeking policy changes in law 
+      enforcement practices.
+    </p>
+    <p><a href="{% url "about" %}">Learn More</a></p>
+  </div>
+ </div>
+ 
+ 
 {% endblock about-text %}
 
 {% block dataset-facts %}
