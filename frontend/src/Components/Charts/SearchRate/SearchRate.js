@@ -24,6 +24,7 @@ import ChartHeader from 'Components/Charts/ChartSections/ChartHeader';
 import Legend from 'Components/Charts/ChartSections/Legend/Legend';
 import DataSubsetPicker from 'Components/Charts/ChartSections/DataSubsetPicker/DataSubsetPicker';
 import GroupedBar from '../ChartPrimitives/GroupedBar';
+import { VictoryLabel } from 'victory';
 
 function SearchRate() {
   let { agencyId } = useParams();
@@ -140,7 +141,22 @@ function SearchRate() {
         </P>
         <S.ChartSubsection>
           <S.LineWrapper>
-            <GroupedBar data={chartData} loading={chartState.loading[STOPS_BY_REASON]} horizontal />
+            <GroupedBar
+              data={chartData}
+              loading={chartState.loading[STOPS_BY_REASON]}
+              horizontal
+              iAxisProps={{
+                tickLabelComponent: <VictoryLabel x={100} dx={-50} style={{ fontSize: 6 }} />,
+                tickFormat: (t) => (t.split ? t.split(' ') : t),
+              }}
+              chartProps={{
+                height: 500,
+                width: 400,
+              }}
+              barProps={{
+                barWidth: 10,
+              }}
+            />
           </S.LineWrapper>
           <S.LegendBelow>
             <S.Spacing>

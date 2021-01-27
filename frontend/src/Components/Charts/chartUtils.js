@@ -176,7 +176,7 @@ export const getRatesAgainstBase = (baseSearches, baseStops, groupSearches, grou
     if (Object.hasOwnProperty.call(baseSearches, r)) {
       const baseRate = calculatePercentage(baseSearches[r], baseStops[r]);
       const groupRate = calculatePercentage(groupSearches[r], groupStops[r]);
-      const rDiff = (groupRate - baseRate) / baseRate;
+      const rDiff = baseRate === 0 ? 0 : (groupRate - baseRate) / baseRate;
       rData[r] = parseFloat((rDiff * 100).toFixed());
     }
   }
