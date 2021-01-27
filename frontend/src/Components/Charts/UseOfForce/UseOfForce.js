@@ -50,7 +50,6 @@ function UseOfForce() {
     const data = chartState.data[USE_OF_FORCE];
     if (data) {
       const years = data.map((s) => s.year);
-      console.log('years: ', years);
       setAvailableYears(years);
     }
   }, [chartState.data[USE_OF_FORCE]]);

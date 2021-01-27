@@ -132,8 +132,8 @@ export function getSearchRateForYearByGroup(searches, stops, year, ethnicGroup, 
   }
 }
 
-export const reduceStopReasonsByEthnicity = (data, yearsSet, ethnicGroup, searchTypeFilter) =>
-  yearsSet.map((year) => {
+export const reduceStopReasonsByEthnicity = (data, yearsSet, ethnicGroup, searchTypeFilter) => {
+  return yearsSet.map((year) => {
     const tick = {};
     tick.x = year;
     tick.symbol = 'circle';
@@ -149,3 +149,36 @@ export const reduceStopReasonsByEthnicity = (data, yearsSet, ethnicGroup, search
     }
     return tick;
   });
+};
+
+export const getGroupValueBasedOnYear = (data, group, yr, keys) => {
+  const groupedData = {};
+  keys.forEach((k) => {
+    const rGroup = filterSinglePurpose(data, k);
+    if (yr === YEARS_DEFAULT) {
+      groupedData[k] = reduceYearsToTotal(rGroup, group)[group];
+    } else {
+      const dataForYear = rGroup.find((g) => g.year === yr);
+      console.log('rGroup: ', rGroup);
+      console.log('year', yr);
+      console.log('dataFroYear, ', dataForYear);
+      // console.log(`setting "${group}" to ${dataForYear[group]}`);
+
+      groupedData[k] = dataForYear ? dataForYear[group] : 0;
+    }
+  });
+  return groupedData;
+};
+
+export const getRatesAgainstBase = (baseSearches, baseStops, groupSearches, groupStops) => {
+  const rData = {};
+  for (const r in baseSearches) {
+    if (Object.hasOwnProperty.call(baseSearches, r)) {
+      const baseRate = calculatePercentage(baseSearches[r], baseStops[r]);
+      const groupRate = calculatePercentage(groupSearches[r], groupStops[r]);
+      const rDiff = (groupRate - baseRate) / baseRate;
+      rData[r] = parseFloat((rDiff * 100).toFixed());
+    }
+  }
+  return rData;
+};

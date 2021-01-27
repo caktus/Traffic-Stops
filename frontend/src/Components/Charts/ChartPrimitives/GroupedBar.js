@@ -11,14 +11,9 @@ function GroupedBar({ data, loading, horizontal, iTickValues, iTickFormat }) {
   return (
     <VictoryChart domainPadding={15} width={700}>
       <VictoryAxis dependentAxis style={AXIS_STYLE} />
-      <VictoryAxis
-        label="Year"
-        style={AXIS_STYLE}
-        tickValues={iTickValues}
-        tickFormat={iTickFormat}
-      />
+      <VictoryAxis style={AXIS_STYLE} tickValues={iTickValues} tickFormat={iTickFormat} />
       <VictoryGroup offset={5}>
-        {data.map((bar, i) => (
+        {data.map((bar) => (
           <VictoryBar
             barWidth={4}
             horizontal={horizontal}
