@@ -4,7 +4,12 @@ export const RACES = ['white', 'black', 'hispanic', 'asian', 'native_american', 
 export const YEARS_DEFAULT = 'All';
 export const PURPOSE_DEFAULT = 'All';
 export const SEARCH_TYPE_DEFAULT = 'All';
-export const AVERAGE_KEY = 'Average for all drivers';
+export const AVERAGE_KEY = 'average';
+export const AVERAGE = {
+  value: AVERAGE_KEY,
+  label: 'Average for all drivers',
+  selected: true,
+};
 
 export const STATIC_LEGEND_KEYS = RACES.map((r) => ({
   value: r,
