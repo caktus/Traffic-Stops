@@ -35,6 +35,7 @@ export default Object.freeze({
       native_american: '#0c3a66',
       other: '#9e7b9b',
       white: '#02bcbb',
+      average: '#939393',
     },
     fontColorsByEthnicGroup: {
       asian: '#212121',
