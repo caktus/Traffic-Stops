@@ -31,6 +31,7 @@ def test_response_person_fields(client, search_url, durham):
         "ethnicity": person.get_ethnicity_display(),
         "age": person.age,
         "department": person.stop.agency.name,
+        "department_id": person.stop.agency_id,
         "officer_id": str(person.stop.officer_id),
         "stop_purpose": person.stop.get_purpose_display(),
         "stop_action": person.stop.get_action_display(),
