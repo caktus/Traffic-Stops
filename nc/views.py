@@ -13,6 +13,7 @@ from rest_framework.response import Response
 from rest_framework_extensions.cache.decorators import cache_response
 from rest_framework_extensions.key_constructor import bits
 from rest_framework_extensions.key_constructor.constructors import DefaultObjectKeyConstructor
+from tsdata.models import StateFacts
 from tsdata.utils import GroupedData
 
 GROUPS = {
@@ -194,3 +195,8 @@ class DriverStopsViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.PersonStopSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = DriverStopsFilter
+
+
+class StateFactsViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = StateFacts.objects.all()
+    serializer_class = serializers.StateFactsSerializer
