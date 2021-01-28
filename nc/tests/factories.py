@@ -43,7 +43,8 @@ class StopFactory(factory.django.DjangoModelFactory):
         if not create:
             return
         if extracted:
-            self.date = self.date.replace(year=extracted)
+            day = 1 if self.date.month == 2 else self.date.day
+            self.date = self.date.replace(year=extracted, day=day)
 
 
 class SearchFactory(factory.django.DjangoModelFactory):
