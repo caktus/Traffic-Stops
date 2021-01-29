@@ -169,9 +169,6 @@ INSTALLED_APPS = [
     "django.contrib.humanize",
     "django.contrib.sitemaps",
     # External apps
-    "selectable",
-    "bootstrap3",
-    "el_pagination",
     "crispy_forms",
     "django_filters",
     "rest_framework",
