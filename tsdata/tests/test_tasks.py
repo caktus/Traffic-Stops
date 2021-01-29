@@ -3,7 +3,7 @@ import datetime
 import io
 
 from django.core import mail
-from django.test import TestCase, override_settings
+from django.test import TransactionTestCase, override_settings
 from django.utils import timezone
 from nc.tests.factories import AgencyFactory as NCAgencyFactory
 from nc.tests.factories import StopFactory as NCStopFactory
@@ -12,7 +12,7 @@ from tsdata.tests.factories import DatasetFactory
 
 
 @override_settings(COMPLIANCE_REPORT_LIST=("compliance@example.com",))
-class ComplianceReportTests(TestCase):
+class ComplianceReportTests(TransactionTestCase):
     databases = "__all__"
 
     def test_all_agencies_good(self):

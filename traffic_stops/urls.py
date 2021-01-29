@@ -12,7 +12,6 @@ admin.autodiscover()
 urlpatterns = [  # noqa
     url(r"^", include(("nc.urls", "nc"), namespace="nc"), name="home"),
     url(r"^admin/", admin.site.urls),
-    url(r"^selectable/", include("selectable.urls")),
     # React SPA:
     path(r"", index, name="index"),
     re_path(r"^(?:.*)/?$", index, name="index-others"),
