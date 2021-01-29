@@ -1,7 +1,7 @@
 import React from 'react';
 
 // Components
-import Table from 'Components/Elements/Table';
+import Table from 'Components/Elements/Table/Table';
 
 function UseOfForceTable({ data }) {
   const columns = React.useMemo(
