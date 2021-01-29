@@ -1,20 +1,17 @@
 # base requirements.in
-django>2.2.15,<3.0
+django>2.2.16,<3.0
 celery
 census
 us
 dealer
-django-bootstrap3
 django-cache-machine
 django-click
 django-crispy-forms
 django-dotenv
-django-el-pagination
 django-extensions
 django-filter
 django-memoize
 django-redis
-django-selectable
 djangorestframework
 dj-database-url
 drf-extensions

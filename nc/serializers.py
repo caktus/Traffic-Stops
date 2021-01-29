@@ -28,6 +28,7 @@ class PersonStopSerializer(serializers.ModelSerializer):
     race = serializers.CharField(source="get_race_display")
     ethnicity = serializers.CharField(source="get_ethnicity_display")
     department = serializers.SerializerMethodField()
+    department_id = serializers.SerializerMethodField()
     officer_id = serializers.SerializerMethodField()
     stop_purpose = serializers.SerializerMethodField()
     stop_action = serializers.SerializerMethodField()
@@ -42,6 +43,7 @@ class PersonStopSerializer(serializers.ModelSerializer):
             "ethnicity",
             "age",
             "department",
+            "department_id",
             "officer_id",
             "stop_purpose",
             "stop_action",
@@ -52,6 +54,9 @@ class PersonStopSerializer(serializers.ModelSerializer):
 
     def get_department(self, obj):
         return obj.stop.agency.name
+
+    def get_department_id(self, obj):
+        return obj.stop.agency_id
 
     def get_officer_id(self, obj):
         return obj.stop.officer_id

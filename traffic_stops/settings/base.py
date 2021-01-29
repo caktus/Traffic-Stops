@@ -169,9 +169,6 @@ INSTALLED_APPS = [
     "django.contrib.humanize",
     "django.contrib.sitemaps",
     # External apps
-    "selectable",
-    "bootstrap3",
-    "el_pagination",
     "crispy_forms",
     "django_filters",
     "rest_framework",
@@ -243,7 +240,6 @@ X_FRAME_OPTIONS = "DENY"
 # Application settings
 LOGIN_URL = "account_login"
 LOGIN_REDIRECT_URL = "home"
-SELECTABLE_MAX_LIMIT = 30
 
 REST_FRAMEWORK_EXTENSIONS = {"DEFAULT_CACHE_RESPONSE_TIMEOUT": 60 * 60 * 24 * 60}  # 60 days
 

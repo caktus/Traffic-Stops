@@ -69,7 +69,7 @@ dictdiffer==0.8.1
     # via openshift
 django-debug-toolbar==2.2
     # via -r requirements/dev/dev.in
-django==2.2.16
+django==2.2.17
     # via
     #   -c requirements/dev/../base/base.txt
     #   django-debug-toolbar
