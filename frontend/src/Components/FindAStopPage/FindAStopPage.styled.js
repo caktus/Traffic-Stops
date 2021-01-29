@@ -3,7 +3,7 @@ import * as breakpoints from 'styles/breakpoints';
 import { FullWidthPage } from 'styles/StyledComponents/FullWidthPage.styled';
 
 export const Page = styled(FullWidthPage)`
-  padding-bottom: 2em;
+  padding: 2em 0;
 `;
 
 export const Form = styled.form``;

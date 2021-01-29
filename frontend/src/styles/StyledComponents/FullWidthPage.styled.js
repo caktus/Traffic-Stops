@@ -16,7 +16,7 @@ export const ResponsiveInnerPage = styled.div`
     max-width: 900px;
   }
   @media (${breakpoints.smallerThanTabletLandscape}) {
-    max-width: 500px;
+    max-width: 550px;
   }
   @media (${breakpoints.phoneOnly}) {
     max-width: 100%;
