@@ -5,6 +5,9 @@ import { useTheme } from 'styled-components';
 // Router
 import { useParams, useHistory, useRouteMatch } from 'react-router-dom';
 
+// Hooks
+import useOfficerId from 'Hooks/useOfficerId';
+
 // Constants
 import toTitleCase from 'util/toTitleCase';
 import {
@@ -27,6 +30,7 @@ import Legend from 'Components/Charts/ChartSections/Legend/Legend';
 
 function Overview() {
   const { agencyId } = useParams();
+  const officerId = useOfficerId();
   const theme = useTheme();
   const history = useHistory();
   const match = useRouteMatch();
