@@ -10,6 +10,8 @@ import {
 
 const API_BASE = '/api';
 
+export const STATE_FACTS_URL = `${API_BASE}/state-facts/`;
+
 export const getAgenciesURL = () => `${API_BASE}/agency/`;
 
 export const getAgencyURL = (agencyId) => `${API_BASE}/agency/${agencyId}/`;
