@@ -9,6 +9,14 @@ export const H1 = styled.h1`
   text-transform: uppercase;
 `;
 
+export const H1point5 = styled.h2`
+  font-family: ${(props) => props.theme.fonts.heading};
+  font-weight: 400;
+  font-size: 31px;
+  color: ${(props) => props.theme.colors.text};
+  text-transform: uppercase;
+`;
+
 export const H2 = styled.h2`
   font-family: ${(props) => props.theme.fonts.heading};
   font-weight: 400;
