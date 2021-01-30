@@ -4,8 +4,8 @@ import { ResponsiveInnerPage } from 'styles/StyledComponents/FullWidthPage.style
 import { AnimatePresence, motion } from 'framer-motion';
 
 // Routing
-import { useLocation } from 'react-router-dom';
-import { FIND_A_STOP_SLUG } from 'Routes/slugs';
+import { useHistory, useLocation } from 'react-router-dom';
+import { FIND_A_STOP_SLUG, AGENCY_LIST_SLUG } from 'Routes/slugs';
 
 // AJAX
 import axios from 'Services/Axios';
@@ -52,6 +52,7 @@ const tableColumns = [
 
 function FindAStopResults() {
   const { search } = useLocation();
+  const history = useHistory();
 
   const [stops, setStops] = useState();
 
@@ -66,6 +67,15 @@ function FindAStopResults() {
     }
     _fetchStops();
   }, [search]);
+
+  const handleOfficerIdSelected = (officerId) => {
+    const qp = new URLSearchParams(search);
+    const agencyId = qp.get('agency');
+    history.push({
+      pathname: `${AGENCY_LIST_SLUG}/${agencyId}/`,
+      search: `officer=${officerId}`,
+    });
+  };
 
   return (
     <S.Page>
@@ -99,7 +109,13 @@ function FindAStopResults() {
                 transition={{ ease: 'easeIn' }}
               >
                 <S.TableWrapper>
-                  <Table data={stops} columns={tableColumns} paginated sortable />
+                  <Table
+                    data={stops}
+                    columns={tableColumns}
+                    paginated
+                    sortable
+                    handleOfficerIdSelected={handleOfficerIdSelected}
+                  />
                 </S.TableWrapper>
               </motion.div>
             </AnimatePresence>

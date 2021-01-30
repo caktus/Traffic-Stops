@@ -22,7 +22,6 @@ import { H1 } from 'styles/StyledComponents/Typography';
 
 function FindAStopPage() {
   const history = useHistory();
-  const match = useRouteMatch();
 
   const [errors, setErrors] = useState({});
 
@@ -70,7 +69,6 @@ function FindAStopPage() {
         let value = formFields[field];
         if (field === 'stop_date_after' || field === 'stop_date_before') {
           value = formFields[field] ? formatDate(formFields[field]) : '';
-          console.log('formFields[field]: ', formFields[field]);
         }
         if (field === 'agency') {
           value = formFields[field].id;
@@ -93,8 +91,10 @@ function FindAStopPage() {
   const handleSearch = (e) => {
     e.preventDefault();
     if (!formFields.agency) {
+      console.log('ERROR');
       setErrors({ agency: ['This field is required'] });
     } else {
+      console.log('OK SERACH');
       // Search just appends the query params to the current url
       // Routing renders a new component when it detects params
       // This way, users can navigate direclty to /stops?[query params] and get the results
