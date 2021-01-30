@@ -1,15 +1,33 @@
 import React from 'react';
+import { useTheme } from 'styled-components';
 import { AnimatePresence, motion } from 'framer-motion';
 import * as S from './AgencyHeader.styled';
 import { P, SIZES, WEIGHTS, COLORS } from 'styles/StyledComponents/Typography';
+
+// Routing
+import { useHistory, useParams } from 'react-router-dom';
+
+// Hooks
+import useOfficerId from 'Hooks/useOfficerId';
 
 // Util
 import { calculatePercentage, RACES } from 'Components/Charts/chartUtils';
 import toTitleCase from 'util/toTitleCase';
 
 import BackButton from 'Components/Elements/BackButton';
+import { ICONS } from 'img/icons/Icon';
+import { AGENCY_LIST_SLUG } from 'Routes/slugs';
 
 function AgencyHeader({ agencyHeaderOpen, agencyDetails }) {
+  const history = useHistory();
+  const { agencyId } = useParams();
+  const theme = useTheme();
+  const officerId = useOfficerId();
+
+  const handleGoToAgency = () => {
+    history.push(`${AGENCY_LIST_SLUG}/${agencyId}`);
+  };
+
   return (
     <AnimatePresence>
       {agencyHeaderOpen && (
@@ -26,17 +44,36 @@ function AgencyHeader({ agencyHeaderOpen, agencyDetails }) {
             </S.SubHeaderNavRow>
             <S.SubHeaderContentRow>
               <S.EntityDetails>
-                <S.AgencyTitle>{agencyDetails.name}</S.AgencyTitle>
+                {officerId ? (
+                  <>
+                    <S.AgencyTitle>Officer #{officerId}</S.AgencyTitle>
+                    <S.AgencySub>
+                      <P>from {agencyDetails.name}</P>
+                      <S.GoToAgency onClick={() => handleGoToAgency()}>
+                        View department statistics
+                        <S.ViewIcon
+                          icon={ICONS.arrowRight}
+                          fill={theme.colors.primaryDark}
+                          height={24}
+                          width={24}
+                        />
+                      </S.GoToAgency>
+                    </S.AgencySub>
+                  </>
+                ) : (
+                  <S.AgencyTitle>{agencyDetails.name}</S.AgencyTitle>
+                )}
                 <P size={SIZES[0]} color={COLORS[0]} weight={WEIGHTS[0]}>
-                  last reported stop {agencyDetails.last_reported_stop && 'on'}{' '}
+                  last reported stop {agencyDetails.last_reported_stop && 'on'}
                   <S.ReportedDate size={SIZES[0]} color={COLORS[0]} weight={WEIGHTS[1]}>
                     <S.ReportedDate size={SIZES[0]} color={COLORS[0]} weight={WEIGHTS[1]}>
-                      {agencyDetails.last_reported_stop ? (new Intl.DateTimeFormat("en-US", {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric"
-                      }).format(new Date(agencyDetails.last_reported_stop))
-                      ) : ('Unknown')}
+                      {agencyDetails.last_reported_stop
+                        ? new Intl.DateTimeFormat('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric',
+                          }).format(new Date(agencyDetails.last_reported_stop))
+                        : 'Unknown'}
                     </S.ReportedDate>
                   </S.ReportedDate>
                 </P>
@@ -59,8 +96,8 @@ function AgencyHeader({ agencyHeaderOpen, agencyDetails }) {
                       );
                     })
                   ) : (
-                      <S.NoCensus>Census data for {agencyDetails.name} could not be found</S.NoCensus>
-                    )}
+                    <S.NoCensus>Census data for {agencyDetails.name} could not be found</S.NoCensus>
+                  )}
                 </S.CensusRow>
               </S.CensusDemographics>
             </S.SubHeaderContentRow>
