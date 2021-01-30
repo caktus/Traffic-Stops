@@ -185,7 +185,6 @@ function TrafficStops() {
 
   // Handle stops by percentage legend interactions
   const handlePercentageKeySelected = (ethnicGroup) => {
-    console.log('------> changing PERCENTAGE ethnic group keys');
     const groupIndex = percentageEthnicGroups.indexOf(
       percentageEthnicGroups.find((g) => g.value === ethnicGroup.value)
     );
@@ -196,7 +195,6 @@ function TrafficStops() {
 
   // Handle stops by count legend interactions
   const handleCountKeySelected = (ethnicGroup) => {
-    console.log('------> changing COUNT ethnic group keys');
     const groupIndex = countEthnicGroups.indexOf(
       countEthnicGroups.find((g) => g.value === ethnicGroup.value)
     );
@@ -210,8 +208,6 @@ function TrafficStops() {
   const handleViewCountData = () => {};
   const handleShareCountGraph = () => {};
 
-  console.log('percentageEthnicGroups', percentageEthnicGroups);
-  console.log('countEthnicGroups', countEthnicGroups);
   return (
     <S.TrafficStops>
       {/* Traffic Stops by Percentage */}

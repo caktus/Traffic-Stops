@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import FJIcon from 'img/icons/Icon';
 
 export const DropdownContainer = styled.div`
@@ -31,6 +31,16 @@ export const Icon = styled(FJIcon)`
 
 export const DropdownListContainer = styled.div`
   position: absolute;
+
+  ${(props) =>
+    props.dropUp
+      ? css`
+          bottom: 100%;
+        `
+      : css`
+          top: 100%;
+        `}
+
   min-width: 100%;
   display: ${(props) => (props.isOpen ? 'block' : 'none')};
 

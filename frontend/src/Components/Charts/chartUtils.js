@@ -39,6 +39,15 @@ export function filterSinglePurpose(data, purpose) {
   return data.filter((d) => d.purpose === purpose);
 }
 
+export const filterDataBySearchType = (data, searchTypeFilter) => {
+  if (searchTypeFilter === SEARCH_TYPE_DEFAULT) return data;
+  else return data.filter((d) => d.search_type === searchTypeFilter);
+};
+
+export const getQuantityForYear = (data, year, ethnicGroup) => {
+  return data.find((d) => d.year === year)[ethnicGroup];
+};
+
 /**
  * Given an Array of objects with shape { year, asian, black, etc. }, reduce to percentages of total by race.
  * provide Theme object to provide fill colors.
@@ -109,10 +118,11 @@ export function getSearchRateForYearByGroup(searches, stops, year, ethnicGroup, 
   if (ethnicGroup === AVERAGE_KEY) {
     let totalSearches = 0;
     let totalStops = 0;
-    filteredKeys.forEach((ethnicGroup) => {
-      if (ethnicGroup === AVERAGE_KEY) return;
-      totalSearches += searchesForYear[ethnicGroup];
-      totalStops += stopsForYear[ethnicGroup];
+    filteredKeys.forEach((eg) => {
+      const g = eg.value;
+      if (g === AVERAGE_KEY) return;
+      totalSearches += searchesForYear[g];
+      totalStops += stopsForYear[g];
     });
     return calculatePercentage(totalSearches, totalStops);
   } else {
@@ -121,3 +131,54 @@ export function getSearchRateForYearByGroup(searches, stops, year, ethnicGroup, 
     return calculatePercentage(searchesForGroup, stopsForGroup);
   }
 }
+
+export const reduceStopReasonsByEthnicity = (data, yearsSet, ethnicGroup, searchTypeFilter) => {
+  return yearsSet.map((year) => {
+    const tick = {};
+    tick.x = year;
+    tick.symbol = 'circle';
+    tick.displayName = toTitleCase(ethnicGroup);
+    if (searchTypeFilter === SEARCH_TYPE_DEFAULT) {
+      const yearSet = data.filter((d) => d.year === year);
+      const stopTotal = yearSet.reduce((acc, curr) => {
+        return { [ethnicGroup]: acc[ethnicGroup] + curr[ethnicGroup] };
+      })[ethnicGroup];
+      tick.y = stopTotal;
+    } else {
+      tick.y = data.find((d) => d.year === year)[ethnicGroup];
+    }
+    return tick;
+  });
+};
+
+export const getGroupValueBasedOnYear = (data, group, yr, keys) => {
+  const groupedData = {};
+  keys.forEach((k) => {
+    const rGroup = filterSinglePurpose(data, k);
+    if (yr === YEARS_DEFAULT) {
+      groupedData[k] = reduceYearsToTotal(rGroup, group)[group];
+    } else {
+      const dataForYear = rGroup.find((g) => g.year === yr);
+      console.log('rGroup: ', rGroup);
+      console.log('year', yr);
+      console.log('dataFroYear, ', dataForYear);
+      // console.log(`setting "${group}" to ${dataForYear[group]}`);
+
+      groupedData[k] = dataForYear ? dataForYear[group] : 0;
+    }
+  });
+  return groupedData;
+};
+
+export const getRatesAgainstBase = (baseSearches, baseStops, groupSearches, groupStops) => {
+  const rData = {};
+  for (const r in baseSearches) {
+    if (Object.hasOwnProperty.call(baseSearches, r)) {
+      const baseRate = calculatePercentage(baseSearches[r], baseStops[r]);
+      const groupRate = calculatePercentage(groupSearches[r], groupStops[r]);
+      const rDiff = baseRate === 0 ? 0 : (groupRate - baseRate) / baseRate;
+      rData[r] = parseFloat((rDiff * 100).toFixed());
+    }
+  }
+  return rData;
+};
