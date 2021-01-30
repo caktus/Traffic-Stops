@@ -8,7 +8,7 @@ import defaultTheme from '../styles/themes.styled';
 
 // Router
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import { AGENCY_LIST_SLUG, ABOUT_SLUG, FIND_A_STOP_SLUG } from 'Routes/slugs';
+import { AGENCY_LIST_SLUG, ABOUT_SLUG, FIND_A_STOP_SLUG, HOME_SLUG } from 'Routes/slugs';
 
 // Layout
 import Header from 'Components/Header/Header';
@@ -27,6 +27,7 @@ import chartReducer, { initialState as initialChartState } from 'Context/chart-r
 import About from 'Components/AboutPage/AboutPage';
 import AgencyList from 'Components/AgencyList/AgencyList';
 import AgencyData from 'Components/AgencyData/AgencyData';
+import HomePage from 'Components/HomePage/HomePage';
 import FindAStopPage from 'Components/FindAStopPage/FindAStopPage';
 
 function App() {
@@ -51,6 +52,9 @@ function App() {
                 </Route>
                 <Route path={FIND_A_STOP_SLUG}>
                   <FindAStopPage />
+                </Route>
+                <Route path={HOME_SLUG}>
+                  <HomePage />
                 </Route>
                 <Route exact path={ABOUT_SLUG}>
                   <About />
