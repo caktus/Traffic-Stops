@@ -21,8 +21,9 @@ NC_COPY_INSTRUCTIONS = {
     "Search.csv": "COPY nc_search (search_id, stop_id, person_id, type, vehicle_search, driver_search, passenger_search, property_search, vehicle_siezed, personal_property_siezed, other_property_sized) FROM STDIN WITH DELIMITER ',' NULL AS '' CSV HEADER",
     "Contraband.csv": "COPY nc_contraband (contraband_id, search_id, person_id, stop_id, ounces, pounds, pints, gallons, dosages, grams, kilos, money, weapons, dollar_amount) FROM STDIN WITH DELIMITER ',' CSV HEADER",
     "SearchBasis.csv": "COPY nc_searchbasis (search_basis_id, search_id, person_id, stop_id, basis) FROM STDIN WITH DELIMITER ',' CSV HEADER",
-    "NC_agencies.csv": "COPY  nc_agency (id, name, census_profile_id) FROM STDIN WITH DELIMITER ',' CSV HEADER FORCE NOT NULL census_profile_id",
 }  # noqa
+
+NC_AGENCY_COPY_INSTRUCTIONS = "COPY nc_agency (id, name, census_profile_id) FROM STDIN WITH DELIMITER ',' CSV HEADER FORCE NOT NULL census_profile_id"
 
 FINALIZE_COPY = """
     UPDATE nc_stop SET agency_id = nc_agency.id FROM nc_agency WHERE nc_stop.agency_description = nc_agency.name;

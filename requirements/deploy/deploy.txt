@@ -4,9 +4,19 @@
 #
 #    pip-compile --output-file=requirements/deploy/deploy.txt requirements/deploy/deploy.in
 #
-certifi==2020.6.20        # via -c requirements/deploy/../base/base.txt, sentry-sdk
-newrelic==5.16.1.146      # via -r requirements/deploy/deploy.in
-python3-memcached==1.51   # via -r requirements/deploy/deploy.in
-sentry-sdk==0.16.5        # via -r requirements/deploy/deploy.in
-urllib3==1.25.9           # via -c requirements/deploy/../base/base.txt, sentry-sdk
-uwsgi==2.0.18             # via -r requirements/deploy/deploy.in
+certifi==2020.6.20
+    # via
+    #   -c requirements/deploy/../base/base.txt
+    #   sentry-sdk
+newrelic==5.16.1.146
+    # via -r requirements/deploy/deploy.in
+python3-memcached==1.51
+    # via -r requirements/deploy/deploy.in
+sentry-sdk==0.16.5
+    # via -r requirements/deploy/deploy.in
+urllib3==1.25.9
+    # via
+    #   -c requirements/deploy/../base/base.txt
+    #   sentry-sdk
+uwsgi==2.0.18
+    # via -r requirements/deploy/deploy.in

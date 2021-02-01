@@ -1,15 +1,19 @@
 from django.conf import settings
 from django.db import connections
 from django.db.models import Count, Q
+from django_filters.rest_framework import DjangoFilterBackend
 from nc import serializers
+from nc.filters import DriverStopsFilter
 from nc.models import SEARCH_TYPE_CHOICES as SEARCH_TYPE_CHOICES_TUPLES
-from nc.models import Agency, Stop
+from nc.models import Agency, Person, Stop
+from nc.pagination import NoCountPagination
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework_extensions.cache.decorators import cache_response
 from rest_framework_extensions.key_constructor import bits
 from rest_framework_extensions.key_constructor.constructors import DefaultObjectKeyConstructor
+from tsdata.models import StateFacts
 from tsdata.utils import GroupedData
 
 GROUPS = {
@@ -167,3 +171,32 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
         self.query(results, group_by=("year", "person__race", "person__ethnicity"), filter_=q)
         response["contraband"] = results.flatten()
         return Response(response)
+
+
+class DriverStopsViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = (
+        Person.objects.filter(type="D")
+        .select_related("stop")
+        .order_by("stop__date")
+        .only(
+            "stop__stop_id",
+            "stop__date",
+            "stop__agency_id",
+            "stop__purpose",
+            "stop__action",
+            "stop__officer_id",
+            "gender",
+            "race",
+            "ethnicity",
+            "age",
+        )
+    )
+    pagination_class = NoCountPagination
+    serializer_class = serializers.PersonStopSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = DriverStopsFilter
+
+
+class StateFactsViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = StateFacts.objects.all()
+    serializer_class = serializers.StateFactsSerializer
