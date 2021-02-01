@@ -33,7 +33,6 @@ function UseOfForce() {
 
   const [chartState] = useDataset(agencyId, USE_OF_FORCE);
 
-  const [availableYears, setAvailableYears] = useState();
   const [year, setYear] = useState(YEARS_DEFAULT);
 
   const [ethnicGroupKeys, setEthnicGroupKeys] = useState(() =>
@@ -42,17 +41,6 @@ function UseOfForce() {
 
   const [useOfForceData, setUseOfForceData] = useState([]);
   const [useOfForcePieData, setUseOfForcePieData] = useState([]);
-
-  /* SET INITIAL STATE */
-  // First, find out which years are available by
-  // inspecting one of the datasets
-  useEffect(() => {
-    const data = chartState.data[USE_OF_FORCE];
-    if (data) {
-      const years = data.map((s) => s.year);
-      setAvailableYears(years);
-    }
-  }, [chartState.data[USE_OF_FORCE]]);
 
   /* BUILD DATA */
   // Bar chart data
@@ -86,12 +74,15 @@ function UseOfForce() {
         const yearData = data.find((d) => d.year === year);
         const total = calculateYearTotal(yearData);
         setUseOfForcePieData(
-          RACES.map((race) => ({
-            x: toTitleCase(race),
-            y: calculatePercentage(yearData[race], total),
-            color: theme.colors.ethnicGroup[race],
-            fontColor: theme.colors.fontColorsByEthnicGroup[race],
-          }))
+          RACES.map((race) => {
+            const rData = {
+              x: toTitleCase(race),
+              color: theme.colors.ethnicGroup[race],
+              fontColor: theme.colors.fontColorsByEthnicGroup[race],
+            };
+            rData.y = yearData ? calculatePercentage(yearData[race], total) : 0;
+            return rData;
+          })
         );
       }
     }
@@ -138,7 +129,7 @@ function UseOfForce() {
               <GroupedBar
                 data={useOfForceData}
                 iTickFormat={(t) => (t % 2 === 0 ? t : null)}
-                iTickValues={availableYears}
+                iTickValues={chartState.yearSet}
                 loading={chartState.loading[USE_OF_FORCE]}
               />
             </S.LineWrapper>
@@ -160,7 +151,7 @@ function UseOfForce() {
               label="Year"
               value={year}
               onChange={handleYearSelected}
-              options={availableYears}
+              options={[YEARS_DEFAULT].concat(chartState.yearRange)}
               dropUp
             />
           </S.PieSection>

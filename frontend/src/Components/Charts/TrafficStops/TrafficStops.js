@@ -10,13 +10,13 @@ import {
   reduceFullDataset,
   calculatePercentage,
   calculateYearTotal,
-  getAvailableReasons,
   filterSinglePurpose,
   buildStackedBarData,
   STATIC_LEGEND_KEYS,
   YEARS_DEFAULT,
   PURPOSE_DEFAULT,
   RACES,
+  STOP_TYPES,
 } from 'Components/Charts/chartUtils';
 
 // State
@@ -41,10 +41,8 @@ function TrafficStops() {
   useDataset(agencyId, STOPS_BY_REASON);
   const [chartState] = useDataset(agencyId, STOPS);
 
-  const [availableYears, setAvailableYears] = useState();
   const [year, setYear] = useState(YEARS_DEFAULT);
 
-  const [availablePurposes, setAvailablePurposes] = useState();
   const [purpose, setPurpose] = useState(PURPOSE_DEFAULT);
 
   const [percentageEthnicGroups, setPercentageEthnicGroups] = useState(
@@ -72,27 +70,7 @@ function TrafficStops() {
 
   const [byCountLineData, setByCountLineData] = useState([]);
 
-  /* SET INITIAL STATE */
-  // First, find out which years are available by
-  // inspecting one of the datasets
-  useEffect(() => {
-    const stops = chartState.data[STOPS];
-    if (stops) {
-      const uniqueYears = stops.map((s) => parseInt(s.year, 10));
-      setAvailableYears(uniqueYears);
-    }
-  }, [chartState.data[STOPS]]);
-
-  useEffect(() => {
-    const stops = chartState.data[STOPS_BY_REASON]?.stops;
-    if (stops) {
-      const stopReasons = getAvailableReasons(stops, 'purpose');
-      setAvailablePurposes(stopReasons);
-    }
-  }, [chartState.data[STOPS_BY_REASON]]);
-
   /* CALCULATE AND BUILD CHART DATA */
-
   // Build data for Stops by Percentage line chart
   useEffect(() => {
     const data = chartState.data[STOPS];
@@ -224,7 +202,7 @@ function TrafficStops() {
               <StackedBar
                 horizontal
                 data={byPercentageLineData}
-                tickValues={availableYears}
+                tickValues={chartState.yearSet}
                 loading={chartState.loading[STOPS]}
               />
             </S.LineWrapper>
@@ -246,7 +224,7 @@ function TrafficStops() {
               label="Year"
               value={year}
               onChange={handleYearSelect}
-              options={[YEARS_DEFAULT].concat(availableYears)}
+              options={[YEARS_DEFAULT].concat(chartState.yearRange)}
             />
           </S.PieSection>
         </S.ChartSubsection>
@@ -265,7 +243,7 @@ function TrafficStops() {
               data={byCountLineData}
               loading={chartState.loading[STOPS_BY_REASON]}
               iTickFormat={(t) => (t % 2 === 0 ? t : null)}
-              iTickValues={availableYears}
+              iTickValues={chartState.yearSet}
             />
           </S.LineWrapper>
           <S.LegendBeside>
@@ -273,7 +251,7 @@ function TrafficStops() {
               label="Stop Purpose"
               value={purpose}
               onChange={handleStopPurposeSelect}
-              options={[PURPOSE_DEFAULT].concat(availablePurposes)}
+              options={[PURPOSE_DEFAULT].concat(STOP_TYPES)}
             />
             <S.Spacing>
               <Legend

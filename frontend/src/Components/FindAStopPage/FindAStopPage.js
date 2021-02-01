@@ -91,10 +91,8 @@ function FindAStopPage() {
   const handleSearch = (e) => {
     e.preventDefault();
     if (!formFields.agency) {
-      console.log('ERROR');
       setErrors({ agency: ['This field is required'] });
     } else {
-      console.log('OK SERACH');
       // Search just appends the query params to the current url
       // Routing renders a new component when it detects params
       // This way, users can navigate direclty to /stops?[query params] and get the results

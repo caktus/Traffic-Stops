@@ -3,20 +3,23 @@ import * as S from './SearchRate.styled';
 import { useTheme } from 'styled-components';
 
 // Router
-import { useParams } from 'react-router-dom';
+import { useParams, useRouteMatch, useHistory } from 'react-router-dom';
 
 // Data
 import useDataset, { STOPS_BY_REASON } from 'Hooks/useDataset';
+
+// Hooks
+import useOfficerId from 'Hooks/useOfficerId';
 
 // Constants
 import {
   STATIC_LEGEND_KEYS,
   YEARS_DEFAULT,
-  filterSinglePurpose,
-  getAvailableReasons,
   getGroupValueBasedOnYear,
   getRatesAgainstBase,
+  STOP_TYPES,
 } from '../chartUtils';
+import { AGENCY_LIST_SLUG, SEARCHES_SLUG } from 'Routes/slugs';
 
 // Children
 import { P } from 'styles/StyledComponents/Typography';
@@ -29,44 +32,36 @@ import { VictoryLabel } from 'victory';
 function SearchRate() {
   let { agencyId } = useParams();
   const theme = useTheme();
+  const history = useHistory();
+  const officerId = useOfficerId();
 
   const [chartState] = useDataset(agencyId, STOPS_BY_REASON);
 
-  const [availableYears, setAvailableYears] = useState([]);
   const [year, setYear] = useState(YEARS_DEFAULT);
   const [ethnicGroupKeys, setEthnicGroupKeys] = useState(() =>
     STATIC_LEGEND_KEYS.map((k) => ({ ...k }))
   );
 
   const [chartData, setChartData] = useState([]);
-
-  /* Set initial data */
-  useEffect(() => {
-    const data = chartState.data[STOPS_BY_REASON];
-    if (data) {
-      const purposeYears = filterSinglePurpose(data.stops, 'Driving While Impaired');
-      const years = purposeYears.map((p) => p.year);
-      setAvailableYears([YEARS_DEFAULT].concat(years));
-    }
-  }, [chartState.data[STOPS_BY_REASON]]);
+  const [noBaseSearches, setNoBaseSearches] = useState(false);
 
   /* BUILD DATA */
   useEffect(() => {
     const data = chartState.data[STOPS_BY_REASON];
     if (data) {
-      const availableStopReasons = getAvailableReasons(data.stops, 'purpose');
       const baseGroupTotalSearches = getGroupValueBasedOnYear(
         data.searches,
         'white',
         year,
-        availableStopReasons
+        STOP_TYPES
       );
-      const baseGroupTotalStops = getGroupValueBasedOnYear(
-        data.stops,
-        'white',
-        year,
-        availableStopReasons
-      );
+      if (_entityHasNoBaseSearches(baseGroupTotalSearches)) {
+        setNoBaseSearches(true);
+        return;
+      } else {
+        setNoBaseSearches(false);
+      }
+      const baseGroupTotalStops = getGroupValueBasedOnYear(data.stops, 'white', year, STOP_TYPES);
       const mappedData = ethnicGroupKeys
         .filter((g) => g.selected && g.value !== 'white')
         .map((g) => {
@@ -75,13 +70,13 @@ function SearchRate() {
             data.searches,
             ethnicGroup,
             year,
-            availableStopReasons
+            STOP_TYPES
           );
           const groupTotalStops = getGroupValueBasedOnYear(
             data.stops,
             ethnicGroup,
             year,
-            availableStopReasons
+            STOP_TYPES
           );
           const ratesByReason = getRatesAgainstBase(
             baseGroupTotalSearches,
@@ -92,7 +87,7 @@ function SearchRate() {
           return {
             id: ethnicGroup,
             color: `${theme.colors.ethnicGroup[ethnicGroup]}90`,
-            data: availableStopReasons.map((reason) => ({
+            data: STOP_TYPES.map((reason) => ({
               x: reason,
               y: ratesByReason[reason],
             })),
@@ -101,6 +96,10 @@ function SearchRate() {
       setChartData(mappedData);
     }
   }, [chartState.data[STOPS_BY_REASON], ethnicGroupKeys, year]);
+
+  const _entityHasNoBaseSearches = (baseGroupSearches) => {
+    return Object.values(baseGroupSearches).every((v) => v === 0);
+  };
 
   /* INTERACTIONS */
   // Handle year dropdown state
@@ -122,6 +121,10 @@ function SearchRate() {
   const handleViewData = () => {};
   const handleShareGraph = () => {};
 
+  const getSearchesUrlForOfficer = () => {
+    return `${AGENCY_LIST_SLUG}/${agencyId}${SEARCHES_SLUG}/?officer=${officerId}`;
+  };
+
   return (
     <S.SearchRate>
       <S.ChartSection>
@@ -141,22 +144,39 @@ function SearchRate() {
         </P>
         <S.ChartSubsection>
           <S.LineWrapper>
-            <GroupedBar
-              data={chartData}
-              loading={chartState.loading[STOPS_BY_REASON]}
-              horizontal
-              iAxisProps={{
-                tickLabelComponent: <VictoryLabel x={100} dx={-50} style={{ fontSize: 6 }} />,
-                tickFormat: (t) => (t.split ? t.split(' ') : t),
-              }}
-              chartProps={{
-                height: 500,
-                width: 400,
-              }}
-              barProps={{
-                barWidth: 10,
-              }}
-            />
+            {noBaseSearches ? (
+              <S.NoBaseSearches>
+                <P>
+                  This {officerId ? 'officer' : 'department'}{' '}
+                  <strong>has not reported searching any people identified as white</strong>. No
+                  comparisons can be made.
+                </P>
+                <P>
+                  For a better comparison, view{' '}
+                  <S.NoBaseLink onClick={() => history.push(getSearchesUrlForOfficer())}>
+                    search counts and percentages
+                  </S.NoBaseLink>
+                  .
+                </P>
+              </S.NoBaseSearches>
+            ) : (
+              <GroupedBar
+                data={chartData}
+                loading={chartState.loading[STOPS_BY_REASON]}
+                horizontal
+                iAxisProps={{
+                  tickLabelComponent: <VictoryLabel x={100} dx={-50} style={{ fontSize: 6 }} />,
+                  tickFormat: (t) => (t.split ? t.split(' ') : t),
+                }}
+                chartProps={{
+                  height: 500,
+                  width: 400,
+                }}
+                barProps={{
+                  barWidth: 10,
+                }}
+              />
+            )}
           </S.LineWrapper>
           <S.LegendBelow>
             <S.Spacing>
@@ -170,7 +190,7 @@ function SearchRate() {
                 label="Year"
                 value={year}
                 onChange={handleYearSelected}
-                options={availableYears}
+                options={[YEARS_DEFAULT].concat(chartState.yearRange)}
               />
             </S.Spacing>
           </S.LegendBelow>

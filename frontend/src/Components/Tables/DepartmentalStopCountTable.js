@@ -4,7 +4,6 @@ import React from 'react';
 import Table from 'Components/Elements/Table/Table';
 
 function DepartmentalStopCountTable({ data }) {
-  console.log('Table render!!');
   const columns = React.useMemo(
     () => [
       {

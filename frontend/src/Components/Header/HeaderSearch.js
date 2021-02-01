@@ -9,10 +9,6 @@ import DepartmentSearch from 'Components/Elements/DepartmentSearch';
 function HeaderSearch(showHeaderSearch) {
   const portalTarget = usePortal('searchbar-root');
 
-  // const _handleDropdownOpen = (open) => {
-  //   console.log('open tho? ', open);
-  // };
-
   return ReactDOM.createPortal(
     showHeaderSearch && (
       <AnimatePresence>

@@ -11,7 +11,9 @@ function SidebarLink({ children, to, ...props }) {
   const [active, setActive] = useState(false);
 
   useEffect(() => {
-    setActive(location.pathname === to);
+    const noQsTo = to.split('?')[0];
+    const cleadedUpTo = noQsTo.replace('//', '/');
+    setActive(location.pathname === cleadedUpTo);
   }, [location.pathname]);
 
   return (

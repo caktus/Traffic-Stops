@@ -31,19 +31,9 @@ function SearchRate() {
 
   const [chartState] = useDataset(agencyId, CONTRABAND_HIT_RATE);
 
-  const [availableYears, setAvailableYears] = useState();
   const [year, setYear] = useState(YEARS_DEFAULT);
 
   const [contrabandData, setContrabandData] = useState();
-
-  useEffect(() => {
-    const data = chartState.data[CONTRABAND_HIT_RATE];
-    if (data) {
-      const { contraband } = data;
-      const years = contraband.map((s) => s.year);
-      setAvailableYears(years);
-    }
-  }, [chartState.data[CONTRABAND_HIT_RATE]]);
 
   /* CALCULATE AND BUILD CHART DATA */
   // Build data for Contraband Hit Rate
@@ -70,7 +60,6 @@ function SearchRate() {
         }
         mappedData.push(groupBar);
       });
-      console.log('mappedData: ', mappedData);
       setContrabandData(mappedData.reverse());
     }
   }, [chartState.data[CONTRABAND_HIT_RATE], year]);
@@ -137,7 +126,7 @@ function SearchRate() {
               label="Year"
               value={year}
               onChange={handleYearSelect}
-              options={[YEARS_DEFAULT].concat(availableYears)}
+              options={[YEARS_DEFAULT].concat(chartState.yearRange)}
             />
           </S.LegendSection>
         </S.ChartSubsection>

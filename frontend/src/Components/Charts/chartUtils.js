@@ -1,6 +1,25 @@
 import toTitleCase from 'util/toTitleCase';
 
 export const RACES = ['white', 'black', 'hispanic', 'asian', 'native_american', 'other'];
+export const SEARCH_TYPES = [
+  'Consent',
+  'Search Warrant',
+  'Probable Cause',
+  'Search Incident to Arrest',
+  'Protective Frisk',
+];
+export const STOP_TYPES = [
+  'Speed Limit Violation',
+  'Stop Light/Sign Violation',
+  'Driving While Impaired',
+  'Safe Movement Violation',
+  'Vehicle Equipment Violation',
+  'Vehicle Regulatory Violation',
+  'Seat Belt Violation',
+  'Investigation',
+  'Other Motor Vehicle Violation',
+  'Checkpoint',
+];
 export const YEARS_DEFAULT = 'All';
 export const PURPOSE_DEFAULT = 'All';
 export const SEARCH_TYPE_DEFAULT = 'All';
@@ -26,12 +45,16 @@ export function calculatePercentage(part, total) {
 }
 
 export function calculateYearTotal(yearData, filteredKeys = RACES) {
+  if (!yearData) return 0;
   let yearSum = 0;
-  filteredKeys.forEach((ethnicGroup) => (yearSum += yearData[ethnicGroup]));
+  filteredKeys.forEach(
+    (ethnicGroup) => (yearSum += yearData[ethnicGroup] ? yearData[ethnicGroup] : 0)
+  );
   return yearSum;
 }
 
 export function reduceYearsToTotal(data, ethnicGroup) {
+  if (data.length === 0) return { [ethnicGroup]: 0 };
   return data.reduce((acc, curr) => ({ [ethnicGroup]: acc[ethnicGroup] + curr[ethnicGroup] }));
 }
 
@@ -71,24 +94,6 @@ export function reduceFullDataset(data, ethnicGroups, theme) {
   }));
 }
 
-/**
- * Given a list of yearly counts, return a list of all the reported stop reasons.
- * @param {Array} data
- * @param {string} key
- */
-export function getAvailableReasons(data, key) {
-  // data is a list of purpose <--> year mappings.
-  // to get all available purpose types, we must select a single year,
-  // map over all its instances and grab the "purpose" key.
-
-  // grab the latest year, to catch any newly added stop reasons:
-  const latestYear = data[data.length - 1].year;
-  // pull all entries for latest year
-  const latestSet = data.filter((d) => d.year === latestYear);
-  // map over entries and create list of reasons
-  return latestSet.map((s) => s[key]);
-}
-
 export function buildStackedBarData(data, filteredKeys, theme) {
   const mappedData = [];
   const yearTotals = {};
@@ -115,6 +120,8 @@ export function buildStackedBarData(data, filteredKeys, theme) {
 export function getSearchRateForYearByGroup(searches, stops, year, ethnicGroup, filteredKeys) {
   const searchesForYear = searches.find((s) => s.year === year);
   const stopsForYear = stops.find((s) => s.year === year);
+  // Officers often have no results for a year.
+  if (!searchesForYear || !stopsForYear) return 0;
   if (ethnicGroup === AVERAGE_KEY) {
     let totalSearches = 0;
     let totalStops = 0;
@@ -139,13 +146,18 @@ export const reduceStopReasonsByEthnicity = (data, yearsSet, ethnicGroup, search
     tick.symbol = 'circle';
     tick.displayName = toTitleCase(ethnicGroup);
     if (searchTypeFilter === SEARCH_TYPE_DEFAULT) {
-      const yearSet = data.filter((d) => d.year === year);
-      const stopTotal = yearSet.reduce((acc, curr) => {
-        return { [ethnicGroup]: acc[ethnicGroup] + curr[ethnicGroup] };
-      })[ethnicGroup];
-      tick.y = stopTotal;
+      const yrSet = data.filter((d) => d.year === year);
+      // No searches this year
+      if (yrSet.length === 0) tick.y = 0;
+      else {
+        const stopTotal = yrSet.reduce((acc, curr) => {
+          return { [ethnicGroup]: acc[ethnicGroup] + curr[ethnicGroup] };
+        })[ethnicGroup];
+        tick.y = stopTotal;
+      }
     } else {
-      tick.y = data.find((d) => d.year === year)[ethnicGroup];
+      const yearData = data.find((d) => d.year === year);
+      tick.y = yearData ? yearData[ethnicGroup] : 0;
     }
     return tick;
   });
@@ -159,11 +171,6 @@ export const getGroupValueBasedOnYear = (data, group, yr, keys) => {
       groupedData[k] = reduceYearsToTotal(rGroup, group)[group];
     } else {
       const dataForYear = rGroup.find((g) => g.year === yr);
-      console.log('rGroup: ', rGroup);
-      console.log('year', yr);
-      console.log('dataFroYear, ', dataForYear);
-      // console.log(`setting "${group}" to ${dataForYear[group]}`);
-
       groupedData[k] = dataForYear ? dataForYear[group] : 0;
     }
   });

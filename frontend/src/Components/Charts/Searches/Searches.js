@@ -7,14 +7,13 @@ import { useParams } from 'react-router-dom';
 
 // Util
 import {
-  getAvailableReasons,
   getSearchRateForYearByGroup,
   filterDataBySearchType,
   reduceStopReasonsByEthnicity,
   STATIC_LEGEND_KEYS,
-  YEARS_DEFAULT,
   SEARCH_TYPE_DEFAULT,
   AVERAGE,
+  SEARCH_TYPES,
 } from 'Components/Charts/chartUtils';
 
 // State
@@ -37,10 +36,6 @@ function Searches() {
   useDataset(agencyId, SEARCHES);
   const [chartState] = useDataset(agencyId, SEARCHES_BY_TYPE);
 
-  const [availableYears, setAvailableYears] = useState();
-  const [year, setYear] = useState(YEARS_DEFAULT);
-
-  const [availableSearchTypes, setAvailableSearchTypes] = useState();
   const [searchType, setSearchType] = useState(SEARCH_TYPE_DEFAULT);
 
   const [percentageEthnicGroups, setPercentageEthnicGroups] = useState(() =>
@@ -54,32 +49,12 @@ function Searches() {
 
   const [byCountLineData, setByCountLineData] = useState();
 
-  /* SET INITIAL STATE */
-  // First, find out which years are available by
-  // inspecting one of the datasets
-  useEffect(() => {
-    const stops = chartState.data[STOPS];
-    if (stops) {
-      const uniqueYears = stops.map((s) => parseInt(s.year, 10));
-      setAvailableYears(uniqueYears);
-    }
-  }, [chartState.data[STOPS]]);
-
-  useEffect(() => {
-    const searches = chartState.data[SEARCHES_BY_TYPE];
-    if (searches) {
-      const sTypes = getAvailableReasons(searches, 'search_type');
-      setAvailableSearchTypes(sTypes);
-    }
-  }, [chartState.data[SEARCHES_BY_TYPE]]);
-
   /* CALCULATE AND BUILD CHART DATA */
-
-  // Build data for Search Rate
+  // Build data for Searches by Percentage
   useEffect(() => {
     const stops = chartState.data[STOPS];
     const searches = chartState.data[SEARCHES];
-    if (searches && stops && availableYears) {
+    if (searches && stops) {
       const mappedData = [];
       percentageEthnicGroups
         .filter((g) => g.selected)
@@ -88,7 +63,7 @@ function Searches() {
           const groupData = {};
           groupData.id = ethnicGroup;
           groupData.color = theme.colors.ethnicGroup[ethnicGroup];
-          groupData.data = availableYears.map((year) => {
+          groupData.data = chartState.yearRange.map((year) => {
             const tick = {};
             tick.x = year;
             tick.y = getSearchRateForYearByGroup(
@@ -105,11 +80,17 @@ function Searches() {
         });
       setByPercentageLineData(mappedData);
     }
-  }, [chartState.data[STOPS], chartState.data[SEARCHES], percentageEthnicGroups, availableYears]);
+  }, [
+    chartState.data[STOPS],
+    chartState.data[SEARCHES],
+    percentageEthnicGroups,
+    chartState.yearRange,
+  ]);
 
+  // Calculate search counts
   useEffect(() => {
     const data = chartState.data[SEARCHES_BY_TYPE];
-    if (data && availableYears?.length > 0) {
+    if (data && chartState.yearRange?.length > 0) {
       const mappedData = [];
       const ethnicGroups = countEthnicGroups.filter((g) => g.selected).map((g) => g.value);
       const dataBySearchReason = filterDataBySearchType(data, searchType);
@@ -119,7 +100,7 @@ function Searches() {
         group.color = theme.colors.ethnicGroup[ethnicGroup];
         const groupData = reduceStopReasonsByEthnicity(
           dataBySearchReason,
-          availableYears,
+          chartState.yearRange,
           ethnicGroup,
           searchType
         );
@@ -128,14 +109,7 @@ function Searches() {
       });
       setByCountLineData(mappedData);
     }
-  }, [chartState.data[SEARCHES_BY_TYPE], availableYears, countEthnicGroups, searchType]);
-
-  // Build data for Searches By Count line chart (single type)
-  // useEffect(() => {
-  //   const data = chartState.data[SEARCHES_BY_TYPE]?.stops;
-  //   if (data) {
-  //   }
-  // }, [chartState.data[SEARCHES_BY_TYPE], searchType]);
+  }, [chartState.data[SEARCHES_BY_TYPE], chartState.yearRange, countEthnicGroups, searchType]);
 
   /* INTERACTIONS */
   // Handle search type dropdown state
@@ -185,7 +159,7 @@ function Searches() {
               data={byPercentageLineData}
               loading={chartState.loading[SEARCHES]}
               iTickFormat={(t) => (t % 2 === 0 ? t : null)}
-              iTickValues={availableYears}
+              iTickValues={chartState.yearSet}
             />
           </S.LineWrapper>
           <S.LegendBeside>
@@ -217,7 +191,10 @@ function Searches() {
               data={byCountLineData}
               loading={chartState.loading[SEARCHES_BY_TYPE]}
               iTickFormat={(t) => (t % 2 === 0 ? t : null)}
-              iTickValues={availableYears}
+              iTickValues={chartState.yearSet}
+              iAxisProps={{
+                minDomain: { y: 1 },
+              }}
             />
           </S.LineWrapper>
           <S.LegendBeside>
@@ -225,7 +202,7 @@ function Searches() {
               label="Search Type"
               value={searchType}
               onChange={handleStopPurposeSelect}
-              options={[SEARCH_TYPE_DEFAULT].concat(availableSearchTypes)}
+              options={[SEARCH_TYPE_DEFAULT].concat(SEARCH_TYPES)}
             />
             <S.Spacing>
               <Legend
