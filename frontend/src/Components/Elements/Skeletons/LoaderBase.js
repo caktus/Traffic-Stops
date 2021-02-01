@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import styled from 'styled-components';
 
 // Deps
 import { AnimatePresence, motion } from 'framer-motion';
@@ -23,10 +24,17 @@ function LoaderBase({ children }) {
         exit={{ opacity: 0.35, x: 50, duration: 350 }}
         transition={{ ease: 'easeIn' }}
       >
-        {children}
+        <LoaderWrapperStyled>{children}</LoaderWrapperStyled>
       </motion.div>
     </AnimatePresence>
   ) : null;
 }
 
 export default LoaderBase;
+
+const LoaderWrapperStyled = styled.div`
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;

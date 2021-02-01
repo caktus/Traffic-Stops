@@ -1,5 +1,5 @@
 import React from 'react';
-import LoaderBase from 'Components/Elements/LoaderBase';
+import LoaderBase from 'Components/Elements/Skeletons/LoaderBase';
 import ContentLoader from 'react-content-loader';
 
 const TableSkeleton = (props) => (

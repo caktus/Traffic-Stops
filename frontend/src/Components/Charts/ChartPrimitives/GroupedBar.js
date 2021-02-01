@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import { VictoryChart, VictoryGroup, VictoryBar, VictoryAxis } from 'victory';
 import { AXIS_STYLE } from './chartConstants';
-import ChartSkeleton from 'Components/Elements/Skeletons/ChartSkeleton';
+import BarSkeleton from 'Components/Elements/Skeletons/BarSkeleton';
 
 function GroupedBar({
   data,
@@ -16,9 +16,7 @@ function GroupedBar({
   iAxisProps,
   barProps,
 }) {
-  if (loading) return <ChartSkeleton />;
-
-  console.log('data: ', data);
+  if (loading) return <BarSkeleton />;
 
   return (
     <VictoryChart domainPadding={15} width={700} {...chartProps}>

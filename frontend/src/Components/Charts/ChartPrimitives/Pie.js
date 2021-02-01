@@ -1,7 +1,11 @@
 import React from 'react';
+import styled from 'styled-components';
 import { useTheme } from 'styled-components';
-import ChartSkeleton from 'Components/Elements/Skeletons/ChartSkeleton';
+
+// Elements
+import PieSkeleton from 'Components/Elements/Skeletons/PieSkeleton';
 import { VictoryPie, VictoryLabel, VictoryTooltip } from 'victory';
+import { P, WEIGHTS } from 'styles/StyledComponents/Typography';
 
 const PIE_STYLES = {
   data: {
@@ -14,8 +18,19 @@ const LABEL_SKIP_ANGLE = 0.4;
 function Pie({ data, loading }) {
   const theme = useTheme();
 
-  if (loading) return <ChartSkeleton />;
+  const _dataIsZeros = (d) => {
+    return d.every((dt) => dt.y === 0);
+  };
 
+  if (loading) return <PieSkeleton />;
+
+  if (_dataIsZeros(data)) {
+    return (
+      <NoData>
+        <P weight={WEIGHTS[1]}>No data</P>
+      </NoData>
+    );
+  }
   return (
     <VictoryPie
       data={data}
@@ -52,5 +67,10 @@ const PieLabel = (props) => {
 };
 
 PieLabel.defaultEvents = VictoryTooltip.defaultEvents;
+
+const NoData = styled.div`
+  text-align: center;
+  margin: 5em auto;
+`;
 
 export default Pie;
