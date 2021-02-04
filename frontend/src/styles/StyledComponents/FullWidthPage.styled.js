@@ -20,7 +20,7 @@ export const ResponsiveInnerPage = styled.div`
     overflow-y: scroll;
   }
   @media (${breakpoints.smallerThanTabletLandscape}) {
-    max-width: 500px;
+    max-width: 550px;
   }
   @media (${breakpoints.phoneOnly}) {
     max-width: 100%;

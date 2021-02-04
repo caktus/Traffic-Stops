@@ -1,33 +1,35 @@
 export const GENDER = [
-  ['male', 'Male'],
-  ['female', 'Female'],
+  ['M', 'Male'],
+  ['F', 'Female'],
 ];
 export const RACE = [
-  ['white', 'White'],
-  ['black', 'Black'],
-  ['asian', 'Asian'],
-  ['native_american', 'Native American'],
-  ['other', 'Other'],
+  ['W', 'White'],
+  ['B', 'Black'],
+  ['A', 'Asian'],
+  ['I', 'Native American'],
+  ['U', 'Other'],
 ];
 export const ETHNICITY = [
-  ['hispanic', 'Hispanic'],
-  ['non_hispanci', 'Non-Hispanic'],
+  ['H', 'Hispanic'],
+  ['N', 'Non-Hispanic'],
 ];
+
 export const PURPOSE_OF_STOP = [
-  ['speed_limit_violation', 'Speed Limit Violation'],
-  ['stop_light_violation', 'Stop Light / Sign Violation'],
-  ['driving_while_impaired', 'Driving While Impaired'],
-  ['safe_movement_violation', 'Safe Movement Violation'],
-  ['vehicle_regulatory_violation', 'Vehicle Regulatory Violation'],
-  ['seat_belt_violation', 'Seat Belt Violation'],
-  ['investigation', 'Investigation'],
-  ['other_motor_vehicle_violation', 'Other Motor Vehicle Violation'],
-  ['checkpoint', 'Checkpoint'],
+  [1, 'Speed Limit Violation'],
+  [2, 'Stop Light / Sign Violation'],
+  [3, 'Driving While Impaired'],
+  [4, 'Safe Movement Violation'],
+  [5, 'Vehicle Equipment Violation'],
+  [6, 'Vehicle Regulatory Violation'],
+  [7, 'Seat Belt Violation'],
+  [8, 'Investigation'],
+  [9, 'Other Motor Vehicle Violation'],
+  [0, 'Checkpoint'],
 ];
 export const ACTION_TAKEN = [
-  ['verbal_warning', 'Verbal Warning'],
-  ['written_warning', 'Written Warning'],
-  ['citation_issued', 'Citation Issued'],
-  ['on_view_arrest', 'On-View Arrest'],
-  ['no_action_taken', 'No Action Taken'],
+  [1, 'Verbal Warning'],
+  [2, 'Written Warning'],
+  [3, 'Citation Issued'],
+  [4, 'On-View Arrest'],
+  [5, 'No Action Taken'],
 ];

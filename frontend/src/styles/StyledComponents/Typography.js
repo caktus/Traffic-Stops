@@ -5,6 +5,7 @@ export const H1 = styled.h1`
   font-family: ${(props) => props.theme.fonts.heading};
   font-weight: 400;
   font-size: 48px;
+  margin: 0.5em 0;
   color: ${(props) => props.theme.colors.text};
   text-transform: uppercase;
 `;

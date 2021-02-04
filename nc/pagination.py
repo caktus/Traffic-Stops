@@ -7,7 +7,7 @@ from rest_framework.response import Response
 class NoCountPagination(LimitOffsetPagination):
     """LimitOffsetPagination without queryset counting"""
 
-    default_limit = 50
+    default_limit = 100
     max_limit = 100
 
     def get_count(self, queryset):
@@ -27,12 +27,4 @@ class NoCountPagination(LimitOffsetPagination):
         return list(queryset[self.offset : self.offset + self.limit])
 
     def get_paginated_response(self, data):
-        return Response(
-            OrderedDict(
-                [
-                    ("next", self.get_next_link()),
-                    ("previous", self.get_previous_link()),
-                    ("results", data),
-                ]
-            )
-        )
+        return Response(OrderedDict([("results", data),]))
