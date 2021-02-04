@@ -53,6 +53,7 @@ function Overview() {
   useEffect(() => {
     if (chartState.data[AGENCY_DETAILS].census_profile) {
       const data = chartState.data[AGENCY_DETAILS].census_profile;
+      if (Object.keys(data).length === 0) return;
       setCensusPieData(
         RACES.map((race) => ({
           x: toTitleCase(race),
@@ -131,7 +132,11 @@ function Overview() {
         <S.PieContainer>
           <S.ChartTitle>Census Demographics</S.ChartTitle>
           <S.PieWrapper>
-            <Pie loading={chartState.loading[AGENCY_DETAILS]} data={censusPieData} />
+            <Pie
+              loading={chartState.loading[AGENCY_DETAILS]}
+              data={censusPieData}
+              fuckinCensus={'fuckinCensus'}
+            />
             <Legend keys={STATIC_LEGEND_KEYS} isStatic showNonHispanic />
           </S.PieWrapper>
           <S.Note>

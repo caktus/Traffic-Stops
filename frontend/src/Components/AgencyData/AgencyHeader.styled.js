@@ -101,4 +101,4 @@ export const CensusRace = styled(P)`
 
 export const Other = styled(P)``;
 
-export const NoCensus = styled.h4``;
+export const NoCensus = styled.p``;

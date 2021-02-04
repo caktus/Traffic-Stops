@@ -19,7 +19,7 @@ function Pie({ data, loading }) {
   const theme = useTheme();
 
   const _dataIsZeros = (d) => {
-    return d.every((dt) => dt.y === 0);
+    return d.length === 0 || d.every((dt) => dt.y === 0);
   };
 
   if (loading) return <PieSkeleton />;

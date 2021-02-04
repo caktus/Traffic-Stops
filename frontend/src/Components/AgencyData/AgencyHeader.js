@@ -83,7 +83,7 @@ function AgencyHeader({ agencyHeaderOpen, agencyDetails }) {
               <S.CensusDemographics>
                 <S.CensusTitle>CENSUS DEMOGRAPHICS</S.CensusTitle>
                 <S.CensusRow>
-                  {agencyDetails.census_profile ? (
+                  {Object.keys(agencyDetails.census_profile).length > 0 ? (
                     RACES.map((race) => {
                       const profile = agencyDetails.census_profile;
                       return (
@@ -98,7 +98,7 @@ function AgencyHeader({ agencyHeaderOpen, agencyDetails }) {
                       );
                     })
                   ) : (
-                    <S.NoCensus>Census data for {agencyDetails.name} could not be found</S.NoCensus>
+                    <S.NoCensus>There is no census data for {agencyDetails.name}</S.NoCensus>
                   )}
                 </S.CensusRow>
               </S.CensusDemographics>
