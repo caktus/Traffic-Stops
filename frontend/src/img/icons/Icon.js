@@ -2,6 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 export const ICONS = {
+  arrowUp: 'arrow-up',
+  arrowDown: 'arrow-down',
   arrowRight: 'arrow-right',
   arrowLeft: 'arrow-left',
   calendar: 'calendar',

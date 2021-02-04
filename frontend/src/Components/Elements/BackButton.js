@@ -10,7 +10,7 @@ import { ICONS } from 'img/icons/Icon';
 
 import { SIZES } from 'styles/StyledComponents/Typography';
 
-function BackButton({ to, ...props }) {
+function BackButton({ to, text, ...props }) {
   const history = useHistory();
   const theme = useTheme();
 
@@ -22,7 +22,7 @@ function BackButton({ to, ...props }) {
   return (
     <S.BackButton onClick={_handleClick} {...props}>
       <S.Icon icon={ICONS.arrowLeft} width={24} height={24} fill={theme.colors.primaryDark} />
-      <S.Text size={SIZES[1]}>Back</S.Text>
+      <S.Text size={SIZES[1]}>{text} </S.Text>
     </S.BackButton>
   );
 }
@@ -30,6 +30,11 @@ function BackButton({ to, ...props }) {
 BackButton.propTypes = {
   /** the path to go back to, defaults to the last item in the stack */
   to: PropTypes.string,
+  text: PropTypes.string,
+};
+
+BackButton.defaultProps = {
+  text: 'Back',
 };
 
 export default BackButton;
