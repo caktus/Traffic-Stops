@@ -10,6 +10,8 @@ import {
 
 const API_BASE = '/api';
 
+export const STATE_FACTS_URL = `${API_BASE}/state-facts/`;
+
 export const FIND_A_STOP_URL = `${API_BASE}/driver-stops/`;
 
 export const getAgenciesURL = () => `${API_BASE}/agency/`;
