@@ -135,7 +135,6 @@ function Overview() {
           </S.PieWrapper>
           <S.Note>
             <strong>NOTE: </strong>
-            <a href="https://">TESTING THO I THINK IM GOING INSNAE</a>
             This data reflects the race/ethnic composition based on the most recent census data.
             While it can be used for general comparative purposes, the actual driving population may
             vary significantly from these figures.
