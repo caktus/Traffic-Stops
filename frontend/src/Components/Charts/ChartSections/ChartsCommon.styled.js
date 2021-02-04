@@ -60,6 +60,10 @@ export const PieWrapper = styled.div`
   & > div:first-child {
     flex: 1;
   }
+
+  @media (${phoneOnly}) {
+    flex-direction: column;
+  }
 `;
 
 export const SectionWrapper = styled.div`
