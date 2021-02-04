@@ -5,10 +5,18 @@ import { AXIS_STYLE } from './chartConstants';
 
 // Deps
 import { VictoryChart, VictoryLine, VictoryAxis } from 'victory';
-import ChartSkeleton from 'Components/Elements/Skeletons/ChartSkeleton';
+import BarSkeleton from 'Components/Elements/Skeletons/BarSkeleton';
 
-function Line({ data = [], loading, iTickValues, iTickFormat, dTickValues, dTickFormat }) {
-  if (loading) return <ChartSkeleton />;
+function Line({
+  data = [],
+  loading,
+  iTickValues,
+  iTickFormat,
+  dTickValues,
+  dTickFormat,
+  iAxisProps = {},
+}) {
+  if (loading) return <BarSkeleton />;
 
   return (
     <VictoryChart>
@@ -23,6 +31,7 @@ function Line({ data = [], loading, iTickValues, iTickFormat, dTickValues, dTick
         style={AXIS_STYLE}
         tickFormat={iTickFormat}
         tickValues={iTickValues}
+        {...iAxisProps}
       />
       {data.map((lineData) => (
         <VictoryLine

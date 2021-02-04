@@ -42,4 +42,5 @@ export const PieSection = styled.div`
 
 export const PieWrapper = styled.div`
   flex: 1;
+  width: 100%;
 `;

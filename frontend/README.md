@@ -18,7 +18,7 @@ This project makes use of [code-splitting](https://reactjs.org/docs/code-splitti
 
 ## Loading/Skeletons
 
-Prefer the use of [skeleton loaders](https://design.gitlab.com/components/skeleton-loader/) over spinners where applicable. There is a [chart skeleton](src/Components/Elements/ChartSkeleton.js) currently in use, for starters. There are various tools for create svg skeletons.
+Prefer the use of [skeleton loaders](https://design.gitlab.com/components/skeleton-loader/) over spinners where applicable. There is a [chart skeleton](src/Components/Elements/PieSkeleton.js) currently in use, for starters. There are various tools for create svg skeletons.
 
 ## Animation
 

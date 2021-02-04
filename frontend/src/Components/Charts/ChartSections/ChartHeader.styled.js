@@ -9,7 +9,15 @@ export const ChartHeader = styled.div`
   align-items: center;
 `;
 
-export const ChartTitle = styled(H2)``;
+export const TitleWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+`;
+
+export const ChartTitle = styled(H2)`
+  margin-right: 2em;
+`;
 
 export const ButtonsWrapper = styled.div`
   display: flex;

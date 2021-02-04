@@ -13,11 +13,6 @@ export const ChartSubsection = styled.div`
   flex: 1;
 `;
 
-export const LegendBelow = styled.div`
-  display: flex;
-  justify-content: center;
-`;
-
 export const LineSection = styled.div`
   display: flex;
   flex-direction: column;
@@ -28,6 +23,10 @@ export const LineWrapper = styled.div`
   flex: 1;
 `;
 
-export const Spacing = styled.div`
-  margin: 1em 0;
+export const LegendSection = styled.div`
+  margin-top: 2em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 33%;
 `;

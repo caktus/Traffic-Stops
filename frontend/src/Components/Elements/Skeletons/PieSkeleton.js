@@ -2,9 +2,9 @@ import React from 'react';
 
 // Deps
 import ContentLoader from 'react-content-loader';
-import LoaderBase from 'Components/Elements/LoaderBase';
+import LoaderBase from 'Components/Elements/Skeletons/LoaderBase';
 
-function ChartSkeleton() {
+function PieSkeleton() {
   return (
     <LoaderBase>
       <ContentLoader
@@ -12,7 +12,7 @@ function ChartSkeleton() {
         height={200}
         width={400}
         speed={2}
-        data-testid="ChartSkeleton"
+        data-testid="PieSkeleton"
       >
         <rect x="100" y="5" rx="0" ry="0" width="200" height="15" />
         <circle cx="140" cy="110" r="70" />
@@ -29,4 +29,4 @@ function ChartSkeleton() {
   );
 }
 
-export default ChartSkeleton;
+export default PieSkeleton;

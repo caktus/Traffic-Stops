@@ -1,10 +1,9 @@
 import React from 'react';
 
 // Components
-import Table from 'Components/Elements/Table';
+import Table from 'Components/Elements/Table/Table';
 
 function DepartmentalStopCountTable({ data }) {
-  console.log('Table render!!');
   const columns = React.useMemo(
     () => [
       {

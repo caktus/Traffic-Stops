@@ -5,10 +5,10 @@ import { VictoryChart, VictoryStack, VictoryBar, VictoryAxis } from 'victory';
 import { AXIS_STYLE } from './chartConstants';
 
 // Childre
-import ChartSkeleton from 'Components/Elements/Skeletons/ChartSkeleton';
+import BarSkeleton from 'Components/Elements/Skeletons/BarSkeleton';
 
 function StackedBar({ data, loading, tickValues }) {
-  if (loading) return <ChartSkeleton />;
+  if (loading) return <BarSkeleton />;
 
   return (
     <VictoryChart style={{ padding: 0 }}>

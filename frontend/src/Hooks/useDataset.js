@@ -1,8 +1,12 @@
 import { useEffect } from 'react';
 
-// ajax
+// Routing
+import { useLocation } from 'react-router-dom';
+
+// AJAX
 import axios from 'Services/Axios';
 import mapDatasetKeyToEndpoint from 'Services/endpoints';
+
 // State
 import { useChartState } from 'Context/chart-state';
 import {
@@ -20,6 +24,7 @@ export const USE_OF_FORCE = 'USE_OF_FORCE';
 export const CONTRABAND_HIT_RATE = 'CONTRABAND_HIT_RATE';
 
 function useDataset(agencyId, datasetKey) {
+  const { search } = useLocation();
   const [state, dispatch] = useChartState();
 
   useEffect(() => {
@@ -27,7 +32,7 @@ function useDataset(agencyId, datasetKey) {
     const _fetchData = async () => {
       dispatch({ type: DATASET_FETCH_START, dataset: datasetKey });
       try {
-        const { data } = await axios.get(getEndpoint(agencyId));
+        const { data } = await axios.get(getEndpoint(agencyId) + search);
         dispatch({
           type: DATASET_FETCH_SUCCESS,
           dataset: datasetKey,
@@ -42,7 +47,7 @@ function useDataset(agencyId, datasetKey) {
       }
     };
     _fetchData();
-  }, [agencyId, dispatch]);
+  }, [agencyId, dispatch, search]);
 
   return [state, dispatch];
 }

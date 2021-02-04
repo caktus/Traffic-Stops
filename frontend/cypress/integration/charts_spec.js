@@ -15,9 +15,9 @@ describe('Chart behavior', () => {
     });
 
     it(`Renders skeleton for minimum of ${MIN_DELAY}ms`, () => {
-      cy.get('[data-testid="ChartSkeleton"]');
+      cy.get('[data-testid="PieSkeleton"]');
       cy.wait(MIN_DELAY);
-      cy.get('[data-testid="ChartSkeleton"]').should('not.exist');
+      cy.get('[data-testid="PieSkeleton"]').should('not.exist');
       cy.wait('@getStopsByReason');
       cy.get('[data-testid="StopsByReason"]');
     });
