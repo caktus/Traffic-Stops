@@ -111,8 +111,9 @@ function Overview() {
     alert('view data');
   };
 
-  const handleShareGraph = () => {
-    alert('share graph');
+  const getPageTitleForShare = () => {
+    const agencyName = chartState.data[AGENCY_DETAILS].name;
+    return `Traffic Stop statistics for ${agencyName}`;
   };
 
   return (
@@ -120,7 +121,9 @@ function Overview() {
       <ChartHeader
         chartTitle="Overview"
         handleViewData={handleViewData}
-        handleShareGraph={handleShareGraph}
+        shareProps={{
+          twitterTitle: getPageTitleForShare(),
+        }}
       />
       <S.SectionWrapper>
         <DataSubsetPicker
@@ -139,6 +142,7 @@ function Overview() {
           </S.PieWrapper>
           <S.Note>
             <strong>NOTE: </strong>
+            <a href="https://">TESTING THO I THINK IM GOING INSNAE</a>
             This data reflects the race/ethnic composition based on the most recent census data.
             While it can be used for general comparative purposes, the actual driving population may
             vary significantly from these figures.
