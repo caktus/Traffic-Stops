@@ -18,6 +18,9 @@ import {
 // State
 import useDataset, { USE_OF_FORCE } from 'Hooks/useDataset';
 
+// Hooks
+import useMetaTags from 'Hooks/useMetaTags';
+
 // Children
 import { P } from 'styles/StyledComponents/Typography';
 import ChartHeader from 'Components/Charts/ChartSections/ChartHeader';
@@ -41,6 +44,8 @@ function UseOfForce() {
 
   const [useOfForceData, setUseOfForceData] = useState([]);
   const [useOfForcePieData, setUseOfForcePieData] = useState([]);
+
+  const renderMetaTags = useMetaTags();
 
   /* BUILD DATA */
   // Bar chart data
@@ -113,6 +118,7 @@ function UseOfForce() {
 
   return (
     <S.UseOfForce>
+      {renderMetaTags()}
       <S.ChartSection>
         <ChartHeader
           chartTitle="Use of Force"

@@ -16,6 +16,9 @@ import {
 } from 'Components/Charts/chartUtils';
 import * as slugs from 'Routes/slugs';
 
+// Hooks
+import useMetaTags from 'Hooks/useMetaTags';
+
 // Data
 import useDataset, { AGENCY_DETAILS, STOPS, SEARCHES, USE_OF_FORCE } from 'Hooks/useDataset';
 
@@ -41,6 +44,8 @@ function Overview() {
   const [trafficStopsData, setTrafficStopsData] = useState([]);
   const [searchesData, setSearchesData] = useState([]);
   const [useOfForceData, setUseOfForceData] = useState([]);
+
+  const renderMetaTags = useMetaTags();
 
   /* Build Data */
   // CENSUS
@@ -98,16 +103,20 @@ function Overview() {
     alert('view data');
   };
 
-  const handleShareGraph = () => {
-    alert('share graph');
+  const getPageTitleForShare = () => {
+    const agencyName = chartState.data[AGENCY_DETAILS].name;
+    return `Traffic Stop statistics for ${agencyName}`;
   };
 
   return (
     <S.Overview>
+      {renderMetaTags()}
       <ChartHeader
         chartTitle="Overview"
         handleViewData={handleViewData}
-        handleShareGraph={handleShareGraph}
+        shareProps={{
+          twitterTitle: getPageTitleForShare(),
+        }}
       />
       <S.SectionWrapper>
         <DataSubsetPicker
@@ -126,6 +135,7 @@ function Overview() {
           </S.PieWrapper>
           <S.Note>
             <strong>NOTE: </strong>
+            <a href="https://">TESTING THO I THINK IM GOING INSNAE</a>
             This data reflects the race/ethnic composition based on the most recent census data.
             While it can be used for general comparative purposes, the actual driving population may
             vary significantly from these figures.

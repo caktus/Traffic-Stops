@@ -16,6 +16,9 @@ import {
   getQuantityForYear,
 } from 'Components/Charts/chartUtils';
 
+// Hooks
+import useMetaTags from 'Hooks/useMetaTags';
+
 // State
 import useDataset, { CONTRABAND_HIT_RATE } from 'Hooks/useDataset';
 
@@ -34,6 +37,8 @@ function SearchRate() {
   const [year, setYear] = useState(YEARS_DEFAULT);
 
   const [contrabandData, setContrabandData] = useState();
+
+  const renderMetaTags = useMetaTags();
 
   /* CALCULATE AND BUILD CHART DATA */
   // Build data for Contraband Hit Rate
@@ -81,6 +86,7 @@ function SearchRate() {
 
   return (
     <S.Contraband>
+      {renderMetaTags()}
       <S.ChartSection>
         <ChartHeader
           chartTitle='Contraband "Hit Rate"'
