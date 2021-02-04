@@ -16,6 +16,9 @@ import {
 } from 'Components/Charts/chartUtils';
 import * as slugs from 'Routes/slugs';
 
+// Hooks
+import useMetaTags from 'Hooks/useMetaTags';
+
 // Data
 import useDataset, { AGENCY_DETAILS, STOPS, SEARCHES, USE_OF_FORCE } from 'Hooks/useDataset';
 
@@ -42,6 +45,8 @@ function Overview() {
   const [trafficStopsData, setTrafficStopsData] = useState([]);
   const [searchesData, setSearchesData] = useState([]);
   const [useOfForceData, setUseOfForceData] = useState([]);
+
+  const renderMetaTags = useMetaTags(chartState.data[AGENCY_DETAILS], !!officerId);
 
   /* Build Data */
 

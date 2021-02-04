@@ -15,7 +15,7 @@ function ChartHeader({ chartTitle, handleViewData, shareProps }) {
   const shareListRef = React.useRef();
 
   const handleShare = () => {
-    if (!shareOpen) setShareOpen(true);
+    setShareOpen(!shareOpen);
   };
 
   useEffect(() => {
@@ -26,7 +26,7 @@ function ChartHeader({ chartTitle, handleViewData, shareProps }) {
     }
     document.addEventListener('click', _closeOnBlur);
     return () => document.removeEventListener('click', _closeOnBlur);
-  }, [shareListRef.current]);
+  }, [shareListRef.current, shareOpen]);
 
   return (
     <S.ChartHeader>
@@ -45,7 +45,7 @@ function ChartHeader({ chartTitle, handleViewData, shareProps }) {
           <ShareList ref={shareListRef} {...shareProps} />
         ) : (
           <Button
-            variant={shareOpen ? 'neutral' : 'positive'}
+            variant="positive"
             border={`2px solid ${theme.colors.primary}`}
             {...S.ButtonInlines}
             onClick={handleShare}
