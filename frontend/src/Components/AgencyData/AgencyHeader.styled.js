@@ -69,8 +69,6 @@ export const AgencyTitle = styled(H2)`
   margin-bottom: 0.5rem;
 `;
 
-// export const LastReported = styled.h4``;
-
 export const ReportedDate = styled(P)`
   display: inline;
 `;

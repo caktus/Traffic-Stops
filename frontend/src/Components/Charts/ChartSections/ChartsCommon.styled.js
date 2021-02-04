@@ -128,6 +128,9 @@ export const NoBaseSearches = styled.div`
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  height: 100%;
+  padding: 2em;
+  text-align: center;
 `;
 
 export const NoBaseLink = styled.span`

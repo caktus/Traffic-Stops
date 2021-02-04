@@ -64,8 +64,10 @@ function AgencyHeader({ agencyHeaderOpen, agencyDetails }) {
                   <S.AgencyTitle>{agencyDetails.name}</S.AgencyTitle>
                 )}
                 <P size={SIZES[0]} color={COLORS[0]} weight={WEIGHTS[0]}>
-                  last reported stop {agencyDetails.last_reported_stop && 'on'}
+                  last reported stop {agencyId ? 'from department' : ''}
+                  {agencyDetails.last_reported_stop && 'on'}
                   <S.ReportedDate size={SIZES[0]} color={COLORS[0]} weight={WEIGHTS[1]}>
+                    {' '}
                     <S.ReportedDate size={SIZES[0]} color={COLORS[0]} weight={WEIGHTS[1]}>
                       {agencyDetails.last_reported_stop
                         ? new Intl.DateTimeFormat('en-US', {
