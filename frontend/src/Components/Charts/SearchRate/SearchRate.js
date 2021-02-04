@@ -10,6 +10,7 @@ import useDataset, { STOPS_BY_REASON } from 'Hooks/useDataset';
 
 // Hooks
 import useOfficerId from 'Hooks/useOfficerId';
+import useMetaTags from 'Hooks/useMetaTags';
 
 // Constants
 import {
@@ -44,6 +45,8 @@ function SearchRate() {
 
   const [chartData, setChartData] = useState([]);
   const [noBaseSearches, setNoBaseSearches] = useState(false);
+
+  const renderMetaTags = useMetaTags();
 
   /* BUILD DATA */
   useEffect(() => {
@@ -127,6 +130,7 @@ function SearchRate() {
 
   return (
     <S.SearchRate>
+      {renderMetaTags()}
       <S.ChartSection>
         <ChartHeader
           chartTitle="Likelihood of Search"

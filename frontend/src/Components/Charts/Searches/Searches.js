@@ -19,6 +19,9 @@ import {
 // State
 import useDataset, { SEARCHES, STOPS, SEARCHES_BY_TYPE } from 'Hooks/useDataset';
 
+// Hooks
+import useMetaTags from 'Hooks/useMetaTags';
+
 // Elements
 import { P } from 'styles/StyledComponents/Typography';
 
@@ -48,6 +51,8 @@ function Searches() {
   const [byPercentageLineData, setByPercentageLineData] = useState();
 
   const [byCountLineData, setByCountLineData] = useState();
+
+  const renderMetaTags = useMetaTags();
 
   /* CALCULATE AND BUILD CHART DATA */
   // Build data for Searches by Percentage
@@ -146,6 +151,7 @@ function Searches() {
   return (
     <S.Searches>
       {/* Searche Rate */}
+      {renderMetaTags()}
       <S.ChartSection>
         <ChartHeader
           chartTitle="Searches by Percentage"

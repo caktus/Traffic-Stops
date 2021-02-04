@@ -45,7 +45,7 @@ function Overview() {
   const [searchesData, setSearchesData] = useState([]);
   const [useOfForceData, setUseOfForceData] = useState([]);
 
-  const renderMetaTags = useMetaTags(chartState.data[AGENCY_DETAILS], !!officerId);
+  const renderMetaTags = useMetaTags();
 
   /* Build Data */
   // CENSUS
@@ -110,6 +110,7 @@ function Overview() {
 
   return (
     <S.Overview>
+      {renderMetaTags()}
       <ChartHeader
         chartTitle="Overview"
         handleViewData={handleViewData}

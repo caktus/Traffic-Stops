@@ -25,6 +25,9 @@ import useDataset, { STOPS_BY_REASON, STOPS } from 'Hooks/useDataset';
 // Elements
 import { P } from 'styles/StyledComponents/Typography';
 
+// Hooks
+import useMetaTags from 'Hooks/useMetaTags';
+
 // Children
 import Line from 'Components/Charts/ChartPrimitives/Line';
 import StackedBar from 'Components/Charts/ChartPrimitives/StackedBar';
@@ -69,6 +72,8 @@ function TrafficStops() {
   const [byPercentagePieData, setByPercentagePieData] = useState([]);
 
   const [byCountLineData, setByCountLineData] = useState([]);
+
+  const renderMetaTags = useMetaTags();
 
   /* CALCULATE AND BUILD CHART DATA */
   // Build data for Stops by Percentage line chart
@@ -189,6 +194,7 @@ function TrafficStops() {
   return (
     <S.TrafficStops>
       {/* Traffic Stops by Percentage */}
+      {renderMetaTags()}
       <S.ChartSection>
         <ChartHeader
           chartTitle="Traffic Stops By Percentage"
