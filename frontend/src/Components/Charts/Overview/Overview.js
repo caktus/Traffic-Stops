@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import * as S from './Overview.styled';
+import * as S from 'Components/Charts/ChartSections/ChartsCommon.styled';
+import { OverviewStyled } from './Overview.styled';
 import { useTheme } from 'styled-components';
 
 // Router
@@ -109,7 +110,7 @@ function Overview() {
   };
 
   return (
-    <S.Overview>
+    <OverviewStyled>
       {renderMetaTags()}
       <ChartHeader
         chartTitle="Overview"
@@ -179,7 +180,7 @@ function Overview() {
           </S.Link>
         </S.PieContainer>
       </S.ChartsWrapper>
-    </S.Overview>
+    </OverviewStyled>
   );
 }
 

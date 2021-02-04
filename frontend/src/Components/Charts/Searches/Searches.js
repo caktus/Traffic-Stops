@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import * as S from './Searches.styled';
+import { SearchesStyled } from './Searches.styled';
+import * as S from 'Components/Charts/ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
 
 // Router
@@ -149,7 +150,7 @@ function Searches() {
   const handleShareCountGraph = () => {};
 
   return (
-    <S.Searches>
+    <SearchesStyled>
       {/* Searche Rate */}
       {renderMetaTags()}
       <S.ChartSection>
@@ -221,7 +222,7 @@ function Searches() {
           </S.LegendBeside>
         </S.ChartSubsection>
       </S.ChartSection>
-    </S.Searches>
+    </SearchesStyled>
   );
 }
 

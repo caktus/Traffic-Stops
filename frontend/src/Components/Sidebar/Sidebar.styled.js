@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { smallerThanTabletLandscape } from 'styles/breakpoints';
+import { phoneOnly, smallerThanTabletLandscape } from 'styles/breakpoints';
 import { motion } from 'framer-motion';
 
 export const Sidebar = styled(motion.div)`
@@ -18,12 +18,17 @@ export const Sidebar = styled(motion.div)`
 
   @media (${smallerThanTabletLandscape}) {
     width: 100%;
-    height: 100px;
     border-right: none;
     border-bottom: ${(props) => props.theme.elementBorder};
 
     overflow-x: scroll;
     overflow-y: hidden;
+
+    padding: 1em;
+  }
+
+  @media (${phoneOnly}) {
+    padding: 0;
   }
 `;
 
@@ -32,6 +37,10 @@ export const Heading = styled.p`
   font-family: ${(props) => props.theme.fonts.heading};
   font-size: 16px;
   margin-bottom: 1em;
+
+  @media (${smallerThanTabletLandscape}) {
+    display: none;
+  }
 `;
 
 export const SidebarNav = styled.ul`
@@ -40,5 +49,10 @@ export const SidebarNav = styled.ul`
   flex-direction: column;
   @media (${smallerThanTabletLandscape}) {
     flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+  }
+  @media (${phoneOnly}) {
+    justify-content: flex-start;
   }
 `;
