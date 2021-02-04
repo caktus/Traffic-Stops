@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as Styled from './AgencyList.styled';
 
 // Router
@@ -13,19 +13,15 @@ import { useRootContext } from 'Context/root-context';
 import { FETCH_START, FETCH_SUCCESS, FETCH_FAILURE } from 'Context/root-reducer';
 
 // Components
-import Button from 'Components/Elements/Button';
 import ListSkeleton from 'Components/Elements/ListSkeleton';
-import AutoSuggest from 'Components/Elements/Inputs/AutoSuggest';
 
 const DATA_SET = 'AGENCIES_LIST';
 
 function AgencyList() {
-  const history = useHistory();
   const match = useRouteMatch();
 
   const [state, dispatch] = useRootContext();
   const [sortedAgencies, setSortedAgencies] = useState({});
-  const [searchedAgency, setSearchedAgency] = useState();
 
   /* FETCH AGENCIES */
   useEffect(() => {
@@ -58,12 +54,6 @@ function AgencyList() {
       setSortedAgencies(agenciesByChar);
     }
   }, [state.data[DATA_SET]]);
-
-  const handleViewSearchedAgency = (e) => {
-    e.preventDefault();
-    if (!searchedAgency) return;
-    history.push(`${match.url}/${searchedAgency.id}`);
-  };
 
   return (
     <Styled.AgencyList data-testid="AgencyList">

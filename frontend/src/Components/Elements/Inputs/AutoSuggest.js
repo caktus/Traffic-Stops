@@ -74,17 +74,17 @@ function AutoSuggest({
         )}
         <Select.InputContainer>
           <Select.Input renderInput={renderInput} />
+          <Select.Dropdown boxShadow="depth5" border="none" borderColor="grey">
+            <Select.OptionsList>
+              {data.map((datum) => (
+                <Select.Option key={datum[keyAccessor]} value={datum[valueAccessor]} option={datum}>
+                  <Styled.Option>{datum[labelAccessor]}</Styled.Option>
+                </Select.Option>
+              ))}
+            </Select.OptionsList>
+            {renderBonusContent && renderBonusContent({ selectRef })}
+          </Select.Dropdown>
         </Select.InputContainer>
-        <Select.Dropdown boxShadow="depth5" border="none" borderColor="grey">
-          <Select.OptionsList>
-            {data.map((datum) => (
-              <Select.Option key={datum[keyAccessor]} value={datum[valueAccessor]} option={datum}>
-                <Styled.Option>{datum[labelAccessor]}</Styled.Option>
-              </Select.Option>
-            ))}
-          </Select.OptionsList>
-          {renderBonusContent && renderBonusContent({ selectRef })}
-        </Select.Dropdown>
       </Select>
 
       {helpText && <HelpText>{helpText}</HelpText>}

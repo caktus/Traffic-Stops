@@ -1,5 +1,6 @@
 from nc import models as stops
 from rest_framework import serializers
+from tsdata.models import StateFacts, TopAgencyFacts
 
 
 class AgencySerializer(serializers.ModelSerializer):
@@ -66,3 +67,26 @@ class PersonStopSerializer(serializers.ModelSerializer):
 
     def get_stop_action(self, obj):
         return obj.stop.get_action_display()
+
+
+class TopAgencyFactsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TopAgencyFacts
+        fields = ("rank", "agency_id", "stops", "name")
+
+
+class StateFactsSerializer(serializers.ModelSerializer):
+    top_agencies = TopAgencyFactsSerializer(many=True, read_only=True, source="topagencyfacts_set")
+
+    class Meta:
+        model = StateFacts
+        fields = (
+            "state_key",
+            "total_stops",
+            "total_stops_millions",
+            "total_searches",
+            "total_agencies",
+            "start_date",
+            "end_date",
+            "top_agencies",
+        )
