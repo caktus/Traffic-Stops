@@ -120,23 +120,12 @@ function Overview() {
           twitterTitle: getPageTitleForShare(),
         }}
       />
-      <S.SectionWrapper>
-        <DataSubsetPicker
-          label="Year"
-          value={year.label}
-          onChange={handleYearSelect}
-          options={chartState.yearRange}
-        />
-      </S.SectionWrapper>
+      <S.SectionWrapper></S.SectionWrapper>
       <S.ChartsWrapper>
         <S.PieContainer>
           <S.ChartTitle>Census Demographics</S.ChartTitle>
           <S.PieWrapper>
-            <Pie
-              loading={chartState.loading[AGENCY_DETAILS]}
-              data={censusPieData}
-              fuckinCensus={'fuckinCensus'}
-            />
+            <Pie loading={chartState.loading[AGENCY_DETAILS]} data={censusPieData} />
             <Legend keys={STATIC_LEGEND_KEYS} isStatic showNonHispanic />
           </S.PieWrapper>
           <S.Note>

@@ -13,7 +13,7 @@ function DataSubsetPicker({ options, value, onChange, label, dropUp }) {
           {label}
         </S.Label>
       )}
-      <Dropdown value={value} onChange={onChange} options={options} dropUp />
+      <Dropdown value={value} onChange={onChange} options={options} dropUp={dropUp} />
     </S.DataSubsetPicker>
   );
 }

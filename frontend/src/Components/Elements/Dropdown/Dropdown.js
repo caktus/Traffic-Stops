@@ -32,7 +32,7 @@ export function Dropdown({ value, onChange, options, dropUp }) {
           <S.Icon icon={ICONS.chevronRight} width={25} height={25} fill={theme.colors.primary} />
         </S.IconWrapper>
       </S.DropdownHeader>
-      <S.DropdownListContainer ref={containerRef} isOpen={isOpen} dropUp>
+      <S.DropdownListContainer ref={containerRef} isOpen={isOpen} dropUp={dropUp}>
         <S.DropdownList>
           {options?.map((option) => (
             <S.ListItem key={option} onClick={() => handleSelect(option)}>
