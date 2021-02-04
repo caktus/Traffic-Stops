@@ -28,6 +28,7 @@ import About from 'Components/AboutPage/AboutPage';
 import AgencyList from 'Components/AgencyList/AgencyList';
 import AgencyData from 'Components/AgencyData/AgencyData';
 import FindAStopPage from 'Components/FindAStopPage/FindAStopPage';
+import FindAStopResults from 'Components/FindAStopPage/FindAStopResults';
 
 function App() {
   return (
@@ -49,9 +50,12 @@ function App() {
                 <Route path={AGENCY_LIST_SLUG}>
                   <AgencyList />
                 </Route>
-                <Route path={FIND_A_STOP_SLUG}>
-                  <FindAStopPage />
-                </Route>
+                <Route
+                  path={FIND_A_STOP_SLUG}
+                  render={(props) =>
+                    props.location.search ? <FindAStopResults /> : <FindAStopPage />
+                  }
+                ></Route>
                 <Route exact path={ABOUT_SLUG}>
                   <About />
                 </Route>

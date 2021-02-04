@@ -2,7 +2,7 @@ import React from 'react';
 import decimalToFixedPercent from 'util/decimalToFixedPercent';
 
 // Components
-import Table from 'Components/Elements/Table';
+import Table from 'Components/Elements/Table/Table';
 
 function CensusDataTable({ data }) {
   const columns = React.useMemo(
