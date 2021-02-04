@@ -3,9 +3,7 @@ import styled from 'styled-components';
 import MainBase from 'styles/MainBase';
 import { phoneOnly, smallerThanTabletLandscape } from 'styles/breakpoints';
 
-export const AgencyData = styled(MainBase)`
-  /* overflow: hidden; */
-`;
+export const AgencyData = styled(MainBase)``;
 
 export const ContentWrapper = styled.div`
   flex: 1;
