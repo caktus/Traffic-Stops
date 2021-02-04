@@ -5,7 +5,6 @@ export const TableWrapper = styled.div`
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  overflow-x: scroll;
 `;
 
 export const Table = styled.table`
@@ -54,7 +53,7 @@ export const TR = styled.tr`
     background: ${(props) => props.theme.colors.greyLight};
   }
 
-  font-size: 18px;
+  font-size: 14px;
   font-family: ${(props) => props.theme.fonts.body};
   font-weight: 400;
   color: ${(props) => props.theme.colors.black};
