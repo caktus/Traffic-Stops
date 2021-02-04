@@ -26,8 +26,22 @@ export const LineSection = styled.div`
 
 export const LineWrapper = styled.div`
   flex: 1;
+  display: flex;
 `;
 
 export const Spacing = styled.div`
   margin: 1em 0;
+`;
+
+export const NoBaseSearches = styled.div`
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+`;
+
+export const NoBaseLink = styled.span`
+  cursor: pointer;
+  color: ${(p) => p.theme.colors.primaryDark};
 `;

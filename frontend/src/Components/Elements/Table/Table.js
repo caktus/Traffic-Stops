@@ -12,7 +12,14 @@ import { ICONS } from 'img/icons/Icon';
 // Children
 import TablePagination from './TablePagination';
 
-function Table({ columns, data = [], intitialTableState, paginated, sortable }) {
+function Table({
+  columns,
+  data = [],
+  intitialTableState,
+  paginated,
+  sortable,
+  handleOfficerIdSelected,
+}) {
   const theme = useTheme();
   const {
     getTableProps,
@@ -79,7 +86,10 @@ function Table({ columns, data = [], intitialTableState, paginated, sortable }) 
             return (
               <S.TR {...row.getRowProps()}>
                 {row.cells.map((cell) => {
-                  if (cell.column.id === 'officer_id') return <OfficerId cell={cell} />;
+                  if (cell.column.id === 'officer_id')
+                    return (
+                      <OfficerId cell={cell} handleOfficerIdSelected={handleOfficerIdSelected} />
+                    );
                   if (cell.column.id === 'date') return <DateTime cell={cell} />;
                   return <S.TD {...cell.getCellProps()}>{cell.render('Cell')}</S.TD>;
                 })}
@@ -95,10 +105,10 @@ function Table({ columns, data = [], intitialTableState, paginated, sortable }) 
 
 export default Table;
 
-function OfficerId({ cell }) {
+function OfficerId({ cell, handleOfficerIdSelected }) {
   const theme = useTheme();
   return (
-    <S.OfficerId onClick={() => alert(`Go to Officer ${cell.value}`)}>
+    <S.OfficerId onClick={() => handleOfficerIdSelected(cell.value)}>
       {cell.value}
       <S.OfficerIdIcon
         icon={ICONS.arrowRight}

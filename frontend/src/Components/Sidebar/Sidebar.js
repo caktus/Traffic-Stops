@@ -5,34 +5,43 @@ import * as S from './Sidebar.styled';
 import * as slugs from 'Routes/slugs';
 import { useRouteMatch } from 'react-router-dom';
 
+// Hooks
+import useOfficerId from 'Hooks/useOfficerId';
+
 // Children
 import SidebarLink from './SidebarLink';
 
 function Sidebar() {
   const match = useRouteMatch();
+  const officerId = useOfficerId();
+
+  const buildUrl = (slug) => {
+    let url = `${match.url}${slug}`;
+    url = url.replace('//', '/');
+    if (officerId) url += `/?officer=${officerId}`;
+    return url;
+  };
+
   return (
     <S.Sidebar data-testid="Sidebar">
       <S.Heading>Department Data</S.Heading>
       <S.SidebarNav>
-        <SidebarLink data-testid="OverviewNavLink" to={`${match.url}${slugs.OVERVIEW_SLUG}`}>
+        <SidebarLink data-testid="OverviewNavLink" to={buildUrl(slugs.OVERVIEW_SLUG)}>
           Overview
         </SidebarLink>
-        <SidebarLink
-          data-testid="TrafficStopsNavLink"
-          to={`${match.url}${slugs.TRAFFIC_STOPS_SLUG}`}
-        >
+        <SidebarLink data-testid="TrafficStopsNavLink" to={buildUrl(slugs.TRAFFIC_STOPS_SLUG)}>
           Traffic Stops
         </SidebarLink>
-        <SidebarLink data-testid="SearchesNavLink" to={`${match.url}${slugs.SEARCHES_SLUG}`}>
+        <SidebarLink data-testid="SearchesNavLink" to={buildUrl(slugs.SEARCHES_SLUG)}>
           Searches
         </SidebarLink>
-        <SidebarLink data-testid="SearchRateNavLink" to={`${match.url}${slugs.SEARCH_RATE_SLUG}`}>
+        <SidebarLink data-testid="SearchRateNavLink" to={buildUrl(slugs.SEARCH_RATE_SLUG)}>
           Search Rate
         </SidebarLink>
-        <SidebarLink data-testid="ContrabandNavLink" to={`${match.url}${slugs.CONTRABAND_SLUG}`}>
+        <SidebarLink data-testid="ContrabandNavLink" to={buildUrl(slugs.CONTRABAND_SLUG)}>
           Contraband
         </SidebarLink>
-        <SidebarLink data-testid="UseOfForceNavLink" to={`${match.url}${slugs.USE_OF_FORCE_SLUG}`}>
+        <SidebarLink data-testid="UseOfForceNavLink" to={buildUrl(slugs.USE_OF_FORCE_SLUG)}>
           Use of Force
         </SidebarLink>
       </S.SidebarNav>

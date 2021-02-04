@@ -1,30 +1,114 @@
 import React, { useState, useEffect } from 'react';
 import * as S from './UseOfForce.styled';
+import { useTheme } from 'styled-components';
+
+// Router
+import { useParams } from 'react-router-dom';
+
+// Util
+import {
+  YEARS_DEFAULT,
+  STATIC_LEGEND_KEYS,
+  RACES,
+  reduceFullDataset,
+  calculatePercentage,
+  calculateYearTotal,
+} from 'Components/Charts/chartUtils';
+
+// State
+import useDataset, { USE_OF_FORCE } from 'Hooks/useDataset';
 
 // Children
 import { P } from 'styles/StyledComponents/Typography';
 import ChartHeader from 'Components/Charts/ChartSections/ChartHeader';
 import Legend from 'Components/Charts/ChartSections/Legend/Legend';
 import DataSubsetPicker from 'Components/Charts/ChartSections/DataSubsetPicker/DataSubsetPicker';
+import GroupedBar from 'Components/Charts/ChartPrimitives/GroupedBar';
+import Pie from 'Components/Charts/ChartPrimitives/Pie';
+import toTitleCase from 'util/toTitleCase';
 
 function UseOfForce() {
-  const [year, setYear] = useState();
-  const [ethnicGroupKeys, setEthnicGroupKeys] = useState([]);
+  let { agencyId } = useParams();
+  const theme = useTheme();
 
+  const [chartState] = useDataset(agencyId, USE_OF_FORCE);
+
+  const [year, setYear] = useState(YEARS_DEFAULT);
+
+  const [ethnicGroupKeys, setEthnicGroupKeys] = useState(() =>
+    STATIC_LEGEND_KEYS.map((k) => ({ ...k }))
+  );
+
+  const [useOfForceData, setUseOfForceData] = useState([]);
+  const [useOfForcePieData, setUseOfForcePieData] = useState([]);
+
+  /* BUILD DATA */
+  // Bar chart data
+  useEffect(() => {
+    const data = chartState.data[USE_OF_FORCE];
+    if (data) {
+      const mappedData = ethnicGroupKeys
+        .filter((e) => e.selected)
+        .map((eg) => {
+          const ethnicGroup = eg.value;
+          return {
+            id: ethnicGroup,
+            color: theme.colors.ethnicGroup[ethnicGroup],
+            data: data.map((d) => ({
+              x: d.year,
+              y: d[ethnicGroup],
+            })),
+          };
+        });
+      setUseOfForceData(mappedData);
+    }
+  }, [chartState.data[USE_OF_FORCE], ethnicGroupKeys]);
+
+  // Pie chart data
+  useEffect(() => {
+    const data = chartState.data[USE_OF_FORCE];
+    if (data) {
+      if (!year || year === YEARS_DEFAULT) {
+        setUseOfForcePieData(reduceFullDataset(data, RACES, theme));
+      } else {
+        const yearData = data.find((d) => d.year === year);
+        const total = calculateYearTotal(yearData);
+        setUseOfForcePieData(
+          RACES.map((race) => {
+            const rData = {
+              x: toTitleCase(race),
+              color: theme.colors.ethnicGroup[race],
+              fontColor: theme.colors.fontColorsByEthnicGroup[race],
+            };
+            rData.y = yearData ? calculatePercentage(yearData[race], total) : 0;
+            return rData;
+          })
+        );
+      }
+    }
+  }, [chartState.data[USE_OF_FORCE], year]);
+
+  /* INTERACTIONS */
+  // Handle year dropdown state
+  const handleYearSelected = (y) => {
+    if (y === year) return;
+    setYear(y);
+  };
+  // Handle stops by percentage legend interactions
+  const handleGroupKeySelected = (ethnicGroup) => {
+    const groupIndex = ethnicGroupKeys.indexOf(
+      ethnicGroupKeys.find((g) => g.value === ethnicGroup.value)
+    );
+    const updatedGroups = [...ethnicGroupKeys];
+    updatedGroups[groupIndex].selected = !updatedGroups[groupIndex].selected;
+    setEthnicGroupKeys(updatedGroups);
+  };
   const handleViewData = () => {
     alert('view data');
   };
 
   const handleShareGraph = () => {
     alert('share graph');
-  };
-
-  const handleKeySelected = (eg) => {
-    console.log('ethnic group: ', eg);
-  };
-
-  const handleYearSelected = (y) => {
-    console.log('year: ', y);
   };
 
   return (
@@ -41,12 +125,19 @@ function UseOfForce() {
         </P>
         <S.ChartSubsection>
           <S.LineSection>
-            <S.LineWrapper>Chart goes here.</S.LineWrapper>
+            <S.LineWrapper>
+              <GroupedBar
+                data={useOfForceData}
+                iTickFormat={(t) => (t % 2 === 0 ? t : null)}
+                iTickValues={chartState.yearSet}
+                loading={chartState.loading[USE_OF_FORCE]}
+              />
+            </S.LineWrapper>
             <S.LegendBelow>
               <Legend
                 heading="Show on graph:"
                 keys={ethnicGroupKeys}
-                onKeySelect={handleKeySelected}
+                onKeySelect={handleGroupKeySelected}
                 showNonHispanic
                 row
               />
@@ -54,14 +145,14 @@ function UseOfForce() {
           </S.LineSection>
           <S.PieSection>
             <S.PieWrapper>
-              {/* <Pie data={byPercentagePieData} loading={chartState.loading[STOPS]} /> */}
-              Pie goes here
+              <Pie data={useOfForcePieData} loading={chartState.loading[USE_OF_FORCE]} />
             </S.PieWrapper>
             <DataSubsetPicker
               label="Year"
               value={year}
               onChange={handleYearSelected}
-              options={[]}
+              options={[YEARS_DEFAULT].concat(chartState.yearRange)}
+              dropUp
             />
           </S.PieSection>
         </S.ChartSubsection>

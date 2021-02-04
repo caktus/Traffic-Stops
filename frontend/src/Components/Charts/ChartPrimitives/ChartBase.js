@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ChartBaseStyled } from './ChartBase.styled';
 
 // Children
-import ChartSkeleton from 'Components/Elements/Skeletons/ChartSkeleton';
+import PieSkeleton from 'Components/Elements/Skeletons/PieSkeleton';
 import ResponsiveChartContainer from 'Components/Charts/ResponsiveChartContainer.styled';
 import Legend from 'Components/Charts/ChartPrimitives/Legend/Legend';
 
@@ -60,7 +60,7 @@ function ChartBase({
       {...props}
     >
       {hasError && <p>some chart error message</p>}
-      {isLoading && <ChartSkeleton />}
+      {isLoading && <PieSkeleton />}
       <h2>{chartTitle}</h2>
       {!hideLegend && (
         <Legend

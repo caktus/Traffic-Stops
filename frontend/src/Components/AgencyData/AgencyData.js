@@ -17,6 +17,7 @@ import ChartRoutes from 'Components/Charts/ChartRoutes';
 
 function AgencyData(props) {
   const { agencyId } = useParams();
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [agencyHeaderOpen, setAgencyHeaderOpen] = useState(false);
   const [chartsOpen, setChartsOpen] = useState(false);

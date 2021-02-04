@@ -35,7 +35,6 @@ function Overview() {
   useDataset(agencyId, SEARCHES);
   const [chartState] = useDataset(agencyId, USE_OF_FORCE);
 
-  const [availableYears, setAvailableYears] = useState([]);
   const [year, setYear] = useState(YEARS_DEFAULT);
 
   const [censusPieData, setCensusPieData] = useState([]);
@@ -44,18 +43,6 @@ function Overview() {
   const [useOfForceData, setUseOfForceData] = useState([]);
 
   /* Build Data */
-
-  // First, find out which years are available by
-  // inspecting one of the datasets
-  useEffect(() => {
-    const stops = chartState.data[STOPS];
-    if (stops) {
-      const uniqueYears = stops.map((s) => s.year);
-      const years = [YEARS_DEFAULT];
-      setAvailableYears(years.concat(uniqueYears));
-    }
-  }, [chartState.data[STOPS]]);
-
   // CENSUS
   useEffect(() => {
     if (chartState.data[AGENCY_DETAILS].census_profile) {
@@ -127,7 +114,7 @@ function Overview() {
           label="Year"
           value={year.label}
           onChange={handleYearSelect}
-          options={availableYears}
+          options={chartState.yearRange}
         />
       </S.SectionWrapper>
       <S.ChartsWrapper>
