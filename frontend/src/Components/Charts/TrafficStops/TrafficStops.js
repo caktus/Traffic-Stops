@@ -202,7 +202,9 @@ function TrafficStops() {
           handleViewData={handleViewPercentageData}
           handleShareGraph={handleSharePercentageGraph}
         />
-        <P>Shows the race/ethnic composition of drivers stopped by this department over time.</P>
+        <S.ChartDescription>
+          <P>Shows the race/ethnic composition of drivers stopped by this department over time.</P>
+        </S.ChartDescription>
         <S.ChartSubsection>
           <S.LineSection>
             <S.LineWrapper>

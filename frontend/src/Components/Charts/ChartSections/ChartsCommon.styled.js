@@ -10,6 +10,13 @@ export const ChartTitle = styled(H2)`
   text-align: center;
 `;
 
+export const ChartDescription = styled.div`
+  max-width: 720px;
+  & p {
+    margin-top: 1em;
+  }
+`;
+
 export const ChartSubsection = styled.div`
   display: flex;
   flex-direction: row;
