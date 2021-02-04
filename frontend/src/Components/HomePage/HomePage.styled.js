@@ -9,7 +9,7 @@ import FJIcon from 'img/icons/Icon';
 export const HomePage = styled(FullWidthPage)`
   display: flex;
   flex-direction: column;
-  overflow-y: hidden;
+  /* overflow-y: scroll; */
 `;
 
 export const Heading = styled.div`
@@ -41,12 +41,18 @@ export const MainContent = styled.div`
 
   @media (${smallerThanTabletLandscape}) {
     flex-direction: column;
+    align-items: center;
   }
 `;
 
 export const About = styled.aside`
   width: 381px;
   margin-right: 3em;
+
+  @media (${smallerThanTabletLandscape}) {
+    margin: 0;
+    width: 100%;
+  }
 `;
 
 export const AboutImage = styled.img`
@@ -131,15 +137,28 @@ export const ViewAllIcon = styled(FJIcon)`
   margin-left: 1em;
 `;
 
-export const DeptCTA = styled.div``;
+export const DeptCTA = styled.div`
+  @media (${smallerThanTabletLandscape}) {
+    width: 90%;
+    margin: 2em auto;
+  }
+`;
 
 export const StopCTA = styled.div`
   margin-top: 2em;
+  @media (${smallerThanTabletLandscape}) {
+    width: 90%;
+    margin: 2em auto;
+  }
 `;
 
 export const ButtonWrapper = styled.div`
   width: 360px;
   margin: 2em 0;
+  @media (${smallerThanTabletLandscape}) {
+    width: 90%;
+    margin: 2em auto;
+  }
 `;
 
 export const ButtonInner = styled.span`
