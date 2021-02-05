@@ -126,10 +126,12 @@ function UseOfForce() {
           handleViewData={handleViewData}
           handleShareGraph={handleShareGraph}
         />
-        <P>
-          Shows the race/ethnic composition of drivers whom law enforcement officers reported using
-          force against
-        </P>
+        <S.ChartDescription>
+          <P>
+            Shows the race/ethnic composition of drivers whom law enforcement officers reported
+            using force against
+          </P>
+        </S.ChartDescription>
         <S.ChartSubsection>
           <S.LineSection>
             <S.LineWrapper>

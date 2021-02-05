@@ -53,6 +53,7 @@ function Overview() {
   useEffect(() => {
     if (chartState.data[AGENCY_DETAILS].census_profile) {
       const data = chartState.data[AGENCY_DETAILS].census_profile;
+      if (Object.keys(data).length === 0) return;
       setCensusPieData(
         RACES.map((race) => ({
           x: toTitleCase(race),
@@ -119,14 +120,7 @@ function Overview() {
           twitterTitle: getPageTitleForShare(),
         }}
       />
-      <S.SectionWrapper>
-        <DataSubsetPicker
-          label="Year"
-          value={year.label}
-          onChange={handleYearSelect}
-          options={chartState.yearRange}
-        />
-      </S.SectionWrapper>
+      <S.SectionWrapper></S.SectionWrapper>
       <S.ChartsWrapper>
         <S.PieContainer>
           <S.ChartTitle>Census Demographics</S.ChartTitle>

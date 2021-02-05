@@ -94,9 +94,11 @@ function SearchRate() {
           handleViewData={handleViewData}
           handleShareGraph={handleShareGraph}
         />
-        <P>
-          Shows what percentage of searches discovered contraband for a given race / ethnic group
-        </P>
+        <S.ChartDescription>
+          <P>
+            Shows what percentage of searches discovered contraband for a given race / ethnic group
+          </P>
+        </S.ChartDescription>
         <S.ChartSubsection>
           <S.LineSection>
             <S.LineWrapper>

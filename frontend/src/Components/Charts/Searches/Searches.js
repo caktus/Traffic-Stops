@@ -159,7 +159,9 @@ function Searches() {
           handleViewData={handleViewPercentageData}
           handleShareGraph={handleSharePercentageGraph}
         />
-        <P>Shows the percent of stops that led to searches, broken down by race/ethnicity.</P>
+        <S.ChartDescription>
+          <P>Shows the percent of stops that led to searches, broken down by race/ethnicity.</P>
+        </S.ChartDescription>
         <S.ChartSubsection>
           <S.LineWrapper>
             <Line

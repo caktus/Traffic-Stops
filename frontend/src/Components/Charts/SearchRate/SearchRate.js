@@ -138,15 +138,17 @@ function SearchRate() {
           handleViewData={handleViewData}
           handleShareGraph={handleShareGraph}
         />
-        <P>
-          Shows the likelihood that drivers of a particular race / ethnicity are searched compared
-          to white drivers, based on stop cause. Stops done for “safety” purposes may be less likely
-          to show racial bias than stops done for “investigatory” purposes.
-        </P>
-        <P>
-          <strong>NOTE:</strong> Large or unexpected percentages may be based on a low number of
-          incidents. Use “View Data” to see the numbers underlying the calculations.
-        </P>
+        <S.ChartDescription>
+          <P>
+            Shows the likelihood that drivers of a particular race / ethnicity are searched compared
+            to white drivers, based on stop cause. Stops done for “safety” purposes may be less
+            likely to show racial bias than stops done for “investigatory” purposes.
+          </P>
+          <P>
+            <strong>NOTE:</strong> Large or unexpected percentages may be based on a low number of
+            incidents. Use “View Data” to see the numbers underlying the calculations.
+          </P>
+        </S.ChartDescription>
         <S.ChartSubsection>
           <S.LineWrapper>
             {noBaseSearches ? (
