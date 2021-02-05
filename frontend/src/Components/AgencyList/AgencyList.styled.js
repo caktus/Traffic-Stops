@@ -1,13 +1,35 @@
 import styled from 'styled-components';
-import { phoneOnly } from 'styles/breakpoints';
+import { phoneOnly, smallerThanDesktop } from 'styles/breakpoints';
 import MainBase from 'styles/MainBase';
 
 export const AgencyList = styled(MainBase)``;
 
+export const InnerWrapper = styled.div`
+  max-width: 1170px;
+  margin: 0 auto;
+  width: 100%;
+
+  @media (${smallerThanDesktop}) {
+    max-width: 750px;
+    padding: 0 1em;
+  }
+`;
+
+export const UpperContent = styled.div`
+  margin-top: 2em;
+`;
+
+export const HeadingAndDescription = styled.div`
+  max-width: 700px;
+
+  p {
+    margin: 1em 0;
+  }
+`;
+
 export const AlphaList = styled.ul`
   display: flex;
   flex-direction: column;
-  padding: 2rem;
 `;
 
 export const AlphaSection = styled.li`
@@ -18,8 +40,8 @@ export const AlphaSection = styled.li`
 
 export const AlphaTitle = styled.h3`
   width: 100%;
-  border-bottom: 1px solid ${(props) => props.theme.colors.black};
-  padding-left: 1em;
+  border-bottom: 2px solid ${(props) => props.theme.colors.secondary};
+  font-family: ${(p) => p.theme.fonts.heading};
   font-size: 2rem;
   color: ${(props) => props.theme.colors.primary};
 `;
