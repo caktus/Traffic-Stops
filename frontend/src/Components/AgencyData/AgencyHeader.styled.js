@@ -1,10 +1,21 @@
 import styled from 'styled-components';
 import { P, H2 } from 'styles/StyledComponents/Typography';
 import FJIcon from 'img/icons/Icon';
+import { phoneOnly, smallerThanTabletLandscape } from 'styles/breakpoints';
 
 export const AgencyHeader = styled.div`
   box-shadow: ${(props) => props.theme.shadows.depth1};
   padding: 2em 3em;
+
+  @media (${smallerThanTabletLandscape}) {
+    padding: 0.5em 1em;
+  }
+
+  @media (${phoneOnly}) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 `;
 
 export const AgencySub = styled.div`
@@ -29,6 +40,9 @@ export const ViewIcon = styled(FJIcon)`
 
 export const SubHeaderNavRow = styled.div`
   margin-bottom: 1em;
+  @media (${smallerThanTabletLandscape}) {
+    display: none;
+  }
 `;
 
 export const SubHeaderContentRow = styled.div`
@@ -45,6 +59,10 @@ export const CensusDemographics = styled.div`
   display: flex;
   flex: 1;
   flex-direction: column;
+
+  @media (${phoneOnly}) {
+    display: none;
+  }
 `;
 
 export const AgencyTitle = styled(H2)`

@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import * as breakpoints from 'styles/breakpoints';
 import { FullWidthPage } from 'styles/StyledComponents/FullWidthPage.styled';
+import { smallerThanTabletLandscape } from 'styles/breakpoints';
 
 export const Page = styled(FullWidthPage)`
   padding: 2em 0;
@@ -10,6 +11,10 @@ export const Form = styled.form``;
 
 export const FieldSet = styled.fieldset`
   margin: 2rem;
+
+  @media (${smallerThanTabletLandscape}) {
+    margin: 2em 0;
+  }
 `;
 
 export const Label = styled.p`
@@ -52,9 +57,16 @@ export const InputWrapper = styled.div`
   flex: 1;
   &:not(:last-child) {
     margin-right: 1rem;
+
+    @media (${smallerThanTabletLandscape}) {
+      margin-right: 0;
+    }
   }
   .react-datepicker-wrapper {
     height: 100%;
+    @media (${smallerThanTabletLandscape}) {
+      width: 100%;
+    }
     .react-datepicker__input-container {
       height: 100%;
     }

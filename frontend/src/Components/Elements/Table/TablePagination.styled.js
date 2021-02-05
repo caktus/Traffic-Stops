@@ -1,9 +1,14 @@
 import styled from 'styled-components';
+import { smallerThanTabletLandscape } from 'styles/breakpoints';
 
 export const Pagination = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
+
+  @media (${smallerThanTabletLandscape}) {
+    justify-content: space-around;
+  }
 `;
 
 export const Arrow = styled.button`
@@ -17,6 +22,11 @@ export const PagesList = styled.ul`
 
   display: flex;
   flex-direction: row;
+
+  @media (${smallerThanTabletLandscape}) {
+    width: 100%;
+    justify-content: space-around;
+  }
 `;
 
 export const PageNumber = styled.button`

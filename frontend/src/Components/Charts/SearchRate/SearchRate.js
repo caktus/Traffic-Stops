@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import * as S from './SearchRate.styled';
+import { SearchRateStyled } from './SearchRate.styled';
+import * as S from 'Components/Charts/ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
 
 // Router
-import { useParams, useRouteMatch, useHistory } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 
 // Data
 import useDataset, { STOPS_BY_REASON } from 'Hooks/useDataset';
@@ -129,7 +130,7 @@ function SearchRate() {
   };
 
   return (
-    <S.SearchRate>
+    <SearchRateStyled>
       {renderMetaTags()}
       <S.ChartSection>
         <ChartHeader
@@ -200,7 +201,7 @@ function SearchRate() {
           </S.LegendBelow>
         </S.ChartSubsection>
       </S.ChartSection>
-    </S.SearchRate>
+    </SearchRateStyled>
   );
 }
 
