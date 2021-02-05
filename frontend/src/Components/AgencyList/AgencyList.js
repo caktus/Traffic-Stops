@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import * as Styled from './AgencyList.styled';
+import * as S from './AgencyList.styled';
 
 // Router
-import { Link, useHistory, useRouteMatch } from 'react-router-dom';
+import { Link, useRouteMatch } from 'react-router-dom';
 
 // AJAX
 import axios from 'Services/Axios';
@@ -14,6 +14,7 @@ import { FETCH_START, FETCH_SUCCESS, FETCH_FAILURE } from 'Context/root-reducer'
 
 // Components
 import ListSkeleton from 'Components/Elements/ListSkeleton';
+import { H1, P } from 'styles/StyledComponents/Typography';
 
 const DATA_SET = 'AGENCIES_LIST';
 
@@ -56,26 +57,43 @@ function AgencyList() {
   }, [state.data[DATA_SET]]);
 
   return (
-    <Styled.AgencyList data-testid="AgencyList">
-      <h1>Find a Law Enforcement Agency</h1>
-      {state.loading[DATA_SET] && <ListSkeleton />}
-      {state.data[DATA_SET] && (
-        <Styled.AlphaList>
-          {Object.keys(sortedAgencies).map((char) => (
-            <Styled.AlphaSection key={char}>
-              <Styled.AlphaTitle>{char}</Styled.AlphaTitle>
-              <Styled.List>
-                {sortedAgencies[char].map((agency) => (
-                  <Styled.ListItem key={agency.id}>
-                    <Link to={`${match.url}/${agency.id}`}>{agency.name}</Link>
-                  </Styled.ListItem>
-                ))}
-              </Styled.List>
-            </Styled.AlphaSection>
-          ))}
-        </Styled.AlphaList>
-      )}
-    </Styled.AgencyList>
+    <S.AgencyList data-testid="AgencyList">
+      <S.InnerWrapper>
+        <S.UpperContent>
+          <S.HeadingAndDescription>
+            <H1>Full Department List</H1>
+            <P>
+              Below are all police departments and sheriff’s offices that report law enforcement
+              data in North Carolina. NC State law requires all law enformcement agencies to report
+              their data on a monthly basis. If datasets appear to be incomplete or missing, please
+              notify the NC Department of Justice.
+            </P>
+            <P>
+              <strong>NOTE: </strong>
+              NC CopWatch does not publish or have access to the names of officers, drivers, or
+              passengers involved in traffic stops.
+            </P>
+          </S.HeadingAndDescription>
+        </S.UpperContent>
+        {state.loading[DATA_SET] && <ListSkeleton />}
+        {state.data[DATA_SET] && (
+          <S.AlphaList>
+            {Object.keys(sortedAgencies).map((char) => (
+              <S.AlphaSection key={char}>
+                <S.AlphaTitle>{char}</S.AlphaTitle>
+                <S.List>
+                  {sortedAgencies[char].map((agency) => (
+                    <S.ListItem key={agency.id}>
+                      <Link to={`${match.url}/${agency.id}`}>{agency.name}</Link>
+                    </S.ListItem>
+                  ))}
+                </S.List>
+              </S.AlphaSection>
+            ))}
+          </S.AlphaList>
+        )}
+      </S.InnerWrapper>
+    </S.AgencyList>
   );
 }
 
