@@ -31,6 +31,9 @@ import Legend from 'Components/Charts/ChartSections/Legend/Legend';
 import ChartHeader from 'Components/Charts/ChartSections/ChartHeader';
 import DataSubsetPicker from 'Components/Charts/ChartSections/DataSubsetPicker/DataSubsetPicker';
 
+const BY_PERCENTAGE_ANCHOR_ID = 'searches-by-percentage';
+const BY_COUNT_ANCHOR_ID = 'searches-by-count';
+
 function Searches() {
   let { agencyId } = useParams();
   const theme = useTheme();
@@ -144,9 +147,8 @@ function Searches() {
   };
 
   const handleViewPercentageData = () => {};
-  const handleSharePercentageGraph = () => {};
+
   const handleViewCountData = () => {};
-  const handleShareCountGraph = () => {};
 
   return (
     <S.Searches>
@@ -156,7 +158,8 @@ function Searches() {
         <ChartHeader
           chartTitle="Searches by Percentage"
           handleViewData={handleViewPercentageData}
-          handleShareGraph={handleSharePercentageGraph}
+          id={BY_PERCENTAGE_ANCHOR_ID}
+          chartAnchorId={BY_PERCENTAGE_ANCHOR_ID}
         />
         <P>Shows the percent of stops that led to searches, broken down by race/ethnicity.</P>
         <S.ChartSubsection>
@@ -185,7 +188,8 @@ function Searches() {
         <ChartHeader
           chartTitle="Searches By Count"
           handleViewData={handleViewCountData}
-          handleShareGraph={handleShareCountGraph}
+          id={BY_COUNT_ANCHOR_ID}
+          chartAnchorId={BY_COUNT_ANCHOR_ID}
         />
         <P>
           Shows the number of searches performed by the department, broken down by search type and

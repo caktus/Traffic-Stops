@@ -103,21 +103,10 @@ function Overview() {
     alert('view data');
   };
 
-  const getPageTitleForShare = () => {
-    const agencyName = chartState.data[AGENCY_DETAILS].name;
-    return `Traffic Stop statistics for ${agencyName}`;
-  };
-
   return (
     <S.Overview>
       {renderMetaTags()}
-      <ChartHeader
-        chartTitle="Overview"
-        handleViewData={handleViewData}
-        shareProps={{
-          twitterTitle: getPageTitleForShare(),
-        }}
-      />
+      <ChartHeader chartTitle="Overview" handleViewData={handleViewData} />
       <S.SectionWrapper>
         <DataSubsetPicker
           label="Year"

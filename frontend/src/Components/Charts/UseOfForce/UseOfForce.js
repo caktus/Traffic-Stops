@@ -112,19 +112,11 @@ function UseOfForce() {
     alert('view data');
   };
 
-  const handleShareGraph = () => {
-    alert('share graph');
-  };
-
   return (
     <S.UseOfForce>
       {renderMetaTags()}
       <S.ChartSection>
-        <ChartHeader
-          chartTitle="Use of Force"
-          handleViewData={handleViewData}
-          handleShareGraph={handleShareGraph}
-        />
+        <ChartHeader chartTitle="Use of Force" handleViewData={handleViewData} />
         <P>
           Shows the race/ethnic composition of drivers whom law enforcement officers reported using
           force against

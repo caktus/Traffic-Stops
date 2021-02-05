@@ -122,7 +122,6 @@ function SearchRate() {
   };
 
   const handleViewData = () => {};
-  const handleShareGraph = () => {};
 
   const getSearchesUrlForOfficer = () => {
     return `${AGENCY_LIST_SLUG}/${agencyId}${SEARCHES_SLUG}/?officer=${officerId}`;
@@ -132,11 +131,7 @@ function SearchRate() {
     <S.SearchRate>
       {renderMetaTags()}
       <S.ChartSection>
-        <ChartHeader
-          chartTitle="Likelihood of Search"
-          handleViewData={handleViewData}
-          handleShareGraph={handleShareGraph}
-        />
+        <ChartHeader chartTitle="Likelihood of Search" handleViewData={handleViewData} />
         <P>
           Shows the likelihood that drivers of a particular race / ethnicity are searched compared
           to white drivers, based on stop cause. Stops done for “safety” purposes may be less likely

@@ -37,6 +37,9 @@ import ChartHeader from 'Components/Charts/ChartSections/ChartHeader';
 import DataSubsetPicker from 'Components/Charts/ChartSections/DataSubsetPicker/DataSubsetPicker';
 import toTitleCase from 'util/toTitleCase';
 
+const BY_PERCENTAGE_ANCHOR_ID = 'stops-by-percentage';
+const BY_COUNT_ANCHOR_ID = 'stops-by-count';
+
 function TrafficStops() {
   let { agencyId } = useParams();
   const theme = useTheme();
@@ -187,9 +190,8 @@ function TrafficStops() {
   };
 
   const handleViewPercentageData = () => {};
-  const handleSharePercentageGraph = () => {};
+
   const handleViewCountData = () => {};
-  const handleShareCountGraph = () => {};
 
   return (
     <S.TrafficStops>
@@ -199,7 +201,8 @@ function TrafficStops() {
         <ChartHeader
           chartTitle="Traffic Stops By Percentage"
           handleViewData={handleViewPercentageData}
-          handleShareGraph={handleSharePercentageGraph}
+          id={BY_PERCENTAGE_ANCHOR_ID}
+          chartAnchorId={BY_PERCENTAGE_ANCHOR_ID}
         />
         <P>Shows the race/ethnic composition of drivers stopped by this department over time.</P>
         <S.ChartSubsection>
@@ -240,7 +243,8 @@ function TrafficStops() {
         <ChartHeader
           chartTitle="Traffic Stops By Count"
           handleViewData={handleViewCountData}
-          handleShareGraph={handleShareCountGraph}
+          id={BY_COUNT_ANCHOR_ID}
+          chartAnchorId={BY_COUNT_ANCHOR_ID}
         />
         <P>Shows the number of traffics stops broken down by purpose and race / ethnicity.</P>
         <S.ChartSubsection>
