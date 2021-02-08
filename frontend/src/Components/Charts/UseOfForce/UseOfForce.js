@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import * as S from './UseOfForce.styled';
+import { UseOfForceStyled } from './UseOfForce.styled';
+import * as S from 'Components/Charts/ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
 
 // Router
@@ -115,15 +116,17 @@ function UseOfForce() {
   };
 
   return (
-    <S.UseOfForce>
+    <UseOfForceStyled>
       {renderMetaTags()}
       {renderTableModal()}
       <S.ChartSection>
         <ChartHeader chartTitle="Use of Force" handleViewData={handleViewData} />
-        <P>
-          Shows the race/ethnic composition of drivers whom law enforcement officers reported using
-          force against
-        </P>
+        <S.ChartDescription>
+          <P>
+            Shows the race/ethnic composition of drivers whom law enforcement officers reported
+            using force against
+          </P>
+        </S.ChartDescription>
         <S.ChartSubsection>
           <S.LineSection>
             <S.LineWrapper>
@@ -158,7 +161,7 @@ function UseOfForce() {
           </S.PieSection>
         </S.ChartSubsection>
       </S.ChartSection>
-    </S.UseOfForce>
+    </UseOfForceStyled>
   );
 }
 

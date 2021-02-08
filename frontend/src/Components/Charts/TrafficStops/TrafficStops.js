@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import * as S from './TrafficStops.styled';
+import { TrafficStopsStyled } from './TrafficStops.styled';
+import * as S from 'Components/Charts/ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
 
 // Router
@@ -197,7 +198,7 @@ function TrafficStops() {
   };
 
   return (
-    <S.TrafficStops>
+    <TrafficStopsStyled>
       {/* Traffic Stops by Percentage */}
       {renderMetaTags()}
       {renderTableModal()}
@@ -206,7 +207,9 @@ function TrafficStops() {
           chartTitle="Traffic Stops By Percentage"
           handleViewData={handleViewPercentageData}
         />
-        <P>Shows the race/ethnic composition of drivers stopped by this department over time.</P>
+        <S.ChartDescription>
+          <P>Shows the race/ethnic composition of drivers stopped by this department over time.</P>
+        </S.ChartDescription>
         <S.ChartSubsection>
           <S.LineSection>
             <S.LineWrapper>
@@ -271,7 +274,7 @@ function TrafficStops() {
           </S.LegendBeside>
         </S.ChartSubsection>
       </S.ChartSection>
-    </S.TrafficStops>
+    </TrafficStopsStyled>
   );
 }
 

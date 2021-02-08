@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import * as S from './SearchRate.styled';
+import { SearchRateStyled } from './SearchRate.styled';
+import * as S from 'Components/Charts/ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
 
 // Router
@@ -132,20 +133,22 @@ function SearchRate() {
   };
 
   return (
-    <S.SearchRate>
+    <SearchRateStyled>
       {renderMetaTags()}
       {renderTableModal()}
       <S.ChartSection>
         <ChartHeader chartTitle="Likelihood of Search" handleViewData={handleViewData} />
-        <P>
-          Shows the likelihood that drivers of a particular race / ethnicity are searched compared
-          to white drivers, based on stop cause. Stops done for “safety” purposes may be less likely
-          to show racial bias than stops done for “investigatory” purposes.
-        </P>
-        <P>
-          <strong>NOTE:</strong> Large or unexpected percentages may be based on a low number of
-          incidents. Use “View Data” to see the numbers underlying the calculations.
-        </P>
+        <S.ChartDescription>
+          <P>
+            Shows the likelihood that drivers of a particular race / ethnicity are searched compared
+            to white drivers, based on stop cause. Stops done for “safety” purposes may be less
+            likely to show racial bias than stops done for “investigatory” purposes.
+          </P>
+          <P>
+            <strong>NOTE:</strong> Large or unexpected percentages may be based on a low number of
+            incidents. Use “View Data” to see the numbers underlying the calculations.
+          </P>
+        </S.ChartDescription>
         <S.ChartSubsection>
           <S.LineWrapper>
             {noBaseSearches ? (
@@ -200,7 +203,7 @@ function SearchRate() {
           </S.LegendBelow>
         </S.ChartSubsection>
       </S.ChartSection>
-    </S.SearchRate>
+    </SearchRateStyled>
   );
 }
 

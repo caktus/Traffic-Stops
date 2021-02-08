@@ -8,14 +8,11 @@ import Icon, { ICONS } from 'img/icons/Icon';
 function TablePagination({
   canPreviousPage,
   canNextPage,
-  pageOptions,
   pageCount,
   gotoPage,
   nextPage,
   previousPage,
-  setPageSize,
-  state: { pageIndex, pageSize },
-  dataLength,
+  state: { pageIndex },
 }) {
   const theme = useTheme();
 

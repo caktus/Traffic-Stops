@@ -4,7 +4,6 @@ import * as breakpoints from 'styles/breakpoints';
 export const FullWidthPage = styled.main`
   flex: 1;
   overflow-x: hidden;
-  overflow-y: scroll;
 `;
 
 export const ResponsiveInnerPage = styled.div`
