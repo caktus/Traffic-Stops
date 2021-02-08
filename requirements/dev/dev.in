@@ -3,7 +3,7 @@
 -c ../test/test.txt
 
 # deploy
--e git+https://github.com/caktus/invoke-kubesae@0.0.7#egg=invoke-kubesae
+-e git+https://github.com/caktus/invoke-kubesae@0.0.10#egg=invoke-kubesae
 troposphere
 
 # docs
