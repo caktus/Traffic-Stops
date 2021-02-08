@@ -108,13 +108,7 @@ function Overview() {
   return (
     <OverviewStyled>
       {renderMetaTags()}
-      <ChartHeader
-        chartTitle="Overview"
-        handleViewData={handleViewData}
-        shareProps={{
-          twitterTitle: getPageTitleForShare(),
-        }}
-      />
+      <ChartHeader chartTitle="Overview" handleViewData={handleViewData} />
       <S.SectionWrapper></S.SectionWrapper>
       <S.ChartsWrapper>
         <S.PieContainer>
