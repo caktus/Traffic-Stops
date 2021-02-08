@@ -19,6 +19,7 @@ function Table({
   paginated,
   sortable,
   handleOfficerIdSelected,
+  pageSize,
 }) {
   const theme = useTheme();
   const {
@@ -32,7 +33,7 @@ function Table({
     {
       columns,
       data,
-      initialState: { pageIndex: 0, pageSize: 15, ...intitialTableState },
+      initialState: { pageIndex: 0, pageSize, ...intitialTableState },
     },
     sortable ? useSortBy : '',
     paginated ? usePagination : ''
@@ -46,7 +47,11 @@ function Table({
           {headerGroups.map((headerGroup) => (
             <S.THR {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map((column) => (
-                <S.TH {...column.getHeaderProps(column.getSortByToggleProps())}>
+                <S.TH
+                  {...column.getHeaderProps(
+                    column.getSortByToggleProps && column.getSortByToggleProps()
+                  )}
+                >
                   <S.THInner>
                     {column.render('Header')}
                     {column.canSort && (
@@ -102,6 +107,10 @@ function Table({
     </S.TableWrapper>
   );
 }
+
+Table.defaultProps = {
+  pageSize: 15,
+};
 
 export default Table;
 

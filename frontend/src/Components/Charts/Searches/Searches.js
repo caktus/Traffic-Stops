@@ -14,6 +14,7 @@ import {
   SEARCH_TYPE_DEFAULT,
   AVERAGE,
   SEARCH_TYPES,
+  calculateYearTotal,
 } from 'Components/Charts/chartUtils';
 
 // State
@@ -21,6 +22,7 @@ import useDataset, { SEARCHES, STOPS, SEARCHES_BY_TYPE } from 'Hooks/useDataset'
 
 // Hooks
 import useMetaTags from 'Hooks/useMetaTags';
+import useTableModal from 'Hooks/useTableModal';
 
 // Elements
 import { P } from 'styles/StyledComponents/Typography';
@@ -53,6 +55,7 @@ function Searches() {
   const [byCountLineData, setByCountLineData] = useState();
 
   const renderMetaTags = useMetaTags();
+  const [renderTableModal, { openModal }] = useTableModal();
 
   /* CALCULATE AND BUILD CHART DATA */
   // Build data for Searches by Percentage
@@ -143,27 +146,30 @@ function Searches() {
     setCountEthnicGroups(updatedGroups);
   };
 
-  const handleViewPercentageData = () => {};
-  const handleSharePercentageGraph = () => {};
-  const handleViewCountData = () => {};
-  const handleShareCountGraph = () => {};
+  const handleViewPercentageData = () => {
+    openModal([STOPS, SEARCHES], PERCENTAGE_COLUMNS);
+  };
+
+  const handleViewCountData = () => {
+    openModal(SEARCHES_BY_TYPE, COUNT_COLUMNS);
+  };
 
   return (
     <S.Searches>
       {/* Searche Rate */}
       {renderMetaTags()}
+      {renderTableModal()}
       <S.ChartSection>
         <ChartHeader
           chartTitle="Searches by Percentage"
           handleViewData={handleViewPercentageData}
-          handleShareGraph={handleSharePercentageGraph}
         />
         <P>Shows the percent of stops that led to searches, broken down by race/ethnicity.</P>
         <S.ChartSubsection>
           <S.LineWrapper>
             <Line
               data={byPercentageLineData}
-              loading={chartState.loading[SEARCHES]}
+              loading={[SEARCHES, STOPS].some((d) => chartState.loading[d])}
               iTickFormat={(t) => (t % 2 === 0 ? t : null)}
               iTickValues={chartState.yearSet}
             />
@@ -182,11 +188,7 @@ function Searches() {
       </S.ChartSection>
       {/* Searches by Count */}
       <S.ChartSection>
-        <ChartHeader
-          chartTitle="Searches By Count"
-          handleViewData={handleViewCountData}
-          handleShareGraph={handleShareCountGraph}
-        />
+        <ChartHeader chartTitle="Searches By Count" handleViewData={handleViewCountData} />
         <P>
           Shows the number of searches performed by the department, broken down by search type and
           race / ethnicity.
@@ -226,3 +228,69 @@ function Searches() {
 }
 
 export default Searches;
+
+const PERCENTAGE_COLUMNS = [
+  {
+    Header: 'Year',
+    accessor: 'year',
+  },
+  {
+    Header: 'White',
+    accessor: 'white',
+  },
+  {
+    Header: 'Black',
+    accessor: 'black',
+  },
+  {
+    Header: 'Hispanic',
+    accessor: 'hispanic',
+  },
+  {
+    Header: 'Asian',
+    accessor: 'asian',
+  },
+  {
+    Header: 'Native American',
+    accessor: 'native_american',
+  },
+  {
+    Header: 'Other',
+    accessor: 'other',
+  },
+];
+
+const COUNT_COLUMNS = [
+  {
+    Header: 'Year',
+    accessor: 'year',
+  },
+  {
+    Header: 'Search-reason',
+    accessor: 'search_type',
+  },
+  {
+    Header: 'White',
+    accessor: 'white',
+  },
+  {
+    Header: 'Black',
+    accessor: 'black',
+  },
+  {
+    Header: 'Hispanic',
+    accessor: 'hispanic',
+  },
+  {
+    Header: 'Asian',
+    accessor: 'asian',
+  },
+  {
+    Header: 'Native American',
+    accessor: 'native_american',
+  },
+  {
+    Header: 'Other',
+    accessor: 'other',
+  },
+];

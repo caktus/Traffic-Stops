@@ -3,7 +3,7 @@ import * as S from './SearchRate.styled';
 import { useTheme } from 'styled-components';
 
 // Router
-import { useParams, useRouteMatch, useHistory } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 
 // Data
 import useDataset, { STOPS_BY_REASON } from 'Hooks/useDataset';
@@ -11,6 +11,7 @@ import useDataset, { STOPS_BY_REASON } from 'Hooks/useDataset';
 // Hooks
 import useOfficerId from 'Hooks/useOfficerId';
 import useMetaTags from 'Hooks/useMetaTags';
+import useTableModal from 'Hooks/useTableModal';
 
 // Constants
 import {
@@ -47,6 +48,7 @@ function SearchRate() {
   const [noBaseSearches, setNoBaseSearches] = useState(false);
 
   const renderMetaTags = useMetaTags();
+  const [renderTableModal, { openModal }] = useTableModal();
 
   /* BUILD DATA */
   useEffect(() => {
@@ -121,8 +123,9 @@ function SearchRate() {
     setEthnicGroupKeys(updatedGroups);
   };
 
-  const handleViewData = () => {};
-  const handleShareGraph = () => {};
+  const handleViewData = () => {
+    openModal(STOPS_BY_REASON, TABLE_COLUMNS);
+  };
 
   const getSearchesUrlForOfficer = () => {
     return `${AGENCY_LIST_SLUG}/${agencyId}${SEARCHES_SLUG}/?officer=${officerId}`;
@@ -131,12 +134,9 @@ function SearchRate() {
   return (
     <S.SearchRate>
       {renderMetaTags()}
+      {renderTableModal()}
       <S.ChartSection>
-        <ChartHeader
-          chartTitle="Likelihood of Search"
-          handleViewData={handleViewData}
-          handleShareGraph={handleShareGraph}
-        />
+        <ChartHeader chartTitle="Likelihood of Search" handleViewData={handleViewData} />
         <P>
           Shows the likelihood that drivers of a particular race / ethnicity are searched compared
           to white drivers, based on stop cause. Stops done for “safety” purposes may be less likely
@@ -205,3 +205,38 @@ function SearchRate() {
 }
 
 export default SearchRate;
+
+const TABLE_COLUMNS = [
+  {
+    Header: 'Year',
+    accessor: 'year',
+  },
+  {
+    Header: 'Stop-reason',
+    accessor: 'purpose',
+  },
+  {
+    Header: 'White',
+    accessor: 'white',
+  },
+  {
+    Header: 'Black',
+    accessor: 'black',
+  },
+  {
+    Header: 'Hispanic',
+    accessor: 'hispanic',
+  },
+  {
+    Header: 'Asian',
+    accessor: 'asian',
+  },
+  {
+    Header: 'Native American',
+    accessor: 'native_american',
+  },
+  {
+    Header: 'Other',
+    accessor: 'other',
+  },
+];

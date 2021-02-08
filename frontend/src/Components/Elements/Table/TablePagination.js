@@ -32,6 +32,7 @@ function TablePagination({
       <S.PagesList>
         {range(0, pageCount).map((p) => (
           <S.PageNumber
+            key={p}
             onClick={() => gotoPage(p)}
             disabled={p === pageIndex}
             current={p === pageIndex}

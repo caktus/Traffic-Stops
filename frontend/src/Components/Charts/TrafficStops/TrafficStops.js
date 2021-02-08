@@ -27,6 +27,7 @@ import { P } from 'styles/StyledComponents/Typography';
 
 // Hooks
 import useMetaTags from 'Hooks/useMetaTags';
+import useTableModal from 'Hooks/useTableModal';
 
 // Children
 import Line from 'Components/Charts/ChartPrimitives/Line';
@@ -74,6 +75,7 @@ function TrafficStops() {
   const [byCountLineData, setByCountLineData] = useState([]);
 
   const renderMetaTags = useMetaTags();
+  const [renderTableModal, { openModal }] = useTableModal();
 
   /* CALCULATE AND BUILD CHART DATA */
   // Build data for Stops by Percentage line chart
@@ -186,20 +188,23 @@ function TrafficStops() {
     setCountEthnicGroups(updatedGroups);
   };
 
-  const handleViewPercentageData = () => {};
-  const handleSharePercentageGraph = () => {};
-  const handleViewCountData = () => {};
-  const handleShareCountGraph = () => {};
+  const handleViewPercentageData = () => {
+    openModal(STOPS, STOPS_TABLE_COLUMNS);
+  };
+
+  const handleViewCountData = () => {
+    openModal(STOPS_BY_REASON, BY_REASON_TABLE_COLUMNS);
+  };
 
   return (
     <S.TrafficStops>
       {/* Traffic Stops by Percentage */}
       {renderMetaTags()}
+      {renderTableModal()}
       <S.ChartSection>
         <ChartHeader
           chartTitle="Traffic Stops By Percentage"
           handleViewData={handleViewPercentageData}
-          handleShareGraph={handleSharePercentageGraph}
         />
         <P>Shows the race/ethnic composition of drivers stopped by this department over time.</P>
         <S.ChartSubsection>
@@ -237,11 +242,7 @@ function TrafficStops() {
       </S.ChartSection>
       {/* Traffic Stops by Count */}
       <S.ChartSection>
-        <ChartHeader
-          chartTitle="Traffic Stops By Count"
-          handleViewData={handleViewCountData}
-          handleShareGraph={handleShareCountGraph}
-        />
+        <ChartHeader chartTitle="Traffic Stops By Count" handleViewData={handleViewCountData} />
         <P>Shows the number of traffics stops broken down by purpose and race / ethnicity.</P>
         <S.ChartSubsection>
           <S.LineWrapper>
@@ -275,3 +276,73 @@ function TrafficStops() {
 }
 
 export default TrafficStops;
+
+const STOPS_TABLE_COLUMNS = [
+  {
+    Header: 'Year',
+    accessor: 'year',
+  },
+  {
+    Header: 'White',
+    accessor: 'white',
+  },
+  {
+    Header: 'Black',
+    accessor: 'black',
+  },
+  {
+    Header: 'Hispanic',
+    accessor: 'hispanic',
+  },
+  {
+    Header: 'Asian',
+    accessor: 'asian',
+  },
+  {
+    Header: 'Native American',
+    accessor: 'native_american',
+  },
+  {
+    Header: 'Other',
+    accessor: 'other',
+  },
+  {
+    Header: 'Total',
+    accessor: (row) => calculateYearTotal(row),
+  },
+];
+
+const BY_REASON_TABLE_COLUMNS = [
+  {
+    Header: 'Year',
+    accessor: 'year',
+  },
+  {
+    Header: 'Stop-reason',
+    accessor: 'purpose',
+  },
+  {
+    Header: 'White',
+    accessor: 'white',
+  },
+  {
+    Header: 'Black',
+    accessor: 'black',
+  },
+  {
+    Header: 'Hispanic',
+    accessor: 'hispanic',
+  },
+  {
+    Header: 'Asian',
+    accessor: 'asian',
+  },
+  {
+    Header: 'Native American',
+    accessor: 'native_american',
+  },
+  {
+    Header: 'Other',
+    accessor: 'other',
+  },
+];

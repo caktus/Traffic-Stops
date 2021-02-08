@@ -11,6 +11,7 @@ export const ICONS = {
   checkboxFilled: 'checkbox-filled',
   chevronLeft: 'chevron-left',
   chevronRight: 'chevron-right',
+  close: 'close',
   download: 'download',
   externalLink: 'external-link',
   info: 'info',
