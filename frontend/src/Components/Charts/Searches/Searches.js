@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import * as S from './Searches.styled';
+import { SearchesStyled } from './Searches.styled';
+import * as S from 'Components/Charts/ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
 
 // Router
@@ -151,7 +152,7 @@ function Searches() {
   const handleViewCountData = () => {};
 
   return (
-    <S.Searches>
+    <SearchesStyled>
       {/* Searche Rate */}
       {renderMetaTags()}
       <S.ChartSection>
@@ -161,7 +162,9 @@ function Searches() {
           id={BY_PERCENTAGE_ANCHOR_ID}
           chartAnchorId={BY_PERCENTAGE_ANCHOR_ID}
         />
-        <P>Shows the percent of stops that led to searches, broken down by race/ethnicity.</P>
+        <S.ChartDescription>
+          <P>Shows the percent of stops that led to searches, broken down by race/ethnicity.</P>
+        </S.ChartDescription>
         <S.ChartSubsection>
           <S.LineWrapper>
             <Line
@@ -225,7 +228,7 @@ function Searches() {
           </S.LegendBeside>
         </S.ChartSubsection>
       </S.ChartSection>
-    </S.Searches>
+    </SearchesStyled>
   );
 }
 

@@ -41,7 +41,7 @@ export const DropdownListContainer = styled.div`
           top: 100%;
         `}
 
-  min-width: 100%;
+  width: 300px;
   display: ${(props) => (props.isOpen ? 'block' : 'none')};
 
   background: ${(props) => props.theme.colors.white};
@@ -49,7 +49,7 @@ export const DropdownListContainer = styled.div`
   box-shadow: ${(props) => props.theme.shadows.depth4};
   z-index: 10;
 
-  max-height: 300px;
+  max-height: 320px;
   overflow-y: scroll;
 `;
 

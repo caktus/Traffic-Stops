@@ -61,18 +61,20 @@ function AgencyHeader({ agencyHeaderOpen, agencyDetails }) {
                     </S.AgencySub>
                   </>
                 ) : (
-                  <S.AgencyTitle>{agencyDetails.name}</S.AgencyTitle>
-                )}
+                    <S.AgencyTitle>{agencyDetails.name}</S.AgencyTitle>
+                  )}
                 <P size={SIZES[0]} color={COLORS[0]} weight={WEIGHTS[0]}>
-                  last reported stop {agencyDetails.last_reported_stop && 'on'}
+                  last reported stop {agencyId ? 'from department ' : ''}
+                  {agencyDetails.last_reported_stop && 'on'}
                   <S.ReportedDate size={SIZES[0]} color={COLORS[0]} weight={WEIGHTS[1]}>
+                    {' '}
                     <S.ReportedDate size={SIZES[0]} color={COLORS[0]} weight={WEIGHTS[1]}>
                       {agencyDetails.last_reported_stop
                         ? new Intl.DateTimeFormat('en-US', {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric',
-                          }).format(new Date(agencyDetails.last_reported_stop))
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                        }).format(new Date(agencyDetails.last_reported_stop))
                         : 'Unknown'}
                     </S.ReportedDate>
                   </S.ReportedDate>
@@ -81,7 +83,7 @@ function AgencyHeader({ agencyHeaderOpen, agencyDetails }) {
               <S.CensusDemographics>
                 <S.CensusTitle>CENSUS DEMOGRAPHICS</S.CensusTitle>
                 <S.CensusRow>
-                  {agencyDetails.census_profile ? (
+                  {Object.keys(agencyDetails.census_profile).length > 0 ? (
                     RACES.map((race) => {
                       const profile = agencyDetails.census_profile;
                       return (
@@ -96,8 +98,8 @@ function AgencyHeader({ agencyHeaderOpen, agencyDetails }) {
                       );
                     })
                   ) : (
-                    <S.NoCensus>Census data for {agencyDetails.name} could not be found</S.NoCensus>
-                  )}
+                      <S.NoCensus>There is no census data for {agencyDetails.name}</S.NoCensus>
+                    )}
                 </S.CensusRow>
               </S.CensusDemographics>
             </S.SubHeaderContentRow>

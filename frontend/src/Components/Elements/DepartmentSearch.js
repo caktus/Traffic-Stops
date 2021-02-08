@@ -30,8 +30,8 @@ function SeeAllDepartments({ selectRef }) {
     if (selectRef?.current) selectRef.current.closeDropdown();
   };
   return (
-    <Styled.SeeAllDepartments>
-      <Styled.SeeAllText onClick={handleClick}>View all departments</Styled.SeeAllText>
+    <Styled.SeeAllDepartments tabIndex="0" onClick={handleClick}>
+      <Styled.SeeAllText>View all departments</Styled.SeeAllText>
     </Styled.SeeAllDepartments>
   );
 }

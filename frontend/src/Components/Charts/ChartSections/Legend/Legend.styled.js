@@ -1,11 +1,16 @@
 import styled from 'styled-components';
-import { smallerThanTabletLandscape } from 'styles/breakpoints';
+import { phoneOnly, smallerThanTabletLandscape } from 'styles/breakpoints';
 import FJIcon from 'img/icons/Icon';
 import { P } from 'styles/StyledComponents/Typography';
 
 export const Legend = styled.div`
   display: flex;
   flex-direction: column;
+
+  @media (${phoneOnly}) {
+    width: 95%;
+    margin: 0 auto;
+  }
 `;
 
 export const LegendHeading = styled(P)`
@@ -21,6 +26,12 @@ export const KeysList = styled.ul`
 
   @media (${smallerThanTabletLandscape}) {
     max-width: 100vw;
+  }
+
+  @media (${phoneOnly}) {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
   }
 `;
 

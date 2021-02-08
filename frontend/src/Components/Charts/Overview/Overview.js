@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import * as S from './Overview.styled';
+import * as S from 'Components/Charts/ChartSections/ChartsCommon.styled';
+import { OverviewStyled } from './Overview.styled';
 import { useTheme } from 'styled-components';
 
 // Router
@@ -52,6 +53,7 @@ function Overview() {
   useEffect(() => {
     if (chartState.data[AGENCY_DETAILS].census_profile) {
       const data = chartState.data[AGENCY_DETAILS].census_profile;
+      if (Object.keys(data).length === 0) return;
       setCensusPieData(
         RACES.map((race) => ({
           x: toTitleCase(race),
@@ -104,17 +106,16 @@ function Overview() {
   };
 
   return (
-    <S.Overview>
+    <OverviewStyled>
       {renderMetaTags()}
-      <ChartHeader chartTitle="Overview" handleViewData={handleViewData} />
-      <S.SectionWrapper>
-        <DataSubsetPicker
-          label="Year"
-          value={year.label}
-          onChange={handleYearSelect}
-          options={chartState.yearRange}
-        />
-      </S.SectionWrapper>
+      <ChartHeader
+        chartTitle="Overview"
+        handleViewData={handleViewData}
+        shareProps={{
+          twitterTitle: getPageTitleForShare(),
+        }}
+      />
+      <S.SectionWrapper></S.SectionWrapper>
       <S.ChartsWrapper>
         <S.PieContainer>
           <S.ChartTitle>Census Demographics</S.ChartTitle>
@@ -168,7 +169,7 @@ function Overview() {
           </S.Link>
         </S.PieContainer>
       </S.ChartsWrapper>
-    </S.Overview>
+    </OverviewStyled>
   );
 }
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import * as S from './Contraband.styled';
+import { ContrabandStyled } from './Contraband.styled';
+import * as S from 'Components/Charts/ChartSections/ChartsCommon.styled';
 
 import { useTheme } from 'styled-components';
 
@@ -85,7 +86,7 @@ function SearchRate() {
   };
 
   return (
-    <S.Contraband>
+    <ContrabandStyled>
       {renderMetaTags()}
       <S.ChartSection>
         <ChartHeader
@@ -93,9 +94,11 @@ function SearchRate() {
           handleViewData={handleViewData}
           handleShareGraph={handleShareGraph}
         />
-        <P>
-          Shows what percentage of searches discovered contraband for a given race / ethnic group
-        </P>
+        <S.ChartDescription>
+          <P>
+            Shows what percentage of searches discovered contraband for a given race / ethnic group
+          </P>
+        </S.ChartDescription>
         <S.ChartSubsection>
           <S.LineSection>
             <S.LineWrapper>
@@ -137,7 +140,7 @@ function SearchRate() {
           </S.LegendSection>
         </S.ChartSubsection>
       </S.ChartSection>
-    </S.Contraband>
+    </ContrabandStyled>
   );
 }
 
