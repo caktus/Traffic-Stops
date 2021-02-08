@@ -4,16 +4,14 @@
 #
 #    pip-compile --output-file=requirements/dev/dev.txt requirements/dev/dev.in
 #
--e git+https://github.com/caktus/invoke-kubesae@0.0.7#egg=invoke-kubesae
+-e git+https://github.com/caktus/invoke-kubesae@0.0.11#egg=invoke-kubesae
     # via -r requirements/dev/dev.in
 alabaster==0.7.12
     # via sphinx
 ansible==2.9.6
     # via invoke-kubesae
 appnope==0.1.0
-    # via
-    #   -r requirements/dev/dev.in
-    #   ipython
+    # via -r requirements/dev/dev.in
 argh==0.26.2
     # via sphinx-autobuild
 attrs==19.3.0
