@@ -1,7 +1,6 @@
 import styled from 'styled-components';
 import { phoneOnly, smallerThanDesktop, smallerThanTabletLandscape } from 'styles/breakpoints';
 import { P } from 'styles/StyledComponents/Typography';
-
 import FJIcon from 'img/icons/Icon';
 
 export const TableModal = styled.div`
@@ -82,6 +81,19 @@ export const CloseButton = styled(FJIcon)`
     align-self: flex-end;
   }
 `;
+
+export const Download = styled.div``;
+
+export const Icon = styled(FJIcon)`
+  margin-right: 1em;
+`;
+
+export const ButtonInlines = {
+  display: 'flex',
+  flexDirection: 'row',
+  alignItems: 'center',
+  pr: '30px',
+};
 
 export const TableWrapper = styled.div`
   margin-top: 3em;

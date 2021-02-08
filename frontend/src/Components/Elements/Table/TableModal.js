@@ -3,6 +3,9 @@ import ReactDOM from 'react-dom';
 import { useTheme } from 'styled-components';
 import * as S from './TableModal.styled';
 
+// Deps
+import { CSVLink } from 'react-csv';
+
 // State
 import { AGENCY_DETAILS, CONTRABAND_HIT_RATE, STOPS_BY_REASON } from 'Hooks/useDataset';
 
@@ -19,6 +22,7 @@ import { P, H2 } from 'styles/StyledComponents/Typography';
 import TableSkeleton from 'Components/Elements/Skeletons/TableSkeleton';
 import Table from 'Components/Elements/Table/Table';
 import { ICONS } from 'img/icons/Icon';
+import Button from 'Components/Elements/Button';
 
 const mapDatasetToChartName = {
   STOPS: 'Traffic Stops',
@@ -142,6 +146,12 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     }
   };
 
+  const _getTableNameForDownload = () => {
+    return `${
+      Array.isArray(dataSet) ? 'Searches by Percentage' : mapDatasetToChartName[dataSet]
+    } ${_getEntityReference()}`;
+  };
+
   return ReactDOM.createPortal(
     isOpen && (
       <>
@@ -152,7 +162,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
               <H2>
                 {Array.isArray(dataSet) ? 'Searches by Percentage' : mapDatasetToChartName[dataSet]}
               </H2>
-              <P> for {_getEntityReference()}</P>
+              <P> {_getEntityReference()}</P>
             </S.Heading>
             <S.CloseButton
               onClick={closeModal}
@@ -162,6 +172,16 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
               height={42}
             />
           </S.Header>
+          {!_getIsLoading(dataSet) && (
+            <S.Download>
+              <CSVLink data={_buildTableData(dataSet)} filename={_getTableNameForDownload()}>
+                <Button variant="positive" {...S.ButtonInlines} onClick={() => {}}>
+                  <S.Icon icon={ICONS.download} height={25} width={25} fill={theme.colors.white} />
+                  Download
+                </Button>
+              </CSVLink>
+            </S.Download>
+          )}
           <S.TableWrapper>
             {_getIsLoading(dataSet) ? (
               <TableSkeleton />
