@@ -13,7 +13,7 @@ import { ICONS } from 'img/icons/Icon';
 // Children
 import ShareList from 'Components/Charts/ChartSections/ShareList';
 
-function ChartHeader({ chartTitle, handleViewData, shareProps }) {
+function ChartHeader({ id, chartTitle, handleViewData, chartAnchorId, shareProps }) {
   const theme = useTheme();
   const [shareOpen, setShareOpen] = useState(false);
   const shareListRef = React.useRef();
@@ -34,7 +34,7 @@ function ChartHeader({ chartTitle, handleViewData, shareProps }) {
   }, [shareListRef.current, shareOpen]);
 
   return (
-    <S.ChartHeader>
+    <S.ChartHeader id={id}>
       <S.TitleWrapper>
         <S.ChartTitle>{chartTitle}</S.ChartTitle>
         {officerId && <OfficerBadge officerId={officerId} />}
@@ -51,7 +51,12 @@ function ChartHeader({ chartTitle, handleViewData, shareProps }) {
           View Data
         </Button>
         {shareOpen ? (
-          <ShareList ref={shareListRef} {...shareProps} />
+          <ShareList
+            ref={shareListRef}
+            chartTitle={chartTitle}
+            chartAnchorId={chartAnchorId}
+            {...shareProps}
+          />
         ) : (
           <Button
             variant="positive"
