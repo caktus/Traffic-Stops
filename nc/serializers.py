@@ -33,10 +33,12 @@ class PersonStopSerializer(serializers.ModelSerializer):
     officer_id = serializers.SerializerMethodField()
     stop_purpose = serializers.SerializerMethodField()
     stop_action = serializers.SerializerMethodField()
+    stop_id = serializers.SerializerMethodField()
 
     class Meta:
         model = stops.Person
         fields = (
+            "stop_id",
             "person_id",
             "date",
             "gender",
@@ -67,6 +69,9 @@ class PersonStopSerializer(serializers.ModelSerializer):
 
     def get_stop_action(self, obj):
         return obj.stop.get_action_display()
+
+    def get_stop_id(self, obj):
+        return obj.stop.stop_id
 
 
 class TopAgencyFactsSerializer(serializers.ModelSerializer):
