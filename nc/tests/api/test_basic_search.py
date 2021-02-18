@@ -24,6 +24,7 @@ def test_response_person_fields(client, search_url, durham):
     response = client.get(search_url, data={"agency": durham.pk}, format="json")
     result = response.data["results"][0]
     expected = {
+        "stop_id": person.stop.stop_id,
         "person_id": person.person_id,
         "date": person.stop.date,
         "gender": person.get_gender_display(),
