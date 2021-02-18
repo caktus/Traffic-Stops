@@ -12,6 +12,7 @@ import useDataset, { STOPS_BY_REASON } from 'Hooks/useDataset';
 // Hooks
 import useOfficerId from 'Hooks/useOfficerId';
 import useMetaTags from 'Hooks/useMetaTags';
+import useTableModal from 'Hooks/useTableModal';
 
 // Constants
 import {
@@ -48,6 +49,7 @@ function SearchRate() {
   const [noBaseSearches, setNoBaseSearches] = useState(false);
 
   const renderMetaTags = useMetaTags();
+  const [renderTableModal, { openModal }] = useTableModal();
 
   /* BUILD DATA */
   useEffect(() => {
@@ -122,8 +124,9 @@ function SearchRate() {
     setEthnicGroupKeys(updatedGroups);
   };
 
-  const handleViewData = () => {};
-  const handleShareGraph = () => {};
+  const handleViewData = () => {
+    openModal(STOPS_BY_REASON, TABLE_COLUMNS);
+  };
 
   const getSearchesUrlForOfficer = () => {
     return `${AGENCY_LIST_SLUG}/${agencyId}${SEARCHES_SLUG}/?officer=${officerId}`;
@@ -132,12 +135,9 @@ function SearchRate() {
   return (
     <SearchRateStyled>
       {renderMetaTags()}
+      {renderTableModal()}
       <S.ChartSection>
-        <ChartHeader
-          chartTitle="Likelihood of Search"
-          handleViewData={handleViewData}
-          handleShareGraph={handleShareGraph}
-        />
+        <ChartHeader chartTitle="Likelihood of Search" handleViewData={handleViewData} />
         <S.ChartDescription>
           <P>
             Shows the likelihood that drivers of a particular race / ethnicity are searched compared
@@ -208,3 +208,38 @@ function SearchRate() {
 }
 
 export default SearchRate;
+
+const TABLE_COLUMNS = [
+  {
+    Header: 'Year',
+    accessor: 'year',
+  },
+  {
+    Header: 'Stop-reason',
+    accessor: 'purpose',
+  },
+  {
+    Header: 'White',
+    accessor: 'white',
+  },
+  {
+    Header: 'Black',
+    accessor: 'black',
+  },
+  {
+    Header: 'Hispanic',
+    accessor: 'hispanic',
+  },
+  {
+    Header: 'Asian',
+    accessor: 'asian',
+  },
+  {
+    Header: 'Native American',
+    accessor: 'native_american',
+  },
+  {
+    Header: 'Other',
+    accessor: 'other',
+  },
+];

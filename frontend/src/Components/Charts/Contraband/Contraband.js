@@ -19,6 +19,7 @@ import {
 
 // Hooks
 import useMetaTags from 'Hooks/useMetaTags';
+import useTableModal from 'Hooks/useTableModal';
 
 // State
 import useDataset, { CONTRABAND_HIT_RATE } from 'Hooks/useDataset';
@@ -40,6 +41,7 @@ function SearchRate() {
   const [contrabandData, setContrabandData] = useState();
 
   const renderMetaTags = useMetaTags();
+  const [renderTableModal, { openModal }] = useTableModal();
 
   /* CALCULATE AND BUILD CHART DATA */
   // Build data for Contraband Hit Rate
@@ -78,22 +80,15 @@ function SearchRate() {
   };
 
   const handleViewData = () => {
-    alert('view data');
-  };
-
-  const handleShareGraph = () => {
-    alert('share graph');
+    openModal(CONTRABAND_HIT_RATE, TABLE_COLUMNS);
   };
 
   return (
     <ContrabandStyled>
       {renderMetaTags()}
+      {renderTableModal()}
       <S.ChartSection>
-        <ChartHeader
-          chartTitle='Contraband "Hit Rate"'
-          handleViewData={handleViewData}
-          handleShareGraph={handleShareGraph}
-        />
+        <ChartHeader chartTitle='Contraband "Hit Rate"' handleViewData={handleViewData} />
         <S.ChartDescription>
           <P>
             Shows what percentage of searches discovered contraband for a given race / ethnic group
@@ -145,3 +140,34 @@ function SearchRate() {
 }
 
 export default SearchRate;
+
+const TABLE_COLUMNS = [
+  {
+    Header: 'Year',
+    accessor: 'year', // accessor is the "key" in the data
+  },
+  {
+    Header: 'White*',
+    accessor: 'white',
+  },
+  {
+    Header: 'Black*',
+    accessor: 'black',
+  },
+  {
+    Header: 'Native American*',
+    accessor: 'native_american',
+  },
+  {
+    Header: 'Asian*',
+    accessor: 'asian',
+  },
+  {
+    Header: 'Other*',
+    accessor: 'other',
+  },
+  {
+    Header: 'Hispanic',
+    accessor: 'hispanic',
+  },
+];

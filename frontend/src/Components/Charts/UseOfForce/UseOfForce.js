@@ -21,6 +21,7 @@ import useDataset, { USE_OF_FORCE } from 'Hooks/useDataset';
 
 // Hooks
 import useMetaTags from 'Hooks/useMetaTags';
+import useTableModal from 'Hooks/useTableModal';
 
 // Children
 import { P } from 'styles/StyledComponents/Typography';
@@ -47,6 +48,7 @@ function UseOfForce() {
   const [useOfForcePieData, setUseOfForcePieData] = useState([]);
 
   const renderMetaTags = useMetaTags();
+  const [renderTableModal, { openModal }] = useTableModal();
 
   /* BUILD DATA */
   // Bar chart data
@@ -110,22 +112,15 @@ function UseOfForce() {
     setEthnicGroupKeys(updatedGroups);
   };
   const handleViewData = () => {
-    alert('view data');
-  };
-
-  const handleShareGraph = () => {
-    alert('share graph');
+    openModal(USE_OF_FORCE, TABLE_COLUMNS);
   };
 
   return (
     <UseOfForceStyled>
       {renderMetaTags()}
+      {renderTableModal()}
       <S.ChartSection>
-        <ChartHeader
-          chartTitle="Use of Force"
-          handleViewData={handleViewData}
-          handleShareGraph={handleShareGraph}
-        />
+        <ChartHeader chartTitle="Use of Force" handleViewData={handleViewData} />
         <S.ChartDescription>
           <P>
             Shows the race/ethnic composition of drivers whom law enforcement officers reported
@@ -171,3 +166,34 @@ function UseOfForce() {
 }
 
 export default UseOfForce;
+
+const TABLE_COLUMNS = [
+  {
+    Header: 'Year',
+    accessor: 'year',
+  },
+  {
+    Header: 'White*',
+    accessor: 'white',
+  },
+  {
+    Header: 'Black*',
+    accessor: 'black',
+  },
+  {
+    Header: 'Native American*',
+    accessor: 'native_american',
+  },
+  {
+    Header: 'Asian*',
+    accessor: 'asian',
+  },
+  {
+    Header: 'Other*',
+    accessor: 'other',
+  },
+  {
+    Header: 'Hispanic',
+    accessor: 'hispanic',
+  },
+];

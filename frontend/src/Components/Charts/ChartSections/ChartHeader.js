@@ -41,15 +41,17 @@ function ChartHeader({ chartTitle, handleViewData, shareProps }) {
       </S.TitleWrapper>
 
       <S.ButtonsWrapper>
-        <Button
-          variant="neutral"
-          border={`2px solid ${theme.colors.primary}`}
-          {...S.ButtonInlines}
-          onClick={handleViewData}
-        >
-          <S.Icon icon={ICONS.view} height={25} width={25} fill={theme.colors.primary} />
-          View Data
-        </Button>
+        {handleViewData && (
+          <Button
+            variant="neutral"
+            border={`2px solid ${theme.colors.primary}`}
+            {...S.ButtonInlines}
+            onClick={handleViewData}
+          >
+            <S.Icon icon={ICONS.view} height={25} width={25} fill={theme.colors.primary} />
+            View Data
+          </Button>
+        )}
         {shareOpen ? (
           <ShareList ref={shareListRef} {...shareProps} />
         ) : (
