@@ -43,6 +43,7 @@ function AutoSuggest({
   valueAccessor,
   renderBonusContent,
   onDropdownChange,
+  dropdownPosition,
   renderInput,
   helpText,
   ...props
@@ -62,6 +63,7 @@ function AutoSuggest({
         ref={selectRef}
         onSelection={(s) => onSelection(s)}
         onDropdownChange={onDropdownChange}
+        dropdownPosition={dropdownPosition}
         filterOption={filterOption}
         labelAccessor={labelAccessor}
         width="100%"
@@ -74,7 +76,12 @@ function AutoSuggest({
         )}
         <Select.InputContainer>
           <Select.Input renderInput={renderInput} />
-          <Select.Dropdown boxShadow="depth5" border="none" borderColor="grey">
+          <Select.Dropdown
+            boxShadow="depth5"
+            border="none"
+            borderColor="grey"
+            maxHeight={[4, 4, 5]}
+          >
             <Select.OptionsList>
               {data.map((datum) => (
                 <Select.Option key={datum[keyAccessor]} value={datum[valueAccessor]} option={datum}>
