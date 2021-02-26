@@ -5,7 +5,7 @@ import { phoneOnly, smallerThanTabletLandscape } from 'styles/breakpoints';
 
 export const AgencyHeader = styled.div`
   box-shadow: ${(props) => props.theme.shadows.depth1};
-  padding: 2em 3em;
+  padding: 1em 3em;
 
   @media (${smallerThanTabletLandscape}) {
     padding: 0.5em 1em;
@@ -65,17 +65,13 @@ export const CensusDemographics = styled.div`
   }
 `;
 
-export const AgencyTitle = styled(H2)`
-  margin-bottom: 0.5rem;
-`;
+export const AgencyTitle = styled(H2)``;
 
 export const ReportedDate = styled(P)`
   display: inline;
 `;
 
-export const CensusTitle = styled(H2)`
-  margin-bottom: 1rem;
-`;
+export const CensusTitle = styled(H2)``;
 
 export const CensusRow = styled.ul`
   margin: 0;
