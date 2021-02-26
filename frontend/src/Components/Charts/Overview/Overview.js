@@ -53,7 +53,10 @@ function Overview() {
   useEffect(() => {
     if (chartState.data[AGENCY_DETAILS].census_profile) {
       const data = chartState.data[AGENCY_DETAILS].census_profile;
-      if (Object.keys(data).length === 0) return;
+      if (Object.keys(data).length === 0) {
+        setCensusPieData([]);
+        return;
+      }
       setCensusPieData(
         RACES.map((race) => ({
           x: toTitleCase(race),
