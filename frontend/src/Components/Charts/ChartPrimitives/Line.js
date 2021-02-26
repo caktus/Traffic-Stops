@@ -4,7 +4,7 @@ import React from 'react';
 import { AXIS_STYLE } from './chartConstants';
 
 // Deps
-import { VictoryChart, VictoryLine, VictoryAxis } from 'victory';
+import { VictoryChart, VictoryLine, VictoryAxis, VictoryContainer } from 'victory';
 import BarSkeleton from 'Components/Elements/Skeletons/BarSkeleton';
 
 function Line({
@@ -19,7 +19,7 @@ function Line({
   if (loading) return <BarSkeleton />;
 
   return (
-    <VictoryChart>
+    <VictoryChart containerComponent={<VictoryContainer style={{ touchAction: 'auto' }} />}>
       <VictoryAxis
         dependentAxis
         style={AXIS_STYLE}

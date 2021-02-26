@@ -11,6 +11,7 @@ const PIE_STYLES = {
   data: {
     fill: ({ datum }) => datum.color,
   },
+  parent: { touchAction: 'auto' },
 };
 
 const LABEL_SKIP_ANGLE = 0.4;
@@ -31,6 +32,7 @@ function Pie({ data, loading }) {
       </NoData>
     );
   }
+
   return (
     <VictoryPie
       data={data}

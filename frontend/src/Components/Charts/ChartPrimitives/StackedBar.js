@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { VictoryChart, VictoryStack, VictoryBar, VictoryAxis } from 'victory';
+import { VictoryChart, VictoryStack, VictoryBar, VictoryAxis, VictoryContainer } from 'victory';
 import { AXIS_STYLE } from './chartConstants';
 
 // Childre
@@ -11,7 +11,10 @@ function StackedBar({ data, loading, tickValues }) {
   if (loading) return <BarSkeleton />;
 
   return (
-    <VictoryChart style={{ padding: 0 }}>
+    <VictoryChart
+      style={{ padding: 0 }}
+      containerComponent={<VictoryContainer style={{ touchAction: 'auto' }} />}
+    >
       <VictoryAxis
         dependentAxis
         style={AXIS_STYLE}
