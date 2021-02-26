@@ -14,6 +14,7 @@ function Line({
   iTickFormat,
   dTickValues,
   dTickFormat,
+  dAxisProps = {},
   iAxisProps = {},
 }) {
   if (loading) return <BarSkeleton />;
@@ -25,6 +26,7 @@ function Line({
         style={AXIS_STYLE}
         tickFormat={dTickFormat}
         tickValues={dTickValues}
+        {...dAxisProps}
       />
       <VictoryAxis
         label="Year"
