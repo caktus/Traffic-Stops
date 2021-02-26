@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import * as S from './FindAStopResults.styled';
-import { ResponsiveInnerPage } from 'styles/StyledComponents/FullWidthPage.styled';
 import { AnimatePresence, motion } from 'framer-motion';
 
 // Routing
@@ -79,49 +78,47 @@ function FindAStopResults() {
 
   return (
     <S.Page>
-      <ResponsiveInnerPage>
-        <S.Heading>
-          <BackButton to={FIND_A_STOP_SLUG} text="Back to Search" />
-          <H1>Stops</H1>
-          {stops?.length > 0 && (
-            <P size={SIZES[0]} color={COLORS[0]}>
-              {stops.length === MAX_STOPS_RESULTS
-                ? `Returned maximum number of results (${MAX_STOPS_RESULTS}). Try limiting your search`
-                : `${stops.length} results found`}
-            </P>
-          )}
-        </S.Heading>
-        <S.TableContainer>
-          {!stops && <TableSkeleton />}
-          {stops?.length === 0 && (
-            <S.NoResults>
-              <H2>No results were found</H2>
-              <P>Try a different search.</P>
-            </S.NoResults>
-          )}
-          {stops?.length > 0 && (
-            <AnimatePresence>
-              <motion.div
-                key="StopsTable"
-                initial={{ opacity: 0.35, x: 100, duration: 750 }}
-                animate={{ opacity: 1, x: 0, duration: 750 }}
-                exit={{ opacity: 0.35, x: 100, duration: 750 }}
-                transition={{ ease: 'easeIn' }}
-              >
-                <S.TableWrapper>
-                  <Table
-                    data={stops}
-                    columns={tableColumns}
-                    paginated
-                    sortable
-                    handleOfficerIdSelected={handleOfficerIdSelected}
-                  />
-                </S.TableWrapper>
-              </motion.div>
-            </AnimatePresence>
-          )}
-        </S.TableContainer>
-      </ResponsiveInnerPage>
+      <S.Heading>
+        <BackButton to={FIND_A_STOP_SLUG} text="Back to Search" />
+        <H1>Stops</H1>
+        {stops?.length > 0 && (
+          <P size={SIZES[0]} color={COLORS[0]}>
+            {stops.length === MAX_STOPS_RESULTS
+              ? `Returned maximum number of results (${MAX_STOPS_RESULTS}). Try limiting your search`
+              : `${stops.length} results found`}
+          </P>
+        )}
+      </S.Heading>
+      <S.TableContainer>
+        {!stops && <TableSkeleton />}
+        {stops?.length === 0 && (
+          <S.NoResults>
+            <H2>No results were found</H2>
+            <P>Try a different search.</P>
+          </S.NoResults>
+        )}
+        {stops?.length > 0 && (
+          <AnimatePresence>
+            <motion.div
+              key="StopsTable"
+              initial={{ opacity: 0.35, x: 100, duration: 750 }}
+              animate={{ opacity: 1, x: 0, duration: 750 }}
+              exit={{ opacity: 0.35, x: 100, duration: 750 }}
+              transition={{ ease: 'easeIn' }}
+            >
+              <S.TableWrapper>
+                <Table
+                  data={stops}
+                  columns={tableColumns}
+                  paginated
+                  sortable
+                  handleOfficerIdSelected={handleOfficerIdSelected}
+                />
+              </S.TableWrapper>
+            </motion.div>
+          </AnimatePresence>
+        )}
+      </S.TableContainer>
     </S.Page>
   );
 }
