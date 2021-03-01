@@ -6,7 +6,7 @@ export const ChartPageBase = styled(motion.article)`
   flex: 1;
   overflow-y: scroll;
   margin: 0 auto;
-  padding: 3em 6em 3em 4em;
+  padding: 1.5em 6em 3em 4em;
 
   @media (${smallerThanDesktop}) {
     overflow-y: visible;
