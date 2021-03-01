@@ -9,7 +9,6 @@ import FJIcon from 'img/icons/Icon';
 export const HomePage = styled(FullWidthPage)`
   display: flex;
   flex-direction: column;
-  /* overflow-y: scroll; */
 `;
 
 export const Heading = styled.div`
