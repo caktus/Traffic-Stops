@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { VictoryChart, VictoryGroup, VictoryBar, VictoryAxis } from 'victory';
+import { VictoryChart, VictoryGroup, VictoryBar, VictoryAxis, VictoryContainer } from 'victory';
 import { AXIS_STYLE } from './chartConstants';
 import BarSkeleton from 'Components/Elements/Skeletons/BarSkeleton';
 
@@ -19,7 +19,12 @@ function GroupedBar({
   if (loading) return <BarSkeleton />;
 
   return (
-    <VictoryChart domainPadding={15} width={700} {...chartProps}>
+    <VictoryChart
+      domainPadding={15}
+      width={700}
+      {...chartProps}
+      containerComponent={<VictoryContainer style={{ touchAction: 'auto' }} />}
+    >
       <VictoryAxis dependentAxis style={AXIS_STYLE} {...dAxisProps} />
       <VictoryAxis
         style={AXIS_STYLE}

@@ -1,13 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { VictoryAxis, VictoryBar, VictoryChart } from 'victory';
+import { VictoryAxis, VictoryBar, VictoryChart, VictoryContainer } from 'victory';
 import { AXIS_STYLE } from './chartConstants';
 import BarSkeleton from 'Components/Elements/Skeletons/BarSkeleton';
 
 function Bar({ data, chartProps, xAxisProps, yAxisProps, barProps }) {
   if (!data) return <BarSkeleton />;
   return (
-    <VictoryChart {...chartProps}>
+    <VictoryChart
+      {...chartProps}
+      containerComponent={<VictoryContainer style={{ touchAction: 'auto' }} />}
+    >
       <VictoryAxis {...xAxisProps} style={AXIS_STYLE} />
       <VictoryAxis {...yAxisProps} style={AXIS_STYLE} dependentAxis />
       <VictoryBar {...barProps} data={data} />
