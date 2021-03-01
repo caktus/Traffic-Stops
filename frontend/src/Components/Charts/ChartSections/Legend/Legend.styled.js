@@ -39,7 +39,7 @@ export const Key = styled.li`
   display: flex;
   flex-direction: row;
   align-items: center;
-  cursor: pointer;
+  cursor: ${(p) => (p.isInteractive ? 'pointer' : 'auto')};
   margin-right: 1.5rem;
   margin-bottom: 1rem;
 `;

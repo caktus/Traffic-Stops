@@ -25,7 +25,11 @@ function Legend({ keys, onKeySelect, isStatic, showNonHispanic, heading, row }) 
               : ICONS.checkboxEmpty,
           };
           return (
-            <S.Key key={key.value} onClick={isStatic ? () => {} : () => onKeySelect(key)}>
+            <S.Key
+              key={key.value}
+              isInteractive={onKeySelect}
+              onClick={isStatic ? () => {} : () => onKeySelect(key)}
+            >
               <S.Icon {...iconProps} />
               <S.KeyLabel selected={key.selected}>
                 {key.label}
