@@ -71,6 +71,9 @@ export const InputWrapper = styled.div`
       height: 100%;
     }
   }
+  .react-datepicker-popper {
+    z-index: 22;
+  }
 `;
 
 export const SearchInputWrapper = styled(InputWrapper)`
