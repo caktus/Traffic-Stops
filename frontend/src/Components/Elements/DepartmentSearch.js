@@ -41,6 +41,7 @@ function DepartmentSearch({
   onDropdownChange,
   navigateOnSelect,
   invertIcon,
+  dropdownPosition,
   showIndexList,
   helpText,
   errors,
@@ -101,6 +102,7 @@ function DepartmentSearch({
       onSelection={handleSuggestionSelected}
       helpText={helpText}
       onDropdownChange={onDropdownChange || _handleDropdownOpen}
+      dropdownPosition={dropdownPosition}
       renderInput={(innerProps) => (
         <Input
           errors={errors}

@@ -18,7 +18,7 @@ function HeaderSearch(showHeaderSearch) {
           exit={{ opacity: 0.35, y: -20, x: '-50%', duration: 750 }}
           transition={{ ease: 'easeIn' }}
         >
-          <DepartmentSearch showIndexList navigateOnSelect invertIcon />
+          <DepartmentSearch showIndexList navigateOnSelect invertIcon dropdownPosition="bottom" />
         </SearchWrapper>
       </AnimatePresence>
     ),
