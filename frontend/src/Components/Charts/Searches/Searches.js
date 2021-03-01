@@ -175,6 +175,9 @@ function Searches() {
               loading={[SEARCHES, STOPS].some((d) => chartState.loading[d])}
               iTickFormat={(t) => (t % 2 === 0 ? t : null)}
               iTickValues={chartState.yearSet}
+              dAxisProps={{
+                tickFormat: (t) => `${t}%`,
+              }}
             />
           </S.LineWrapper>
           <S.LegendBeside>

@@ -30,7 +30,7 @@ import ChartHeader from 'Components/Charts/ChartSections/ChartHeader';
 import Legend from 'Components/Charts/ChartSections/Legend/Legend';
 import DataSubsetPicker from 'Components/Charts/ChartSections/DataSubsetPicker/DataSubsetPicker';
 import GroupedBar from '../ChartPrimitives/GroupedBar';
-import { VictoryLabel } from 'victory';
+import { VictoryLabel, VictoryTooltip } from 'victory';
 
 function SearchRate() {
   let { agencyId } = useParams();
@@ -96,6 +96,7 @@ function SearchRate() {
             data: STOP_TYPES.map((reason) => ({
               x: reason,
               y: ratesByReason[reason],
+              label: `${ratesByReason[reason]}%`,
             })),
           };
         });
@@ -175,12 +176,19 @@ function SearchRate() {
                   tickLabelComponent: <VictoryLabel x={100} dx={-50} style={{ fontSize: 6 }} />,
                   tickFormat: (t) => (t.split ? t.split(' ') : t),
                 }}
+                dAxisProps={{
+                  tickFormat: (t) => `${t}%`,
+                }}
                 chartProps={{
                   height: 500,
                   width: 400,
                 }}
                 barProps={{
                   barWidth: 10,
+                  labelComponent: (
+                    <VictoryTooltip style={toolTipStyles(theme)} flyoutStyle={barFlyoutStyle} />
+                  ),
+                  events: barEvents,
                 }}
               />
             )}
@@ -208,6 +216,51 @@ function SearchRate() {
 }
 
 export default SearchRate;
+
+const barEvents = [
+  {
+    target: 'data',
+    eventHandlers: {
+      onMouseOver: () => {
+        return [
+          {
+            target: 'data',
+            mutation: ({ style }) => {
+              const fill = style.fill.slice(0, -2);
+              return { style: { fill } };
+            },
+          },
+          {
+            target: 'labels',
+            mutation: () => ({ active: true }),
+          },
+        ];
+      },
+      onMouseOut: () => {
+        return [
+          {
+            target: 'data',
+            mutation: () => {},
+          },
+          {
+            target: 'labels',
+            mutation: () => ({ active: false }),
+          },
+        ];
+      },
+    },
+  },
+];
+
+const toolTipStyles = (theme) => ({
+  fontFamily: theme.fonts.body,
+  fontSize: 8,
+});
+
+const barFlyoutStyle = {
+  stroke: 'none',
+  fill: 'none',
+};
 
 const TABLE_COLUMNS = [
   {
