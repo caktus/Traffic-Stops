@@ -24,7 +24,6 @@ import fetchReducer, {
 } from 'Context/fetch-reducer';
 
 // Elements
-import { ResponsiveInnerPage } from 'styles/StyledComponents/FullWidthPage.styled';
 import { P, SIZES, WEIGHTS } from 'styles/StyledComponents/Typography';
 import DepartmentSearch from 'Components/Elements/DepartmentSearch';
 import { ICONS } from 'img/icons/Icon';
@@ -52,139 +51,137 @@ function HomePage() {
   }, []);
 
   return (
-    <ResponsiveInnerPage>
-      <S.HomePage>
-        <S.Heading>
-          <S.Logo white />
-          <S.SubTitle>
-            a project of{' '}
-            <S.SubTitleLink
-              href="https://www.forwardjustice.org"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              Forward Justice
-            </S.SubTitleLink>
-          </S.SubTitle>
-        </S.Heading>
+    <S.HomePage>
+      <S.Heading>
+        <S.Logo white />
+        <S.SubTitle>
+          a project of{' '}
+          <S.SubTitleLink
+            href="https://www.forwardjustice.org"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Forward Justice
+          </S.SubTitleLink>
+        </S.SubTitle>
+      </S.Heading>
 
-        <S.MainContent>
-          <S.About>
-            <S.AboutImage src={SplashImage} />
-            <S.AboutContent>
-              <S.AboutHeading>About the Data</S.AboutHeading>
-              {loading && <CardSkeleton />}
-              {data && (
-                <>
-                  <S.AboutSubSection>
-                    <S.AboutSubTitle size={SIZES[0]}>showing</S.AboutSubTitle>
-                    <P>
-                      <S.Datum>{Number(data.total_stops).toLocaleString()}</S.Datum> stops
-                    </P>
-                    <P>
-                      <S.Datum>{Number(data.total_searches).toLocaleString()}</S.Datum> searches
-                    </P>
-                  </S.AboutSubSection>
-                  <S.AboutSubSection>
-                    <S.AboutSubTitle>across</S.AboutSubTitle>
-                    <P>
-                      <S.Datum>{Number(data.total_agencies).toLocaleString()}</S.Datum>
-                      police and sheriff's departments
-                    </P>
-                  </S.AboutSubSection>
-                  <S.AboutSubSection>
-                    <S.AboutSubTitle>from</S.AboutSubTitle>
-                    <P weight={WEIGHTS[1]}>
-                      {data.start_date} - {data.end_date}
-                    </P>
-                  </S.AboutSubSection>
-                  <S.AboutExtra>
-                    All data comes directly from{' '}
-                    <S.FormLink
-                      href="https://fbaum.unc.edu/TrafficStops/SBI-122-form.pdf"
-                      rel="noopener noreferrer"
-                      target="_blank"
-                    >
-                      Form SBI-122
-                      <S.FormIcon
-                        icon={ICONS.externalLink}
-                        fill={theme.colors.primaryDark}
-                        height={24}
-                        width={24}
-                      />
-                    </S.FormLink>{' '}
-                    reports filled out by NC law enforcement officers
-                  </S.AboutExtra>
-                </>
-              )}
-              {errors.length > 0 && (
-                <S.FetchError>
-                  There was an error fetching meta-data. Refresh to try again.
-                </S.FetchError>
-              )}
-            </S.AboutContent>
-          </S.About>
-
-          <S.SubContent>
-            <S.DeptCTA>
-              <S.SubHeading>View Stop + Search Data by Department</S.SubHeading>
-              <P size={SIZES[1]}>Choose a police or sheriff’s department to see:</P>
-              <P size={SIZES[1]}>- Stops and search rates over time</P>
-              <P size={SIZES[1]}>- Stops and searches broken down by race / ethnicity</P>
-              <P size={SIZES[1]}>
-                - Use of force during stops and how frequently contraband was found
-              </P>
-              <S.SearchWrapper>
-                <DepartmentSearch
-                  showIndexList
-                  navigateOnSelect
-                  placeholder="Search for a police or sheriff's department..."
-                />
-              </S.SearchWrapper>
-              <S.ViewAllDepts onClick={() => history.push(AGENCY_LIST_SLUG)}>
-                View all departments
-                <S.ViewAllIcon
-                  icon={ICONS.arrowRight}
-                  fill={theme.colors.primaryDark}
-                  height={25}
-                  width={25}
-                />
-              </S.ViewAllDepts>
-            </S.DeptCTA>
-            <S.StopCTA>
-              <S.SubHeading>Find a Stop</S.SubHeading>
-              <P size={SIZES[1]}>
-                Have you or someone you know been subjected to an unfair stop or search?
-              </P>
-              <P size={SIZES[1]}>
-                Enter the stop information to view all data associated with that particular officer.
-              </P>
-              <S.ButtonWrapper>
-                <FjButton
-                  onClick={() => history.push(FIND_A_STOP_SLUG)}
-                  variant="positive"
-                  bg={theme.colors.secondary}
-                  width="100%"
-                  py="2"
-                  fontSize="3"
-                  fontWeight="bold"
-                >
-                  <S.ButtonInner>
-                    FIND A STOP
-                    <S.ButtonIcon
-                      icon={ICONS.arrowRight}
-                      fill={theme.colors.white}
-                      width={32}
-                      height={32}
+      <S.MainContent>
+        <S.About>
+          <S.AboutImage src={SplashImage} />
+          <S.AboutContent>
+            <S.AboutHeading>About the Data</S.AboutHeading>
+            {loading && <CardSkeleton />}
+            {data && (
+              <>
+                <S.AboutSubSection>
+                  <S.AboutSubTitle size={SIZES[0]}>showing</S.AboutSubTitle>
+                  <P>
+                    <S.Datum>{Number(data.total_stops).toLocaleString()}</S.Datum> stops
+                  </P>
+                  <P>
+                    <S.Datum>{Number(data.total_searches).toLocaleString()}</S.Datum> searches
+                  </P>
+                </S.AboutSubSection>
+                <S.AboutSubSection>
+                  <S.AboutSubTitle>across</S.AboutSubTitle>
+                  <P>
+                    <S.Datum>{Number(data.total_agencies).toLocaleString()}</S.Datum>
+                    police and sheriff's departments
+                  </P>
+                </S.AboutSubSection>
+                <S.AboutSubSection>
+                  <S.AboutSubTitle>from</S.AboutSubTitle>
+                  <P weight={WEIGHTS[1]}>
+                    {data.start_date} - {data.end_date}
+                  </P>
+                </S.AboutSubSection>
+                <S.AboutExtra>
+                  All data comes directly from{' '}
+                  <S.FormLink
+                    href="https://fbaum.unc.edu/TrafficStops/SBI-122-form.pdf"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    Form SBI-122
+                    <S.FormIcon
+                      icon={ICONS.externalLink}
+                      fill={theme.colors.primaryDark}
+                      height={24}
+                      width={24}
                     />
-                  </S.ButtonInner>
-                </FjButton>
-              </S.ButtonWrapper>
-            </S.StopCTA>
-          </S.SubContent>
-        </S.MainContent>
-      </S.HomePage>
-    </ResponsiveInnerPage>
+                  </S.FormLink>{' '}
+                  reports filled out by NC law enforcement officers
+                </S.AboutExtra>
+              </>
+            )}
+            {errors.length > 0 && (
+              <S.FetchError>
+                There was an error fetching meta-data. Refresh to try again.
+              </S.FetchError>
+            )}
+          </S.AboutContent>
+        </S.About>
+
+        <S.SubContent>
+          <S.DeptCTA>
+            <S.SubHeading>View Stop + Search Data by Department</S.SubHeading>
+            <P size={SIZES[1]}>Choose a police or sheriff’s department to see:</P>
+            <P size={SIZES[1]}>- Stops and search rates over time</P>
+            <P size={SIZES[1]}>- Stops and searches broken down by race / ethnicity</P>
+            <P size={SIZES[1]}>
+              - Use of force during stops and how frequently contraband was found
+            </P>
+            <S.SearchWrapper>
+              <DepartmentSearch
+                showIndexList
+                navigateOnSelect
+                placeholder="Search for a police or sheriff's department..."
+              />
+            </S.SearchWrapper>
+            <S.ViewAllDepts onClick={() => history.push(AGENCY_LIST_SLUG)}>
+              View all departments
+              <S.ViewAllIcon
+                icon={ICONS.arrowRight}
+                fill={theme.colors.primaryDark}
+                height={25}
+                width={25}
+              />
+            </S.ViewAllDepts>
+          </S.DeptCTA>
+          <S.StopCTA>
+            <S.SubHeading>Find a Stop</S.SubHeading>
+            <P size={SIZES[1]}>
+              Have you or someone you know been subjected to an unfair stop or search?
+            </P>
+            <P size={SIZES[1]}>
+              Enter the stop information to view all data associated with that particular officer.
+            </P>
+            <S.ButtonWrapper>
+              <FjButton
+                onClick={() => history.push(FIND_A_STOP_SLUG)}
+                variant="positive"
+                bg={theme.colors.secondary}
+                width="100%"
+                py="2"
+                fontSize="3"
+                fontWeight="bold"
+              >
+                <S.ButtonInner>
+                  FIND A STOP
+                  <S.ButtonIcon
+                    icon={ICONS.arrowRight}
+                    fill={theme.colors.white}
+                    width={32}
+                    height={32}
+                  />
+                </S.ButtonInner>
+              </FjButton>
+            </S.ButtonWrapper>
+          </S.StopCTA>
+        </S.SubContent>
+      </S.MainContent>
+    </S.HomePage>
   );
 }
 

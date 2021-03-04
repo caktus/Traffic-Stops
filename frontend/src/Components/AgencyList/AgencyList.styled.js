@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 import { phoneOnly, smallerThanDesktop } from 'styles/breakpoints';
-import MainBase from 'styles/MainBase';
+import FullWidthPage from 'styles/StyledComponents/FullWidthPage';
 
-export const AgencyList = styled(MainBase)``;
+export const AgencyList = styled(FullWidthPage)``;
 
 export const InnerWrapper = styled.div`
   max-width: 1170px;

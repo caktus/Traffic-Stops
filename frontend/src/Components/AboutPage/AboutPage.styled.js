@@ -1,10 +1,10 @@
 import styled from 'styled-components';
 import { smallerThanDesktop, smallerThanTabletLandscape } from 'styles/breakpoints';
-import MainBase from 'styles/MainBase';
+import FullWidthPage from 'styles/StyledComponents/FullWidthPage';
 
 import { P } from 'styles/StyledComponents/Typography';
 
-export const AboutPageStyled = styled(MainBase)``;
+export const AboutPageStyled = styled(FullWidthPage)``;
 
 export const AboutPageContent = styled.div`
   max-width: 1170px;

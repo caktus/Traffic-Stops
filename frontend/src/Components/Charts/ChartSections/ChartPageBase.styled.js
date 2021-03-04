@@ -5,6 +5,9 @@ import { phoneOnly, smallerThanDesktop } from 'styles/breakpoints';
 export const ChartPageBase = styled(motion.article)`
   flex: 1;
   overflow-y: scroll;
+`;
+
+export const ChartPageContent = styled.div`
   margin: 0 auto;
   padding: 1.5em 6em 3em 4em;
 
