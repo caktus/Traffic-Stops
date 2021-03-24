@@ -11,3 +11,7 @@
 - src: https://github.com/caktus/ansible-role-k8s-web-cluster
   name: caktus.k8s-web-cluster
   version: v0.0.7
+
+- src: https://github.com/caktus/ansible-role-k8s-hosting-services
+  name: caktus.k8s-hosting-services
+  version: v0.0.1
