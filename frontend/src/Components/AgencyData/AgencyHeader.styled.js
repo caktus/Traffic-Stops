@@ -5,7 +5,7 @@ import { phoneOnly, smallerThanTabletLandscape } from 'styles/breakpoints';
 
 export const AgencyHeader = styled.div`
   box-shadow: ${(props) => props.theme.shadows.depth1};
-  padding: 1em 3em;
+  padding: 0.5em 3em;
 
   @media (${smallerThanTabletLandscape}) {
     padding: 0.5em 1em;
@@ -39,7 +39,7 @@ export const ViewIcon = styled(FJIcon)`
 `;
 
 export const SubHeaderNavRow = styled.div`
-  margin-bottom: 1em;
+  margin-bottom: 0.5em;
   @media (${smallerThanTabletLandscape}) {
     display: none;
   }
@@ -65,13 +65,17 @@ export const CensusDemographics = styled.div`
   }
 `;
 
-export const AgencyTitle = styled(H2)``;
+export const AgencyTitle = styled(H2)`
+  font-size: 18px;
+`;
 
 export const ReportedDate = styled(P)`
   display: inline;
 `;
 
-export const CensusTitle = styled(H2)``;
+export const CensusTitle = styled(H2)`
+  font-size: 18px;
+`;
 
 export const CensusRow = styled.ul`
   margin: 0;
@@ -93,8 +97,15 @@ export const CensusDatum = styled.li`
 
 export const CensusRace = styled(P)`
   text-transform: uppercase;
+  font-size: 14px;
 `;
 
-export const Other = styled(P)``;
+export const Datum = styled(P)`
+  font-size: 14px;
+`;
+
+export const Other = styled(P)`
+  font-size: 14px;
+`;
 
 export const NoCensus = styled.p``;

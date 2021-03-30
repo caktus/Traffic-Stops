@@ -11,6 +11,17 @@ export const Heading = styled.div`
 
 export const TableContainer = styled.div``;
 
-export const NoResults = styled.div``;
+export const NoResults = styled.div`
+  margin: 2em;
+
+  h2 {
+    margin: 0.5em 0;
+  }
+`;
+
+export const DeptLink = styled.span`
+  color: ${(props) => props.theme.colors.primaryDark};
+  cursor: pointer;
+`;
 
 export const TableWrapper = styled.div``;

@@ -67,11 +67,15 @@ function FindAStopResults() {
     _fetchStops();
   }, [search]);
 
-  const handleOfficerIdSelected = (officerId) => {
+  const _getAgencyURLFromQueryString = () => {
     const qp = new URLSearchParams(search);
     const agencyId = qp.get('agency');
+    return `${AGENCY_LIST_SLUG}/${agencyId}/`;
+  };
+
+  const handleOfficerIdSelected = (officerId) => {
     history.push({
-      pathname: `${AGENCY_LIST_SLUG}/${agencyId}/`,
+      pathname: _getAgencyURLFromQueryString(),
       search: `officer=${officerId}`,
     });
   };
@@ -93,8 +97,14 @@ function FindAStopResults() {
         {!stops && <TableSkeleton />}
         {stops?.length === 0 && (
           <S.NoResults>
-            <H2>No results were found</H2>
-            <P>Try a different search.</P>
+            <H2>No stops matching these criteria have been reported to the SBI.</H2>
+            <P>
+              Has{' '}
+              <S.DeptLink onClick={() => history.push(_getAgencyURLFromQueryString())}>
+                this department
+              </S.DeptLink>{' '}
+              reported stops within your date range?
+            </P>
           </S.NoResults>
         )}
         {stops?.length > 0 && (

@@ -61,8 +61,8 @@ function AgencyHeader({ agencyHeaderOpen, agencyDetails }) {
                     </S.AgencySub>
                   </>
                 ) : (
-                    <S.AgencyTitle>{agencyDetails.name}</S.AgencyTitle>
-                  )}
+                  <S.AgencyTitle>{agencyDetails.name}</S.AgencyTitle>
+                )}
                 <P size={SIZES[0]} color={COLORS[0]} weight={WEIGHTS[0]}>
                   last reported stop {agencyId ? 'from department ' : ''}
                   {agencyDetails.last_reported_stop && 'on'}
@@ -71,10 +71,10 @@ function AgencyHeader({ agencyHeaderOpen, agencyDetails }) {
                     <S.ReportedDate size={SIZES[0]} color={COLORS[0]} weight={WEIGHTS[1]}>
                       {agencyDetails.last_reported_stop
                         ? new Intl.DateTimeFormat('en-US', {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric',
-                        }).format(new Date(agencyDetails.last_reported_stop))
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric',
+                          }).format(new Date(agencyDetails.last_reported_stop))
                         : 'Unknown'}
                     </S.ReportedDate>
                   </S.ReportedDate>
@@ -91,15 +91,15 @@ function AgencyHeader({ agencyHeaderOpen, agencyDetails }) {
                           <S.CensusRace color={COLORS[0]} size={SIZES[0]}>
                             {toTitleCase(race)}*
                           </S.CensusRace>
-                          <P size={SIZES[0]}>
+                          <S.Datum size={SIZES[0]}>
                             {calculatePercentage(profile[race], profile.total)}%
-                          </P>
+                          </S.Datum>
                         </S.CensusDatum>
                       );
                     })
                   ) : (
-                      <S.NoCensus>There is no census data for {agencyDetails.name}</S.NoCensus>
-                    )}
+                    <S.NoCensus>There is no census data for {agencyDetails.name}</S.NoCensus>
+                  )}
                 </S.CensusRow>
               </S.CensusDemographics>
             </S.SubHeaderContentRow>
