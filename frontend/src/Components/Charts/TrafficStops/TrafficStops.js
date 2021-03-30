@@ -197,6 +197,13 @@ function TrafficStops() {
     openModal(STOPS_BY_REASON, BY_REASON_TABLE_COLUMNS);
   };
 
+  const getChartDetailedBreakdown = () => {
+    const selectedGroups = percentageEthnicGroups.filter((k) => k.selected).map((k) => k.label);
+    if (selectedGroups.length < percentageEthnicGroups.length) {
+      return `Showing total for ${selectedGroups.join(', ')}.`;
+    }
+  };
+
   return (
     <TrafficStopsStyled>
       {/* Traffic Stops by Percentage */}
@@ -209,6 +216,7 @@ function TrafficStops() {
         />
         <S.ChartDescription>
           <P>Shows the race/ethnic composition of drivers stopped by this department over time.</P>
+          <P>{getChartDetailedBreakdown()}</P>
         </S.ChartDescription>
         <S.ChartSubsection>
           <S.LineSection>
