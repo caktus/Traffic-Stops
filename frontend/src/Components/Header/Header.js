@@ -1,5 +1,8 @@
 import React, { useEffect } from 'react';
-import * as Styled from './Header.styled';
+import * as S from './Header.styled';
+
+// Assets
+import SplashImage from 'img/nc-copwatch-transparent-small--tayetheartist.png';
 
 // Routing
 import { HOME_SLUG } from 'Routes/slugs';
@@ -29,15 +32,16 @@ function Header(props) {
   }, [pathname]);
 
   return (
-    <Styled.Header data-testid="Header">
-      <Styled.HeaderNavWrapper>
-        <Styled.Logos>
+    <S.Header data-testid="Header">
+      <S.HeaderNavWrapper>
+        <S.Logos>
           <LogoFull />
-        </Styled.Logos>
+          <S.SplashImage src={SplashImage} />
+        </S.Logos>
         <Navbar />
-      </Styled.HeaderNavWrapper>
+      </S.HeaderNavWrapper>
       <HeaderSearch showHeaderSearch={showHeaderSearch} />
-    </Styled.Header>
+    </S.Header>
   );
 }
 

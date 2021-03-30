@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { phoneOnly } from 'styles/breakpoints';
 
 export const Footer = styled.footer`
+  position: relative;
   width: 100%;
   background: ${(p) => p.theme.colors.darkGrey};
   margin-top: 2em;
@@ -37,4 +38,15 @@ export const FJLogo = styled.img`
 export const ArtistAttribution = styled.p`
   text-align: center;
   padding: 1em 0;
+`;
+
+export const SplashImage = styled.img`
+  position: absolute;
+  opacity: 0.1;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin-left: 0.5em;
+  height: 100%;
+  width: auto;
 `;

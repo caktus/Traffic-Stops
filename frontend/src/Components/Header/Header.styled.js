@@ -21,11 +21,16 @@ export const Header = styled.header`
 
 export const Logos = styled.div`
   display: flex;
+  height: 100%;
   flex-direction: row;
   align-items: center;
   color: white;
   font-size: 20px;
   font-weight: bold;
+
+  @media (${breakpoints.smallerThanTabletLandscape}) {
+    height: auto;
+  }
 `;
 
 export const HeaderNavWrapper = styled.div`
@@ -61,5 +66,15 @@ export const SearchWrapper = styled(motion.div)`
   }
   @media (${breakpoints.phoneOnly}) {
     top: 95px;
+  }
+`;
+
+export const SplashImage = styled.img`
+  margin-left: 0.5em;
+  height: 100%;
+  width: auto;
+
+  @media (${breakpoints.smallerThanTabletLandscape}) {
+    display: none;
   }
 `;
