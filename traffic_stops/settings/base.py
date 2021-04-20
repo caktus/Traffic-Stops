@@ -60,7 +60,7 @@ DATABASE_ETL_USER = ""
 # timezone as the operating system.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
-TIME_ZONE = "UTC"
+TIME_ZONE = "America/New_York"
 NC_TIME_ZONE = "America/New_York"
 
 NC_KEY = "nc"
@@ -97,7 +97,6 @@ STATICFILES_FINDERS = [
 
 STATICFILES_DIRS = [
     os.path.join(PROJECT_DIR, "static"),
-    os.path.join(BASE_DIR, "node_modules/bootstrap"),
 ]
 
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
@@ -150,7 +149,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "traffic_stops.middleware.StateMiddleware",
 ]
 
 ROOT_URLCONF = "traffic_stops.urls"
@@ -171,9 +169,8 @@ INSTALLED_APPS = [
     "django.contrib.humanize",
     "django.contrib.sitemaps",
     # External apps
-    "selectable",
-    "bootstrap3",
-    "el_pagination",
+    "crispy_forms",
+    "django_filters",
     "rest_framework",
     # Custom apps
     "tsdata",
@@ -243,7 +240,6 @@ X_FRAME_OPTIONS = "DENY"
 # Application settings
 LOGIN_URL = "account_login"
 LOGIN_REDIRECT_URL = "home"
-SELECTABLE_MAX_LIMIT = 30
 
 REST_FRAMEWORK_EXTENSIONS = {"DEFAULT_CACHE_RESPONSE_TIMEOUT": 60 * 60 * 24 * 60}  # 60 days
 

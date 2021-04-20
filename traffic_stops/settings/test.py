@@ -17,7 +17,7 @@ PASSWORD_HASHERS = (
     "django.contrib.auth.hashers.SHA1PasswordHasher",
     "django.contrib.auth.hashers.MD5PasswordHasher",
 )
-CACHES["cache_machine"] = {
+CACHES["default"] = {
     "BACKEND": "django.core.cache.backends.dummy.DummyCache",
 }
 EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"

@@ -3,7 +3,7 @@
 -c ../test/test.txt
 
 # deploy
--e git+https://github.com/caktus/invoke-kubesae@0.0.7#egg=invoke-kubesae
+-e git+https://github.com/caktus/invoke-kubesae@0.0.14#egg=invoke-kubesae
 troposphere
 
 # docs
@@ -12,11 +12,12 @@ sphinx-autobuild
 rstcheck
 
 # AWS tools
-awscli
+#awscli and boto3 are pinned to keep the correct botocore version
+awscli==1.19.35
 openshift
 kubernetes-validate
 boto
-boto3==1.13.8
+boto3==1.17.35
 
 django-debug-toolbar
 

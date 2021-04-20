@@ -42,6 +42,7 @@ ns.add_collection(kubesae.image)
 ns.add_collection(kubesae.aws)
 ns.add_collection(kubesae.deploy)
 ns.add_collection(kubesae.pod)
+ns.add_collection(kubesae.info)
 
 ns.add_task(staging)
 ns.add_task(production)
