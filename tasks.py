@@ -43,6 +43,7 @@ ns.add_collection(kubesae.aws)
 ns.add_collection(kubesae.deploy)
 ns.add_collection(kubesae.pod)
 ns.add_collection(kubesae.info)
+ns.add_collection(kubesae.utils)
 
 ns.add_task(staging)
 ns.add_task(production)
@@ -55,6 +56,7 @@ ns.configure(
         "aws": {"region": "us-east-2",},
         "cluster": "trafficstops-stack-cluster",
         "container_name": "app",
+        "hosting_services_backup_folder": "trafficstops",
         "repository": "606178775542.dkr.ecr.us-east-2.amazonaws.com/traff-appli-gvyudgfsjhrz",
         "run": {
             "echo": True,
