@@ -7,7 +7,7 @@ RUN npm install --silent
 COPY frontend/ /code/
 RUN npm run build
 
-FROM python:3.8-slim as base
+FROM python:3.8-slim-bullseye as base
 
 # Create a group and user to run our app
 ARG APP_USER=appuser
