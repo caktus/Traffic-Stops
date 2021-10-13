@@ -1,20 +1,21 @@
 import logging
-import time
+from time import perf_counter
 
 from django.conf import settings
-from django.db.models import Count
+from django.core.cache import cache
+from django.db.models import Count, F
 from django.test.client import Client
 from django.urls import reverse
-from nc.models import Agency
+from nc.models import Stop
 
 logger = logging.getLogger(__name__)
-ENDPOINTS = (
-    "stops",
-    "stops_by_reason",
-    "use_of_force",
-    "searches",
-    "searches_by_type",
-    "contraband_hit_rate",
+API_ENDPOINT_NAMES = (
+    "nc:agency-api-stops",
+    "nc:agency-api-stops-by-reason",
+    "nc:agency-api-searches",
+    "nc:agency-api-searches-by-type",
+    "nc:agency-api-contraband-hit-rate",
+    "nc:agency-api-use-of-force",
 )
 DEFAULT_CUTOFF_SECS = 4
 
@@ -51,7 +52,120 @@ def avoid_newrelic_bug():
         pass
 
 
-def run(cutoff_duration_secs=None):
+class Timer:
+    def __init__(self, cutoff):
+        self.cutoff = cutoff
+
+    def __enter__(self):
+        self.start = perf_counter()
+        return self
+
+    def __exit__(self, type, value, traceback):
+        self.elapsed = perf_counter() - self.start
+        self.stop = self.elapsed < self.cutoff
+        self.readout = f"{self.elapsed} < {self.cutoff} = {self.stop}"
+
+
+class CachePrimer:
+    def __init__(self, cutoff_secs=0, cutoff_count=None):
+        self.cutoff_secs = cutoff_secs
+        self.cutoff_count = cutoff_count
+        self.count = 0
+
+    def request(self, uri, payload=None):
+        c = Client()
+        if settings.ALLOWED_HOSTS and settings.ALLOWED_HOSTS[0] != "*":
+            host = settings.ALLOWED_HOSTS[0]
+        else:
+            host = "127.0.0.1"
+        logger.debug(f"Querying {uri}")
+        response = c.get(uri, data=payload, HTTP_HOST=host)
+        if response.status_code != 200:
+            logger.warning("Status not OK: {} ({})".format(uri, response.status_code))
+            raise Exception("Request to %s failed: %s", uri, response.status_code)
+
+    def get_endpoints(self):
+        for idx, row in enumerate(self.get_queryset()):
+            with Timer(self.cutoff_secs) as timer:
+                yield self.get_urls(row)
+            officer_id = row.get("officer_id", "")
+            logger.info(
+                (
+                    "Primed cache for agency %s:%s "
+                    "[officer_id=%s] with "
+                    "%s stops in %.2f secs (%s of %s)"
+                ),
+                row["agency_id"],
+                row["agency_name"],
+                officer_id,
+                "{:,}".format(row["num_stops"]),
+                timer.elapsed,
+                idx,
+                self.count,
+            )
+            if timer.stop or (self.cutoff_count and idx == self.cutoff_count):
+                logger.info("Cutoff reached, stopping...")
+                break
+
+    def prime(self):
+        logger.info(f"{self} starting")
+        self.count = self.get_queryset().count()
+        logger.info(f"{self} priming {self.count:,} objects")
+        for endpoints in self.get_endpoints():
+            for endpoint in endpoints:
+                self.request(endpoint)
+
+    def __repr__(self):
+        options = []
+        if self.cutoff_secs:
+            options.append(f"cutoff_secs={self.cutoff_secs}")
+        if self.cutoff_count:
+            options.append(f"cutoff_count={self.cutoff_count}")
+        return f"<{self.__class__.__name__} {' '.join(options)}>"
+
+
+class AgencyStopsPrimer(CachePrimer):
+    def get_queryset(self):
+        return (
+            Stop.objects.no_cache()
+            .annotate(agency_name=F("agency_description"))
+            .values("agency_name", "agency_id")
+            .annotate(num_stops=Count("stop_id"))
+            .order_by("-num_stops")
+        )
+
+    def get_urls(self, row):
+        urls = []
+        for endpoint_name in API_ENDPOINT_NAMES:
+            urls.append(reverse(endpoint_name, args=[row["agency_id"]]))
+        return urls
+
+
+class OfficerStopsPrimer(CachePrimer):
+    def get_queryset(self):
+        return (
+            Stop.objects.no_cache()
+            .annotate(agency_name=F("agency_description"))
+            .values("agency_name", "agency_id", "officer_id")
+            .annotate(num_stops=Count("stop_id"))
+            .order_by("-num_stops")
+        )
+
+    def get_urls(self, row):
+        urls = []
+        for endpoint_name in API_ENDPOINT_NAMES:
+            agency_url = reverse(endpoint_name, args=[row["agency_id"]])
+            urls.append(f"{agency_url}?officer={row['officer_id']}")
+        return urls
+
+
+def run(
+    cutoff_duration_secs=None,
+    clear_cache=False,
+    skip_agencies=False,
+    skip_officers=False,
+    officer_cutoff_count=None,
+):
     """
     Prime query cache for "big" NC agencies.
 
@@ -78,51 +192,16 @@ def run(cutoff_duration_secs=None):
 
     avoid_newrelic_bug()
 
-    logger.info("NC prime_cache starting")
-    logger.info("Finding largest agencies by stop counts")
-    agencies = [
-        (a.id, a.name, a.num_stops)
-        for a in Agency.objects.annotate(num_stops=Count("stops")).order_by("-num_stops")
-    ]
-    api = reverse("nc:agency-api-list")
-    agencies_processed = 0
-    for agency_id, agency_name, num_stops in agencies:
-        elapsed = []  # collect times for each request
-        # prime each API endpoint
-        for endpoint in ENDPOINTS:
-            uri = "{}/{}/{}/".format(api.rstrip("/"), agency_id, endpoint)
-            start_time = time.time()
-            req(uri)
-            elapsed.append(time.time() - start_time)
-        # # prime first search page
-        # payload = {"agency": agency_name}
-        # search_uri = reverse("nc:stops-search")
-        # start_time = time.time()
-        # req(search_uri, payload)
-        elapsed.append(time.time() - start_time)
-        elapsed = sum(elapsed)
-        logger.info(
-            "Primed cache for agency %s:%s with %s stops in %.2f secs",
-            agency_id,
-            agency_name,
-            "{:,}".format(num_stops),
-            elapsed,
-        )
-        agencies_processed += 1
-        num_remaining_agencies = len(agencies) - agencies_processed
-        if elapsed < cutoff_duration_secs and num_remaining_agencies > 0:
-            logger.info("Not priming cache for %s remaining agencies", num_remaining_agencies)
-            break
+    if clear_cache:
+        logger.info("Clearing cache")
+        cache.clear()
 
+    if not skip_agencies:
+        AgencyStopsPrimer(cutoff_secs=cutoff_duration_secs).prime()
 
-def req(uri, payload=None):
-    c = Client()
-    if settings.ALLOWED_HOSTS and settings.ALLOWED_HOSTS[0] != "*":
-        host = settings.ALLOWED_HOSTS[0]
-    else:
-        host = "127.0.0.1"
-    logger.debug(f"Querying {uri}")
-    response = c.get(uri, data=payload, HTTP_HOST=host)
-    if response.status_code != 200:
-        logger.warning("Status not OK: {} ({})".format(uri, response.status_code))
-        raise Exception("Request to %s failed: %s", uri, response.status_code)
+    if not skip_officers:
+        OfficerStopsPrimer(
+            cutoff_secs=0, cutoff_count=officer_cutoff_count
+        ).prime()  # cache all officer endpoins for now
+
+    logger.info("Complete")
