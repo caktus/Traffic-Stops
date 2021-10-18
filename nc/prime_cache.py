@@ -3,10 +3,10 @@ from time import perf_counter
 
 from django.conf import settings
 from django.core.cache import cache
-from django.db.models import Count, F
+from django.db.models import Count, F, Sum
 from django.test.client import Client
 from django.urls import reverse
-from nc.models import Stop
+from nc.models import Stop, StopSummary
 
 logger = logging.getLogger(__name__)
 API_ENDPOINT_NAMES = (
@@ -144,10 +144,10 @@ class AgencyStopsPrimer(CachePrimer):
 class OfficerStopsPrimer(CachePrimer):
     def get_queryset(self):
         return (
-            Stop.objects.no_cache()
-            .annotate(agency_name=F("agency_description"))
+            StopSummary.objects.all()
+            .annotate(agency_name=F("agency__name"))
             .values("agency_name", "agency_id", "officer_id")
-            .annotate(num_stops=Count("stop_id"))
+            .annotate(num_stops=Sum("count"))
             .order_by("-num_stops")
         )
 

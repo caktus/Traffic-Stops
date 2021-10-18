@@ -160,3 +160,21 @@ class Agency(CachingMixin, models.Model):
             return profile.get_census_dict()
         else:
             return dict()
+
+
+class StopSummary(models.Model):
+    id = models.PositiveIntegerField(primary_key=True)
+    year = models.IntegerField()
+    agency = models.ForeignKey("Agency", on_delete=models.DO_NOTHING)
+    stop_purpose = models.PositiveSmallIntegerField(choices=PURPOSE_CHOICES)
+    engage_force = models.BooleanField()
+    search_type = models.PositiveSmallIntegerField(choices=SEARCH_TYPE_CHOICES)
+    contraband_found = models.BooleanField()
+    officer_id = models.CharField(max_length=15)
+    driver_race = models.CharField(max_length=2, choices=RACE_CHOICES)
+    driver_ethnicity = models.CharField(max_length=2, choices=ETHNICITY_CHOICES)
+    count = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = "nc_stop_summary"
