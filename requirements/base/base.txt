@@ -4,6 +4,8 @@
 #
 #    pip-compile --output-file=requirements/base/base.txt requirements/base/base.in
 #
+-e git+https://github.com/copelco/django-pgviews@multidb#egg=django_pgviews
+    # via -r requirements/base/base.in
 amqp==2.6.0
     # via kombu
 billiard==3.6.3.0

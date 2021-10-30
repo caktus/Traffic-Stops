@@ -172,6 +172,7 @@ INSTALLED_APPS = [
     "crispy_forms",
     "django_filters",
     "rest_framework",
+    "django_pgviews",
     # Custom apps
     "tsdata",
     "nc",

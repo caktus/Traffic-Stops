@@ -1,5 +1,6 @@
 from caching.base import CachingManager, CachingMixin
 from django.db import models
+from django_pgviews import view as pg
 from tsdata.models import CensusProfile
 
 PURPOSE_CHOICES = (
@@ -162,7 +163,38 @@ class Agency(CachingMixin, models.Model):
             return dict()
 
 
-class StopSummary(models.Model):
+STOP_SUMMARY_VIEW_SQL = """
+    SELECT
+        ROW_NUMBER() OVER () AS id
+        , "nc_stop"."agency_id"
+        , DATE_PART('year', DATE_TRUNC('year', date AT TIME ZONE 'America/New_York'))::integer AS "year"
+        , "nc_stop"."purpose" AS "stop_purpose"
+        , "nc_stop"."engage_force"
+        , "nc_search"."type" AS "search_type"
+        , (CASE
+            WHEN nc_contraband.contraband_id IS NULL THEN false
+            ELSE true
+            END) AS contraband_found
+        , "nc_stop"."officer_id"
+        , "nc_person"."race" AS "driver_race"
+        , "nc_person"."ethnicity" AS "driver_ethnicity"
+        , COUNT("nc_stop"."date")::integer AS "count"
+    FROM "nc_stop"
+    INNER JOIN "nc_person"
+        ON ("nc_stop"."stop_id" = "nc_person"."stop_id" AND "nc_person"."type" = 'D')
+    LEFT OUTER JOIN "nc_search"
+        ON ("nc_stop"."stop_id" = "nc_search"."stop_id")
+    LEFT OUTER JOIN "nc_contraband"
+        ON ("nc_stop"."stop_id" = "nc_contraband"."stop_id")
+    GROUP BY
+        2, 3, 4, 5, 6, 7, 8, 9, 10
+    ORDER BY "agency_id", "year" ASC;
+"""  # noqa
+
+
+class StopSummary(pg.MaterializedView):
+    sql = STOP_SUMMARY_VIEW_SQL
+
     id = models.PositiveIntegerField(primary_key=True)
     year = models.IntegerField()
     agency = models.ForeignKey("Agency", on_delete=models.DO_NOTHING)
@@ -177,4 +209,8 @@ class StopSummary(models.Model):
 
     class Meta:
         managed = False
-        db_table = "nc_stop_summary"
+        indexes = [
+            models.Index(fields=["agency", "officer_id", "search_type"]),
+            models.Index(fields=["engage_force"]),
+            models.Index(fields=["contraband_found"]),
+        ]

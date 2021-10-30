@@ -11,6 +11,7 @@ django-dotenv
 django-extensions
 django-filter
 django-memoize
+-e git+https://github.com/copelco/django-pgviews@multidb#egg=django_pgviews
 django-redis
 djangorestframework
 dj-database-url
