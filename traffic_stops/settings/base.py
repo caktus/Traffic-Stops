@@ -53,6 +53,10 @@ if os.getenv("DATABASE_URL"):
 DATABASE_ROUTERS = ["traffic_stops.routers.StateDatasetRouter"]
 DATABASE_ETL_USER = ""
 
+# Only recreate materialized views when view SQL schema changed
+# https://github.com/mikicz/django-pgviews#conditional-materialized-views-recreate
+MATERIALIZED_VIEWS_CHECK_SQL_CHANGED = True
+
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
