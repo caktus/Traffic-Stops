@@ -81,7 +81,9 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
                 data["purpose"] = purpose
 
             if "search_type" in group_by:
-                data["type"] = SEARCH_TYPE_CHOICES.get(stop["search_type"], stop["search_type"],)
+                data["search_type"] = SEARCH_TYPE_CHOICES.get(
+                    stop["search_type"], stop["search_type"],
+                )
 
             if "driver_race" in group_by:
                 # The 'Hispanic' ethnicity option is now being aggreggated into its
@@ -140,7 +142,7 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
     @action(detail=True, methods=["get"])
     # @cache_response(key_func=query_cache_key_func)
     def searches_by_type(self, request, pk=None):
-        results = GroupedData(by=("type", "year"), defaults=GROUP_DEFAULTS)
+        results = GroupedData(by=("search_type", "year"), defaults=GROUP_DEFAULTS)
         q = Q(search_type__isnull=False)
         self.query(
             results,
