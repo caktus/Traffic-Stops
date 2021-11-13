@@ -192,8 +192,12 @@ STOP_SUMMARY_VIEW_SQL = """
 """  # noqa
 
 
-class StopSummary(pg.MaterializedView):
+class StopSummary(pg.ReadOnlyMaterializedView):
     sql = STOP_SUMMARY_VIEW_SQL
+    # Don't create view with data, this will be manually managed
+    # and refreshed by the data import process
+    # https://github.com/mikicz/django-pgviews#with-no-data
+    with_data = False
 
     id = models.PositiveIntegerField(primary_key=True)
     year = models.IntegerField()
