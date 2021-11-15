@@ -4,6 +4,7 @@
 
 # deploy
 invoke-kubesae==0.0.16
+ansible==4.8.0
 troposphere
 
 # docs
