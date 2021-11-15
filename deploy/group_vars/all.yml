@@ -86,3 +86,14 @@ k8s_papertrail_logspout_destination: "syslog+tls://logs2.papertrailapp.com:20851
 k8s_papertrail_logspout_memory_limit: 128Mi
 
 k8s_iam_users: [copelco]
+
+# Pin ingress-nginx and cert-manager to current versions so future upgrades of this
+# role will not upgrade these charts without your intervention:
+# https://github.com/kubernetes/ingress-nginx/releases
+k8s_ingress_nginx_chart_version: "3.39.0"
+# https://github.com/jetstack/cert-manager/releases
+k8s_cert_manager_chart_version: "v1.6.1"
+# AWS only:
+# Use the newer load balancer type (NLB). DO NOT edit k8s_aws_load_balancer_type after
+# creating your Service.
+k8s_aws_load_balancer_type: nlb
