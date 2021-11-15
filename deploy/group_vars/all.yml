@@ -42,6 +42,7 @@ cloudformation_stack:
     UseAES256Encryption: "true"
     CustomerManagedCmkArn: ""
     ContainerInstanceType: t3a.medium
+    ContainerVolumeSize: 40
     DatabaseAllocatedStorage: 100
     DatabaseClass: db.t3.large
     DatabaseEngineVersion: "12"
