@@ -6,8 +6,9 @@ import { Switch, useRouteMatch } from 'react-router-dom';
 import * as slugs from 'Routes/slugs';
 
 // Children
-import PieSkeleton from 'Components/Elements/Skeletons/PieSkeleton';
+// import PieSkeleton from 'Components/Elements/Skeletons/PieSkeleton';
 import ChartError from 'Components/Elements/ChartError';
+import DataLoading from 'Components/Charts/ChartPrimitives/DataLoading';
 
 function Charts() {
   const match = useRouteMatch();
@@ -24,7 +25,7 @@ function Charts() {
         importComponent={() =>
           import(/* webpackChunkName: 'Overview' */ 'Components/Charts/Overview/Overview')
         }
-        renderLoading={() => <PieSkeleton />}
+        renderLoading={() => <DataLoading />}
         renderError={() => <ChartError chartName="Overview" />}
       />
       <AsyncRoute
@@ -35,7 +36,7 @@ function Charts() {
             /* webpackChunkName: 'TrafficStops' */ 'Components/Charts/TrafficStops/TrafficStops'
           )
         }
-        renderLoading={() => <PieSkeleton />}
+        renderLoading={() => <DataLoading />}
         renderError={() => <ChartError chartName="Traffic Stops" />}
       />
       <AsyncRoute
@@ -43,7 +44,7 @@ function Charts() {
         importComponent={() =>
           import(/* webpackChunkName: 'Searches' */ 'Components/Charts/Searches/Searches')
         }
-        renderLoading={() => <PieSkeleton />}
+        renderLoading={() => <DataLoading />}
         renderError={() => <ChartError chartName="Searches" />}
       />
       <AsyncRoute
@@ -51,7 +52,7 @@ function Charts() {
         importComponent={() =>
           import(/* webpackChunkName: 'SearchRate' */ 'Components/Charts/SearchRate/SearchRate')
         }
-        renderLoading={() => <PieSkeleton />}
+        renderLoading={() => <DataLoading />}
         renderError={() => <ChartError chartName="Search Rate" />}
       />
       <AsyncRoute
@@ -59,7 +60,7 @@ function Charts() {
         importComponent={() =>
           import(/* webpackChunkName: 'Contraband' */ 'Components/Charts/Contraband/Contraband')
         }
-        renderLoading={() => <PieSkeleton />}
+        renderLoading={() => <DataLoading />}
         renderError={() => <ChartError chartName="Contraband" />}
       />
 
@@ -68,7 +69,7 @@ function Charts() {
         importComponent={() =>
           import(/* webpackChunkName: 'UseOfForce' */ 'Components/Charts/UseOfForce/UseOfForce')
         }
-        renderLoading={() => <PieSkeleton />}
+        renderLoading={() => <DataLoading />}
         renderError={() => <ChartError chartName="Use of Force" />}
       />
     </>
