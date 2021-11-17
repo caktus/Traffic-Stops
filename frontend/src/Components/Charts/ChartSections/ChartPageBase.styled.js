@@ -5,6 +5,7 @@ import { phoneOnly, smallerThanDesktop } from 'styles/breakpoints';
 export const ChartPageBase = styled(motion.article)`
   flex: 1;
   overflow-y: scroll;
+  align-self: flex-start;
 `;
 
 export const ChartPageContent = styled.div`

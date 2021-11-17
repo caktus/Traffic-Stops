@@ -5,6 +5,7 @@ import { AXIS_STYLE } from './chartConstants';
 
 // Deps
 import { VictoryChart, VictoryLine, VictoryAxis, VictoryContainer } from 'victory';
+import ChartLoading from 'Components/Charts/ChartPrimitives/ChartLoading';
 import BarSkeleton from 'Components/Elements/Skeletons/BarSkeleton';
 
 function Line({
@@ -17,7 +18,7 @@ function Line({
   dAxisProps = {},
   iAxisProps = {},
 }) {
-  if (loading) return <BarSkeleton />;
+  if (loading) return <ChartLoading skeleton={BarSkeleton} />
 
   return (
     <VictoryChart containerComponent={<VictoryContainer style={{ touchAction: 'auto' }} />}>

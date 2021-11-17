@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { ChartBaseStyled } from './ChartBase.styled';
 
 // Children
-import PieSkeleton from 'Components/Elements/Skeletons/PieSkeleton';
 import ResponsiveChartContainer from 'Components/Charts/ResponsiveChartContainer.styled';
 import Legend from 'Components/Charts/ChartPrimitives/Legend/Legend';
+import DataLoading from 'Components/Charts/ChartPrimitives/DataLoading';
 
 function ChartBase({
   children,
@@ -60,7 +60,7 @@ function ChartBase({
       {...props}
     >
       {hasError && <p>some chart error message</p>}
-      {isLoading && <PieSkeleton />}
+      {isLoading && <DataLoading />}
       <h2>{chartTitle}</h2>
       {!hideLegend && (
         <Legend
