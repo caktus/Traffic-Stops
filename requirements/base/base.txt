@@ -16,7 +16,7 @@ certifi==2020.6.20
     # via requests
 chardet==3.0.4
     # via requests
-click==7.0
+click==7.1.2
     # via django-click
 dealer==2.1.0
     # via -r requirements/base/base.in
@@ -31,7 +31,7 @@ django==2.2.17
     #   djangorestframework
 django-cache-machine==1.1.0
     # via -r requirements/base/base.in
-django-click==2.1.1
+django-click==2.2.0
     # via -r requirements/base/base.in
 django-crispy-forms==1.10.0
     # via -r requirements/base/base.in
@@ -83,7 +83,6 @@ requests==2.24.0
 six==1.15.0
     # via
     #   -r requirements/base/base.in
-    #   django-click
     #   django-extensions
     #   python-dateutil
 sqlparse==0.3.1
