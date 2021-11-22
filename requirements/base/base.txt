@@ -4,8 +4,6 @@
 #
 #    pip-compile --output-file=requirements/base/base.txt requirements/base/base.in
 #
--e git+https://github.com/copelco/django-pgviews@multidb#egg=django-pgviews-redux
-    # via -r requirements/base/base.in
 amqp==2.6.0
     # via kombu
 billiard==3.6.3.0
@@ -44,6 +42,8 @@ django-extensions==3.0.1
 django-filter==2.4.0
     # via -r requirements/base/base.in
 django-memoize==2.3.1
+    # via -r requirements/base/base.in
+django-pgviews-redux==0.8.0
     # via -r requirements/base/base.in
 django-redis==4.12.1
     # via -r requirements/base/base.in
