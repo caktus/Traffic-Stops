@@ -8,6 +8,7 @@ from nc.pagination import NoCountPagination
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework_extensions.cache.decorators import cache_response
 from rest_framework_extensions.key_constructor import bits
 from rest_framework_extensions.key_constructor.constructors import DefaultObjectKeyConstructor
 from tsdata.models import StateFacts
@@ -70,8 +71,6 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
         # group by specified fields and order by year
         qs = qs.values(*group_by).order_by("year")
         qs = qs.annotate(count=Sum("count"))
-        # print(str(qs.query))
-        print(qs.explain(verbose=True, analyze=True))
         for stop in qs:
             data = {}
             if "year" in group_by:
@@ -99,14 +98,14 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
             results.add(**data)
 
     @action(detail=True, methods=["get"])
-    # @cache_response(key_func=query_cache_key_func)
+    @cache_response(key_func=query_cache_key_func)
     def stops(self, request, pk=None):
         results = GroupedData(by="year", defaults=GROUP_DEFAULTS)
         self.query(results, group_by=("year", "driver_race", "driver_ethnicity"))
         return Response(results.flatten())
 
     @action(detail=True, methods=["get"])
-    # @cache_response(key_func=query_cache_key_func)
+    @cache_response(key_func=query_cache_key_func)
     def stops_by_reason(self, request, pk=None):
         response = {}
         # stops
@@ -124,7 +123,7 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(response)
 
     @action(detail=True, methods=["get"])
-    # @cache_response(key_func=query_cache_key_func)
+    @cache_response(key_func=query_cache_key_func)
     def use_of_force(self, request, pk=None):
         results = GroupedData(by="year", defaults=GROUP_DEFAULTS)
         q = Q(search_type__isnull=False) & Q(engage_force="t")
@@ -132,7 +131,7 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(results.flatten())
 
     @action(detail=True, methods=["get"])
-    # @cache_response(key_func=query_cache_key_func)
+    @cache_response(key_func=query_cache_key_func)
     def searches(self, request, pk=None):
         results = GroupedData(by="year", defaults=GROUP_DEFAULTS)
         q = Q(search_type__isnull=False)
@@ -152,7 +151,7 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(results.flatten())
 
     @action(detail=True, methods=["get"])
-    # @cache_response(key_func=query_cache_key_func)
+    @cache_response(key_func=query_cache_key_func)
     def contraband_hit_rate(self, request, pk=None):
         response = {}
         # searches
