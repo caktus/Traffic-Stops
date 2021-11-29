@@ -8,15 +8,15 @@ commands:
     steps:
       - restore_cache:
           keys:
-              - v7-pip-dependencies-{{ checksum "requirements/test/test.txt" }}-{{ checksum "requirements/base/base.txt" }}
+              - v10-pip-dependencies-{{ checksum "requirements/test/test.txt" }}-{{ checksum "requirements/base/base.txt" }}
               # fallback to using the latest cache if no exact match is found
-              - v7-pip-dependencies-
+              - v10-pip-dependencies-
   save_cache_cmd:
     steps:
       - save_cache:
           paths:
             - "env"
-          key: v7-pip-dependencies-{{ checksum "requirements/test/test.txt" }}-{{ checksum "requirements/base/base.txt" }}
+          key: v10-pip-dependencies-{{ checksum "requirements/test/test.txt" }}-{{ checksum "requirements/base/base.txt" }}
 orbs:
   slack: circleci/slack@3.4.2
 

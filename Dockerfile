@@ -43,6 +43,7 @@ RUN set -ex \
     build-essential \
     libpcre3-dev \
     libpq-dev \
+    git-core \
     " \
     && apt-get update && apt-get install -y --no-install-recommends $BUILD_DEPS \
     && pip install -U -q pip-tools \
