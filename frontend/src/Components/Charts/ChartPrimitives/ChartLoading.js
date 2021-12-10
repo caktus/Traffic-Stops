@@ -1,16 +1,18 @@
 import React from 'react';
-import { ChartLoadingStyled } from './ChartLoading.styled';
+import * as S from './ChartLoading.styled';
 
-function ChartLoading({ pastDelay }) {
-  if (pastDelay) {
-    return (
-      <ChartLoadingStyled>
-        <p>ChartLoading</p>
-      </ChartLoadingStyled>
-    );
-  } else {
-    return null;
-  }
+// Hooks
+import useOfficerId from 'Hooks/useOfficerId';
+
+function ChartLoading({ skeleton: Skeleton }) {
+  const officerId = useOfficerId();
+
+  return (
+    <S.ChartLoading>
+      <h3>Loading {officerId ? "Officer" : "Agency"} data...</h3>
+      <Skeleton scale={2} />
+    </S.ChartLoading>
+  );
 }
 
 export default ChartLoading;

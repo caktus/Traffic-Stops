@@ -4,7 +4,7 @@ import React from 'react';
 import ContentLoader from 'react-content-loader';
 import LoaderBase from 'Components/Elements/Skeletons/LoaderBase';
 
-function PieSkeleton() {
+function BarSkeleton() {
   return (
     <LoaderBase>
       <ContentLoader
@@ -24,4 +24,4 @@ function PieSkeleton() {
   );
 }
 
-export default PieSkeleton;
+export default BarSkeleton;

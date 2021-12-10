@@ -14,7 +14,7 @@ Caktus AWS Access
     .. code-block::
 
         [trafficstops]
-        role_arn = arn:aws:iam::000000000000:role/CaktusAccessRole
+        role_arn = arn:aws:iam::000000000000:role/CaktusAccountAccessRole-Admins
         source_profile = caktus
 
     See LastPass entry *Traffic Stops AWS Profile role_arn* for the AWS account
@@ -111,4 +111,3 @@ Deploy application
 4. Deploy::
 
     inv staging deploy --tag=...
-=======

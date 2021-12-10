@@ -5,14 +5,25 @@ import factory.fuzzy
 from nc import models
 
 
-class AgencyFactory(factory.django.DjangoModelFactory):
+class ViewRefreshFactory(factory.django.DjangoModelFactory):
+    """
+    Refresh materialized view after object creation so tests don't have to
+    manually invoke this functionality.
+    """
+
+    @factory.post_generation
+    def refresh_view(obj, create, extracted, **kwargs):
+        models.StopSummary.refresh()
+
+
+class AgencyFactory(ViewRefreshFactory):
     class Meta(object):
         model = models.Agency
 
     name = factory.Sequence(lambda n: "Agency %03d" % n)
 
 
-class PersonFactory(factory.django.DjangoModelFactory):
+class PersonFactory(ViewRefreshFactory):
     class Meta(object):
         model = models.Person
 
@@ -24,7 +35,7 @@ class PersonFactory(factory.django.DjangoModelFactory):
     type = "D"
 
 
-class StopFactory(factory.django.DjangoModelFactory):
+class StopFactory(ViewRefreshFactory):
     class Meta(object):
         model = models.Stop
 
@@ -47,7 +58,7 @@ class StopFactory(factory.django.DjangoModelFactory):
             self.date = self.date.replace(year=extracted, day=day)
 
 
-class SearchFactory(factory.django.DjangoModelFactory):
+class SearchFactory(ViewRefreshFactory):
     class Meta(object):
         model = models.Search
 
@@ -57,7 +68,7 @@ class SearchFactory(factory.django.DjangoModelFactory):
     type = factory.fuzzy.FuzzyChoice(x[0] for x in models.SEARCH_TYPE_CHOICES)
 
 
-class ContrabandFactory(factory.django.DjangoModelFactory):
+class ContrabandFactory(ViewRefreshFactory):
     class Meta(object):
         model = models.Contraband
 

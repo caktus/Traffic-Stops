@@ -43,6 +43,7 @@ npm-debug.log
 .python-version
 env-local.sh
 *.dump
+*.pgdump
 .envrc
 .direnv
 .vscode

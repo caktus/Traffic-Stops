@@ -6,3 +6,7 @@
   gather_facts: false
   roles:
     - role: caktus.k8s-hosting-services
+  tasks:
+    - import_role:
+        name: caktus.k8s-hosting-services
+        tasks_from: monitoring

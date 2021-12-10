@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { useTheme } from 'styled-components';
 
 // Elements
+import ChartLoading from 'Components/Charts/ChartPrimitives/ChartLoading'
 import PieSkeleton from 'Components/Elements/Skeletons/PieSkeleton';
 import { VictoryPie, VictoryLabel, VictoryTooltip } from 'victory';
 import { P, WEIGHTS } from 'styles/StyledComponents/Typography';
@@ -23,7 +24,7 @@ function Pie({ data, loading }) {
     return d.length === 0 || d.every((dt) => dt.y === 0);
   };
 
-  if (loading) return <PieSkeleton />;
+  if (loading) return <ChartLoading skeleton={PieSkeleton} />;
 
   if (_dataIsZeros(data)) {
     return (

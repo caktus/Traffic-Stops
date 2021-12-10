@@ -5,12 +5,13 @@ census
 us
 dealer
 django-cache-machine
-django-click
+django-click==2.2.0
 django-crispy-forms
 django-dotenv
 django-extensions
 django-filter
 django-memoize
+django-pgviews-redux==0.8.0
 django-redis
 djangorestframework
 dj-database-url

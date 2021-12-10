@@ -1,6 +1,5 @@
 # test.in
 -c ../base/base.txt
--c ../dev/dev.txt
 
 pyyaml
 isort
@@ -12,5 +11,5 @@ coverage
 # Linting
 flake8
 # Pinned due to bug introduced in release 20.8b0
-black==19.10b0
+black==21.10b0
 pre-commit

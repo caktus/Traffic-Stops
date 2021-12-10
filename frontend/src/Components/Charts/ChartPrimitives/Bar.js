@@ -2,10 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { VictoryAxis, VictoryBar, VictoryChart, VictoryContainer } from 'victory';
 import { AXIS_STYLE } from './chartConstants';
+import ChartLoading from 'Components/Charts/ChartPrimitives/ChartLoading';
 import BarSkeleton from 'Components/Elements/Skeletons/BarSkeleton';
 
 function Bar({ data, chartProps, xAxisProps, yAxisProps, barProps }) {
-  if (!data) return <BarSkeleton />;
+  if (!data) return <ChartLoading skeleton={BarSkeleton} />;
   return (
     <VictoryChart
       {...chartProps}

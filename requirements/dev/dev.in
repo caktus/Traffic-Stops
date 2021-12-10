@@ -3,7 +3,8 @@
 -c ../test/test.txt
 
 # deploy
--e git+https://github.com/caktus/invoke-kubesae@0.0.14#egg=invoke-kubesae
+invoke-kubesae==0.0.16
+ansible==4.8.0
 troposphere
 
 # docs

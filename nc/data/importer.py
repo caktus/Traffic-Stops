@@ -11,7 +11,7 @@ from django.core.cache import cache
 from django.core.mail import EmailMessage
 from django.db import connections, transaction
 from nc.data import copy_nc
-from nc.models import Agency, Search, Stop
+from nc.models import Agency, Search, Stop, StopSummary
 from nc.prime_cache import run as prime_cache_run
 from tsdata.dataset_facts import compute_dataset_facts
 from tsdata.sql import drop_constraints_and_indexes
@@ -24,7 +24,9 @@ logger = logging.getLogger(__name__)
 MAGIC_NC_FTP_URL = "ftp://nc.us/"
 
 
-def run(url, destination=None, zip_path=None, min_stop_id=None, max_stop_id=None, prime_cache=True):
+def run(
+    url, destination=None, zip_path=None, min_stop_id=None, max_stop_id=None, prime_cache=False
+):
     """
     Download NC data, extract, convert to CSV, and load into PostgreSQL
 
@@ -91,6 +93,11 @@ def run(url, destination=None, zip_path=None, min_stop_id=None, max_stop_id=None
         Agency, Stop, settings.NC_KEY, Search=Search, override_start_date=override_start_date
     )
     logger.info("NC dataset facts: %r", facts)
+
+    # update materialized view
+    logger.info("Updating materialized view")
+    StopSummary.refresh()
+    logger.info("Materialized view updated")
 
     # prime the query cache for large NC agencies
     if prime_cache:
