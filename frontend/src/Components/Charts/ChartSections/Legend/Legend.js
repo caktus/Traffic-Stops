@@ -33,7 +33,7 @@ function Legend({ keys, onKeySelect, isStatic, showNonHispanic, heading, row }) 
               <S.Icon {...iconProps} />
               <S.KeyLabel selected={key.selected}>
                 {key.label}
-                {showNonHispanic && '*'}
+                {showNonHispanic && key.label !== 'Hispanic' && '*'}
               </S.KeyLabel>
             </S.Key>
           );
