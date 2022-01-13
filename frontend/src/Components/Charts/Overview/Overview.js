@@ -25,7 +25,6 @@ import useDataset, { AGENCY_DETAILS, STOPS, SEARCHES, USE_OF_FORCE } from 'Hooks
 
 // Children
 import ChartHeader from 'Components/Charts/ChartSections/ChartHeader';
-import DataSubsetPicker from 'Components/Charts/ChartSections/DataSubsetPicker/DataSubsetPicker';
 import Pie from 'Components/Charts/ChartPrimitives/Pie';
 import Legend from 'Components/Charts/ChartSections/Legend/Legend';
 

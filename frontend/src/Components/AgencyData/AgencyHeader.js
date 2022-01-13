@@ -71,10 +71,10 @@ function AgencyHeader({ agencyHeaderOpen, agencyDetails }) {
                     <S.ReportedDate size={SIZES[0]} color={COLORS[0]} weight={WEIGHTS[1]}>
                       {agencyDetails.last_reported_stop
                         ? new Intl.DateTimeFormat('en-US', {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric',
-                          }).format(new Date(agencyDetails.last_reported_stop))
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                        }).format(new Date(agencyDetails.last_reported_stop))
                         : 'Unknown'}
                     </S.ReportedDate>
                   </S.ReportedDate>
@@ -89,7 +89,7 @@ function AgencyHeader({ agencyHeaderOpen, agencyDetails }) {
                       return (
                         <S.CensusDatum key={race}>
                           <S.CensusRace color={COLORS[0]} size={SIZES[0]}>
-                            {toTitleCase(race)}*
+                            {toTitleCase(race)}{race !== 'hispanic' && "*"}
                           </S.CensusRace>
                           <S.Datum size={SIZES[0]}>
                             {calculatePercentage(profile[race], profile.total)}%
