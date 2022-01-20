@@ -272,11 +272,11 @@ const TABLE_COLUMNS = [
     accessor: 'purpose',
   },
   {
-    Header: 'White',
+    Header: 'White*',
     accessor: 'white',
   },
   {
-    Header: 'Black',
+    Header: 'Black*',
     accessor: 'black',
   },
   {
@@ -284,15 +284,15 @@ const TABLE_COLUMNS = [
     accessor: 'hispanic',
   },
   {
-    Header: 'Asian',
+    Header: 'Asian*',
     accessor: 'asian',
   },
   {
-    Header: 'Native American',
+    Header: 'Native American*',
     accessor: 'native_american',
   },
   {
-    Header: 'Other',
+    Header: 'Other*',
     accessor: 'other',
   },
 ];
