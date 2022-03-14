@@ -65,6 +65,8 @@ function UseOfForce() {
             data: data.map((d) => ({
               x: d.year,
               y: d[ethnicGroup],
+              ethnicGroup: eg.label,
+              color: theme.colors.ethnicGroup[ethnicGroup],
             })),
           };
         });

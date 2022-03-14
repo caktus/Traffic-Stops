@@ -109,7 +109,8 @@ export function buildStackedBarData(data, filteredKeys, theme) {
       return {
         x: datum.year,
         y: calculatePercentage(datum[ethnicGroup], yearTotals[datum.year]),
-        ethnicGroup: toTitleCase(ethnicGroup),
+        displayName: toTitleCase(ethnicGroup),
+        color: theme.colors.ethnicGroup[ethnicGroup]
       };
     });
     mappedData.push(groupSet);

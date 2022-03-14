@@ -1,0 +1,42 @@
+import styled from 'styled-components';
+import { lighten } from 'styles/styleUtils/lighten-darken'
+
+
+export const FlyoutContainer = styled.div`
+  background: ${props => props.theme.colors.black};
+  color: ${props => props.theme.colors.white};
+  width: fit-content;
+  padding: 0.5rem;
+  border-radius: ${props => props.theme.radii.standard}px;
+`;
+
+export const FlyoutLabel = styled.h4`
+  font-family: ${props => props.theme.fonts.heading};
+  margin-bottom: 0.5rem;
+`;
+
+export const DataList = styled.ul`
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  font-family: ${props => props.theme.fonts.body};
+  font-size: 12px;
+  font-weight: bold;
+`;
+
+export const DataListItem = styled.li`
+  color: ${props => lighten(props.color, 20)};
+  display: flex;
+  
+  &:not(:last-child) {
+    margin-bottom: 5px;
+  }
+`;
+
+export const DatumLabel = styled.span`
+  flex: 1;
+`;
+
+export const DatumValue = styled.span`
+  margin-left: 20px;
+`;
