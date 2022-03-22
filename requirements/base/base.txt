@@ -63,15 +63,15 @@ jellyfish==0.6.1
     # via us
 kombu==4.6.11
     # via celery
-numpy==1.19.1
+numpy==1.22.3
     # via pandas
-pandas==1.1.1
+pandas==1.4.1
     # via -r requirements/base/base.in
-psycopg2-binary==2.8.5
+psycopg2==2.8.6
     # via -r requirements/base/base.in
 python-dateutil==2.8.1
     # via pandas
-pytz==2019.3
+pytz==2022.1
     # via
     #   celery
     #   django
