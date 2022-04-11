@@ -6,13 +6,14 @@ export const FlyoutContainer = styled.div`
   background: ${props => props.theme.colors.black};
   color: ${props => props.theme.colors.white};
   width: fit-content;
-  padding: 0.5rem;
+  ${props => props.fontSize ? `font-size: ${props.fontSize}px;`: ''}
+  padding: 4px;
   border-radius: ${props => props.theme.radii.standard}px;
 `;
 
 export const FlyoutLabel = styled.h4`
   font-family: ${props => props.theme.fonts.heading};
-  margin-bottom: 0.5rem;
+  margin-bottom: 2px;
 `;
 
 export const DataList = styled.ul`
@@ -27,6 +28,7 @@ export const DataList = styled.ul`
 export const DataListItem = styled.li`
   color: ${props => lighten(props.color, 20)};
   display: flex;
+  ${props => props.fontSize ? `font-size: ${props.fontSize}px;`: ''}
   
   &:not(:last-child) {
     margin-bottom: 5px;

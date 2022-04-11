@@ -21,12 +21,12 @@ function CopwatchChart({ children, yAxisLabel, transformCenter, voronoiDimension
 
 export default CopwatchChart;
 
-export function CopwatchTooltip({ yAxisLabel, transformCenter, pie, ...props }) {
+export function CopwatchTooltip({ yAxisLabel, transformCenter, pie, tooltipFontSize = null, ...props }) {
   return (
     <VictoryTooltip
       {...props}
       renderInPortal={true}
-      flyoutComponent={<CopwatchChartFlyout yAxisLabel={yAxisLabel} pie={pie} transformCenter={transformCenter} />}
+      flyoutComponent={<CopwatchChartFlyout tooltipFontSize={tooltipFontSize} yAxisLabel={yAxisLabel} pie={pie} transformCenter={transformCenter} />}
     />
   )
 }
@@ -37,7 +37,7 @@ const VORONOI_LABEL_X_OFFSET = 10;
 const defaultYAxisLabel = (value) => value;
 const defaultTransformCenter = ({ x, y, datum }) => ({ x: x + VORONOI_LABEL_X_OFFSET, y: y - datum.height })
 
-export function CopwatchChartFlyout({ yAxisLabel = defaultYAxisLabel, transformCenter = defaultTransformCenter, pie, ...data }) {
+export function CopwatchChartFlyout({ yAxisLabel = defaultYAxisLabel, transformCenter = defaultTransformCenter, pie, tooltipFontSize, ...data }) {
   const centered = transformCenter({ x: data.center.x, y: data.center.y, datum: data })
 
   const isVoronoi = !!data.activePoints
@@ -72,17 +72,19 @@ export function CopwatchChartFlyout({ yAxisLabel = defaultYAxisLabel, transformC
     return yAxisLabel(d.datum.y)
   }
 
+
   return (
     <foreignObject width="100%" height="100%" {...centered}>
       <S.FlyoutContainer
         xmlns="http://www.w3.org/1999/xhtml"
         data-testid="graphTooltip"
+        fontSize={tooltipFontSize}
       >
         {!pie && <S.FlyoutLabel>{data.datum.x}</S.FlyoutLabel>}
         <S.DataList >
           {
-            data.activePoints?.map(p => <S.DataListItem color={getColor(p)} key={getLabel(p)}><S.DatumLabel>{getLabel(p)}:</S.DatumLabel> <S.DatumValue>{getValue(p)}</S.DatumValue></S.DataListItem>)
-            || <S.DataListItem color={getColor(data)} key={getLabel(data)}><S.DatumLabel>{getLabel(data)}:</S.DatumLabel> <S.DatumValue>{getValue(data)}</S.DatumValue></S.DataListItem>
+            data.activePoints?.map(p => <S.DataListItem color={getColor(p)} fontSize={tooltipFontSize} key={getLabel(p)}><S.DatumLabel>{getLabel(p)}:</S.DatumLabel> <S.DatumValue>{getValue(p)}</S.DatumValue></S.DataListItem>)
+            || <S.DataListItem fontSize={tooltipFontSize} color={getColor(data)} key={getLabel(data)}><S.DatumLabel>{getLabel(data)}:</S.DatumLabel> <S.DatumValue>{getValue(data)}</S.DatumValue></S.DataListItem>
           }
         </S.DataList>
       </S.FlyoutContainer>

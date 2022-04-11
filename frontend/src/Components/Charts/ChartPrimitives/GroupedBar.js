@@ -16,7 +16,8 @@ function GroupedBar({
   chartProps,
   dAxisProps,
   iAxisProps,
-  barProps
+  barProps,
+  toolTipFontSize
 }) {
   if (loading) return <ChartLoading skeleton={BarSkeleton} />
 
@@ -46,7 +47,7 @@ function GroupedBar({
             }}
             labels={() => " "}
             labelComponent={
-              <CopwatchTooltip transformCenter={({ x, y }) => ({ x, y })} yAxisLabel={barProps?.yAxisLabel} />
+              <CopwatchTooltip transformCenter={({ x, y }) => ({ x, y })} yAxisLabel={barProps?.yAxisLabel} tooltipFontSize={toolTipFontSize} />
             }
             {...barProps}
           />
