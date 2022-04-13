@@ -178,6 +178,7 @@ function Searches() {
               dAxisProps={{
                 tickFormat: (t) => `${t}%`,
               }}
+              yAxisLabel={(val) => `${val}%`}
             />
           </S.LineWrapper>
           <S.LegendBeside>

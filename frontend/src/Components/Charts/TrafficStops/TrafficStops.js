@@ -226,6 +226,7 @@ function TrafficStops() {
                 data={byPercentageLineData}
                 tickValues={chartState.yearSet}
                 loading={chartState.loading[STOPS]}
+                yAxisLabel={val => `${val}%`}
               />
             </S.LineWrapper>
             <S.LegendBelow>

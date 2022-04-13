@@ -65,6 +65,8 @@ function UseOfForce() {
             data: data.map((d) => ({
               x: d.year,
               y: d[ethnicGroup],
+              ethnicGroup: eg.label,
+              color: theme.colors.ethnicGroup[ethnicGroup],
             })),
           };
         });
@@ -135,6 +137,7 @@ function UseOfForce() {
                 iTickFormat={(t) => (t % 2 === 0 ? t : null)}
                 iTickValues={chartState.yearSet}
                 loading={chartState.loading[USE_OF_FORCE]}
+                toolTipFontSize={16}
               />
             </S.LineWrapper>
             <S.LegendBelow>

@@ -1,26 +1,29 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { VictoryChart, VictoryStack, VictoryBar, VictoryAxis, VictoryContainer } from 'victory';
+import { VictoryStack, VictoryBar, VictoryAxis, VictoryTooltip } from 'victory';
 import { AXIS_STYLE } from './chartConstants';
 
 // Children
 import ChartLoading from 'Components/Charts/ChartPrimitives/ChartLoading';
 import BarSkeleton from 'Components/Elements/Skeletons/BarSkeleton';
+import CopwatchChart from './CopwatchChart';
 
-function StackedBar({ data, loading, tickValues }) {
+function StackedBar({ data, loading, tickValues, yAxisLabel }) {
   if (loading) return <ChartLoading skeleton={BarSkeleton} />
 
   return (
-    <VictoryChart
+    <CopwatchChart
       style={{ padding: 0 }}
-      containerComponent={<VictoryContainer style={{ touchAction: 'auto' }} />}
+      yAxisLabel={yAxisLabel}
     >
       <VictoryAxis
         dependentAxis
         style={AXIS_STYLE}
         tickValues={[10, 20, 30, 40, 50, 60, 70, 80, 90, 100]}
         tickFormat={(t) => (t % 20 === 0 ? `${t}%` : null)}
+        labels={({ datum }) => `HEY: ${datum.y} ${datum.x}`}
+        labelComponent={<VictoryTooltip />}
       />
       <VictoryAxis
         label="Year"
@@ -28,7 +31,7 @@ function StackedBar({ data, loading, tickValues }) {
         style={AXIS_STYLE}
         tickFormat={(t) => (t % 2 === 0 ? t : null)}
       />
-      <VictoryStack>
+      <VictoryStack >
         {data.map((bar) => (
           <VictoryBar
             key={bar.id}
@@ -37,10 +40,11 @@ function StackedBar({ data, loading, tickValues }) {
             style={{
               data: { fill: bar.color, opacity: 0.5 },
             }}
+
           />
         ))}
       </VictoryStack>
-    </VictoryChart>
+    </CopwatchChart>
   );
 }
 
