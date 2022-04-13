@@ -42,3 +42,9 @@ jobs:
           psql $DATABASE_URL -c 'CREATE DATABASE traffic_stops_nc;'
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/traffic_stops
+      - name: Run tests
+        run: |
+           pytest
+        env:
+          DJANGO_SETTINGS_MODULE: traffic_stops.settings.dev
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/traffic_stops
