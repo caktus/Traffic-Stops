@@ -33,5 +33,12 @@ jobs:
           cache-dependency-path: 'requirements/*/*.txt'
       - name: Install dependencies
         run: |
+          sudo apt update
+          sudo apt install -y --no-install-recommends postgresql-client-12
           python -m pip install pip-tools
           pip-sync requirements/base/base.txt requirements/test/test.txt
+      - name: Create NC database
+        run: |
+          psql $DATABASE_URL -c 'CREATE DATABASE traffic_stops_nc;'
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/traffic_stops
