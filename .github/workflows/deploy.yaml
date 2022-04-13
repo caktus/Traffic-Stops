@@ -47,7 +47,7 @@ jobs:
         id: build-tag-push-deploy
         run: |
           echo "env is $ENV"
-          inv $ENV generate-tag image deploy --verbosity=0
+          inv $ENV image deploy --verbosity=0
       - name: Update deployment status
         uses: bobheadxi/deployments@v1
         if: always()
