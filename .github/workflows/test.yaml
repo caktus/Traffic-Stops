@@ -24,8 +24,6 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
-        volumes:
-          - ./docker-entrypoint.postgres.sql:/docker-entrypoint-initdb.d/init.sql
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
