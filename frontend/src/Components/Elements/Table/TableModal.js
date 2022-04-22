@@ -10,7 +10,7 @@ import { CSVLink } from 'react-csv';
 import { AGENCY_DETAILS, CONTRABAND_HIT_RATE, STOPS_BY_REASON } from 'Hooks/useDataset';
 
 // Constants
-import {PURPOSE_DEFAULT, RACES, STOP_TYPES} from 'Components/Charts/chartUtils';
+import {PURPOSE_DEFAULT, RACES, reduceFullDatasetOnlyTotals, STOP_TYPES} from 'Components/Charts/chartUtils';
 
 // Hooks
 import usePortal from 'Hooks/usePortal';
@@ -90,13 +90,20 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
         return yearData;
       });
     }
-    return mergedData.filter(e => {
+    mergedData = mergedData.filter(e => {
       // Filter out empty objects if a purpose is selected from the dropdown
       return Object.keys(e).length !== 0
-    }).sort((a, b) => {
+    });
+    let raceTotals = {
+      year: "",
+      purpose: "Totals",
+      ...reduceFullDatasetOnlyTotals(mergedData, RACES)
+    };
+    let sortedData = mergedData.sort((a, b) => {
       // Sort data descending by year
       return (a["year"] < b["year"]) ? 1 : ((b["year"] < a["year"]) ? -1 : 0)
     });
+    return [raceTotals, ...sortedData];
   };
 
   const mapSearchesByReason = (ds) => {
