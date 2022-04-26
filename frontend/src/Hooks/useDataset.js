@@ -22,6 +22,7 @@ export const STOPS_BY_REASON = 'STOPS_BY_REASON';
 export const SEARCHES_BY_TYPE = 'SEARCHES_BY_TYPE';
 export const USE_OF_FORCE = 'USE_OF_FORCE';
 export const CONTRABAND_HIT_RATE = 'CONTRABAND_HIT_RATE';
+export const LIKELIHOOD_OF_SEARCH = 'LIKELIHOOD_OF_SEARCH';
 
 function useDataset(agencyId, datasetKey) {
   const { search } = useLocation();

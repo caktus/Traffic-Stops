@@ -7,7 +7,7 @@ import { useTheme } from 'styled-components';
 import { useParams, useHistory } from 'react-router-dom';
 
 // Data
-import useDataset, { STOPS_BY_REASON } from 'Hooks/useDataset';
+import useDataset, { LIKELIHOOD_OF_SEARCH } from 'Hooks/useDataset';
 
 // Hooks
 import useOfficerId from 'Hooks/useOfficerId';
@@ -39,7 +39,7 @@ function SearchRate() {
   const history = useHistory();
   const officerId = useOfficerId();
 
-  const [chartState] = useDataset(agencyId, STOPS_BY_REASON);
+  const [chartState] = useDataset(agencyId, LIKELIHOOD_OF_SEARCH);
 
   const [year, setYear] = useState(YEARS_DEFAULT);
   const [ethnicGroupKeys, setEthnicGroupKeys] = useState(() =>
@@ -54,7 +54,7 @@ function SearchRate() {
 
   /* BUILD DATA */
   useEffect(() => {
-    const data = chartState.data[STOPS_BY_REASON];
+    const data = chartState.data[LIKELIHOOD_OF_SEARCH];
     if (data) {
       const baseGroupTotalSearches = getGroupValueBasedOnYear(
         data.searches,
@@ -104,7 +104,7 @@ function SearchRate() {
         });
       setChartData(mappedData);
     }
-  }, [chartState.data[STOPS_BY_REASON], ethnicGroupKeys, year]);
+  }, [chartState.data[LIKELIHOOD_OF_SEARCH], ethnicGroupKeys, year]);
 
   const _entityHasNoBaseSearches = (baseGroupSearches) => {
     return Object.values(baseGroupSearches).every((v) => v === 0);
@@ -128,7 +128,7 @@ function SearchRate() {
   };
 
   const handleViewData = () => {
-    openModal(STOPS_BY_REASON, TABLE_COLUMNS);
+    openModal(LIKELIHOOD_OF_SEARCH, TABLE_COLUMNS);
   };
 
   const getSearchesUrlForOfficer = () => {
@@ -172,7 +172,7 @@ function SearchRate() {
             ) : (
               <GroupedBar
                 data={chartData}
-                loading={chartState.loading[STOPS_BY_REASON]}
+                loading={chartState.loading[LIKELIHOOD_OF_SEARCH]}
                 horizontal
                 iAxisProps={{
                   tickLabelComponent: <VictoryLabel x={100} dx={-50} style={{ fontSize: 6 }} />,

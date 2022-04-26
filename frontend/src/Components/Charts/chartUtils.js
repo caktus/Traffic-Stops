@@ -55,7 +55,7 @@ export function calculateYearTotal(yearData, filteredKeys = RACES) {
 
 export function reduceYearsToTotal(data, ethnicGroup) {
   if (data.length === 0) return { [ethnicGroup]: 0 };
-  return data.reduce((acc, curr) => ({ [ethnicGroup]: acc[ethnicGroup] + curr[ethnicGroup] }));
+  return data.reduce((acc, curr) => ({ [ethnicGroup]: parseInt(acc[ethnicGroup]) + parseInt(curr[ethnicGroup]) }));
 }
 
 export function filterSinglePurpose(data, purpose) {
@@ -92,6 +92,21 @@ export function reduceFullDataset(data, ethnicGroups, theme) {
     color: theme.colors.ethnicGroup[race],
     fontColor: theme.colors.fontColorsByEthnicGroup[race],
   }));
+}
+
+/**
+ * Given an Array of objects with shape { year, asian, black, etc. }, reduce to total by race.
+ * provide Theme object to provide fill colors.
+ * @param {Array} data
+ * @param {Array} ethnicGroups
+ */
+export function reduceFullDatasetOnlyTotals(data, ethnicGroups) {
+  const totals = {};
+  ethnicGroups.forEach((race) => {
+    totals[race] = reduceYearsToTotal(data, race)[race];
+  });
+
+  return totals;
 }
 
 export function buildStackedBarData(data, filteredKeys, theme) {
