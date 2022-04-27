@@ -82,7 +82,9 @@ export const CloseButton = styled(FJIcon)`
   }
 `;
 
-export const Download = styled.div``;
+export const Download = styled.div`
+  margin-top: 1em;
+`;
 
 export const Icon = styled(FJIcon)`
   margin-right: 1em;
