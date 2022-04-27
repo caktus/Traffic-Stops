@@ -99,7 +99,6 @@ export function reduceFullDataset(data, ethnicGroups, theme) {
  * provide Theme object to provide fill colors.
  * @param {Array} data
  * @param {Array} ethnicGroups
- * @param {Object} theme
  */
 export function reduceFullDatasetOnlyTotals(data, ethnicGroups) {
   const totals = {};

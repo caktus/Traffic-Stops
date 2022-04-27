@@ -135,11 +135,19 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       const search = searches.find((d) => d.year === year) || 0;
       const comparedData = { year };
       RACES.forEach((r) => {
-        comparedData[r] = `${hits[r] || 0}/${search[r] || 0}`;
+        comparedData[r] = `${hits[r] || 0}`;
       });
       return comparedData;
     });
-    return mappedData;
+    let raceTotals = {
+      year: "Totals",
+      ...reduceFullDatasetOnlyTotals(mappedData, RACES)
+    };
+    let sortedData = mappedData.sort((a, b) => {
+      // Sort data descending by year
+      return (a["year"] < b["year"]) ? 1 : ((b["year"] < a["year"]) ? -1 : 0)
+    });
+    return [raceTotals, ...sortedData];
   };
 
   const _buildTableData = (ds) => {
