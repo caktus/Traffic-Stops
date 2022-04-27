@@ -28,7 +28,7 @@ import DataSubsetPicker from "../../Charts/ChartSections/DataSubsetPicker/DataSu
 const mapDatasetToChartName = {
   STOPS: 'Traffic Stops',
   SEARCHES: 'Searches',
-  STOPS_BY_REASON: 'Searches by Reason',
+  STOPS_BY_REASON: 'Traffic Stops by Count and Reason',
   SEARCHES_BY_TYPE: 'Searches by Type',
   USE_OF_FORCE: 'Use of Force',
   CONTRABAND_HIT_RATE: 'Contraband Hits',
@@ -74,6 +74,9 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       mergedData = searches.map((searchYear, i) => {
         const yearData = {};
         const stopYear = stops[i];
+        if (purpose && purpose !== stopYear["purpose"]) {
+          return {};
+        }
         for (const ethnicGroup in searchYear) {
           if (searchYear.hasOwnProperty(ethnicGroup)) {
             const searchDatum = searchYear[ethnicGroup];
@@ -81,14 +84,27 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
             if (ethnicGroup === 'year') {
               yearData.year = searchDatum;
             } else {
-              yearData[ethnicGroup] = `${searchDatum}/${stopDatum}`;
+              yearData[ethnicGroup] = `${stopDatum}`;
             }
           }
         }
         return yearData;
       });
     }
-    return mergedData;
+    mergedData = mergedData.filter(e => {
+      // Filter out empty objects if a purpose is selected from the dropdown
+      return Object.keys(e).length !== 0
+    });
+    let raceTotals = {
+      year: "",
+      purpose: "Totals",
+      ...reduceFullDatasetOnlyTotals(mergedData, RACES)
+    };
+    let sortedData = mergedData.sort((a, b) => {
+      // Sort data descending by year
+      return (a["year"] < b["year"]) ? 1 : ((b["year"] < a["year"]) ? -1 : 0)
+    });
+    return [raceTotals, ...sortedData];
   };
 
   const mapLikelihoodOfSearch = (ds) => {
@@ -161,11 +177,19 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       const search = searches.find((d) => d.year === year) || 0;
       const comparedData = { year };
       RACES.forEach((r) => {
-        comparedData[r] = `${hits[r] || 0}/${search[r] || 0}`;
+        comparedData[r] = `${hits[r] || 0}`;
       });
       return comparedData;
     });
-    return mappedData;
+    let raceTotals = {
+      year: "Totals",
+      ...reduceFullDatasetOnlyTotals(mappedData, RACES)
+    };
+    let sortedData = mappedData.sort((a, b) => {
+      // Sort data descending by year
+      return (a["year"] < b["year"]) ? 1 : ((b["year"] < a["year"]) ? -1 : 0)
+    });
+    return [raceTotals, ...sortedData];
   };
 
   const _buildTableData = (ds) => {
