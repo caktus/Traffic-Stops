@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import ReactDOM from 'react-dom';
 import { useTheme } from 'styled-components';
 import * as S from './TableModal.styled';
@@ -10,7 +10,7 @@ import { CSVLink } from 'react-csv';
 import { AGENCY_DETAILS, CONTRABAND_HIT_RATE, STOPS_BY_REASON } from 'Hooks/useDataset';
 
 // Constants
-import { RACES } from 'Components/Charts/chartUtils';
+import {PURPOSE_DEFAULT, RACES, reduceFullDatasetOnlyTotals, STOP_TYPES} from 'Components/Charts/chartUtils';
 
 // Hooks
 import usePortal from 'Hooks/usePortal';
@@ -23,11 +23,12 @@ import TableSkeleton from 'Components/Elements/Skeletons/TableSkeleton';
 import Table from 'Components/Elements/Table/Table';
 import { ICONS } from 'img/icons/Icon';
 import Button from 'Components/Elements/Button';
+import DataSubsetPicker from "../../Charts/ChartSections/DataSubsetPicker/DataSubsetPicker";
 
 const mapDatasetToChartName = {
   STOPS: 'Traffic Stops',
   SEARCHES: 'Searches',
-  STOPS_BY_REASON: 'Searches by Reason',
+  STOPS_BY_REASON: 'Traffic Stops by Count and Reason',
   SEARCHES_BY_TYPE: 'Searches by Type',
   USE_OF_FORCE: 'Use of Force',
   CONTRABAND_HIT_RATE: 'Contraband Hits',
@@ -38,6 +39,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
   const portalTarget = usePortal('modal-root');
   const officerId = useOfficerId();
   const [yearRange] = useYearSet();
+  const [purpose, setPurpose] = useState(null);
 
   const _getEntityReference = () => {
     const agencyName = chartState.data[AGENCY_DETAILS].name;
@@ -71,6 +73,9 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       mergedData = searches.map((searchYear, i) => {
         const yearData = {};
         const stopYear = stops[i];
+        if (purpose && purpose !== stopYear["purpose"]) {
+          return {};
+        }
         for (const ethnicGroup in searchYear) {
           if (searchYear.hasOwnProperty(ethnicGroup)) {
             const searchDatum = searchYear[ethnicGroup];
@@ -78,14 +83,27 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
             if (ethnicGroup === 'year') {
               yearData.year = searchDatum;
             } else {
-              yearData[ethnicGroup] = `${searchDatum}/${stopDatum}`;
+              yearData[ethnicGroup] = `${stopDatum}`;
             }
           }
         }
         return yearData;
       });
     }
-    return mergedData;
+    mergedData = mergedData.filter(e => {
+      // Filter out empty objects if a purpose is selected from the dropdown
+      return Object.keys(e).length !== 0
+    });
+    let raceTotals = {
+      year: "",
+      purpose: "Totals",
+      ...reduceFullDatasetOnlyTotals(mergedData, RACES)
+    };
+    let sortedData = mergedData.sort((a, b) => {
+      // Sort data descending by year
+      return (a["year"] < b["year"]) ? 1 : ((b["year"] < a["year"]) ? -1 : 0)
+    });
+    return [raceTotals, ...sortedData];
   };
 
   const mapSearchesByReason = (ds) => {
@@ -152,6 +170,16 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     } ${_getEntityReference()}`;
   };
 
+  // Handle stop purpose dropdown state
+  const handleStopPurposeSelect = (p) => {
+    if (p === purpose) return;
+    if (p === "All") {
+      setPurpose(null);
+    } else {
+      setPurpose(p);
+    }
+  };
+
   return ReactDOM.createPortal(
     isOpen && (
       <>
@@ -172,16 +200,14 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
               height={42}
             />
           </S.Header>
-          {!_getIsLoading(dataSet) && (
-            <S.Download>
-              <CSVLink data={_buildTableData(dataSet)} filename={_getTableNameForDownload()}>
-                <Button variant="positive" {...S.ButtonInlines} onClick={() => {}}>
-                  <S.Icon icon={ICONS.download} height={25} width={25} fill={theme.colors.white} />
-                  Download
-                </Button>
-              </CSVLink>
-            </S.Download>
-          )}
+          {dataSet == STOPS_BY_REASON &&
+            <DataSubsetPicker
+                label="Filter by Stop Purpose"
+                value={purpose ? purpose : "All"}
+                onChange={handleStopPurposeSelect}
+                options={[PURPOSE_DEFAULT].concat(STOP_TYPES)}
+              />
+            }
           <S.TableWrapper>
             {_getIsLoading(dataSet) ? (
               <TableSkeleton />
@@ -190,6 +216,16 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
             )}
           </S.TableWrapper>
           <S.NonHispanic>* Non-hispanic</S.NonHispanic>
+          {!_getIsLoading(dataSet) && (
+            <S.Download>
+              <CSVLink data={_buildTableData(dataSet)} filename={_getTableNameForDownload()}>
+                <Button variant="positive" {...S.ButtonInlines} onClick={() => {}}>
+                  <S.Icon icon={ICONS.download} height={25} width={25} fill={theme.colors.white} />
+                  Download Data
+                </Button>
+              </CSVLink>
+            </S.Download>
+          )}
         </S.TableModal>
       </>
     ),
