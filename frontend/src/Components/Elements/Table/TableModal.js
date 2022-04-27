@@ -7,7 +7,7 @@ import * as S from './TableModal.styled';
 import { CSVLink } from 'react-csv';
 
 // State
-import { AGENCY_DETAILS, CONTRABAND_HIT_RATE, STOPS_BY_REASON } from 'Hooks/useDataset';
+import {AGENCY_DETAILS, CONTRABAND_HIT_RATE, LIKELIHOOD_OF_SEARCH, STOPS_BY_REASON} from 'Hooks/useDataset';
 
 // Constants
 import {PURPOSE_DEFAULT, RACES, reduceFullDatasetOnlyTotals, STOP_TYPES} from 'Components/Charts/chartUtils';
@@ -32,6 +32,7 @@ const mapDatasetToChartName = {
   SEARCHES_BY_TYPE: 'Searches by Type',
   USE_OF_FORCE: 'Use of Force',
   CONTRABAND_HIT_RATE: 'Contraband Hits',
+  LIKELIHOOD_OF_SEARCH: 'Likelihood of Search'
 };
 
 function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
@@ -106,6 +107,47 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     return [raceTotals, ...sortedData];
   };
 
+  const mapLikelihoodOfSearch = (ds) => {
+    const data = chartState.data[ds];
+    let mergedData = [];
+    const { searches, stops } = data;
+    if (searches && stops) {
+      mergedData = searches.map((searchYear, i) => {
+        const yearData = {};
+        const stopYear = stops[i];
+        if (purpose && purpose !== stopYear["purpose"]) {
+          return {};
+        }
+        for (const ethnicGroup in searchYear) {
+          if (searchYear.hasOwnProperty(ethnicGroup)) {
+            const searchDatum = searchYear[ethnicGroup];
+            const stopDatum = stopYear[ethnicGroup];
+            if (ethnicGroup === 'year') {
+              yearData.year = searchDatum;
+            } else {
+              yearData[ethnicGroup] = `${searchDatum}`;
+            }
+          }
+        }
+        return yearData;
+      });
+    }
+    mergedData = mergedData.filter(e => {
+      // Filter out empty objects if a purpose is selected from the dropdown
+      return Object.keys(e).length !== 0
+    });
+    let raceTotals = {
+      year: "",
+      purpose: "Totals",
+      ...reduceFullDatasetOnlyTotals(mergedData, RACES)
+    };
+    let sortedData = mergedData.sort((a, b) => {
+      // Sort data descending by year
+      return (a["year"] < b["year"]) ? 1 : ((b["year"] < a["year"]) ? -1 : 0)
+    });
+    return [raceTotals, ...sortedData];
+  };
+
   const mapSearchesByReason = (ds) => {
     const searches = chartState.data[ds[1]];
     const stops = chartState.data[ds[0]];
@@ -156,6 +198,8 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       data = mapStopsByPurpose(ds);
     } else if (ds === CONTRABAND_HIT_RATE) {
       data = mapContrbandHitrate(ds);
+    } else if (ds === LIKELIHOOD_OF_SEARCH) {
+      data = mapLikelihoodOfSearch(ds);
     } else if (Array.isArray(ds)) {
       data = mapSearchesByReason(ds);
     } else {
@@ -188,6 +232,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     }
   };
 
+
   return ReactDOM.createPortal(
     isOpen && (
       <>
@@ -208,9 +253,9 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
               height={42}
             />
           </S.Header>
-          {dataSet == STOPS_BY_REASON &&
+          {(dataSet === STOPS_BY_REASON || dataSet === LIKELIHOOD_OF_SEARCH ) &&
             <DataSubsetPicker
-                label="Filter by Stop Purpose"
+                label={'Filter by Stop Purpose'}
                 value={purpose ? purpose : "All"}
                 onChange={handleStopPurposeSelect}
                 options={[PURPOSE_DEFAULT].concat(STOP_TYPES)}
