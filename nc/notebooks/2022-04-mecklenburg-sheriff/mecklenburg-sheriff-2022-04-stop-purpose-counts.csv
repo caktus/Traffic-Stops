@@ -1,0 +1,187 @@
+year,stop_purpose,Asian,Black,Hispanic,Native American,Other,White
+2002,Driving While Impaired,0.0,10.0,5.0,1.0,0.0,18.0
+2002,Investigation,0.0,18.0,5.0,1.0,2.0,7.0
+2002,Other Motor Vehicle Violation,3.0,63.0,17.0,0.0,5.0,62.0
+2002,Safe Movement Violation,0.0,79.0,41.0,0.0,5.0,104.0
+2002,Seat Belt Violation,0.0,11.0,5.0,0.0,0.0,19.0
+2002,Speed Limit Violation,2.0,42.0,12.0,0.0,2.0,63.0
+2002,Stop Light/Sign Violation,3.0,82.0,42.0,0.0,2.0,92.0
+2002,Vehicle Equipment Violation,0.0,19.0,2.0,0.0,3.0,10.0
+2002,Vehicle Regulatory Violation,2.0,20.0,8.0,0.0,0.0,17.0
+2003,Driving While Impaired,2.0,3.0,5.0,0.0,1.0,13.0
+2003,Investigation,1.0,20.0,3.0,1.0,0.0,11.0
+2003,Other Motor Vehicle Violation,1.0,37.0,15.0,0.0,0.0,38.0
+2003,Safe Movement Violation,0.0,55.0,13.0,0.0,2.0,45.0
+2003,Seat Belt Violation,0.0,32.0,6.0,0.0,0.0,22.0
+2003,Speed Limit Violation,0.0,5.0,4.0,0.0,0.0,19.0
+2003,Stop Light/Sign Violation,1.0,78.0,34.0,0.0,4.0,84.0
+2003,Vehicle Equipment Violation,0.0,13.0,1.0,0.0,0.0,7.0
+2003,Vehicle Regulatory Violation,0.0,11.0,0.0,0.0,1.0,3.0
+2004,Driving While Impaired,0.0,3.0,4.0,0.0,0.0,10.0
+2004,Investigation,0.0,14.0,1.0,0.0,1.0,6.0
+2004,Other Motor Vehicle Violation,0.0,14.0,1.0,0.0,1.0,4.0
+2004,Safe Movement Violation,2.0,25.0,3.0,0.0,1.0,17.0
+2004,Seat Belt Violation,0.0,13.0,1.0,0.0,0.0,1.0
+2004,Speed Limit Violation,2.0,17.0,0.0,0.0,0.0,24.0
+2004,Stop Light/Sign Violation,1.0,24.0,10.0,1.0,0.0,23.0
+2004,Vehicle Equipment Violation,0.0,7.0,1.0,0.0,0.0,2.0
+2004,Vehicle Regulatory Violation,0.0,6.0,3.0,0.0,0.0,2.0
+2005,Driving While Impaired,0.0,0.0,0.0,0.0,0.0,2.0
+2005,Investigation,0.0,5.0,1.0,0.0,0.0,3.0
+2005,Other Motor Vehicle Violation,0.0,8.0,0.0,0.0,0.0,3.0
+2005,Safe Movement Violation,0.0,11.0,2.0,0.0,3.0,9.0
+2005,Seat Belt Violation,0.0,2.0,0.0,0.0,0.0,0.0
+2005,Speed Limit Violation,1.0,8.0,1.0,0.0,0.0,11.0
+2005,Stop Light/Sign Violation,1.0,13.0,1.0,0.0,0.0,11.0
+2005,Vehicle Equipment Violation,0.0,3.0,0.0,0.0,0.0,1.0
+2005,Vehicle Regulatory Violation,0.0,9.0,1.0,0.0,0.0,2.0
+2006,Driving While Impaired,0.0,1.0,0.0,0.0,0.0,2.0
+2006,Investigation,0.0,3.0,0.0,0.0,0.0,2.0
+2006,Other Motor Vehicle Violation,0.0,12.0,4.0,0.0,1.0,3.0
+2006,Safe Movement Violation,0.0,9.0,3.0,0.0,0.0,13.0
+2006,Seat Belt Violation,0.0,2.0,0.0,0.0,0.0,2.0
+2006,Speed Limit Violation,0.0,13.0,1.0,0.0,0.0,13.0
+2006,Stop Light/Sign Violation,1.0,13.0,10.0,0.0,1.0,13.0
+2006,Vehicle Equipment Violation,0.0,0.0,0.0,0.0,0.0,5.0
+2006,Vehicle Regulatory Violation,0.0,8.0,1.0,0.0,0.0,3.0
+2007,Driving While Impaired,0.0,2.0,1.0,0.0,0.0,5.0
+2007,Investigation,0.0,2.0,2.0,0.0,0.0,0.0
+2007,Other Motor Vehicle Violation,0.0,17.0,5.0,0.0,1.0,18.0
+2007,Safe Movement Violation,1.0,18.0,5.0,0.0,0.0,16.0
+2007,Seat Belt Violation,0.0,1.0,0.0,0.0,0.0,0.0
+2007,Speed Limit Violation,2.0,34.0,6.0,0.0,2.0,40.0
+2007,Stop Light/Sign Violation,0.0,29.0,12.0,1.0,2.0,23.0
+2007,Vehicle Equipment Violation,0.0,6.0,3.0,0.0,0.0,6.0
+2007,Vehicle Regulatory Violation,0.0,3.0,0.0,0.0,0.0,2.0
+2008,Driving While Impaired,0.0,0.0,3.0,0.0,0.0,3.0
+2008,Investigation,0.0,0.0,0.0,0.0,0.0,1.0
+2008,Other Motor Vehicle Violation,0.0,6.0,2.0,0.0,0.0,7.0
+2008,Safe Movement Violation,0.0,15.0,4.0,0.0,0.0,22.0
+2008,Seat Belt Violation,0.0,1.0,0.0,0.0,0.0,0.0
+2008,Speed Limit Violation,2.0,20.0,5.0,0.0,0.0,24.0
+2008,Stop Light/Sign Violation,2.0,27.0,12.0,1.0,0.0,29.0
+2008,Vehicle Equipment Violation,0.0,6.0,1.0,1.0,0.0,1.0
+2008,Vehicle Regulatory Violation,0.0,1.0,0.0,0.0,0.0,2.0
+2009,Driving While Impaired,0.0,2.0,1.0,0.0,0.0,0.0
+2009,Investigation,0.0,3.0,2.0,0.0,0.0,0.0
+2009,Other Motor Vehicle Violation,1.0,7.0,3.0,0.0,0.0,12.0
+2009,Safe Movement Violation,1.0,17.0,5.0,0.0,1.0,9.0
+2009,Speed Limit Violation,0.0,12.0,2.0,1.0,0.0,17.0
+2009,Stop Light/Sign Violation,0.0,16.0,7.0,0.0,1.0,22.0
+2009,Vehicle Equipment Violation,0.0,8.0,0.0,0.0,1.0,2.0
+2009,Vehicle Regulatory Violation,0.0,0.0,2.0,0.0,0.0,3.0
+2010,Driving While Impaired,0.0,1.0,1.0,0.0,0.0,1.0
+2010,Investigation,0.0,1.0,0.0,0.0,0.0,0.0
+2010,Other Motor Vehicle Violation,0.0,6.0,2.0,1.0,0.0,2.0
+2010,Safe Movement Violation,0.0,10.0,5.0,2.0,0.0,18.0
+2010,Speed Limit Violation,0.0,10.0,2.0,2.0,0.0,9.0
+2010,Stop Light/Sign Violation,3.0,17.0,11.0,2.0,2.0,20.0
+2010,Vehicle Equipment Violation,1.0,5.0,1.0,1.0,0.0,5.0
+2011,Driving While Impaired,1.0,0.0,1.0,0.0,0.0,3.0
+2011,Investigation,0.0,3.0,2.0,0.0,0.0,0.0
+2011,Other Motor Vehicle Violation,1.0,0.0,2.0,0.0,2.0,1.0
+2011,Safe Movement Violation,1.0,14.0,5.0,0.0,0.0,8.0
+2011,Seat Belt Violation,0.0,1.0,0.0,0.0,0.0,0.0
+2011,Speed Limit Violation,0.0,6.0,4.0,0.0,0.0,2.0
+2011,Stop Light/Sign Violation,1.0,17.0,5.0,1.0,0.0,12.0
+2011,Vehicle Equipment Violation,0.0,5.0,2.0,0.0,0.0,1.0
+2012,Driving While Impaired,0.0,1.0,0.0,0.0,0.0,0.0
+2012,Investigation,0.0,2.0,3.0,0.0,0.0,5.0
+2012,Other Motor Vehicle Violation,0.0,3.0,0.0,0.0,0.0,2.0
+2012,Safe Movement Violation,1.0,7.0,1.0,1.0,1.0,6.0
+2012,Speed Limit Violation,0.0,2.0,1.0,0.0,0.0,3.0
+2012,Stop Light/Sign Violation,0.0,15.0,5.0,3.0,0.0,12.0
+2012,Vehicle Equipment Violation,0.0,3.0,0.0,0.0,0.0,2.0
+2012,Vehicle Regulatory Violation,0.0,1.0,0.0,0.0,0.0,0.0
+2013,Checkpoint,0.0,1.0,0.0,0.0,0.0,0.0
+2013,Investigation,0.0,2.0,0.0,0.0,0.0,0.0
+2013,Other Motor Vehicle Violation,2.0,10.0,2.0,0.0,0.0,9.0
+2013,Safe Movement Violation,0.0,20.0,6.0,1.0,0.0,11.0
+2013,Seat Belt Violation,0.0,0.0,0.0,0.0,0.0,1.0
+2013,Speed Limit Violation,2.0,25.0,5.0,0.0,2.0,22.0
+2013,Stop Light/Sign Violation,1.0,34.0,9.0,2.0,0.0,30.0
+2013,Vehicle Equipment Violation,0.0,12.0,0.0,0.0,0.0,8.0
+2013,Vehicle Regulatory Violation,0.0,13.0,2.0,0.0,0.0,15.0
+2014,Checkpoint,0.0,2.0,1.0,0.0,0.0,4.0
+2014,Driving While Impaired,0.0,2.0,0.0,0.0,0.0,1.0
+2014,Investigation,0.0,21.0,1.0,0.0,3.0,12.0
+2014,Other Motor Vehicle Violation,4.0,98.0,26.0,3.0,5.0,46.0
+2014,Safe Movement Violation,5.0,130.0,21.0,0.0,11.0,128.0
+2014,Seat Belt Violation,1.0,19.0,12.0,1.0,1.0,40.0
+2014,Speed Limit Violation,34.0,406.0,84.0,6.0,25.0,475.0
+2014,Stop Light/Sign Violation,19.0,458.0,105.0,5.0,22.0,267.0
+2014,Vehicle Equipment Violation,1.0,21.0,3.0,0.0,2.0,21.0
+2014,Vehicle Regulatory Violation,6.0,188.0,19.0,2.0,7.0,119.0
+2015,Checkpoint,1.0,4.0,0.0,0.0,0.0,0.0
+2015,Driving While Impaired,0.0,1.0,2.0,0.0,0.0,2.0
+2015,Investigation,0.0,21.0,1.0,1.0,1.0,14.0
+2015,Other Motor Vehicle Violation,10.0,304.0,65.0,4.0,20.0,122.0
+2015,Safe Movement Violation,18.0,237.0,71.0,5.0,13.0,208.0
+2015,Seat Belt Violation,2.0,66.0,5.0,0.0,4.0,50.0
+2015,Speed Limit Violation,61.0,1056.0,214.0,17.0,57.0,1167.0
+2015,Stop Light/Sign Violation,51.0,817.0,187.0,15.0,52.0,588.0
+2015,Vehicle Equipment Violation,0.0,67.0,8.0,0.0,1.0,49.0
+2015,Vehicle Regulatory Violation,9.0,531.0,59.0,8.0,15.0,365.0
+2016,Driving While Impaired,0.0,0.0,1.0,0.0,0.0,1.0
+2016,Investigation,0.0,7.0,2.0,0.0,2.0,6.0
+2016,Other Motor Vehicle Violation,4.0,102.0,20.0,4.0,9.0,43.0
+2016,Safe Movement Violation,4.0,131.0,22.0,9.0,7.0,87.0
+2016,Seat Belt Violation,0.0,1.0,2.0,0.0,0.0,3.0
+2016,Speed Limit Violation,25.0,457.0,106.0,5.0,25.0,427.0
+2016,Stop Light/Sign Violation,18.0,260.0,71.0,4.0,13.0,176.0
+2016,Vehicle Equipment Violation,0.0,16.0,5.0,1.0,0.0,10.0
+2016,Vehicle Regulatory Violation,3.0,150.0,20.0,1.0,1.0,101.0
+2017,Driving While Impaired,0.0,1.0,0.0,0.0,0.0,1.0
+2017,Investigation,0.0,9.0,2.0,0.0,0.0,6.0
+2017,Other Motor Vehicle Violation,3.0,76.0,17.0,7.0,1.0,35.0
+2017,Safe Movement Violation,4.0,94.0,29.0,2.0,6.0,64.0
+2017,Seat Belt Violation,0.0,8.0,2.0,1.0,0.0,9.0
+2017,Speed Limit Violation,18.0,440.0,93.0,2.0,31.0,375.0
+2017,Stop Light/Sign Violation,13.0,210.0,70.0,6.0,11.0,118.0
+2017,Vehicle Equipment Violation,0.0,20.0,3.0,1.0,1.0,5.0
+2017,Vehicle Regulatory Violation,1.0,92.0,17.0,1.0,1.0,51.0
+2018,Driving While Impaired,0.0,0.0,0.0,0.0,0.0,1.0
+2018,Investigation,0.0,12.0,3.0,0.0,0.0,10.0
+2018,Other Motor Vehicle Violation,2.0,116.0,45.0,2.0,10.0,52.0
+2018,Safe Movement Violation,12.0,181.0,54.0,1.0,11.0,102.0
+2018,Seat Belt Violation,0.0,27.0,11.0,0.0,2.0,14.0
+2018,Speed Limit Violation,39.0,958.0,207.0,12.0,78.0,750.0
+2018,Stop Light/Sign Violation,24.0,457.0,121.0,5.0,31.0,270.0
+2018,Vehicle Equipment Violation,3.0,50.0,11.0,2.0,0.0,17.0
+2018,Vehicle Regulatory Violation,9.0,312.0,48.0,3.0,8.0,178.0
+2019,Driving While Impaired,0.0,1.0,0.0,0.0,0.0,1.0
+2019,Investigation,0.0,9.0,5.0,0.0,0.0,9.0
+2019,Other Motor Vehicle Violation,7.0,115.0,40.0,3.0,2.0,51.0
+2019,Safe Movement Violation,4.0,117.0,48.0,0.0,8.0,69.0
+2019,Seat Belt Violation,1.0,14.0,9.0,0.0,1.0,7.0
+2019,Speed Limit Violation,45.0,798.0,195.0,7.0,78.0,730.0
+2019,Stop Light/Sign Violation,20.0,311.0,79.0,5.0,28.0,200.0
+2019,Vehicle Equipment Violation,3.0,55.0,10.0,1.0,2.0,28.0
+2019,Vehicle Regulatory Violation,6.0,235.0,27.0,1.0,9.0,145.0
+2020,Driving While Impaired,0.0,1.0,2.0,0.0,0.0,0.0
+2020,Investigation,0.0,6.0,2.0,0.0,0.0,3.0
+2020,Other Motor Vehicle Violation,1.0,148.0,22.0,1.0,3.0,54.0
+2020,Safe Movement Violation,7.0,161.0,56.0,5.0,6.0,136.0
+2020,Seat Belt Violation,0.0,42.0,8.0,1.0,2.0,21.0
+2020,Speed Limit Violation,78.0,2145.0,535.0,20.0,126.0,1675.0
+2020,Stop Light/Sign Violation,17.0,326.0,99.0,12.0,15.0,184.0
+2020,Vehicle Equipment Violation,1.0,70.0,13.0,1.0,2.0,34.0
+2020,Vehicle Regulatory Violation,1.0,122.0,15.0,2.0,1.0,58.0
+2021,Checkpoint,0.0,30.0,25.0,0.0,0.0,12.0
+2021,Investigation,0.0,3.0,1.0,0.0,0.0,1.0
+2021,Other Motor Vehicle Violation,2.0,141.0,52.0,3.0,6.0,82.0
+2021,Safe Movement Violation,6.0,152.0,43.0,1.0,10.0,78.0
+2021,Seat Belt Violation,0.0,49.0,12.0,0.0,6.0,19.0
+2021,Speed Limit Violation,121.0,2842.0,915.0,28.0,199.0,2045.0
+2021,Stop Light/Sign Violation,17.0,463.0,131.0,4.0,27.0,203.0
+2021,Vehicle Equipment Violation,3.0,77.0,24.0,0.0,7.0,38.0
+2021,Vehicle Regulatory Violation,1.0,221.0,44.0,1.0,9.0,127.0
+2022,Checkpoint,0.0,8.0,2.0,0.0,0.0,1.0
+2022,Investigation,0.0,0.0,1.0,0.0,0.0,0.0
+2022,Other Motor Vehicle Violation,1.0,15.0,3.0,0.0,5.0,11.0
+2022,Safe Movement Violation,1.0,13.0,3.0,0.0,2.0,10.0
+2022,Seat Belt Violation,0.0,3.0,0.0,0.0,1.0,3.0
+2022,Speed Limit Violation,17.0,346.0,108.0,0.0,21.0,207.0
+2022,Stop Light/Sign Violation,4.0,32.0,13.0,1.0,0.0,14.0
+2022,Vehicle Equipment Violation,1.0,18.0,4.0,0.0,0.0,8.0
+2022,Vehicle Regulatory Violation,1.0,37.0,4.0,0.0,1.0,17.0
