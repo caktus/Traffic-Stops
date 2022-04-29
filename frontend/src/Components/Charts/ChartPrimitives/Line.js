@@ -4,8 +4,8 @@ import React from 'react';
 import { AXIS_STYLE } from './chartConstants';
 
 // Deps
-import CopwatchChart from 'Components/Charts/ChartPrimitives/CopwatchChart';
-import { VictoryLine, VictoryAxis } from 'victory';
+import CopwatchChart, {CopwatchTooltip} from 'Components/Charts/ChartPrimitives/CopwatchChart';
+import {VictoryLine, VictoryAxis, VictoryTooltip} from 'victory';
 import ChartLoading from 'Components/Charts/ChartPrimitives/ChartLoading';
 import BarSkeleton from 'Components/Elements/Skeletons/BarSkeleton';
 
@@ -47,6 +47,8 @@ function Line({
           style={{
             data: { stroke: lineData.color },
           }}
+          labels={({ datum }) => `${datum.x}, ${datum.displayName}, ${dAxisProps.tickFormat(datum.y)}`}
+          labelComponent={<VictoryTooltip style={{ fontSize: 10 }}/>}
         />
       ))}
     </CopwatchChart>

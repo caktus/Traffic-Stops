@@ -138,6 +138,9 @@ function UseOfForce() {
                 iTickValues={chartState.yearSet}
                 loading={chartState.loading[USE_OF_FORCE]}
                 toolTipFontSize={16}
+                dAxisProps={{
+                  tickFormat: (t) => `${t}`,
+                }}
               />
             </S.LineWrapper>
             <S.LegendBelow>
