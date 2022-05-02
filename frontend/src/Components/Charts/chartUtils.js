@@ -19,6 +19,7 @@ export const STOP_TYPES = [
   'Investigation',
   'Other Motor Vehicle Violation',
   'Checkpoint',
+  'Average'
 ];
 export const YEARS_DEFAULT = 'All';
 export const PURPOSE_DEFAULT = 'All';
@@ -205,3 +206,12 @@ export const getRatesAgainstBase = (baseSearches, baseStops, groupSearches, grou
   }
   return rData;
 };
+
+export const calculateAveragePercentage = (data) => {
+  data.forEach(da => {
+    let dataPoints = da.data.filter(d => d.x !== "Average").map(p => p.y);
+    let averageDataPoint = da.data.filter(d => d.x === "Average")[0];
+    averageDataPoint["y"] = (dataPoints.reduce((a, b) => a + b, 0)) / dataPoints.length;
+  })
+  return data;
+}
