@@ -263,6 +263,9 @@ function TrafficStops() {
               loading={chartState.loading[STOPS_BY_REASON]}
               iTickFormat={(t) => (t % 2 === 0 ? t : null)}
               iTickValues={chartState.yearSet}
+              dAxisProps={{
+                tickFormat: (t) => `${t}`,
+              }}
             />
           </S.LineWrapper>
           <S.LegendBeside>

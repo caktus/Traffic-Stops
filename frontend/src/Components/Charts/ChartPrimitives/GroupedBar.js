@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { CopwatchTooltip } from '../ChartPrimitives/CopwatchChart';
-import { VictoryChart, VictoryGroup, VictoryBar, VictoryAxis, VictoryContainer } from 'victory';
+import {VictoryChart, VictoryGroup, VictoryBar, VictoryAxis, VictoryContainer, VictoryTooltip} from 'victory';
 import { AXIS_STYLE } from './chartConstants';
 import ChartLoading from 'Components/Charts/ChartPrimitives/ChartLoading';
 import BarSkeleton from 'Components/Elements/Skeletons/BarSkeleton';
@@ -45,10 +45,8 @@ function GroupedBar({
             style={{
               data: { fill: bar.color },
             }}
-            labels={() => " "}
-            labelComponent={
-              <CopwatchTooltip transformCenter={({ x, y }) => ({ x, y })} yAxisLabel={barProps?.yAxisLabel} tooltipFontSize={toolTipFontSize} />
-            }
+            labels={({ datum }) => `${datum.ethnicGroup}, ${datum.x}, ${dAxisProps.tickFormat(datum.y)}`}
+            labelComponent={<VictoryTooltip style={{ fontSize: toolTipFontSize }}/>}
             {...barProps}
           />
         ))}

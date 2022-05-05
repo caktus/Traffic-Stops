@@ -210,6 +210,9 @@ function Searches() {
               iAxisProps={{
                 minDomain: { y: 1 },
               }}
+              dAxisProps={{
+                tickFormat: (t) => `${t}`,
+              }}
             />
           </S.LineWrapper>
           <S.LegendBeside>

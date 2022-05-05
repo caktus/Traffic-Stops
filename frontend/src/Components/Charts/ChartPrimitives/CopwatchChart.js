@@ -2,17 +2,11 @@ import React from 'react';
 import * as S from './CopwatchChart.styled'
 import { VictoryChart, VictoryVoronoiContainer, VictoryTooltip } from 'victory'
 
-function CopwatchChart({ children, yAxisLabel, transformCenter, voronoiDimension = "x", ...props }) {
+function CopwatchChart({ children, ...props }) {
   return (
     <VictoryChart
       {...props}
-      containerComponent={
-        <VictoryVoronoiContainer
-          voronoiDimension={voronoiDimension}
-          style={{ touchAction: 'auto' }}
-          labels={() => ' '}
-          labelComponent={<CopwatchTooltip yAxisLabel={yAxisLabel} transformCenter={transformCenter} />}
-        />}
+      containerComponent={ <VictoryVoronoiContainer />}
     >
       {children}
     </VictoryChart>
@@ -81,12 +75,17 @@ export function CopwatchChartFlyout({ yAxisLabel = defaultYAxisLabel, transformC
         fontSize={tooltipFontSize}
       >
         {!pie && <S.FlyoutLabel>{data.datum.x}</S.FlyoutLabel>}
-        <S.DataList >
+        <S.DataList>
           {
-            data.activePoints?.map(p => <S.DataListItem color={getColor(p)} fontSize={tooltipFontSize} key={getLabel(p)}><S.DatumLabel>{getLabel(p)}:</S.DatumLabel> <S.DatumValue>{getValue(p)}</S.DatumValue></S.DataListItem>)
-            || <S.DataListItem fontSize={tooltipFontSize} color={getColor(data)} key={getLabel(data)}><S.DatumLabel>{getLabel(data)}:</S.DatumLabel> <S.DatumValue>{getValue(data)}</S.DatumValue></S.DataListItem>
+            data.activePoints?.map(p => <S.DataListItem color={getColor(p)} fontSize={tooltipFontSize}
+                                                        key={getLabel(p)}><S.DatumLabel>{getLabel(p)}:</S.DatumLabel>
+              <S.DatumValue>{getValue(p)}</S.DatumValue></S.DataListItem>)
+            || <S.DataListItem fontSize={tooltipFontSize} color={getColor(data)}
+                               key={getLabel(data)}><S.DatumLabel>{getLabel(data)}:</S.DatumLabel>
+              <S.DatumValue>{getValue(data)}</S.DatumValue></S.DataListItem>
           }
         </S.DataList>
+
       </S.FlyoutContainer>
     </foreignObject>
   )

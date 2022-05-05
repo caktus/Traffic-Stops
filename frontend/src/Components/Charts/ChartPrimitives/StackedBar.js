@@ -40,7 +40,8 @@ function StackedBar({ data, loading, tickValues, yAxisLabel }) {
             style={{
               data: { fill: bar.color, opacity: 0.5 },
             }}
-
+            labels={({ datum }) => `${datum.x}, ${datum.displayName}, ${datum.y}%`}
+            labelComponent={<VictoryTooltip style={{ fontSize: 10 }}/>}
           />
         ))}
       </VictoryStack>

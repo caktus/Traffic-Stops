@@ -1,14 +1,16 @@
 import styled from 'styled-components';
-import { lighten } from 'styles/styleUtils/lighten-darken'
+import {darken, lighten} from 'styles/styleUtils/lighten-darken'
 
 
 export const FlyoutContainer = styled.div`
-  background: ${props => props.theme.colors.black};
-  color: ${props => props.theme.colors.white};
+  background: ${props => props.theme.colors.white};
+  color: ${props => props.theme.colors.black};
   width: fit-content;
   ${props => props.fontSize ? `font-size: ${props.fontSize}px;`: ''}
   padding: 4px;
   border-radius: ${props => props.theme.radii.standard}px;
+  border-style: solid;
+  border-width: thin;
 `;
 
 export const FlyoutLabel = styled.h4`
@@ -26,7 +28,7 @@ export const DataList = styled.ul`
 `;
 
 export const DataListItem = styled.li`
-  color: ${props => lighten(props.color, 20)};
+  color: ${props => darken(props.color, 10)};
   display: flex;
   ${props => props.fontSize ? `font-size: ${props.fontSize}px;`: ''}
   
