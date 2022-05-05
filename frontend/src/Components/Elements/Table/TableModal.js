@@ -7,10 +7,22 @@ import * as S from './TableModal.styled';
 import { CSVLink } from 'react-csv';
 
 // State
-import {AGENCY_DETAILS, CONTRABAND_HIT_RATE, LIKELIHOOD_OF_SEARCH, STOPS_BY_REASON} from 'Hooks/useDataset';
+import {
+  AGENCY_DETAILS,
+  CONTRABAND_HIT_RATE,
+  LIKELIHOOD_OF_SEARCH,
+  SEARCHES_BY_TYPE,
+  STOPS_BY_REASON
+} from 'Hooks/useDataset';
 
 // Constants
-import {PURPOSE_DEFAULT, RACES, reduceFullDatasetOnlyTotals, STOP_TYPES} from 'Components/Charts/chartUtils';
+import {
+  PURPOSE_DEFAULT,
+  RACES,
+  reduceFullDatasetOnlyTotals,
+  STOP_TYPES,
+  SEARCH_TYPES
+} from 'Components/Charts/chartUtils';
 
 // Hooks
 import usePortal from 'Hooks/usePortal';
@@ -18,7 +30,7 @@ import useOfficerId from 'Hooks/useOfficerId';
 import useYearSet from 'Hooks/useYearSet';
 
 // elements/components
-import { P, H2 } from 'styles/StyledComponents/Typography';
+import { H2, P } from 'styles/StyledComponents/Typography';
 import TableSkeleton from 'Components/Elements/Skeletons/TableSkeleton';
 import Table from 'Components/Elements/Table/Table';
 import { ICONS } from 'img/icons/Icon';
@@ -74,9 +86,6 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       mergedData = searches.map((searchYear, i) => {
         const yearData = {};
         const stopYear = stops[i];
-        if (purpose && purpose !== stopYear["purpose"]) {
-          return {};
-        }
         for (const ethnicGroup in searchYear) {
           if (searchYear.hasOwnProperty(ethnicGroup)) {
             const searchDatum = searchYear[ethnicGroup];
@@ -91,10 +100,9 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
         return yearData;
       });
     }
-    mergedData = mergedData.filter(e => {
-      // Filter out empty objects if a purpose is selected from the dropdown
-      return Object.keys(e).length !== 0
-    });
+    if (purpose) {
+      mergedData = mergedData.filter(e => e.purpose === purpose);
+    }
     let raceTotals = {
       year: "",
       purpose: "Totals",
@@ -115,9 +123,6 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       mergedData = searches.map((searchYear, i) => {
         const yearData = {};
         const stopYear = stops[i];
-        if (purpose && purpose !== stopYear["purpose"]) {
-          return {};
-        }
         for (const ethnicGroup in searchYear) {
           if (searchYear.hasOwnProperty(ethnicGroup)) {
             const searchDatum = searchYear[ethnicGroup];
@@ -132,10 +137,9 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
         return yearData;
       });
     }
-    mergedData = mergedData.filter(e => {
-      // Filter out empty objects if a purpose is selected from the dropdown
-      return Object.keys(e).length !== 0
-    });
+    if (purpose) {
+      mergedData = mergedData.filter(e => e.purpose === purpose);
+    }
     let raceTotals = {
       year: "",
       purpose: "Totals",
@@ -152,7 +156,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     const searches = chartState.data[ds[1]];
     const stops = chartState.data[ds[0]];
 
-    const mergedData = stops.map((yearsStops) => {
+    let mergedData = stops.map((yearsStops) => {
       const year = yearsStops.year;
       const yearsSearches = searches.find((s) => s.year === year);
       const comparedData = { year };
@@ -162,11 +166,22 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
         if (!yearsSearches) groupsSearches = 0;
         else if (!yearsSearches[key]) groupsSearches = 0;
         else groupsSearches = yearsSearches[key];
-        comparedData[key] = `${groupsSearches}/${yearsStops[key]}`;
+        comparedData[key] = `${groupsSearches}`;
       });
       return comparedData;
     });
-    return mergedData;
+    if (purpose) {
+      mergedData = mergedData.filter(e => e.purpose === purpose);
+    }
+    let raceTotals = {
+      year: "Totals",
+      ...reduceFullDatasetOnlyTotals(mergedData, RACES)
+    };
+    let sortedData = mergedData.sort((a, b) => {
+      // Sort data descending by year
+      return (a["year"] < b["year"]) ? 1 : ((b["year"] < a["year"]) ? -1 : 0)
+    });
+    return [raceTotals, ...sortedData];
   };
 
   const mapContrbandHitrate = (ds) => {
@@ -192,6 +207,23 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     return [raceTotals, ...sortedData];
   };
 
+  const mapSearchByType = (ds) => {
+    let data = chartState.data[ds];
+    if (purpose) {
+      data = data.filter(d => d.search_type === purpose);
+    }
+    let raceTotals = {
+      year: "Totals",
+      search_type: "",
+      ...reduceFullDatasetOnlyTotals(data, RACES)
+    };
+    let sortedData = data.sort((a, b) => {
+      // Sort data descending by year
+      return (a["year"] < b["year"]) ? 1 : ((b["year"] < a["year"]) ? -1 : 0)
+    });
+    return [raceTotals, ...sortedData];
+  }
+
   const _buildTableData = (ds) => {
     let data = [];
     if (ds === STOPS_BY_REASON) {
@@ -200,10 +232,21 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       data = mapContrbandHitrate(ds);
     } else if (ds === LIKELIHOOD_OF_SEARCH) {
       data = mapLikelihoodOfSearch(ds);
+    } else if (ds === SEARCHES_BY_TYPE) {
+      data = mapSearchByType(ds);
     } else if (Array.isArray(ds)) {
       data = mapSearchesByReason(ds);
     } else {
-      data = chartState.data[ds];
+      let chartData = chartState.data[ds];
+      let raceTotals = {
+        year: "Totals",
+        ...reduceFullDatasetOnlyTotals(chartData, RACES)
+      };
+      let sortedData = chartData.sort((a, b) => {
+        // Sort data descending by year
+        return (a["year"] < b["year"]) ? 1 : ((b["year"] < a["year"]) ? -1 : 0)
+      });
+      data = [raceTotals, ...sortedData];
     }
     return data;
   };
@@ -253,12 +296,20 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
               height={42}
             />
           </S.Header>
-          {(dataSet === STOPS_BY_REASON || dataSet === LIKELIHOOD_OF_SEARCH ) &&
+          {(dataSet === STOPS_BY_REASON || dataSet === LIKELIHOOD_OF_SEARCH) &&
             <DataSubsetPicker
                 label={'Filter by Stop Purpose'}
                 value={purpose ? purpose : "All"}
                 onChange={handleStopPurposeSelect}
                 options={[PURPOSE_DEFAULT].concat(STOP_TYPES)}
+              />
+            }
+            {(dataSet === SEARCHES_BY_TYPE) &&
+            <DataSubsetPicker
+                label={'Filter by Search Type'}
+                value={purpose ? purpose : "All"}
+                onChange={handleStopPurposeSelect}
+                options={[PURPOSE_DEFAULT].concat(SEARCH_TYPES)}
               />
             }
           <S.TableWrapper>
