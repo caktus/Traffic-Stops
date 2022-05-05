@@ -20,7 +20,7 @@ import {
   YEARS_DEFAULT,
   getGroupValueBasedOnYear,
   getRatesAgainstBase,
-  STOP_TYPES,
+  STOP_TYPES, calculateAveragePercentage,
 } from '../chartUtils';
 import { AGENCY_LIST_SLUG, SEARCHES_SLUG } from 'Routes/slugs';
 
@@ -69,7 +69,7 @@ function SearchRate() {
         setNoBaseSearches(false);
       }
       const baseGroupTotalStops = getGroupValueBasedOnYear(data.stops, 'white', year, STOP_TYPES);
-      const mappedData = ethnicGroupKeys
+      let mappedData = ethnicGroupKeys
         .filter((g) => g.selected && g.value !== 'white')
         .map((g) => {
           const ethnicGroup = g.value;
@@ -102,6 +102,7 @@ function SearchRate() {
             })),
           };
         });
+      mappedData = calculateAveragePercentage(mappedData);
       setChartData(mappedData);
     }
   }, [chartState.data[LIKELIHOOD_OF_SEARCH], ethnicGroupKeys, year]);
