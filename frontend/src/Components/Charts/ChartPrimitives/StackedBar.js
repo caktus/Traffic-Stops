@@ -8,11 +8,14 @@ import { AXIS_STYLE } from './chartConstants';
 import ChartLoading from 'Components/Charts/ChartPrimitives/ChartLoading';
 import BarSkeleton from 'Components/Elements/Skeletons/BarSkeleton';
 import CopwatchChart from './CopwatchChart';
+import EmptyChartMessage from "../ChartSections/EmptyChartMessage";
 
 function StackedBar({ data, loading, tickValues, yAxisLabel }) {
   if (loading) return <ChartLoading skeleton={BarSkeleton} />
 
   return (
+  <>
+    <EmptyChartMessage data={data} />
     <CopwatchChart
       style={{ padding: 0 }}
       yAxisLabel={yAxisLabel}
@@ -46,6 +49,7 @@ function StackedBar({ data, loading, tickValues, yAxisLabel }) {
         ))}
       </VictoryStack>
     </CopwatchChart>
+  </>
   );
 }
 

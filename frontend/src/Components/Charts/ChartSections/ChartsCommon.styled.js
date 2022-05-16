@@ -17,6 +17,20 @@ export const ChartDescription = styled.div`
   }
 `;
 
+export const ChartWarning = styled.div`
+  background-color: rgba(252, 248, 227, 1);
+  border-color: rgba(177, 161, 129, 1);
+  color: rgba(138, 109, 59, 1);
+  width: 50%;
+  padding: 12px 16px;
+  border-radius: 4px;
+  border-style: solid;
+  border-width: 1px;
+  margin-top: 15px;
+  font-size: 16px;
+  text-align: center;
+`;
+
 export const ChartSubsection = styled.div`
   display: flex;
   flex-direction: row;
