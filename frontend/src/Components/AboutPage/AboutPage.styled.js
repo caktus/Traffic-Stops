@@ -28,7 +28,20 @@ export const AboutPageText = styled.div`
   }
 `;
 
-export const AboutPageParagaph = styled(P)`
+export const AboutPageParagraph = styled(P)`
   margin: 1.5em 0;
   line-height: 2;
+`;
+
+
+export const AboutPageBoldParagraph = styled(P)`
+  margin: 1.5em 0;
+  line-height: 2;
+  font-weight: bold;
+`;
+
+export const AboutPageFlexedDiv = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5em;
 `;
