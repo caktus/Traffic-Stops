@@ -10,8 +10,11 @@ import {CONTACT_FORM_URL} from "../../Services/endpoints";
 function AboutPage(props) {
   const [formFields, setFormFields] = useState({
     name: '',
+    nameErrors: [],
     email: '',
+    emailErrors: [],
     message: '',
+    messageErrors: [],
     messageSent: false
   });
 
@@ -36,7 +39,16 @@ function AboutPage(props) {
           setFormFields({messageSent: false});
         }, 2000);
       }
-    }).catch(err => console.log(err));
+    }).catch(err => {
+      if (err.response.data) {
+        console.log(err.response.data);
+        setFormFields({
+          nameErrors: err.response.data["name"],
+          emailErrors: err.response.data["email"],
+          messageErrors: err.response.data["message"]
+        })
+      }
+    });
   }
 
   return (
@@ -98,18 +110,21 @@ function AboutPage(props) {
               <Input
                 label="Your name"
                 value={formFields.name}
-                  onChange={(e) => setFormValue('name', e.target.value)}
+                errors={formFields.nameErrors}
+                onChange={(e) => setFormValue('name', e.target.value)}
               />
               <Input
                   label="Your email"
                   type="email"
                   value={formFields.email}
+                  errors={formFields.emailErrors}
                   onChange={(e) => setFormValue('email', e.target.value)}
               />
               <Input
                   label="Message"
                   type="textarea"
                   value={formFields.message}
+                  errors={formFields.messageErrors}
                   cols="50"
                   rows="8"
                   onChange={(e) => setFormValue('message', e.target.value)}

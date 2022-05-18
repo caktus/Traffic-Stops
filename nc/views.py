@@ -205,7 +205,7 @@ class ContactView(APIView):
 
     def post(self, request):
         serializer = ContactFormSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
+        if serializer.is_valid():
             contact_name = serializer.data.get("name")
             contact_email = serializer.data.get("email")
             message = serializer.data.get("message")
@@ -215,4 +215,6 @@ class ContactView(APIView):
                 settings.DEFAULT_FROM_EMAIL,
                 [settings.DEFAULT_FROM_EMAIL],  # TODO: Update with correct email to forward to.
             )
-        return Response(status=204)
+            return Response(status=204)
+        else:
+            return Response(data=serializer.errors, status=400)
