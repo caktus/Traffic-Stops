@@ -45,8 +45,8 @@ function TrafficStops() {
   const theme = useTheme();
   const officerId = useOfficerId();
 
-  useDataset(agencyId, STOPS_BY_REASON);
-  const [chartState] = useDataset(agencyId, STOPS);
+  const [stopsChartState] = useDataset(agencyId, STOPS);
+  const [reasonChartState] = useDataset(agencyId, STOPS_BY_REASON);
 
   const [year, setYear] = useState(YEARS_DEFAULT);
 
@@ -83,17 +83,17 @@ function TrafficStops() {
   /* CALCULATE AND BUILD CHART DATA */
   // Build data for Stops by Percentage line chart
   useEffect(() => {
-    const data = chartState.data[STOPS];
+    const data = stopsChartState.data[STOPS];
     if (data) {
       const filteredGroups = percentageEthnicGroups.filter((g) => g.selected).map((g) => g.value);
       const derivedData = buildStackedBarData(data, filteredGroups, theme);
       setByPercentageLineData(derivedData);
     }
-  }, [chartState.data[STOPS], percentageEthnicGroups]);
+  }, [stopsChartState.data[STOPS], percentageEthnicGroups]);
 
   // Build data for Stops by Percentage pie chart
   useEffect(() => {
-    const data = chartState.data[STOPS];
+    const data = stopsChartState.data[STOPS];
     if (data) {
       if (!year || year === 'All') {
         setByPercentagePieData(reduceFullDataset(data, RACES, theme));
@@ -110,11 +110,11 @@ function TrafficStops() {
         );
       }
     }
-  }, [chartState.data[STOPS], year]);
+  }, [stopsChartState.data[STOPS], year]);
 
   // Build data for Stops By Count line chart ("All")
   useEffect(() => {
-    const data = chartState.data[STOPS];
+    const data = stopsChartState.data[STOPS];
     if (data && purpose === PURPOSE_DEFAULT) {
       const derivedData = countEthnicGroups
         .filter((g) => g.selected)
@@ -133,11 +133,11 @@ function TrafficStops() {
         });
       setByCountLineData(derivedData);
     }
-  }, [chartState.data[STOPS], purpose, countEthnicGroups]);
+  }, [stopsChartState.data[STOPS], purpose, countEthnicGroups]);
 
   // Build data for Stops By Count line chart (single purpose)
   useEffect(() => {
-    const data = chartState.data[STOPS_BY_REASON]?.stops;
+    const data = reasonChartState.data[STOPS_BY_REASON]?.stops;
     if (data && purpose !== PURPOSE_DEFAULT) {
       const purposeData = filterSinglePurpose(data, purpose);
       const derivedData = countEthnicGroups
@@ -156,7 +156,7 @@ function TrafficStops() {
         });
       setByCountLineData(derivedData);
     }
-  }, [chartState.data[STOPS_BY_REASON], purpose, countEthnicGroups]);
+  }, [reasonChartState.data[STOPS_BY_REASON], purpose, countEthnicGroups]);
 
   /* INTERACTIONS */
   // Handle year dropdown state
@@ -234,8 +234,8 @@ function TrafficStops() {
               <StackedBar
                 horizontal
                 data={byPercentageLineData}
-                tickValues={chartState.yearSet}
-                loading={chartState.loading[STOPS]}
+                tickValues={stopsChartState.yearSet}
+                loading={stopsChartState.loading[STOPS]}
                 yAxisLabel={val => `${val}%`}
               />
             </S.LineWrapper>
@@ -251,13 +251,13 @@ function TrafficStops() {
           </S.LineSection>
           <S.PieSection>
             <S.PieWrapper>
-              <Pie data={byPercentagePieData} loading={chartState.loading[STOPS]} />
+              <Pie data={byPercentagePieData} loading={stopsChartState.loading[STOPS]} />
             </S.PieWrapper>
             <DataSubsetPicker
               label="Year"
               value={year}
               onChange={handleYearSelect}
-              options={[YEARS_DEFAULT].concat(chartState.yearRange)}
+              options={[YEARS_DEFAULT].concat(stopsChartState.yearRange)}
             />
           </S.PieSection>
         </S.ChartSubsection>
@@ -270,9 +270,9 @@ function TrafficStops() {
           <S.LineWrapper>
             <Line
               data={byCountLineData}
-              loading={chartState.loading[STOPS_BY_REASON]}
+              loading={reasonChartState.loading[STOPS_BY_REASON]}
               iTickFormat={(t) => (t % 2 === 0 ? t : null)}
-              iTickValues={chartState.yearSet}
+              iTickValues={reasonChartState.yearSet}
               dAxisProps={{
                 tickFormat: (t) => `${t}`,
               }}
