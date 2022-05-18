@@ -280,3 +280,8 @@ COMPLIANCE_REPORT_LIST = ("forwardjustice-team@caktusgroup.com",)
 NC_FTP_HOST = os.environ.get("NC_FTP_HOST", "")
 NC_FTP_USER = os.environ.get("NC_FTP_USER", "")
 NC_FTP_PASSWORD = os.environ.get("NC_FTP_PASSWORD", "")
+
+
+# Contact us Email
+CONTACT_US_EMAIL = os.getenv("CONTACT_US_EMAIL", "forwardjustice-team@caktusgroup.com")
+

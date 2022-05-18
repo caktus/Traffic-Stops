@@ -46,6 +46,7 @@ else:
 EMAIL_PORT = os.getenv("EMAIL_PORT", default_smtp_port)
 EMAIL_SUBJECT_PREFIX = "[trafficstops %s] " % ENVIRONMENT.title()
 DEFAULT_FROM_EMAIL = f"noreply@{os.getenv('DOMAIN', os.environ)}"
+CONTACT_US_EMAIL = os.getenv("CONTACT_US_EMAIL", DEFAULT_FROM_EMAIL)
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
 ### React SPA index.html

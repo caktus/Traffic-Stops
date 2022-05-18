@@ -213,7 +213,7 @@ class ContactView(APIView):
                 f"{contact_name} ({contact_email}) has submitted a message.",
                 message,
                 settings.DEFAULT_FROM_EMAIL,
-                [settings.DEFAULT_FROM_EMAIL],  # TODO: Update with correct email to forward to.
+                [settings.CONTACT_US_EMAIL],
             )
             return Response(status=204)
         else:
