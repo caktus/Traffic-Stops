@@ -284,4 +284,3 @@ NC_FTP_PASSWORD = os.environ.get("NC_FTP_PASSWORD", "")
 
 # Contact us Email
 CONTACT_US_EMAIL = os.getenv("CONTACT_US_EMAIL", "forwardjustice-team@caktusgroup.com")
-
