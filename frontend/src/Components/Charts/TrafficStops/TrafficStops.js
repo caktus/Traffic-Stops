@@ -38,10 +38,12 @@ import Legend from 'Components/Charts/ChartSections/Legend/Legend';
 import ChartHeader from 'Components/Charts/ChartSections/ChartHeader';
 import DataSubsetPicker from 'Components/Charts/ChartSections/DataSubsetPicker/DataSubsetPicker';
 import toTitleCase from 'util/toTitleCase';
+import useOfficerId from "../../../Hooks/useOfficerId";
 
 function TrafficStops() {
   let { agencyId } = useParams();
   const theme = useTheme();
+  const officerId = useOfficerId();
 
   useDataset(agencyId, STOPS_BY_REASON);
   const [chartState] = useDataset(agencyId, STOPS);
@@ -204,6 +206,14 @@ function TrafficStops() {
     }
   };
 
+  const subjectObserving = () => {
+    if (officerId) {
+      return "officer";
+    } else if (agencyId) {
+      return "department";
+    }
+  }
+
   return (
     <TrafficStopsStyled>
       {/* Traffic Stops by Percentage */}
@@ -215,7 +225,7 @@ function TrafficStops() {
           handleViewData={handleViewPercentageData}
         />
         <S.ChartDescription>
-          <P>Shows the race/ethnic composition of drivers stopped by this department over time.</P>
+          <P>Shows the race/ethnic composition of drivers stopped by this {subjectObserving()} over time.</P>
           <P>{getChartDetailedBreakdown()}</P>
         </S.ChartDescription>
         <S.ChartSubsection>
