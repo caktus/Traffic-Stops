@@ -8,6 +8,7 @@ import CopwatchChart, {CopwatchTooltip} from 'Components/Charts/ChartPrimitives/
 import {VictoryLine, VictoryAxis, VictoryTooltip} from 'victory';
 import ChartLoading from 'Components/Charts/ChartPrimitives/ChartLoading';
 import BarSkeleton from 'Components/Elements/Skeletons/BarSkeleton';
+import EmptyChartMessage from "../ChartSections/EmptyChartMessage";
 
 
 function Line({
@@ -24,6 +25,8 @@ function Line({
   if (loading) return <ChartLoading skeleton={BarSkeleton} />
 
   return (
+  <>
+    <EmptyChartMessage data={data} />
     <CopwatchChart yAxisLabel={yAxisLabel}>
       <VictoryAxis
         dependentAxis
@@ -52,6 +55,7 @@ function Line({
         />
       ))}
     </CopwatchChart>
+  </>
   );
 }
 
