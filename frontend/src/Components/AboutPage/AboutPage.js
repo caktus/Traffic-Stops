@@ -31,6 +31,7 @@ function AboutPage(props) {
       email: formFields.email,
       message: formFields.message
     }
+    console.log(postData);
 
     axios.post(CONTACT_FORM_URL, postData).then(res => {
       if (res.status === 204) {
@@ -41,8 +42,10 @@ function AboutPage(props) {
       }
     }).catch(err => {
       if (err.response.data) {
-        console.log(err.response.data);
         setFormFields({
+          name: formFields.name,
+          email: formFields.email,
+          message: formFields.message,
           nameErrors: err.response.data["name"],
           emailErrors: err.response.data["email"],
           messageErrors: err.response.data["message"]
