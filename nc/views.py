@@ -85,7 +85,8 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
 
             if "search_type" in group_by:
                 data["search_type"] = SEARCH_TYPE_CHOICES.get(
-                    stop["search_type"], stop["search_type"],
+                    stop["search_type"],
+                    stop["search_type"],
                 )
 
             if "driver_race" in group_by:
@@ -149,7 +150,12 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
         q = Q(search_type__isnull=False)
         self.query(
             results,
-            group_by=("search_type", "year", "driver_race", "driver_ethnicity",),
+            group_by=(
+                "search_type",
+                "year",
+                "driver_race",
+                "driver_ethnicity",
+            ),
             filter_=q,
         )
         return Response(results.flatten())
@@ -213,7 +219,7 @@ class ContactView(APIView):
                 f"{contact_name} ({contact_email}) has submitted a message.",
                 message,
                 settings.DEFAULT_FROM_EMAIL,
-                [settings.CONTACT_US_EMAIL],
+                settings.CONTACT_US_EMAILS,
             )
             return Response(status=204)
         else:
