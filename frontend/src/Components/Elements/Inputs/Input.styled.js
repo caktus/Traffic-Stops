@@ -1,5 +1,20 @@
 import styled, { css } from 'styled-components';
 
+export const TextArea = styled.textarea`
+  width: 100%;
+  outline: none;
+  border: 1px solid;
+  border-color: #272973;
+  border-radius: 6px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 16px;
+  padding-right: 16px;
+  font-size: 18px;
+  font-family: inherit;
+  color: black;
+`;
+
 export const Wrapper = styled.div`
   height: 100%;
   display: flex;

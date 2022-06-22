@@ -39,13 +39,17 @@ if os.getenv("DATABASE_URL"):
     import dj_database_url
 
     db_from_env = dj_database_url.config(
-        env="DATABASE_URL", conn_max_age=500, ssl_require=os.getenv("DATABASE_SSL", False),
+        env="DATABASE_URL",
+        conn_max_age=500,
+        ssl_require=os.getenv("DATABASE_SSL", False),
     )
     DATABASES["default"].update(db_from_env)
 
     if os.getenv("DATABASE_URL_NC"):
         db_from_env = dj_database_url.config(
-            env="DATABASE_URL_NC", conn_max_age=500, ssl_require=os.getenv("DATABASE_SSL", False),
+            env="DATABASE_URL_NC",
+            conn_max_age=500,
+            ssl_require=os.getenv("DATABASE_SSL", False),
         )
         DATABASES["traffic_stops_nc"].update(db_from_env)
 
@@ -127,7 +131,9 @@ AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(PROJECT_DIR, "templates"),],
+        "DIRS": [
+            os.path.join(PROJECT_DIR, "templates"),
+        ],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -189,28 +195,81 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "filters": {"require_debug_false": {"()": "django.utils.log.RequireDebugFalse"}},
-    "formatters": {"basic": {"format": "%(asctime)s %(name)-20s %(levelname)-8s %(message)s",},},
+    "formatters": {
+        "basic": {
+            "format": "%(asctime)s %(name)-20s %(levelname)-8s %(message)s",
+        },
+    },
     "handlers": {
         "mail_admins": {
             "level": "ERROR",
             "filters": ["require_debug_false"],
             "class": "django.utils.log.AdminEmailHandler",
         },
-        "console": {"level": "DEBUG", "class": "logging.StreamHandler", "formatter": "basic",},
+        "console": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "basic",
+        },
     },
     "loggers": {
-        "django.request": {"handlers": ["mail_admins"], "level": "ERROR", "propagate": True,},
-        "django.security": {"handlers": ["mail_admins"], "level": "ERROR", "propagate": True,},
-        "django.db": {"handlers": ["console"], "level": "INFO", "propagate": False,},
-        "apps": {"level": "DEBUG", "handlers": ["console"], "propagate": False,},
-        "traffic_stops": {"handlers": ["console"], "level": "INFO", "propagate": False,},
-        "tsdata": {"handlers": ["console"], "level": "DEBUG", "propagate": False,},
-        "nc": {"handlers": ["console"], "level": "DEBUG", "propagate": False,},
-        "caching": {"handlers": ["console"], "level": "DEBUG", "propagate": False,},
-        "caching.invalidation": {"handlers": ["console"], "level": "INFO", "propagate": False,},
-        "celery": {"level": "INFO", "handlers": ["console"], "propagate": False,},
+        "django.request": {
+            "handlers": ["mail_admins"],
+            "level": "ERROR",
+            "propagate": True,
+        },
+        "django.security": {
+            "handlers": ["mail_admins"],
+            "level": "ERROR",
+            "propagate": True,
+        },
+        "django.db": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "apps": {
+            "level": "DEBUG",
+            "handlers": ["console"],
+            "propagate": False,
+        },
+        "traffic_stops": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "tsdata": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+        "nc": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+        "caching": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+        "caching.invalidation": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "celery": {
+            "level": "INFO",
+            "handlers": ["console"],
+            "propagate": False,
+        },
     },
-    "root": {"handlers": ["console",], "level": "INFO",},
+    "root": {
+        "handlers": [
+            "console",
+        ],
+        "level": "INFO",
+    },
 }
 
 CELERYBEAT_SCHEDULE = {
@@ -228,10 +287,18 @@ CELERYD_HIJACK_ROOT_LOGGER = False
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",},
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",},
-    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",},
-    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+    },
 ]
 
 # Make things more secure by default. Run "python manage.py check --deploy"
@@ -255,13 +322,17 @@ if "redis" in CACHE_HOST:
         "default": {
             "BACKEND": "django_redis.cache.RedisCache",
             "LOCATION": CACHE_HOST,
-            "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient",},
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            },
         }
     }
     SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 else:
     CACHES = {
-        "default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache",},
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        },
     }
 
 CENSUS_API_KEY = ""
@@ -280,3 +351,7 @@ COMPLIANCE_REPORT_LIST = ("forwardjustice-team@caktusgroup.com",)
 NC_FTP_HOST = os.environ.get("NC_FTP_HOST", "")
 NC_FTP_USER = os.environ.get("NC_FTP_USER", "")
 NC_FTP_PASSWORD = os.environ.get("NC_FTP_PASSWORD", "")
+
+
+# Contact us Email
+CONTACT_US_EMAILS = os.getenv("CONTACT_US_EMAILS", "forwardjustice-team@caktusgroup.com").split(":")

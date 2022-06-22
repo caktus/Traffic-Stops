@@ -33,7 +33,16 @@ k8s_migration_command:
   - migrate_all_dbs.sh
 k8s_collectstatic_enabled: false
 
+# Auxillary pod configuration:
+k8s_worker_enabled: true
+k8s_worker_replicas: 1
+k8s_worker_celery_app: "traffic_stops"
+k8s_worker_beat_enabled: true
+k8s_memcached_enabled: false
+k8s_redis_enabled: true
+
 # Shared environment variables:
+env_django_debug: false
 env_database_url: "postgres://{{ app_name }}_{{ env_name }}:{{ database_password }}@{{ DatabaseAddress }}:5432/{{ app_name }}_{{ env_name }}"
 env_database_url_nc: "postgres://{{ app_name }}_{{ env_name }}:{{ database_password }}@{{ DatabaseAddress }}:5432/{{ app_name }}_{{ env_name }}_nc"
 env_django_settings: "traffic_stops.settings.deploy"
@@ -77,13 +86,48 @@ env_email_host_password: !vault |
   3232353563333332396133636565626662366332356638303166
 env_email_use_tls: "true"
 
-# Auxillary pod configuration:
-k8s_worker_enabled: true
-k8s_worker_replicas: 1
-k8s_worker_celery_app: "traffic_stops"
-k8s_worker_beat_enabled: true
-k8s_memcached_enabled: false
-k8s_redis_enabled: true
+k8s_environment_variables:
+  DJANGO_DEBUG: "{{ env_django_debug | string | title | string }}"
+  DATABASE_URL: "{{ env_database_url }}"
+  DATABASE_URL_NC: "{{ env_database_url_nc }}"
+  DJANGO_SETTINGS_MODULE: "{{ env_django_settings }}"
+  # DOMAIN is the ALLOWED_HOST
+  DOMAIN: "{{ k8s_domain_names[0] }}"
+  ALLOWED_HOSTS: "{{ k8s_domain_names[0] }}"
+  ENVIRONMENT: "{{ env_name }}"
+  CACHE_HOST: "{{ env_cache_host }}"
+  BROKER_URL: "{{ env_broker_url }}"
+  # *** Uploaded media
+  DEFAULT_FILE_STORAGE: "{{ env_default_file_storage }}"
+  MEDIA_STORAGE_BUCKET_NAME: "{{ env_media_storage_bucket_name }}"
+  AWS_DEFAULT_ACL: "{{ env_aws_default_acl }}"
+  AWS_DEFAULT_REGION: "{{ aws_region }}"
+  MEDIA_LOCATION: "{{ env_media_location }}"
+  # *** Email
+  # 'ses-smtp-user.20200921-084510' user in traffic-stops account
+  EMAIL_HOST: "{{ env_email_host }}"
+  EMAIL_HOST_USER: "{{ env_email_host_user }}"
+  EMAIL_HOST_PASSWORD: "{{ env_email_host_password }}"
+  EMAIL_USE_TLS: "{{ env_email_use_tls }}"
+  # *** New Relic APM
+  NEW_RELIC_APP_NAME: "{{ env_new_relic_app_name }}"
+  NEW_RELIC_LICENSE_KEY: "{{ env_new_relic_license_key }}"
+  SENTRY_DSN: "{{ env_sentry_dsn }}"
+  DJANGO_SECRET_KEY: !vault |
+    $ANSIBLE_VAULT;1.1;AES256
+    35313432353232386662373534636239333765663936643639363266323337333936656462373962
+    3766616464653266613234303331663934386462313238370a646532663834356266333765623763
+    63633165383834303864613362623364653165623135323138346234313031393461653033306233
+    3861323666306530640a346233653332356235623036653865383235626636623764613038653331
+    61343666356364623132323230626430616261313463366462643632346132313331316561633764
+    37646461333661316261363930626239643633323333633930636232616231326530656233396164
+    613035323630616135653866373062303966
+  # ** FTP_ACCESS
+  NC_FTP_HOST: "{{ env_nc_ftp_host }}"
+  NC_FTP_USER: "{{ env_nc_ftp_user }}"
+  NC_FTP_PASSWORD: "{{ env_nc_ftp_password }}"
+  # Contact form
+  CONTACT_US_EMAILS: "{{ env_contact_us_emails|join(':') }}"
 
 # S3 bucket configuration:
 k8s_s3_region: "{{ aws_region }}"

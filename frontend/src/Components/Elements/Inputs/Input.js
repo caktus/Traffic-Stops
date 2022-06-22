@@ -5,6 +5,7 @@ import * as Styled from './Input.styled';
 
 import Icon, { ICONS } from 'img/icons/Icon';
 import { Input } from 'reaktus';
+import {TextArea} from "./Input.styled";
 
 export const iconPositions = {
   LEFT: 'left',
@@ -26,6 +27,7 @@ function _renderIcon(icon, { iconPosition, invertIcon, iconStyles }) {
 }
 
 function FJInput({
+  type = "text",
   label,
   errors = [],
   loading,
@@ -51,6 +53,25 @@ function FJInput({
     return paddingProps;
   }
 
+  if (type === "textarea") {
+    return (
+        <Styled.Wrapper>
+          {label && (
+            <Input.Label errors={errors} py="2">
+              {label}{' '}
+              <Styled.LableSpan required={required} optional={optional}>
+                {required && '(required)'}
+                {optional && '(optional)'}
+              </Styled.LableSpan>
+            </Input.Label>
+          )}
+          <TextArea {...props} />
+          <Input.Errors errors={errors} />
+          {helpText && <Styled.HelpText>{helpText}</Styled.HelpText>}
+        </Styled.Wrapper>
+    )
+  }
+
   return (
     <Styled.Wrapper>
       {label && (
@@ -63,7 +84,7 @@ function FJInput({
         </Input.Label>
       )}
       <Input
-        type="text"
+        type={type}
         icon={
           icon
             ? (iconProps) =>
@@ -86,6 +107,7 @@ function FJInput({
 }
 
 FJInput.propTypes = {
+  type: PropTypes.string,
   label: PropTypes.string,
   icon: PropTypes.oneOf(Object.values(ICONS)),
   iconPosition: PropTypes.oneOf(Object.values(iconPositions)),
@@ -99,6 +121,7 @@ FJInput.defaultProps = {
   invertIcon: false,
   required: false,
   optional: false,
+  type: "text"
 };
 
 export default FJInput;

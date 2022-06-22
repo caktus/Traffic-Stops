@@ -95,3 +95,12 @@ class StateFactsSerializer(serializers.ModelSerializer):
             "end_date",
             "top_agencies",
         )
+
+
+class ContactFormSerializer(serializers.Serializer):
+    name = serializers.CharField()
+    email = serializers.EmailField()
+    message = serializers.CharField()
+
+    class Meta:
+        fields = "__all__"

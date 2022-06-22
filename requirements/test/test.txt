@@ -50,7 +50,7 @@ platformdirs==2.4.0
     # via black
 pluggy==0.13.1
     # via pytest
-pre-commit==2.4.0
+pre-commit==2.17.0
     # via -r requirements/test/test.in
 py==1.8.1
     # via pytest
