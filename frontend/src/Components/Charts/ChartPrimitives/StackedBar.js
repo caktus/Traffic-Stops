@@ -7,11 +7,14 @@ import { AXIS_STYLE } from './chartConstants';
 // Children
 import ChartLoading from 'Components/Charts/ChartPrimitives/ChartLoading';
 import BarSkeleton from 'Components/Elements/Skeletons/BarSkeleton';
+import EmptyChartMessage from "../ChartSections/EmptyChartMessage";
 
 function StackedBar({ data, loading, tickValues, yAxisLabel }) {
   if (loading) return <ChartLoading skeleton={BarSkeleton} />
 
   return (
+  <>
+    <EmptyChartMessage data={data} />
     <VictoryChart
       style={{ padding: 0 }}
       yAxisLabel={yAxisLabel}
@@ -45,6 +48,7 @@ function StackedBar({ data, loading, tickValues, yAxisLabel }) {
         ))}
       </VictoryStack>
     </VictoryChart>
+  </>
   );
 }
 
