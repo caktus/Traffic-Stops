@@ -31,9 +31,11 @@ import DataSubsetPicker from 'Components/Charts/ChartSections/DataSubsetPicker/D
 import GroupedBar from 'Components/Charts/ChartPrimitives/GroupedBar';
 import Pie from 'Components/Charts/ChartPrimitives/Pie';
 import toTitleCase from 'util/toTitleCase';
+import useOfficerId from "../../../Hooks/useOfficerId";
 
 function UseOfForce() {
   let { agencyId } = useParams();
+  const officerId = useOfficerId();
   const theme = useTheme();
 
   const [chartState] = useDataset(agencyId, USE_OF_FORCE);
@@ -49,6 +51,14 @@ function UseOfForce() {
 
   const renderMetaTags = useMetaTags();
   const [renderTableModal, { openModal }] = useTableModal();
+
+  const subjectObserving = () => {
+    if (officerId) {
+      return "whom this officer";
+    } else if (agencyId) {
+      return "whom law enforcement officers";
+    }
+  }
 
   /* BUILD DATA */
   // Bar chart data
@@ -125,7 +135,7 @@ function UseOfForce() {
         <ChartHeader chartTitle="Use of Force" handleViewData={handleViewData} />
         <S.ChartDescription>
           <P>
-            Shows the race/ethnic composition of drivers whom law enforcement officers reported
+            Shows the race/ethnic composition of drivers {subjectObserving()} reported
             using force against
           </P>
         </S.ChartDescription>
