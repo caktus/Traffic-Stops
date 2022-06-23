@@ -49,7 +49,13 @@ function GroupedBar({
               data: { fill: bar.color },
             }}
             labels={({ datum }) => `${datum.ethnicGroup}, ${datum.x}, ${dAxisProps.tickFormat(datum.y)}`}
-            labelComponent={<VictoryTooltip style={{ fontSize: toolTipFontSize }}/>}
+            labelComponent={
+              <VictoryTooltip
+                  constrainToVisibleArea
+                  flyoutStyle={{ opacity: 0.8 }}
+                  style={{ fontSize: toolTipFontSize }}
+              />
+            }
             {...barProps}
           />
         ))}
