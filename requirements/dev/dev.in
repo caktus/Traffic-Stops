@@ -2,9 +2,12 @@
 -c ../base/base.txt
 -c ../test/test.txt
 
+wheel
+
 # deploy
 invoke-kubesae==0.0.16
-ansible==4.8.0
+ansible==5.9.0
+cffi==1.15.0
 troposphere
 
 # docs

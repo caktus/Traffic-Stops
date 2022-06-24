@@ -1,0 +1,192 @@
+TASK [caktus.django-k8s : Create/update templates in Kubernetes] ***************
+ok: [staging] => (item={'name': 'registry_secret.yaml.j2', 'state': 'absent'})
+ok: [staging] => (item={'name': 'redis.yaml.j2', 'state': 'present'})
+ok: [staging] => (item={'name': 'elasticsearch.yaml.j2', 'state': 'absent'})
+ok: [staging] => (item={'name': 'memcached.yaml.j2', 'state': 'absent'})
+fatal: [staging]: FAILED! => 
+  msg: |-
+    An unhandled exception occurred while running the lookup plugin 'template'. Error was a <class 'ansible.errors.AnsibleError'>, original message: template error while templating string: expected token 'end of statement block', got '+'. String: {#
+    Anywhere we need to inject a non-scalar value, we use to_json instead of to_yaml because it:
+    1) more reliably includes wrapping {}
+    2) behaves identically on Python 2 and Python 3
+    (and all JSON is valid YAML).
+    #}
+    {% for container in k8s_web_containers %}
+    apiVersion: v1
+    kind: Secret
+    metadata:
+      name: "{{ container["name"] }}-secrets"
+      labels:
+        app: "{{ container["name"] }}"
+      namespace: "{{ k8s_namespace }}"
+    type: Opaque
+    stringData: {{ container["environment"] | to_json }}
+    ---
+    {% for volume in container.get("data_volumes", []) %}
+    apiVersion: v1
+    kind: Secret
+    metadata:
+      name: "{{ container["name"] }}-volume-{{ volume["name"] }}"
+      labels:
+        app: "{{ container["name"] }}"
+      namespace: "{{ k8s_namespace }}"
+    type: Opaque
+    stringData: {{ volume["data"] | to_json }}
+    ---
+    {% endfor %}
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: "{{ container["name"] }}"
+      namespace: "{{ k8s_namespace }}"
+    spec:
+      selector:
+        matchLabels:
+          app: "{{ container["name"] }}"
+      replicas: {{ container["replicas"] }}
+      template:
+        metadata:
+          labels:
+            app: "{{ container["name"] }}"
+        spec:
+          affinity:
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                podAffinityTerm:
+                  labelSelector:
+                    matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                      - {{ container["name"] }}
+                  topologyKey: kubernetes.io/hostname
+    {% if k8s_dockerconfigjson %}
+          imagePullSecrets:
+          - name: registry-secret
+    {% else %}
+          imagePullSecrets: []
+    {% endif %}
+          containers:
+          - name: "{{ container["name"] }}"
+            image: "{{ container["image"] }}:{{ container["tag"] }}"
+            imagePullPolicy: "{{ container["image_pull_policy"] }}"
+            env:
+            - name: GET_HOSTS_FROM
+              value: dns
+            envFrom:
+            - secretRef:
+                name: "{{ container["name"] }}-secrets"
+            ports:
+            - containerPort: {{ container["port"] }}
+            resources: {{ container["resources"] | to_json }}
+            volumeMounts: {% if not container.get("data_volumes") %}[]{% endif +%}
+    {% for volume in container.get("data_volumes", []) %}
+              - name: {{ volume["name"] }}
+                mountPath: "{{ volume["mountPath"] }}"
+                readOnly: true
+    {% endfor %}
+          volumes: {% if not container.get("data_volumes") %}[]{% endif +%}
+    {% for volume in container.get("data_volumes", []) %}
+            - name: {{ volume["name"] }}
+              secret:
+                secretName: "{{ container["name"] }}-volume-{{ volume["name"] }}"
+    {% endfor %}
+          securityContext:
+            fsGroup: 2000
+    ---
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: "{{ container["name"] }}"
+      labels:
+        app: "{{ container["name"] }}"
+      namespace: "{{ k8s_namespace }}"
+    spec:
+      ports:
+      - protocol: TCP
+        # Where other things in the cluster should try to connect to our application
+        port: {{ container["port"] }}
+        # Where our application is listening:
+        targetPort: {{ container["port"] }}
+      selector:
+        app: "{{ container["name"] }}"
+    ---
+    {% endfor %}
+    apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    metadata:
+      name: "ingress"
+      namespace: "{{ k8s_namespace }}"
+      annotations:
+        kubernetes.io/ingress.class: "{{ k8s_ingress_class }}"
+        nginx.org/mergeable-ingress-type: master
+    {% if k8s_ingress_certificate_issuer %}
+        cert-manager.io/cluster-issuer: "{{ k8s_ingress_certificate_issuer }}"
+    {% endif %}
+    spec:
+      tls:
+      - hosts:
+    {% for domain in k8s_ingress_tls_domains %}
+        - "{{ domain }}"
+    {% endfor %}
+        secretName: "{{ k8s_namespace }}-tls"
+      rules:
+    {% for domain in k8s_domain_names %}
+      - host: "{{ domain }}"
+    {% endfor %}
+    {% for container in k8s_web_containers %}
+    {% if container["htpasswd"] %}
+    ---
+    apiVersion: v1
+    data:
+      auth: {{ container["htpasswd"] | b64encode }}
+    kind: Secret
+    metadata:
+      name: basic-auth-{{ container["name"] }}
+      namespace: "{{ k8s_namespace }}"
+    type: Opaque
+    {% endif %}
+    ---
+    apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    metadata:
+      name: "ingress-{{ container["name"] }}"
+      namespace: "{{ k8s_namespace }}"
+      annotations:
+        kubernetes.io/ingress.class: "{{ k8s_ingress_class }}"
+        nginx.org/mergeable-ingress-type: minion
+        nginx.ingress.kubernetes.io/backend-protocol: "{{ container["protocol"] }}"
+    {% if container["htpasswd"] %}
+        nginx.ingress.kubernetes.io/auth-type: basic
+        nginx.ingress.kubernetes.io/auth-secret: basic-auth-{{ container["name"] }}
+        nginx.ingress.kubernetes.io/auth-realm: "Authentication Required"
+    {% else %}{# Disable basic auth, in case it was enabled previously. #}
+        nginx.ingress.kubernetes.io/auth-type: ""
+    {% endif %}
+    {% if k8s_domain_from_to_www_redirect %}
+        nginx.ingress.kubernetes.io/from-to-www-redirect: 'true'
+    {% else %}
+        nginx.ingress.kubernetes.io/from-to-www-redirect: 'false'
+    {% endif %}
+    {% for key, value in container["ingress_annotations"].items() %}
+        {{ key }}: "{{ value }}"
+    {% endfor %}
+    spec:
+      rules:
+    {% for domain in k8s_domain_names %}
+      - host: "{{ domain }}"
+        http:
+          paths:
+    {% for ingress_path in container["ingress_paths"] %}
+          - path: "{{ ingress_path }}"
+            pathType: "{{ k8s_container_ingress_path_type }}"
+            backend:
+              service:
+                name: "{{ container["name"] }}"
+                port:
+                  number: {{ container["port"] }}
+    {% endfor %}
+    {% endfor %}
+    {% endfor %}
+NO MORE HOSTS LEFT *************************************************************
