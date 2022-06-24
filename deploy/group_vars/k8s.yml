@@ -1,4 +1,4 @@
----
+s---
 # ----------------------------------------------------------------------------
 # Global: CloudFormation stack outputs. See all.yml for stack parameters.
 # ----------------------------------------------------------------------------
@@ -27,6 +27,12 @@ k8s_container_port: 8000
 k8s_container_image: "{{ RepositoryURL }}/traff-appli-gvyudgfsjhrz"
 k8s_container_image_pull_policy: Always
 k8s_container_replicas: 2
+k8s_container_resources:
+  requests:
+    memory: 256Mi
+    cpu: 50m
+  limits:
+    cpu: 250m
 k8s_migrations_enabled: true
 k8s_migration_command:
   - bash
