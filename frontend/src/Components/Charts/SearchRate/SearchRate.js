@@ -187,7 +187,7 @@ function SearchRate() {
                   width: 400,
                 }}
                 barProps={{ barWidth: 10, yAxisLabel: (val) => `${val}%` }}
-                toolTipFontSize={8}
+                toolTipFontSize={7}
               />
             )}
           </S.LineWrapper>
