@@ -71,8 +71,6 @@ decorator==4.4.2
     # via
     #   ipython
     #   traitlets
-dictdiffer==0.8.1
-    # via openshift
 django==2.2.17
     # via
     #   -c requirements/dev/../base/base.txt
@@ -102,8 +100,9 @@ ipython-genutils==0.2.0
     # via traitlets
 jedi==0.17.0
     # via ipython
-jinja2==2.11.2
+jinja2==3.0.3
     # via
+    #   -r requirements/dev/dev.in
     #   ansible-core
     #   openshift
     #   sphinx
@@ -113,17 +112,19 @@ jmespath==0.10.0
     #   botocore
 jsonschema==3.2.0
     # via kubernetes-validate
-kubernetes==11.0.0
-    # via openshift
+kubernetes==12.0.0
+    # via
+    #   -r requirements/dev/dev.in
+    #   openshift
 kubernetes-validate==1.18.0
     # via -r requirements/dev/dev.in
 livereload==2.6.2
     # via sphinx-autobuild
-markupsafe==1.1.1
+markupsafe==2.1.1
     # via jinja2
 oauthlib==3.1.0
     # via requests-oauthlib
-openshift==0.11.0
+openshift==0.12
     # via -r requirements/dev/dev.in
 packaging==20.3
     # via

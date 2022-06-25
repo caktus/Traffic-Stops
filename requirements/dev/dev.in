@@ -6,6 +6,10 @@
 invoke-kubesae==0.0.16
 ansible==5.9.0
 cffi==1.15.0
+Jinja2==3.0.3
+openshift==0.12
+kubernetes==12.0.0
+kubernetes-validate
 
 troposphere
 
@@ -17,8 +21,6 @@ rstcheck
 # AWS tools
 #awscli and boto3 are pinned to keep the correct botocore version
 awscli==1.19.35
-openshift
-kubernetes-validate
 boto
 boto3==1.17.35
 
