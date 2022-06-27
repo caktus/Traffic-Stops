@@ -65,8 +65,10 @@ colorama==0.4.3
     # via
     #   awscli
     #   invoke-kubesae
-cryptography==2.9
-    # via ansible-core
+cryptography==37.0.2
+    # via
+    #   -r requirements/dev/dev.in
+    #   ansible-core
 decorator==4.4.2
     # via
     #   ipython
@@ -219,7 +221,6 @@ six==1.15.0
     #   -c requirements/dev/../base/base.txt
     #   -c requirements/dev/../test/test.txt
     #   cfn-flip
-    #   cryptography
     #   google-auth
     #   jsonschema
     #   kubernetes
@@ -277,6 +278,8 @@ wcwidth==0.1.9
     #   prompt-toolkit
 websocket-client==0.57.0
     # via kubernetes
+wheel==0.37.1
+    # via -r requirements/dev/dev.in
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
