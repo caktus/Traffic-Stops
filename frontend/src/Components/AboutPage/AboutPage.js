@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import * as S from './AboutPage.styled';
 
-import { H1 } from 'styles/StyledComponents/Typography';
+import {H1, H2} from 'styles/StyledComponents/Typography';
 import Input from "../Elements/Inputs/Input";
 import {Button} from "reaktus";
 import axios from "../../Services/Axios";
@@ -104,12 +104,12 @@ function AboutPage(props) {
             success for social movements and expands opportunities for people affected by injustice.
           </S.AboutPageParagraph>
           <S.AboutPageContent>
-            Questions about NC CopWatch? Contact us here:
+            <H2>Questions about NC CopWatch? Contact us here:</H2>
             {formFields.messageSent &&
             <S.AboutPageFlexedDiv>
               <S.AboutPageBoldParagraph>Message sent!</S.AboutPageBoldParagraph>
             </S.AboutPageFlexedDiv>}
-            <S.AboutPageParagraph>
+            <S.AboutPageBoldParagraph>
               <Input
                 label="Your name"
                 value={formFields.name}
@@ -144,7 +144,7 @@ function AboutPage(props) {
                   SUBMIT
                 </Button>
               </S.AboutPageFlexedDiv>
-            </S.AboutPageParagraph>
+            </S.AboutPageBoldParagraph>
           </S.AboutPageContent>
         </S.AboutPageText>
       </S.AboutPageContent>
