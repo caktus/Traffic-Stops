@@ -118,6 +118,14 @@ function Overview() {
     return `Traffic Stop statistics for ${agencyName}`;
   };
 
+  const useOfForcePieChartCopy = () => {
+    if (officerId) {
+      return "this officer";
+    } else {
+      return "law enforcement officers";
+    }
+  }
+
   return (
     <OverviewStyled>
       {renderMetaTags()}
@@ -173,7 +181,7 @@ function Overview() {
             <Legend keys={STATIC_LEGEND_KEYS} isStatic showNonHispanic />
           </S.PieWrapper>
           <S.Note>
-            Shows the race/ethnic composition of drivers whom law enforcement officers reported
+            Shows the race/ethnic composition of drivers whom {useOfForcePieChartCopy()} reported
             using force against
           </S.Note>
           <S.Link onClick={() => history.push(`${match.url}${slugs.USE_OF_FORCE_SLUG}`)}>
