@@ -6,7 +6,6 @@ import Input from "../Elements/Inputs/Input";
 import {Button} from "reaktus";
 import axios from "../../Services/Axios";
 import {CONTACT_FORM_URL} from "../../Services/endpoints";
-import {AboutPageBoldParagraph} from "./AboutPage.styled";
 
 function AboutPage(props) {
   const [formFields, setFormFields] = useState({
