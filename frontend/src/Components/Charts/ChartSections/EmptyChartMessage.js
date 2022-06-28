@@ -16,6 +16,10 @@ function EmptyChartMessage({ data }) {
             if (data.every((arr) => arr.data.length === 0)) {
                 return <EmptyMessage/>
             }
+             // For charts that have a list of data but all y values are 0
+            else if ((data.every((arr) => arr.data.every((a) => a.y === 0)))) {
+                return <EmptyMessage/>
+            }
         }
         // For charts that show data by 'y' values
         else if (data[0].hasOwnProperty("y")) {
