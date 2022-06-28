@@ -16,8 +16,8 @@ django-redis
 djangorestframework
 dj-database-url
 drf-extensions
-psycopg2-binary
+psycopg2<2.9
 requests
 six
 whitenoise
-pandas
+pandas<1.5

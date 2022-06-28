@@ -6,11 +6,11 @@
 #
 alabaster==0.7.12
     # via sphinx
-ansible==4.8.0
+ansible==5.9.0
     # via
     #   -r requirements/dev/dev.in
     #   invoke-kubesae
-ansible-core==2.11.6
+ansible-core==2.12.7
     # via ansible
 appnope==0.1.0
     # via
@@ -46,8 +46,10 @@ certifi==2020.6.20
     #   -c requirements/dev/../base/base.txt
     #   kubernetes
     #   requests
-cffi==1.14.0
-    # via cryptography
+cffi==1.15.0
+    # via
+    #   -r requirements/dev/dev.in
+    #   cryptography
 cfn-flip==1.2.3
     # via troposphere
 chardet==3.0.4
@@ -63,14 +65,14 @@ colorama==0.4.3
     # via
     #   awscli
     #   invoke-kubesae
-cryptography==2.9
-    # via ansible-core
+cryptography==37.0.2
+    # via
+    #   -r requirements/dev/dev.in
+    #   ansible-core
 decorator==4.4.2
     # via
     #   ipython
     #   traitlets
-dictdiffer==0.8.1
-    # via openshift
 django==2.2.17
     # via
     #   -c requirements/dev/../base/base.txt
@@ -100,8 +102,9 @@ ipython-genutils==0.2.0
     # via traitlets
 jedi==0.17.0
     # via ipython
-jinja2==2.11.2
+jinja2==3.0.3
     # via
+    #   -r requirements/dev/dev.in
     #   ansible-core
     #   openshift
     #   sphinx
@@ -111,17 +114,19 @@ jmespath==0.10.0
     #   botocore
 jsonschema==3.2.0
     # via kubernetes-validate
-kubernetes==11.0.0
-    # via openshift
+kubernetes==12.0.0
+    # via
+    #   -r requirements/dev/dev.in
+    #   openshift
 kubernetes-validate==1.18.0
     # via -r requirements/dev/dev.in
 livereload==2.6.2
     # via sphinx-autobuild
-markupsafe==1.1.1
+markupsafe==2.1.1
     # via jinja2
 oauthlib==3.1.0
     # via requests-oauthlib
-openshift==0.11.0
+openshift==0.12
     # via -r requirements/dev/dev.in
 packaging==20.3
     # via
@@ -138,7 +143,7 @@ pexpect==4.8.0
     # via ipython
 pickleshare==0.7.5
     # via ipython
-port_for==0.3.1
+port-for==0.3.1
     # via sphinx-autobuild
 prompt-toolkit==3.0.5
     # via ipython
@@ -173,7 +178,7 @@ python-dateutil==2.8.1
     #   kubernetes
 python-string-utils==1.0.0
     # via openshift
-pytz==2019.3
+pytz==2022.1
     # via
     #   -c requirements/dev/../base/base.txt
     #   babel
@@ -203,10 +208,10 @@ rsa==3.4.2
     #   google-auth
 rstcheck==3.3.1
     # via -r requirements/dev/dev.in
-ruamel.yaml==0.16.10
+ruamel-yaml==0.16.10
     # via openshift
-ruamel.yaml.clib==0.2.6
-    # via ruamel.yaml
+ruamel-yaml-clib==0.2.6
+    # via ruamel-yaml
 s3transfer==0.3.3
     # via
     #   awscli
@@ -216,7 +221,6 @@ six==1.15.0
     #   -c requirements/dev/../base/base.txt
     #   -c requirements/dev/../test/test.txt
     #   cfn-flip
-    #   cryptography
     #   google-auth
     #   jsonschema
     #   kubernetes
@@ -274,6 +278,8 @@ wcwidth==0.1.9
     #   prompt-toolkit
 websocket-client==0.57.0
     # via kubernetes
+wheel==0.37.1
+    # via -r requirements/dev/dev.in
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools

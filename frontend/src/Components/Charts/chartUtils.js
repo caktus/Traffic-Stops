@@ -19,6 +19,7 @@ export const STOP_TYPES = [
   'Investigation',
   'Other Motor Vehicle Violation',
   'Checkpoint',
+  'Average'
 ];
 export const YEARS_DEFAULT = 'All';
 export const PURPOSE_DEFAULT = 'All';
@@ -55,7 +56,7 @@ export function calculateYearTotal(yearData, filteredKeys = RACES) {
 
 export function reduceYearsToTotal(data, ethnicGroup) {
   if (data.length === 0) return { [ethnicGroup]: 0 };
-  return data.reduce((acc, curr) => ({ [ethnicGroup]: acc[ethnicGroup] + curr[ethnicGroup] }));
+  return data.reduce((acc, curr) => ({ [ethnicGroup]: parseInt(acc[ethnicGroup]) + parseInt(curr[ethnicGroup]) }));
 }
 
 export function filterSinglePurpose(data, purpose) {
@@ -94,6 +95,21 @@ export function reduceFullDataset(data, ethnicGroups, theme) {
   }));
 }
 
+/**
+ * Given an Array of objects with shape { year, asian, black, etc. }, reduce to total by race.
+ * provide Theme object to provide fill colors.
+ * @param {Array} data
+ * @param {Array} ethnicGroups
+ */
+export function reduceFullDatasetOnlyTotals(data, ethnicGroups) {
+  const totals = {};
+  ethnicGroups.forEach((race) => {
+    totals[race] = reduceYearsToTotal(data, race)[race];
+  });
+
+  return totals;
+}
+
 export function buildStackedBarData(data, filteredKeys, theme) {
   const mappedData = [];
   const yearTotals = {};
@@ -109,7 +125,8 @@ export function buildStackedBarData(data, filteredKeys, theme) {
       return {
         x: datum.year,
         y: calculatePercentage(datum[ethnicGroup], yearTotals[datum.year]),
-        ethnicGroup: toTitleCase(ethnicGroup),
+        displayName: toTitleCase(ethnicGroup),
+        color: theme.colors.ethnicGroup[ethnicGroup]
       };
     });
     mappedData.push(groupSet);
@@ -189,3 +206,12 @@ export const getRatesAgainstBase = (baseSearches, baseStops, groupSearches, grou
   }
   return rData;
 };
+
+export const calculateAveragePercentage = (data) => {
+  data.forEach(da => {
+    let dataPoints = da.data.filter(d => d.x !== "Average").map(p => p.y);
+    let averageDataPoint = da.data.filter(d => d.x === "Average")[0];
+    averageDataPoint["y"] = (dataPoints.reduce((a, b) => a + b, 0)) / dataPoints.length;
+  })
+  return data;
+}

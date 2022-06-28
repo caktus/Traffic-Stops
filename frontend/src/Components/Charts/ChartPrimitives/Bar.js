@@ -4,10 +4,13 @@ import { VictoryAxis, VictoryBar, VictoryChart, VictoryContainer } from 'victory
 import { AXIS_STYLE } from './chartConstants';
 import ChartLoading from 'Components/Charts/ChartPrimitives/ChartLoading';
 import BarSkeleton from 'Components/Elements/Skeletons/BarSkeleton';
+import EmptyChartMessage from "../ChartSections/EmptyChartMessage";
 
 function Bar({ data, chartProps, xAxisProps, yAxisProps, barProps }) {
   if (!data) return <ChartLoading skeleton={BarSkeleton} />;
   return (
+  <>
+    <EmptyChartMessage data={data} />
     <VictoryChart
       {...chartProps}
       containerComponent={<VictoryContainer style={{ touchAction: 'auto' }} />}
@@ -16,6 +19,7 @@ function Bar({ data, chartProps, xAxisProps, yAxisProps, barProps }) {
       <VictoryAxis {...yAxisProps} style={AXIS_STYLE} dependentAxis />
       <VictoryBar {...barProps} data={data} />
     </VictoryChart>
+  </>
   );
 }
 

@@ -5,7 +5,7 @@ import {
   STOPS_BY_REASON,
   SEARCHES_BY_TYPE,
   USE_OF_FORCE,
-  CONTRABAND_HIT_RATE,
+  CONTRABAND_HIT_RATE, LIKELIHOOD_OF_SEARCH,
 } from 'Hooks/useDataset';
 
 const API_BASE = '/api';
@@ -13,6 +13,8 @@ const API_BASE = '/api';
 export const STATE_FACTS_URL = `${API_BASE}/state-facts/`;
 
 export const FIND_A_STOP_URL = `${API_BASE}/driver-stops/`;
+
+export const CONTACT_FORM_URL = `${API_BASE}/about/contact/`;
 
 export const getAgenciesURL = () => `${API_BASE}/agency/`;
 
@@ -44,6 +46,9 @@ export default function mapDatasetKeyToEndpoint(datasetKey) {
       return getSearchesURL;
     }
     case STOPS_BY_REASON: {
+      return getStopsByReasonURL;
+    }
+    case LIKELIHOOD_OF_SEARCH: {
       return getStopsByReasonURL;
     }
     case SEARCHES_BY_TYPE: {

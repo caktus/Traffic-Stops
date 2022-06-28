@@ -1,3 +1,5 @@
+from django.conf import settings
+from django.core.mail import send_mail
 from django.db.models import Q, Sum
 from django_filters.rest_framework import DjangoFilterBackend
 from nc import serializers
@@ -5,9 +7,11 @@ from nc.filters import DriverStopsFilter
 from nc.models import SEARCH_TYPE_CHOICES as SEARCH_TYPE_CHOICES_TUPLES
 from nc.models import Agency, Person, StopSummary
 from nc.pagination import NoCountPagination
+from nc.serializers import ContactFormSerializer
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework_extensions.cache.decorators import cache_response
 from rest_framework_extensions.key_constructor import bits
 from rest_framework_extensions.key_constructor.constructors import DefaultObjectKeyConstructor
@@ -81,7 +85,8 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
 
             if "search_type" in group_by:
                 data["search_type"] = SEARCH_TYPE_CHOICES.get(
-                    stop["search_type"], stop["search_type"],
+                    stop["search_type"],
+                    stop["search_type"],
                 )
 
             if "driver_race" in group_by:
@@ -145,7 +150,12 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
         q = Q(search_type__isnull=False)
         self.query(
             results,
-            group_by=("search_type", "year", "driver_race", "driver_ethnicity",),
+            group_by=(
+                "search_type",
+                "year",
+                "driver_race",
+                "driver_ethnicity",
+            ),
             filter_=q,
         )
         return Response(results.flatten())
@@ -194,3 +204,23 @@ class DriverStopsViewSet(viewsets.ReadOnlyModelViewSet):
 class StateFactsViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = StateFacts.objects.all()
     serializer_class = serializers.StateFactsSerializer
+
+
+class ContactView(APIView):
+    authentication_classes = []
+
+    def post(self, request):
+        serializer = ContactFormSerializer(data=request.data)
+        if serializer.is_valid():
+            contact_name = serializer.data.get("name")
+            contact_email = serializer.data.get("email")
+            message = serializer.data.get("message")
+            send_mail(
+                f"{contact_name} ({contact_email}) has submitted a message.",
+                message,
+                settings.DEFAULT_FROM_EMAIL,
+                settings.CONTACT_US_EMAILS,
+            )
+            return Response(status=204)
+        else:
+            return Response(data=serializer.errors, status=400)

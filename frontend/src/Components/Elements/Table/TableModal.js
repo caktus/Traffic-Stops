@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import ReactDOM from 'react-dom';
 import { useTheme } from 'styled-components';
 import * as S from './TableModal.styled';
@@ -7,10 +7,22 @@ import * as S from './TableModal.styled';
 import { CSVLink } from 'react-csv';
 
 // State
-import { AGENCY_DETAILS, CONTRABAND_HIT_RATE, STOPS_BY_REASON } from 'Hooks/useDataset';
+import {
+  AGENCY_DETAILS,
+  CONTRABAND_HIT_RATE,
+  LIKELIHOOD_OF_SEARCH,
+  SEARCHES_BY_TYPE,
+  STOPS_BY_REASON
+} from 'Hooks/useDataset';
 
 // Constants
-import { RACES } from 'Components/Charts/chartUtils';
+import {
+  PURPOSE_DEFAULT,
+  RACES,
+  reduceFullDatasetOnlyTotals,
+  STOP_TYPES,
+  SEARCH_TYPES
+} from 'Components/Charts/chartUtils';
 
 // Hooks
 import usePortal from 'Hooks/usePortal';
@@ -18,19 +30,21 @@ import useOfficerId from 'Hooks/useOfficerId';
 import useYearSet from 'Hooks/useYearSet';
 
 // elements/components
-import { P, H2 } from 'styles/StyledComponents/Typography';
+import { H2, P } from 'styles/StyledComponents/Typography';
 import TableSkeleton from 'Components/Elements/Skeletons/TableSkeleton';
 import Table from 'Components/Elements/Table/Table';
 import { ICONS } from 'img/icons/Icon';
 import Button from 'Components/Elements/Button';
+import DataSubsetPicker from "../../Charts/ChartSections/DataSubsetPicker/DataSubsetPicker";
 
 const mapDatasetToChartName = {
   STOPS: 'Traffic Stops',
   SEARCHES: 'Searches',
-  STOPS_BY_REASON: 'Searches by Reason',
+  STOPS_BY_REASON: 'Traffic Stops by Count and Reason',
   SEARCHES_BY_TYPE: 'Searches by Type',
   USE_OF_FORCE: 'Use of Force',
   CONTRABAND_HIT_RATE: 'Contraband Hits',
+  LIKELIHOOD_OF_SEARCH: 'Likelihood of Search'
 };
 
 function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
@@ -38,6 +52,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
   const portalTarget = usePortal('modal-root');
   const officerId = useOfficerId();
   const [yearRange] = useYearSet();
+  const [purpose, setPurpose] = useState(null);
 
   const _getEntityReference = () => {
     const agencyName = chartState.data[AGENCY_DETAILS].name;
@@ -78,21 +93,70 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
             if (ethnicGroup === 'year') {
               yearData.year = searchDatum;
             } else {
-              yearData[ethnicGroup] = `${searchDatum}/${stopDatum}`;
+              yearData[ethnicGroup] = `${stopDatum}`;
             }
           }
         }
         return yearData;
       });
     }
-    return mergedData;
+    if (purpose) {
+      mergedData = mergedData.filter(e => e.purpose === purpose);
+    }
+    let raceTotals = {
+      year: "",
+      purpose: "Totals",
+      ...reduceFullDatasetOnlyTotals(mergedData, RACES)
+    };
+    let sortedData = mergedData.sort((a, b) => {
+      // Sort data descending by year
+      return (a["year"] < b["year"]) ? 1 : ((b["year"] < a["year"]) ? -1 : 0)
+    });
+    return [raceTotals, ...sortedData];
+  };
+
+  const mapLikelihoodOfSearch = (ds) => {
+    const data = chartState.data[ds];
+    let mergedData = [];
+    const { searches, stops } = data;
+    if (searches && stops) {
+      mergedData = searches.map((searchYear, i) => {
+        const yearData = {};
+        const stopYear = stops[i];
+        for (const ethnicGroup in searchYear) {
+          if (searchYear.hasOwnProperty(ethnicGroup)) {
+            const searchDatum = searchYear[ethnicGroup];
+            const stopDatum = stopYear[ethnicGroup];
+            if (ethnicGroup === 'year') {
+              yearData.year = searchDatum;
+            } else {
+              yearData[ethnicGroup] = `${searchDatum}`;
+            }
+          }
+        }
+        return yearData;
+      });
+    }
+    if (purpose) {
+      mergedData = mergedData.filter(e => e.purpose === purpose);
+    }
+    let raceTotals = {
+      year: "",
+      purpose: "Totals",
+      ...reduceFullDatasetOnlyTotals(mergedData, RACES)
+    };
+    let sortedData = mergedData.sort((a, b) => {
+      // Sort data descending by year
+      return (a["year"] < b["year"]) ? 1 : ((b["year"] < a["year"]) ? -1 : 0)
+    });
+    return [raceTotals, ...sortedData];
   };
 
   const mapSearchesByReason = (ds) => {
     const searches = chartState.data[ds[1]];
     const stops = chartState.data[ds[0]];
 
-    const mergedData = stops.map((yearsStops) => {
+    let mergedData = stops.map((yearsStops) => {
       const year = yearsStops.year;
       const yearsSearches = searches.find((s) => s.year === year);
       const comparedData = { year };
@@ -102,11 +166,22 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
         if (!yearsSearches) groupsSearches = 0;
         else if (!yearsSearches[key]) groupsSearches = 0;
         else groupsSearches = yearsSearches[key];
-        comparedData[key] = `${groupsSearches}/${yearsStops[key]}`;
+        comparedData[key] = `${groupsSearches}`;
       });
       return comparedData;
     });
-    return mergedData;
+    if (purpose) {
+      mergedData = mergedData.filter(e => e.purpose === purpose);
+    }
+    let raceTotals = {
+      year: "Totals",
+      ...reduceFullDatasetOnlyTotals(mergedData, RACES)
+    };
+    let sortedData = mergedData.sort((a, b) => {
+      // Sort data descending by year
+      return (a["year"] < b["year"]) ? 1 : ((b["year"] < a["year"]) ? -1 : 0)
+    });
+    return [raceTotals, ...sortedData];
   };
 
   const mapContrbandHitrate = (ds) => {
@@ -117,12 +192,37 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       const search = searches.find((d) => d.year === year) || 0;
       const comparedData = { year };
       RACES.forEach((r) => {
-        comparedData[r] = `${hits[r] || 0}/${search[r] || 0}`;
+        comparedData[r] = `${hits[r] || 0}`;
       });
       return comparedData;
     });
-    return mappedData;
+    let raceTotals = {
+      year: "Totals",
+      ...reduceFullDatasetOnlyTotals(mappedData, RACES)
+    };
+    let sortedData = mappedData.sort((a, b) => {
+      // Sort data descending by year
+      return (a["year"] < b["year"]) ? 1 : ((b["year"] < a["year"]) ? -1 : 0)
+    });
+    return [raceTotals, ...sortedData];
   };
+
+  const mapSearchByType = (ds) => {
+    let data = chartState.data[ds];
+    if (purpose) {
+      data = data.filter(d => d.search_type === purpose);
+    }
+    let raceTotals = {
+      year: "Totals",
+      search_type: "",
+      ...reduceFullDatasetOnlyTotals(data, RACES)
+    };
+    let sortedData = data.sort((a, b) => {
+      // Sort data descending by year
+      return (a["year"] < b["year"]) ? 1 : ((b["year"] < a["year"]) ? -1 : 0)
+    });
+    return [raceTotals, ...sortedData];
+  }
 
   const _buildTableData = (ds) => {
     let data = [];
@@ -130,10 +230,23 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       data = mapStopsByPurpose(ds);
     } else if (ds === CONTRABAND_HIT_RATE) {
       data = mapContrbandHitrate(ds);
+    } else if (ds === LIKELIHOOD_OF_SEARCH) {
+      data = mapLikelihoodOfSearch(ds);
+    } else if (ds === SEARCHES_BY_TYPE) {
+      data = mapSearchByType(ds);
     } else if (Array.isArray(ds)) {
       data = mapSearchesByReason(ds);
     } else {
-      data = chartState.data[ds];
+      let chartData = chartState.data[ds];
+      let raceTotals = {
+        year: "Totals",
+        ...reduceFullDatasetOnlyTotals(chartData, RACES)
+      };
+      let sortedData = chartData.sort((a, b) => {
+        // Sort data descending by year
+        return (a["year"] < b["year"]) ? 1 : ((b["year"] < a["year"]) ? -1 : 0)
+      });
+      data = [raceTotals, ...sortedData];
     }
     return data;
   };
@@ -151,6 +264,17 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       Array.isArray(dataSet) ? 'Searches by Percentage' : mapDatasetToChartName[dataSet]
     } ${_getEntityReference()}`;
   };
+
+  // Handle stop purpose dropdown state
+  const handleStopPurposeSelect = (p) => {
+    if (p === purpose) return;
+    if (p === "All") {
+      setPurpose(null);
+    } else {
+      setPurpose(p);
+    }
+  };
+
 
   return ReactDOM.createPortal(
     isOpen && (
@@ -172,16 +296,22 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
               height={42}
             />
           </S.Header>
-          {!_getIsLoading(dataSet) && (
-            <S.Download>
-              <CSVLink data={_buildTableData(dataSet)} filename={_getTableNameForDownload()}>
-                <Button variant="positive" {...S.ButtonInlines} onClick={() => {}}>
-                  <S.Icon icon={ICONS.download} height={25} width={25} fill={theme.colors.white} />
-                  Download
-                </Button>
-              </CSVLink>
-            </S.Download>
-          )}
+          {(dataSet === STOPS_BY_REASON || dataSet === LIKELIHOOD_OF_SEARCH) &&
+            <DataSubsetPicker
+                label={'Filter by Stop Purpose'}
+                value={purpose ? purpose : "All"}
+                onChange={handleStopPurposeSelect}
+                options={[PURPOSE_DEFAULT].concat(STOP_TYPES)}
+              />
+            }
+            {(dataSet === SEARCHES_BY_TYPE) &&
+            <DataSubsetPicker
+                label={'Filter by Search Type'}
+                value={purpose ? purpose : "All"}
+                onChange={handleStopPurposeSelect}
+                options={[PURPOSE_DEFAULT].concat(SEARCH_TYPES)}
+              />
+            }
           <S.TableWrapper>
             {_getIsLoading(dataSet) ? (
               <TableSkeleton />
@@ -190,6 +320,16 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
             )}
           </S.TableWrapper>
           <S.NonHispanic>* Non-hispanic</S.NonHispanic>
+          {!_getIsLoading(dataSet) && (
+            <S.Download>
+              <CSVLink data={_buildTableData(dataSet)} filename={_getTableNameForDownload()}>
+                <Button variant="positive" {...S.ButtonInlines} onClick={() => {}}>
+                  <S.Icon icon={ICONS.download} height={25} width={25} fill={theme.colors.white} />
+                  Download Data
+                </Button>
+              </CSVLink>
+            </S.Download>
+          )}
         </S.TableModal>
       </>
     ),

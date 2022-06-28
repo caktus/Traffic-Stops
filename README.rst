@@ -1,9 +1,6 @@
 NC CopWatch
 ================
 
-.. image:: https://circleci.com/gh/caktus/Traffic-Stops.svg?style=svg
-    :target: https://circleci.com/gh/caktus/Traffic-Stops
-
 NC CopWatch is a website to monitor and identify racial profiling
 practices by North Carolina law enforcement agencies. This project is lead by
 `Forward Justice`_, a nonpartisan law, policy, and strategy center dedicated to advancing racial, 

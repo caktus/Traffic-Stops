@@ -33,10 +33,13 @@ import Line from 'Components/Charts/ChartPrimitives/Line';
 import Legend from 'Components/Charts/ChartSections/Legend/Legend';
 import ChartHeader from 'Components/Charts/ChartSections/ChartHeader';
 import DataSubsetPicker from 'Components/Charts/ChartSections/DataSubsetPicker/DataSubsetPicker';
+import useOfficerId from "../../../Hooks/useOfficerId";
 
 function Searches() {
   let { agencyId } = useParams();
   const theme = useTheme();
+
+  const officerId = useOfficerId();
 
   useDataset(agencyId, STOPS);
   useDataset(agencyId, SEARCHES);
@@ -155,9 +158,17 @@ function Searches() {
     openModal(SEARCHES_BY_TYPE, COUNT_COLUMNS);
   };
 
+  const subjectObserving = () => {
+    if (officerId) {
+      return "officer";
+    } else if (agencyId) {
+      return "department";
+    }
+  }
+
   return (
     <SearchesStyled>
-      {/* Searche Rate */}
+      {/* Search Rate */}
       {renderMetaTags()}
       {renderTableModal()}
       <S.ChartSection>
@@ -178,6 +189,7 @@ function Searches() {
               dAxisProps={{
                 tickFormat: (t) => `${t}%`,
               }}
+              yAxisLabel={(val) => `${val}%`}
             />
           </S.LineWrapper>
           <S.LegendBeside>
@@ -196,7 +208,7 @@ function Searches() {
       <S.ChartSection>
         <ChartHeader chartTitle="Searches By Count" handleViewData={handleViewCountData} />
         <P>
-          Shows the number of searches performed by the department, broken down by search type and
+          Shows the number of searches performed by the {subjectObserving()}, broken down by search type and
           race / ethnicity.
         </P>
         <S.ChartSubsection>
@@ -208,6 +220,9 @@ function Searches() {
               iTickValues={chartState.yearSet}
               iAxisProps={{
                 minDomain: { y: 1 },
+              }}
+              dAxisProps={{
+                tickFormat: (t) => `${t}`,
               }}
             />
           </S.LineWrapper>

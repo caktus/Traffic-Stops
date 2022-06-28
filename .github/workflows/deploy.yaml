@@ -1,0 +1,60 @@
+name: deploy
+
+on:
+  push:
+    branches: [main, develop, 112-deploy-fix]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04
+    env:
+      ENV: staging
+      GITHUB_ENV: https://staging.nccopwatch.org/
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Set env vars (production)
+        if: endsWith(github.ref, '/main')
+        run: | 
+          echo "ENV=production" >> $GITHUB_ENV
+          echo "ENV_URL=https://nccopwatch.org/" >> $GITHUB_ENV
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+          cache-dependency-path: 'requirements/*/*.txt'
+      - name: Install dependencies
+        run: |
+          python -m pip install pip-tools
+          pip-sync requirements/base/base.txt requirements/dev/dev.txt
+      - name: Start deployment
+        uses: bobheadxi/deployments@v1
+        id: deployment
+        with:
+          step: start
+          token: ${{ secrets.GITHUB_TOKEN }}
+          env: ${{ env.ENV }}
+      - name: Login to Docker
+        id: docker-login
+        run: |
+          echo "env is $ENV"
+          inv $ENV aws.docker-login
+      - name: Build, tag, push, and deploy image
+        id: build-tag-push-deploy
+        run: |
+          echo "env is $ENV"
+          inv $ENV image deploy --verbosity=0
+      - name: Update deployment status
+        uses: bobheadxi/deployments@v1
+        if: always()
+        with:
+          step: finish
+          token: ${{ secrets.GITHUB_TOKEN }}
+          status: ${{ job.status }}
+          env: ${{ env.ENV }}
+          env_url: ${{ env.ENV_URL }}
+          deployment_id: ${{ steps.deployment.outputs.deployment_id }}

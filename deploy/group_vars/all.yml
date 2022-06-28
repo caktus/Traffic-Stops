@@ -93,7 +93,7 @@ k8s_papertrail_logspout_destination: "syslog+tls://logs2.papertrailapp.com:20851
 k8s_papertrail_logspout_memory_limit: 128Mi
 
 # New Relic Infrastructure: admin+newrelic@caktusgroup.com
-k8s_newrelic_chart_version: "3.2.4"
+k8s_newrelic_chart_version: "3.5.1"
 k8s_newrelic_license_key: !vault |
   $ANSIBLE_VAULT;1.1;AES256
   37656631623333346263383231386165666531333961373931383661366338343634333362356430

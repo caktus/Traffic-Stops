@@ -1,10 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { VictoryChart, VictoryGroup, VictoryBar, VictoryAxis, VictoryContainer } from 'victory';
+import { CopwatchTooltip } from '../ChartPrimitives/CopwatchChart';
+import {VictoryChart, VictoryGroup, VictoryBar, VictoryAxis, VictoryContainer, VictoryTooltip} from 'victory';
 import { AXIS_STYLE } from './chartConstants';
 import ChartLoading from 'Components/Charts/ChartPrimitives/ChartLoading';
 import BarSkeleton from 'Components/Elements/Skeletons/BarSkeleton';
+import EmptyChartMessage from "../ChartSections/EmptyChartMessage";
 
 function GroupedBar({
   data,
@@ -16,10 +18,13 @@ function GroupedBar({
   dAxisProps,
   iAxisProps,
   barProps,
+  toolTipFontSize
 }) {
   if (loading) return <ChartLoading skeleton={BarSkeleton} />
 
   return (
+  <>
+    <EmptyChartMessage data={data} />
     <VictoryChart
       domainPadding={15}
       width={700}
@@ -43,11 +48,20 @@ function GroupedBar({
             style={{
               data: { fill: bar.color },
             }}
+            labels={({ datum }) => `${datum.ethnicGroup}, ${datum.x}, ${dAxisProps.tickFormat(datum.y)}`}
+            labelComponent={
+              <VictoryTooltip
+                  constrainToVisibleArea
+                  flyoutStyle={{ opacity: 0.8 }}
+                  style={{ fontSize: toolTipFontSize }}
+              />
+            }
             {...barProps}
           />
         ))}
       </VictoryGroup>
     </VictoryChart>
+  </>
   );
 }
 
@@ -60,3 +74,4 @@ GroupedBar.defaultProps = {
 };
 
 export default GroupedBar;
+

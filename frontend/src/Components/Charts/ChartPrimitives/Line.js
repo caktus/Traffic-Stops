@@ -4,9 +4,12 @@ import React from 'react';
 import { AXIS_STYLE } from './chartConstants';
 
 // Deps
-import { VictoryChart, VictoryLine, VictoryAxis, VictoryContainer } from 'victory';
+import CopwatchChart, {CopwatchTooltip} from 'Components/Charts/ChartPrimitives/CopwatchChart';
+import {VictoryLine, VictoryAxis, VictoryTooltip} from 'victory';
 import ChartLoading from 'Components/Charts/ChartPrimitives/ChartLoading';
 import BarSkeleton from 'Components/Elements/Skeletons/BarSkeleton';
+import EmptyChartMessage from "../ChartSections/EmptyChartMessage";
+
 
 function Line({
   data = [],
@@ -17,17 +20,21 @@ function Line({
   dTickFormat,
   dAxisProps = {},
   iAxisProps = {},
+  yAxisLabel
 }) {
   if (loading) return <ChartLoading skeleton={BarSkeleton} />
 
   return (
-    <VictoryChart containerComponent={<VictoryContainer style={{ touchAction: 'auto' }} />}>
+  <>
+    <EmptyChartMessage data={data} />
+    <CopwatchChart yAxisLabel={yAxisLabel}>
       <VictoryAxis
         dependentAxis
         style={AXIS_STYLE}
         tickFormat={dTickFormat}
         tickValues={dTickValues}
         {...dAxisProps}
+
       />
       <VictoryAxis
         label="Year"
@@ -43,9 +50,12 @@ function Line({
           style={{
             data: { stroke: lineData.color },
           }}
+          labels={({ datum }) => `${datum.x}, ${datum.displayName}, ${dAxisProps.tickFormat(datum.y)}`}
+          labelComponent={<VictoryTooltip style={{ fontSize: 10 }}/>}
         />
       ))}
-    </VictoryChart>
+    </CopwatchChart>
+  </>
   );
 }
 

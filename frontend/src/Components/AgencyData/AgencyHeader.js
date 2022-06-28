@@ -28,6 +28,14 @@ function AgencyHeader({ agencyHeaderOpen, agencyDetails }) {
     history.push(`${AGENCY_LIST_SLUG}/${agencyId}`);
   };
 
+  let lastReportedStop = () => {
+    if (officerId) {
+      return `last reported stop from officer`;
+    } else if (agencyId) {
+      return `last reported stop from department`;
+    }
+  }
+
   return (
     <AnimatePresence>
       {agencyHeaderOpen && (
@@ -64,7 +72,7 @@ function AgencyHeader({ agencyHeaderOpen, agencyDetails }) {
                   <S.AgencyTitle>{agencyDetails.name}</S.AgencyTitle>
                 )}
                 <P size={SIZES[0]} color={COLORS[0]} weight={WEIGHTS[0]}>
-                  last reported stop {agencyId ? 'from department ' : ''}
+                  {lastReportedStop()}{' '}
                   {agencyDetails.last_reported_stop && 'on'}
                   <S.ReportedDate size={SIZES[0]} color={COLORS[0]} weight={WEIGHTS[1]}>
                     {' '}
