@@ -140,6 +140,7 @@ function AboutPage(props) {
                   py="2"
                   fontSize="3"
                   fontWeight="bold"
+                  boxShadow="0"
                 >
                   SUBMIT
                 </Button>

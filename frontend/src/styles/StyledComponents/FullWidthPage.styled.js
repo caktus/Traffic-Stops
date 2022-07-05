@@ -13,11 +13,10 @@ export const ResponsiveInnerPage = styled.div`
   display: flex;
   flex: 1;
   flex-direction: column;
-  overflow-y: scroll;
+  overflow-y: hidden;
 
   @media (${breakpoints.smallerThanDesktop}) {
     max-width: 900px;
-    overflow-y: scroll;
   }
   @media (${breakpoints.smallerThanTabletLandscape}) {
     max-width: 550px;
