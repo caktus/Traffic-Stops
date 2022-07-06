@@ -38,12 +38,12 @@ import Button from 'Components/Elements/Button';
 import DataSubsetPicker from "../../Charts/ChartSections/DataSubsetPicker/DataSubsetPicker";
 
 const mapDatasetToChartName = {
-  STOPS: 'Traffic Stops',
+  STOPS: 'Traffic Stops By Percentage',
   SEARCHES: 'Searches',
-  STOPS_BY_REASON: 'Traffic Stops by Count and Reason',
-  SEARCHES_BY_TYPE: 'Searches by Type',
+  STOPS_BY_REASON: 'Traffic Stops by Count',
+  SEARCHES_BY_TYPE: 'Searches by Count',
   USE_OF_FORCE: 'Use of Force',
-  CONTRABAND_HIT_RATE: 'Contraband Hits',
+  CONTRABAND_HIT_RATE: 'Contraband "Hit Rate"',
   LIKELIHOOD_OF_SEARCH: 'Likelihood of Search'
 };
 
