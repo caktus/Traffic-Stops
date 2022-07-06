@@ -31,7 +31,7 @@ django==3.2.14
     #   django-memoize
     #   django-redis
     #   djangorestframework
-django-cache-machine @ git+https://github.com/Afani97/django-3.2-cache-machine@master
+django-cache-machine==1.2.0
     # via -r requirements/base/base.in
 django-click==2.2.0
     # via -r requirements/base/base.in

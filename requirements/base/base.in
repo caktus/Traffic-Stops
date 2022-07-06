@@ -4,9 +4,7 @@ celery
 census
 us
 dealer
-# Use forked version until package is updated
-# django-cache-machine
-git+https://github.com/Afani97/django-3.2-cache-machine@master#egg=django-3.2-cache-machine
+django-cache-machine==1.2.0
 django-click==2.2.0
 django-crispy-forms
 django-dotenv
