@@ -83,7 +83,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     let mergedData = [];
     const { searches, stops } = data;
     if (searches && stops) {
-      mergedData = searches.map((searchYear, i) => {
+      mergedData = stops.map((searchYear, i) => {
         const yearData = {};
         const stopYear = stops[i];
         for (const ethnicGroup in searchYear) {
@@ -156,7 +156,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     const searches = chartState.data[ds[1]];
     const stops = chartState.data[ds[0]];
 
-    let mergedData = stops.map((yearsStops) => {
+    let mergedData = searches.map((yearsStops) => {
       const year = yearsStops.year;
       const yearsSearches = searches.find((s) => s.year === year);
       const comparedData = { year };
