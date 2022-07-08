@@ -31,7 +31,7 @@ export const CONTRABAND_TYPES = [
 export const YEARS_DEFAULT = 'All';
 export const PURPOSE_DEFAULT = 'All';
 export const SEARCH_TYPE_DEFAULT = 'All';
-export const CONTRABAND_DEFAULT= 'ALL';
+export const CONTRABAND_DEFAULT= 'All';
 export const AVERAGE_KEY = 'average';
 export const AVERAGE = {
   value: AVERAGE_KEY,

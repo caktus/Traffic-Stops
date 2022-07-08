@@ -49,8 +49,9 @@ function SearchRate() {
   useEffect(() => {
     const data = chartState.data[CONTRABAND_HIT_RATE];
     if (data) {
-      const { contraband, searches } = data;
+      let { contraband, searches, contraband_types } = data;
       const mappedData = [];
+      let contrabandData = contrabandType !== CONTRABAND_DEFAULT ? contraband_types.filter(c => c.contraband_type === contrabandType) : contraband;
       RACES.forEach((ethnicGroup) => {
         const groupBar = {};
         const displayName = toTitleCase(ethnicGroup);
@@ -58,12 +59,12 @@ function SearchRate() {
         groupBar.color = `${theme.colors.ethnicGroup[ethnicGroup]}90`;
         groupBar.x = displayName;
         if (year === YEARS_DEFAULT) {
-          const groupContraband = reduceYearsToTotal(contraband, ethnicGroup)[ethnicGroup];
+          const groupContraband = reduceYearsToTotal(contrabandData, ethnicGroup)[ethnicGroup];
           const groupSearches = reduceYearsToTotal(searches, ethnicGroup)[ethnicGroup];
           groupBar.y = calculatePercentage(groupContraband, groupSearches);
         } else {
           const yearInt = parseInt(year);
-          const groupContrabandForYear = getQuantityForYear(contraband, yearInt, ethnicGroup);
+          const groupContrabandForYear = getQuantityForYear(contrabandData, yearInt, ethnicGroup);
           const groupSearchesForYear = getQuantityForYear(searches, yearInt, ethnicGroup);
           groupBar.y = calculatePercentage(groupContrabandForYear, groupSearchesForYear);
         }
@@ -71,7 +72,7 @@ function SearchRate() {
       });
       setContrabandData(mappedData.reverse());
     }
-  }, [chartState.data[CONTRABAND_HIT_RATE], year]);
+  }, [chartState.data[CONTRABAND_HIT_RATE], year, contrabandType]);
 
   /* INTERACTIONS */
   // Handle year dropdown state
