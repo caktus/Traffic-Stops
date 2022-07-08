@@ -14,7 +14,7 @@ import {
   YEARS_DEFAULT,
   reduceYearsToTotal,
   calculatePercentage,
-  getQuantityForYear,
+  getQuantityForYear, SEARCH_TYPE_DEFAULT, SEARCH_TYPES, CONTRABAND_TYPES, CONTRABAND_DEFAULT,
 } from 'Components/Charts/chartUtils';
 
 // Hooks
@@ -37,6 +37,7 @@ function SearchRate() {
   const [chartState] = useDataset(agencyId, CONTRABAND_HIT_RATE);
 
   const [year, setYear] = useState(YEARS_DEFAULT);
+  const [contrabandType, setContrabandType] = useState(CONTRABAND_DEFAULT);
 
   const [contrabandData, setContrabandData] = useState();
 
@@ -52,10 +53,10 @@ function SearchRate() {
       const mappedData = [];
       RACES.forEach((ethnicGroup) => {
         const groupBar = {};
-        const displaName = toTitleCase(ethnicGroup);
-        groupBar.displayName = displaName;
+        const displayName = toTitleCase(ethnicGroup);
+        groupBar.displayName = displayName;
         groupBar.color = `${theme.colors.ethnicGroup[ethnicGroup]}90`;
-        groupBar.x = displaName;
+        groupBar.x = displayName;
         if (year === YEARS_DEFAULT) {
           const groupContraband = reduceYearsToTotal(contraband, ethnicGroup)[ethnicGroup];
           const groupSearches = reduceYearsToTotal(searches, ethnicGroup)[ethnicGroup];
@@ -81,6 +82,11 @@ function SearchRate() {
 
   const handleViewData = () => {
     openModal(CONTRABAND_HIT_RATE, TABLE_COLUMNS);
+  };
+
+  const handleContrabandTypeSelect = (c) => {
+    if (c === contrabandType) return;
+    setContrabandType(c);
   };
 
   return (
@@ -131,6 +137,12 @@ function SearchRate() {
               value={year}
               onChange={handleYearSelect}
               options={[YEARS_DEFAULT].concat(chartState.yearRange)}
+            />
+            <DataSubsetPicker
+              label="Contraband Type"
+              value={contrabandType}
+              onChange={handleContrabandTypeSelect}
+              options={[CONTRABAND_DEFAULT].concat(CONTRABAND_TYPES)}
             />
           </S.LegendSection>
         </S.ChartSubsection>
