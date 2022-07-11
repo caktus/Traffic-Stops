@@ -47,8 +47,7 @@ CONTRABAND_CHOICES = {
     2: "Alcohol",
     3: "Money",
     4: "Weapons",
-    5: "Dollar Amount",
-    6: ""
+    5: "Other",
 }
 
 GROUP_DEFAULTS = {
@@ -192,7 +191,7 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
         # # filter down by officer if supplied
         officer = self.request.query_params.get("officer", None)
         if officer:
-            qs = qs.filter(officer_id=officer)
+            qs = qs.filter(stop__officer_id=officer)
         qs = qs.annotate(
             year=ExtractYear("stop__date__year"),
             driver_race=F("person__race"),
@@ -202,7 +201,7 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
                 When(Q(pints__gt=0) | Q(gallons__gt=0), then=Value("Alcohol")),
                 When(Q(money__gt=0), then=Value("Money")),
                 When(Q(weapons__gt=0), then=Value("Weapons")),
-                When(Q(dollar_amount__gt=0), then=Value("Dollar Amount")),
+                When(Q(dollar_amount__gt=0), then=Value("Other")),
                 default=Value(""),
                 output_field=CharField()
             )

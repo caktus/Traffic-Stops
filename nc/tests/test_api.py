@@ -311,15 +311,15 @@ class AgencyTests(APITestCase):
         s4 = factories.SearchFactory(stop=p4.stop)
         s5 = factories.SearchFactory(stop=p5.stop)
         s6 = factories.SearchFactory(stop=p6.stop)
-        factories.ContrabandFactory(search=s1, person=p1, stop=p1.stop)
-        factories.ContrabandFactory(search=s3, person=p3, stop=p3.stop)
-        factories.ContrabandFactory(search=s4, person=p4, stop=p4.stop)
-        factories.ContrabandFactory(search=s5, person=p5, stop=p5.stop)
-        factories.ContrabandFactory(search=s6, person=p6, stop=p6.stop)
+        factories.ContrabandFactory(search=s1, person=p1, stop=p1.stop, ounces=1.0)
+        factories.ContrabandFactory(search=s3, person=p3, stop=p3.stop, pints=1.0)
+        factories.ContrabandFactory(search=s4, person=p4, stop=p4.stop, money=1.0)
+        factories.ContrabandFactory(search=s5, person=p5, stop=p5.stop, weapons=1.0)
+        factories.ContrabandFactory(search=s6, person=p6, stop=p6.stop, dollar_amount=1.0)
         url = reverse("nc:agency-api-contraband-hit-rate", args=[agency.pk])
         response = self.client.get(url, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data.keys()), 2)
+        self.assertEqual(len(response.data.keys()), 3)
 
         searches = response.data["searches"]
         # The expected search data matches the created data, since each of the
@@ -341,6 +341,12 @@ class AgencyTests(APITestCase):
         self.assertEqual(contraband[0]["hispanic"], 2)
         self.assertEqual(contraband[1]["year"], 2012)
         self.assertEqual(contraband[1]["black"], 1)
+
+        contraband = response.data["contraband_types"]
+        self.assertEqual(contraband[0]["contraband_type"], "Drugs")
+        self.assertEqual(contraband[0]["black"], 1)
+        self.assertEqual(contraband[0]["native_american"], 0)
+        self.assertEqual(contraband[0]["hispanic"], 0)
 
     def test_use_of_force(self):
         pass
