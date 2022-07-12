@@ -1,5 +1,5 @@
 import React from 'react';
-import { TooltipStyled, TooltipableText, TooltipText, TooltipLink } from './Tooltip.styled';
+import { TooltipStyled, TooltipableText, TooltipText, TooltipLink } from 'Components/Tooltip.styled';
 import { useTheme } from 'styled-components';
 import PropTypes from 'prop-types';
 

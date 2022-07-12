@@ -13,7 +13,7 @@ import {
   LIKELIHOOD_OF_SEARCH,
   SEARCHES_BY_TYPE,
   STOPS_BY_REASON
-} from 'Hooks/useDataset';
+} from '../../../Hooks/useDataset';
 
 // Constants
 import {
@@ -22,19 +22,19 @@ import {
   reduceFullDatasetOnlyTotals,
   STOP_TYPES,
   SEARCH_TYPES
-} from 'Components/Charts/chartUtils';
+} from '../../Charts/chartUtils';
 
 // Hooks
-import usePortal from 'Hooks/usePortal';
-import useOfficerId from 'Hooks/useOfficerId';
-import useYearSet from 'Hooks/useYearSet';
+import usePortal from '../../../Hooks/usePortal';
+import useOfficerId from '../../../Hooks/useOfficerId';
+import useYearSet from '../../../Hooks/useYearSet';
 
 // elements/components
-import { H2, P } from 'styles/StyledComponents/Typography';
-import TableSkeleton from 'Components/Elements/Skeletons/TableSkeleton';
-import Table from 'Components/Elements/Table/Table';
-import { ICONS } from 'img/icons/Icon';
-import Button from 'Components/Elements/Button';
+import { H2, P } from '../../../styles/StyledComponents/Typography';
+import TableSkeleton from "../Skeletons/TableSkeleton";
+import Table from '../Table/Table';
+import { ICONS } from '../../../img/icons/Icon';
+import Button from '../Button';
 import DataSubsetPicker from "../../Charts/ChartSections/DataSubsetPicker/DataSubsetPicker";
 
 const mapDatasetToChartName = {

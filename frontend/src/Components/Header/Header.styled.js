@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import * as breakpoints from 'styles/breakpoints';
+import * as breakpoints from '../../styles/breakpoints';
 import { motion } from 'framer-motion';
 
 export const Header = styled.header`

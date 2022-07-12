@@ -1,39 +1,39 @@
 import React, { useState, useEffect } from 'react';
-import * as S from 'Components/Charts/ChartSections/ChartsCommon.styled';
+import * as S from '../ChartSections/ChartsCommon.styled';
 import { OverviewStyled } from './Overview.styled';
 import { useTheme } from 'styled-components';
 
 // Router
-import { useParams, useHistory, useRouteMatch } from 'react-router-dom';
+import { useParams, useNavigate, useMatch } from 'react-router-dom';
 
 // Constants
-import toTitleCase from 'util/toTitleCase';
+import toTitleCase from '../../../util/toTitleCase';
 import {
   calculatePercentage,
   reduceFullDataset,
   YEARS_DEFAULT,
   STATIC_LEGEND_KEYS,
   RACES,
-} from 'Components/Charts/chartUtils';
-import * as slugs from 'Routes/slugs';
+} from '../chartUtils';
+import * as slugs from '../../../Routes/slugs';
 
 // Hooks
-import useMetaTags from 'Hooks/useMetaTags';
+import useMetaTags from '../../../Hooks/useMetaTags';
 
 // Data
-import useDataset, { AGENCY_DETAILS, STOPS, SEARCHES, USE_OF_FORCE } from 'Hooks/useDataset';
+import useDataset, { AGENCY_DETAILS, STOPS, SEARCHES, USE_OF_FORCE } from '../../../Hooks/useDataset';
 
 // Children
-import ChartHeader from 'Components/Charts/ChartSections/ChartHeader';
-import Pie from 'Components/Charts/ChartPrimitives/Pie';
-import Legend from 'Components/Charts/ChartSections/Legend/Legend';
+import ChartHeader from '../ChartSections/ChartHeader';
+import Legend from '../ChartSections/Legend/Legend';
 import useOfficerId from "../../../Hooks/useOfficerId";
+import Pie from "../ChartPrimitives/Pie";
 
 function Overview() {
   const { agencyId } = useParams();
   const theme = useTheme();
-  const history = useHistory();
-  const match = useRouteMatch();
+  const history = useNavigate();
+  const match = useMatch();
   const officerId = useOfficerId();
 
   useDataset(agencyId, STOPS);

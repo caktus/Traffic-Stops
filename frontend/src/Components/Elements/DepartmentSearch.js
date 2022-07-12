@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from 'styled-components';
-import * as Styled from './DepartmentSearch.styled';
+import * as Styled from 'Components/DepartmentSearch.styled';
 import PropTypes from 'prop-types';
 
 // Router
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 // Context
 import { FETCH_START, FETCH_SUCCESS, FETCH_FAILURE } from 'Context/root-reducer';
@@ -14,7 +14,7 @@ import { useRootContext } from 'Context/root-context';
 import axios from 'Services/Axios';
 import { getAgenciesURL } from 'Services/endpoints';
 
-// Components
+// .
 import { AGENCY_LIST_SLUG } from 'Routes/slugs';
 import AutoSuggest from './Inputs/AutoSuggest';
 import Input, { iconPositions } from 'Components/Elements/Inputs/Input';
@@ -23,7 +23,7 @@ import { ICONS } from 'img/icons/Icon';
 const DATA_SET = 'AGENCIES_LIST';
 
 function SeeAllDepartments({ selectRef }) {
-  const history = useHistory();
+  const history = useNavigate();
   const handleClick = (e) => {
     e.preventDefault();
     history.push(AGENCY_LIST_SLUG);
@@ -48,7 +48,7 @@ function DepartmentSearch({
   ...props
 }) {
   const theme = useTheme();
-  const history = useHistory();
+  const history = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState();
   const [state, dispatch] = useRootContext();
 

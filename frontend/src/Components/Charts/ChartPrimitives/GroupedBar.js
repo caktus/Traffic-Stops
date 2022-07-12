@@ -1,12 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { CopwatchTooltip } from '../ChartPrimitives/CopwatchChart';
 import {VictoryChart, VictoryGroup, VictoryBar, VictoryAxis, VictoryContainer, VictoryTooltip} from 'victory';
 import { AXIS_STYLE } from './chartConstants';
-import ChartLoading from 'Components/Charts/ChartPrimitives/ChartLoading';
-import BarSkeleton from 'Components/Elements/Skeletons/BarSkeleton';
+import ChartLoading from '../ChartPrimitives/ChartLoading';
 import EmptyChartMessage from "../ChartSections/EmptyChartMessage";
+import BarSkeleton from "../../Elements/Skeletons/BarSkeleton";
 
 function GroupedBar({
   data,

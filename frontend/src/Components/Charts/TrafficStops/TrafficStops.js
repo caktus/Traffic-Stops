@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TrafficStopsStyled } from './TrafficStops.styled';
+import { TrafficStopsStyled } from 'Components/TrafficStops.styled';
 import * as S from 'Components/Charts/ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
 

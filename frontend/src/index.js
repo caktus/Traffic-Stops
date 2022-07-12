@@ -5,10 +5,10 @@ import * as serviceWorker from './serviceWorker';
 import * as Sentry from '@sentry/react';
 
 // Settings
-import { SENTRY_DSN } from 'settings';
+import { SENTRY_DSN } from './settings';
 
 // Children
-import App from 'Components/App';
+import App from "./Components/App";
 
 // Eventually, we'll want to make sure NODE_ENV is set up
 // so that the following commented code wont run locally.

@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import {VictoryStack, VictoryBar, VictoryAxis, VictoryTooltip, VictoryChart} from 'victory';
-import { AXIS_STYLE } from './chartConstants';
+import { AXIS_STYLE } from 'Components/chartConstants';
 
 // Children
 import ChartLoading from 'Components/Charts/ChartPrimitives/ChartLoading';

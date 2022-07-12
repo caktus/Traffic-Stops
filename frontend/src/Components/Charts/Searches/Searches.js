@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { SearchesStyled } from './Searches.styled';
-import * as S from 'Components/Charts/ChartSections/ChartsCommon.styled';
+import * as S from '../../Charts/ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
 
 // Router
@@ -16,23 +16,23 @@ import {
   AVERAGE,
   SEARCH_TYPES,
   calculateYearTotal,
-} from 'Components/Charts/chartUtils';
+} from '../chartUtils';
 
 // State
-import useDataset, { SEARCHES, STOPS, SEARCHES_BY_TYPE } from 'Hooks/useDataset';
+import useDataset, { SEARCHES, STOPS, SEARCHES_BY_TYPE } from '../../../Hooks/useDataset';
 
 // Hooks
-import useMetaTags from 'Hooks/useMetaTags';
-import useTableModal from 'Hooks/useTableModal';
+import useMetaTags from '../../../Hooks/useMetaTags';
+import useTableModal from '../../../Hooks/useTableModal';
 
 // Elements
-import { P } from 'styles/StyledComponents/Typography';
+import { P } from '../../../styles/StyledComponents/Typography';
 
 // Children
-import Line from 'Components/Charts/ChartPrimitives/Line';
-import Legend from 'Components/Charts/ChartSections/Legend/Legend';
-import ChartHeader from 'Components/Charts/ChartSections/ChartHeader';
-import DataSubsetPicker from 'Components/Charts/ChartSections/DataSubsetPicker/DataSubsetPicker';
+import Line from '../../Charts/ChartPrimitives/Line';
+import Legend from '../../Charts/ChartSections/Legend/Legend';
+import ChartHeader from '../../Charts/ChartSections/ChartHeader';
+import DataSubsetPicker from '../../Charts/ChartSections/DataSubsetPicker/DataSubsetPicker';
 import useOfficerId from "../../../Hooks/useOfficerId";
 
 function Searches() {
@@ -102,7 +102,7 @@ function Searches() {
   // Calculate search counts
   useEffect(() => {
     const data = chartState.data[SEARCHES_BY_TYPE];
-    if (data && chartState.yearRange?.length > 0) {
+    if (data && chartState.yearRange.length > 0) {
       const mappedData = [];
       const ethnicGroups = countEthnicGroups.filter((g) => g.selected).map((g) => g.value);
       const dataBySearchReason = filterDataBySearchType(data, searchType);

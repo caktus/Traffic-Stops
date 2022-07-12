@@ -3,7 +3,7 @@ import { useTheme } from 'styled-components';
 import * as S from './SidebarLink.styled';
 
 import { useLocation } from 'react-router-dom';
-import { ICONS } from 'img/icons/Icon';
+import { ICONS } from '../../img/icons/Icon';
 
 function SidebarLink({ children, to, ...props }) {
   const theme = useTheme();

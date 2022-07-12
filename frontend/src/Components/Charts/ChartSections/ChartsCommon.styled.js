@@ -1,6 +1,6 @@
 import styled from 'styled-components';
-import { phoneOnly } from 'styles/breakpoints';
-import { H2 } from 'styles/StyledComponents/Typography';
+import { phoneOnly } from '../../../styles/breakpoints';
+import { H2 } from '../../../styles/StyledComponents/Typography';
 
 export const ChartSection = styled.div`
   margin-bottom: 2em;

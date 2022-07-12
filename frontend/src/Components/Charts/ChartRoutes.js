@@ -1,17 +1,17 @@
 import React from 'react';
 
 // Route
-import AsyncRoute from 'Components/Containers/AsyncRoute';
-import { Switch, useRouteMatch } from 'react-router-dom';
-import * as slugs from 'Routes/slugs';
+import { useMatch } from 'react-router-dom';
+import * as slugs from '../../Routes/slugs';
 
 // Children
 // import PieSkeleton from 'Components/Elements/Skeletons/PieSkeleton';
-import ChartError from 'Components/Elements/ChartError';
-import DataLoading from 'Components/Charts/ChartPrimitives/DataLoading';
+import ChartError from '../Elements/ChartError';
+import DataLoading from '../Charts/ChartPrimitives/DataLoading';
+import AsyncRoute from "../Containers/AsyncRoute";
 
 function Charts() {
-  const match = useRouteMatch();
+  const match = useMatch();
 
   // NOTE: We should consider lumping everything together into a JSON or JS file
   // with definitions for each chart.
@@ -23,7 +23,7 @@ function Charts() {
         exact
         path={`${match.path}${slugs.OVERVIEW_SLUG}`}
         importComponent={() =>
-          import(/* webpackChunkName: 'Overview' */ 'Components/Charts/Overview/Overview')
+          import(/* webpackChunkName: 'Overview' */ '../Charts/Overview/Overview')
         }
         renderLoading={() => <DataLoading />}
         renderError={() => <ChartError chartName="Overview" />}
@@ -33,7 +33,7 @@ function Charts() {
         path={`${match.path}${slugs.TRAFFIC_STOPS_SLUG}`}
         importComponent={() =>
           import(
-            /* webpackChunkName: 'TrafficStops' */ 'Components/Charts/TrafficStops/TrafficStops'
+            /* webpackChunkName: 'TrafficStops' */ '../Charts/TrafficStops/TrafficStops'
           )
         }
         renderLoading={() => <DataLoading />}
@@ -42,7 +42,7 @@ function Charts() {
       <AsyncRoute
         path={`${match.path}${slugs.SEARCHES_SLUG}`}
         importComponent={() =>
-          import(/* webpackChunkName: 'Searches' */ 'Components/Charts/Searches/Searches')
+          import(/* webpackChunkName: 'Searches' */ '../Charts/Searches/Searches')
         }
         renderLoading={() => <DataLoading />}
         renderError={() => <ChartError chartName="Searches" />}
@@ -50,7 +50,7 @@ function Charts() {
       <AsyncRoute
         path={`${match.path}${slugs.SEARCH_RATE_SLUG}`}
         importComponent={() =>
-          import(/* webpackChunkName: 'SearchRate' */ 'Components/Charts/SearchRate/SearchRate')
+          import(/* webpackChunkName: 'SearchRate' */ '../Charts/SearchRate/SearchRate')
         }
         renderLoading={() => <DataLoading />}
         renderError={() => <ChartError chartName="Search Rate" />}
@@ -58,7 +58,7 @@ function Charts() {
       <AsyncRoute
         path={`${match.path}${slugs.CONTRABAND_SLUG}`}
         importComponent={() =>
-          import(/* webpackChunkName: 'Contraband' */ 'Components/Charts/Contraband/Contraband')
+          import(/* webpackChunkName: 'Contraband' */ '../Charts/Contraband/Contraband')
         }
         renderLoading={() => <DataLoading />}
         renderError={() => <ChartError chartName="Contraband" />}
@@ -67,7 +67,7 @@ function Charts() {
       <AsyncRoute
         path={`${match.path}${slugs.USE_OF_FORCE_SLUG}`}
         importComponent={() =>
-          import(/* webpackChunkName: 'UseOfForce' */ 'Components/Charts/UseOfForce/UseOfForce')
+          import(/* webpackChunkName: 'UseOfForce' */ '../Charts/UseOfForce/UseOfForce')
         }
         renderLoading={() => <DataLoading />}
         renderError={() => <ChartError chartName="Use of Force" />}

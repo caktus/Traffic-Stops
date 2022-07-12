@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { UseOfForceStyled } from './UseOfForce.styled';
-import * as S from 'Components/Charts/ChartSections/ChartsCommon.styled';
+import * as S from '../ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
 
 // Router
@@ -14,24 +14,24 @@ import {
   reduceFullDataset,
   calculatePercentage,
   calculateYearTotal,
-} from 'Components/Charts/chartUtils';
+} from '../chartUtils';
 
 // State
-import useDataset, { USE_OF_FORCE } from 'Hooks/useDataset';
+import useDataset, { USE_OF_FORCE } from '../../../Hooks/useDataset';
 
 // Hooks
-import useMetaTags from 'Hooks/useMetaTags';
-import useTableModal from 'Hooks/useTableModal';
+import useMetaTags from '../../../Hooks/useMetaTags';
+import useTableModal from '../../../Hooks/useTableModal';
 
 // Children
-import { P } from 'styles/StyledComponents/Typography';
-import ChartHeader from 'Components/Charts/ChartSections/ChartHeader';
-import Legend from 'Components/Charts/ChartSections/Legend/Legend';
-import DataSubsetPicker from 'Components/Charts/ChartSections/DataSubsetPicker/DataSubsetPicker';
-import GroupedBar from 'Components/Charts/ChartPrimitives/GroupedBar';
-import Pie from 'Components/Charts/ChartPrimitives/Pie';
-import toTitleCase from 'util/toTitleCase';
+import { P } from '../../../styles/StyledComponents/Typography';
+import ChartHeader from '../ChartSections/ChartHeader';
+import Legend from '../ChartSections/Legend/Legend';
+import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
+import toTitleCase from '../../../util/toTitleCase';
 import useOfficerId from "../../../Hooks/useOfficerId";
+import GroupedBar from "../ChartPrimitives/GroupedBar";
+import Pie from "../ChartPrimitives/Pie";
 
 function UseOfForce() {
   let { agencyId } = useParams();

@@ -4,10 +4,10 @@ import React from 'react';
 import { AXIS_STYLE } from './chartConstants';
 
 // Deps
-import CopwatchChart, {CopwatchTooltip} from 'Components/Charts/ChartPrimitives/CopwatchChart';
+import CopwatchChart, {CopwatchTooltip} from '../../Charts/ChartPrimitives/CopwatchChart';
 import {VictoryLine, VictoryAxis, VictoryTooltip} from 'victory';
-import ChartLoading from 'Components/Charts/ChartPrimitives/ChartLoading';
-import BarSkeleton from 'Components/Elements/Skeletons/BarSkeleton';
+import ChartLoading from '../../Charts/ChartPrimitives/ChartLoading';
+import BarSkeleton from '../../Elements/Skeletons/BarSkeleton';
 import EmptyChartMessage from "../ChartSections/EmptyChartMessage";
 
 

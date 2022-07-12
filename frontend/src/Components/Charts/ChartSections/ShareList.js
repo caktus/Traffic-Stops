@@ -1,5 +1,5 @@
 import React from 'react';
-import * as S from './ShareList.styled';
+import * as S from 'Components/ShareList.styled';
 
 // Derps
 import TwitterLogo from 'img/twitter_logo_blue.png';

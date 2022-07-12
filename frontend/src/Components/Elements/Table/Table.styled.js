@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import FJIcon from 'img/icons/Icon';
+import FJIcon from '../../../img/icons/Icon';
 
 export const TableWrapper = styled.div`
   width: 100%;

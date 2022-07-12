@@ -2,7 +2,7 @@ import React from 'react';
 import * as S from './ChartLoading.styled';
 
 // Hooks
-import useOfficerId from 'Hooks/useOfficerId';
+import useOfficerId from '../../../Hooks/useOfficerId';
 
 function ChartLoading({ skeleton: Skeleton }) {
   const officerId = useOfficerId();

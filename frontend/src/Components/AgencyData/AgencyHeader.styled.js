@@ -1,7 +1,7 @@
 import styled from 'styled-components';
-import { P, H2 } from 'styles/StyledComponents/Typography';
-import FJIcon from 'img/icons/Icon';
-import { phoneOnly, smallerThanTabletLandscape } from 'styles/breakpoints';
+import { P, H2 } from '../../styles/StyledComponents/Typography';
+import FJIcon from '../../img/icons/Icon';
+import { phoneOnly, smallerThanTabletLandscape } from '../../styles/breakpoints';
 
 export const AgencyHeader = styled.div`
   box-shadow: ${(props) => props.theme.shadows.depth1};

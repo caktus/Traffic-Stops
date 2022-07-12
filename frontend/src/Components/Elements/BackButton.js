@@ -1,17 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 // Styles, assets
 import { useTheme } from 'styled-components';
 import * as S from './BackButton.styled';
-import { ICONS } from 'img/icons/Icon';
+import { ICONS } from '../../img/icons/Icon';
 
-import { SIZES } from 'styles/StyledComponents/Typography';
+import { SIZES } from '../../styles/StyledComponents/Typography';
 
 function BackButton({ to, text, ...props }) {
-  const history = useHistory();
+  const history = useNavigate();
   const theme = useTheme();
 
   const _handleClick = (e) => {

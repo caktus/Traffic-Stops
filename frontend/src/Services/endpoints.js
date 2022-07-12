@@ -6,7 +6,7 @@ import {
   SEARCHES_BY_TYPE,
   USE_OF_FORCE,
   CONTRABAND_HIT_RATE, LIKELIHOOD_OF_SEARCH,
-} from 'Hooks/useDataset';
+} from '../Hooks/useDataset';
 
 const API_BASE = '/api';
 

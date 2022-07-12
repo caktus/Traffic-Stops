@@ -2,10 +2,10 @@ import React from 'react';
 import { DataLoadingStyled } from './DataLoading.styled';
 
 // Hooks
-import useOfficerId from 'Hooks/useOfficerId';
+import useOfficerId from '../../../Hooks/useOfficerId';
 
 // Children
-import PieSkeleton from 'Components/Elements/Skeletons/PieSkeleton';
+import PieSkeleton from '../../Elements/Skeletons/PieSkeleton';
 
 function DataLoading() {
   const officerId = useOfficerId();

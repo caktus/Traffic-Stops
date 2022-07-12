@@ -7,7 +7,7 @@ import { useTable, usePagination, useSortBy } from 'react-table';
 import { format } from 'date-fns';
 
 // Constants
-import { ICONS } from 'img/icons/Icon';
+import { ICONS } from '../../../img/icons/Icon';
 
 // Children
 import TablePagination from './TablePagination';

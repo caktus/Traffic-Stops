@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-// import { SvgCircleStyled } from './SvgCircle.styled';
+// import { SvgCircleStyled } from 'Components/SvgCircle.styled';
 
 function SvgCircle({ color, filled }) {
   return (

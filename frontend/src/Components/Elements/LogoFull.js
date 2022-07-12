@@ -1,12 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
-import CopWatchLogoWhite from 'img/NC_copwatch_logo_solid.png';
-import CopWatchLogoSolid from 'img/NC_copwatch_logo_white.png';
-import { HOME_SLUG } from 'Routes/slugs';
-import { useHistory } from 'react-router-dom';
+import CopWatchLogoWhite from '../../img/NC_copwatch_logo_solid.png';
+import CopWatchLogoSolid from '../../img/NC_copwatch_logo_white.png';
+import { HOME_SLUG } from '../../Routes/slugs';
+import { useNavigate } from 'react-router-dom';
 
 function LogoFull({ solid, white }) {
-  const history = useHistory();
+  const history = useNavigate();
 
   const _getLogo = () => {
     if (white) return CopWatchLogoWhite;

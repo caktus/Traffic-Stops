@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { SearchRateStyled } from './SearchRate.styled';
-import * as S from 'Components/Charts/ChartSections/ChartsCommon.styled';
+import * as S from '../ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
 
 // Router
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 // Data
-import useDataset, { LIKELIHOOD_OF_SEARCH } from 'Hooks/useDataset';
+import useDataset, { LIKELIHOOD_OF_SEARCH } from '../../../Hooks/useDataset';
 
 // Hooks
-import useOfficerId from 'Hooks/useOfficerId';
-import useMetaTags from 'Hooks/useMetaTags';
-import useTableModal from 'Hooks/useTableModal';
+import useOfficerId from '../../../Hooks/useOfficerId';
+import useMetaTags from '../../../Hooks/useMetaTags';
+import useTableModal from '../../../Hooks/useTableModal';
 
 // Constants
 import {
@@ -22,13 +22,13 @@ import {
   getRatesAgainstBase,
   STOP_TYPES, calculateAveragePercentage,
 } from '../chartUtils';
-import { AGENCY_LIST_SLUG, SEARCHES_SLUG } from 'Routes/slugs';
+import { AGENCY_LIST_SLUG, SEARCHES_SLUG } from '../../../Routes/slugs';
 
 // Children
-import { P } from 'styles/StyledComponents/Typography';
-import ChartHeader from 'Components/Charts/ChartSections/ChartHeader';
-import Legend from 'Components/Charts/ChartSections/Legend/Legend';
-import DataSubsetPicker from 'Components/Charts/ChartSections/DataSubsetPicker/DataSubsetPicker';
+import { P } from '../../../styles/StyledComponents/Typography';
+import ChartHeader from '../ChartSections/ChartHeader';
+import Legend from '../ChartSections/Legend/Legend';
+import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
 import GroupedBar from '../ChartPrimitives/GroupedBar';
 import { VictoryLabel } from 'victory';
 
@@ -36,7 +36,7 @@ import { VictoryLabel } from 'victory';
 function SearchRate() {
   let { agencyId } = useParams();
   const theme = useTheme();
-  const history = useHistory();
+  const history = useNavigate();
   const officerId = useOfficerId();
 
   const [chartState] = useDataset(agencyId, LIKELIHOOD_OF_SEARCH);

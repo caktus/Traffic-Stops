@@ -1,12 +1,12 @@
 import React from 'react';
 
-import CopWatchLogoSolid from 'img/NC_copwatch_logo_solid.png';
+import CopWatchLogoSolid from '../img/NC_copwatch_logo_solid.png';
 
 // Hooks
-import useOfficerId from 'Hooks/useOfficerId';
+import useOfficerId from '../Hooks/useOfficerId';
 
 // State
-import { useChartState } from 'Context/chart-state';
+import { useChartState } from '../Context/chart-state';
 import { AGENCY_DETAILS } from './useDataset';
 
 // Deps

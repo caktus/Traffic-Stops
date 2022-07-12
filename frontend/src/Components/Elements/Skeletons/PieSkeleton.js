@@ -2,7 +2,7 @@ import React from 'react';
 
 // Deps
 import ContentLoader from 'react-content-loader';
-import LoaderBase from 'Components/Elements/Skeletons/LoaderBase';
+import LoaderBase from '../../Elements/Skeletons/LoaderBase';
 
 function PieSkeleton({ scale=1 }) {
   const toScale = (val) => parseInt(val, 10) * scale

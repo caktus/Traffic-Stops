@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { useTheme } from 'styled-components';
 import * as Styled from './Input.styled';
 
-import Icon, { ICONS } from 'img/icons/Icon';
+import Icon, { ICONS } from '../../../img/icons/Icon';
 import { Input } from 'reaktus';
 import {TextArea} from "./Input.styled";
 

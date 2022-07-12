@@ -2,24 +2,24 @@ import React, { useState, useEffect } from 'react';
 import * as S from './AgencyList.styled';
 
 // Router
-import { Link, useRouteMatch } from 'react-router-dom';
+import { Link, useMatch } from 'react-router-dom';
 
 // AJAX
-import axios from 'Services/Axios';
-import { getAgenciesURL } from 'Services/endpoints';
+import axios from '../../Services/Axios';
+import { getAgenciesURL } from '../../Services/endpoints';
 
 // Context
-import { useRootContext } from 'Context/root-context';
-import { FETCH_START, FETCH_SUCCESS, FETCH_FAILURE } from 'Context/root-reducer';
+import { useRootContext } from '../../Context/root-context';
+import { FETCH_START, FETCH_SUCCESS, FETCH_FAILURE } from '../../Context/root-reducer';
 
 // Components
-import ListSkeleton from 'Components/Elements/ListSkeleton';
-import { H1, P } from 'styles/StyledComponents/Typography';
+import ListSkeleton from '../Elements/ListSkeleton';
+import { H1, P } from '../../styles/StyledComponents/Typography';
 
 const DATA_SET = 'AGENCIES_LIST';
 
 function AgencyList() {
-  const match = useRouteMatch();
+  const match = useMatch();
 
   const [state, dispatch] = useRootContext();
   const [sortedAgencies, setSortedAgencies] = useState({});

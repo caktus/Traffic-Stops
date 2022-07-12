@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { smallerThanTabletLandscape } from 'styles/breakpoints';
+import { smallerThanTabletLandscape } from '../../../styles/breakpoints';
 
 export const Pagination = styled.div`
   display: flex;

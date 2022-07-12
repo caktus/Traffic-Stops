@@ -2,24 +2,24 @@ import React from 'react';
 import { useTheme } from 'styled-components';
 import { AnimatePresence, motion } from 'framer-motion';
 import * as S from './AgencyHeader.styled';
-import { P, SIZES, WEIGHTS, COLORS } from 'styles/StyledComponents/Typography';
+import { P, SIZES, WEIGHTS, COLORS } from '../../styles/StyledComponents/Typography';
 
 // Routing
-import { useHistory, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 // Hooks
-import useOfficerId from 'Hooks/useOfficerId';
+import useOfficerId from '../../Hooks/useOfficerId';
 
 // Util
-import { calculatePercentage, RACES } from 'Components/Charts/chartUtils';
-import toTitleCase from 'util/toTitleCase';
+import { calculatePercentage, RACES } from '../Charts/chartUtils';
+import toTitleCase from '../../util/toTitleCase';
 
-import BackButton from 'Components/Elements/BackButton';
-import { ICONS } from 'img/icons/Icon';
-import { AGENCY_LIST_SLUG } from 'Routes/slugs';
+import { ICONS } from '../../img/icons/Icon';
+import { AGENCY_LIST_SLUG } from '../../Routes/slugs';
+import BackButton from "../Elements/BackButton";
 
 function AgencyHeader({ agencyHeaderOpen, agencyDetails }) {
-  const history = useHistory();
+  const history = useNavigate();
   const { agencyId } = useParams();
   const theme = useTheme();
   const officerId = useOfficerId();

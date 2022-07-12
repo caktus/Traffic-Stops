@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { phoneOnly, smallerThanTabletLandscape } from 'styles/breakpoints';
+import { phoneOnly, smallerThanTabletLandscape } from '../../styles/breakpoints';
 import { motion } from 'framer-motion';
 
 export const Sidebar = styled(motion.div)`

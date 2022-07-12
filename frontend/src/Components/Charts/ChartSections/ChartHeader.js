@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from 'styled-components';
-import * as S from './ChartHeader.styled';
+import * as S from 'Components/ChartHeader.styled';
 
 // Hooks
 import useOfficerId from 'Hooks/useOfficerId';

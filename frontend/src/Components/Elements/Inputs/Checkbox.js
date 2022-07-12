@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { HelpText } from 'Components/Elements/Inputs/Input.styled';
 import * as Styled from './Checkbox.styled';
-import CheckboxIcon from 'img/icons/CheckboxIcon';
+import CheckboxIcon from '../../../img/icons/CheckboxIcon';
+import {HelpText} from "./Input.styled";
 
 function Checkbox({ value, checked, onChange, label, helpText }) {
   return (

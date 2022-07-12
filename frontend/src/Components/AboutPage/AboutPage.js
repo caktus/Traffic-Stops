@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import * as S from './AboutPage.styled';
 
-import {H1, H2} from 'styles/StyledComponents/Typography';
+import {H1, H2} from '../../styles/StyledComponents/Typography';
 import Input from "../Elements/Inputs/Input";
 import {Button} from "reaktus";
 import axios from "../../Services/Axios";

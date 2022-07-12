@@ -3,7 +3,7 @@ import * as S from './FindAStopResults.styled';
 import { AnimatePresence, motion } from 'framer-motion';
 
 // Routing
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { FIND_A_STOP_SLUG, AGENCY_LIST_SLUG } from 'Routes/slugs';
 
 // AJAX
@@ -51,7 +51,7 @@ const tableColumns = [
 
 function FindAStopResults() {
   const { search } = useLocation();
-  const history = useHistory();
+  const history = useNavigate();
 
   const [stops, setStops] = useState();
 

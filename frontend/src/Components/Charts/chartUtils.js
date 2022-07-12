@@ -1,4 +1,4 @@
-import toTitleCase from 'util/toTitleCase';
+import toTitleCase from '../../util/toTitleCase';
 
 export const RACES = ['white', 'black', 'hispanic', 'asian', 'native_american', 'other'];
 export const SEARCH_TYPES = [

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTheme } from 'styled-components';
 import PropTypes from 'prop-types';
-import * as S from './Legend.styled';
+import * as S from 'Components/Legend.styled';
 import { ICONS } from 'img/icons/Icon';
 import { WEIGHTS } from 'styles/StyledComponents/Typography';
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useChartState } from 'Context/chart-state';
-import TableModal from 'Components/Elements/Table/TableModal';
+import { useChartState } from '../Context/chart-state';
+import TableModal from "../Components/Elements/Table/TableModal";
 
 function useTableModal() {
   const [isOpen, setIsOpen] = useState(false);

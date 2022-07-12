@@ -8,12 +8,12 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useParams } from 'react-router-dom';
 
 // State
-import useDataset, { AGENCY_DETAILS } from 'Hooks/useDataset';
+import useDataset, { AGENCY_DETAILS } from '../../Hooks/useDataset';
 
 // Children
-import AgencyHeader from 'Components/AgencyData/AgencyHeader';
-import Sidebar from 'Components/Sidebar/Sidebar';
-import ChartRoutes from 'Components/Charts/ChartRoutes';
+import AgencyHeader from '../AgencyData/AgencyHeader';
+import Sidebar from '../Sidebar/Sidebar';
+import ChartRoutes from '../Charts/ChartRoutes';
 
 function AgencyData(props) {
   const { agencyId } = useParams();

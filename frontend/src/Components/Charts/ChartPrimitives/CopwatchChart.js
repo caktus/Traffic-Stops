@@ -1,5 +1,5 @@
 import React from 'react';
-import * as S from './CopwatchChart.styled'
+import * as S from 'Components/CopwatchChart.styled'
 import { VictoryChart, VictoryVoronoiContainer, VictoryTooltip } from 'victory'
 
 function CopwatchChart({ children, ...props }) {
