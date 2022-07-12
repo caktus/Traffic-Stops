@@ -2,11 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import {VictoryStack, VictoryBar, VictoryAxis, VictoryTooltip, VictoryChart} from 'victory';
-import { AXIS_STYLE } from 'Components/chartConstants';
+import { AXIS_STYLE } from './chartConstants';
 
 // Children
-import ChartLoading from 'Components/Charts/ChartPrimitives/ChartLoading';
-import BarSkeleton from 'Components/Elements/Skeletons/BarSkeleton';
+import ChartLoading from '../../Charts/ChartPrimitives/ChartLoading';
+import BarSkeleton from '../../Elements/Skeletons/BarSkeleton';
 import EmptyChartMessage from "../ChartSections/EmptyChartMessage";
 
 function StackedBar({ data, loading, tickValues, yAxisLabel }) {

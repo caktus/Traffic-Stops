@@ -43,26 +43,27 @@ function App() {
               <IconDefs />
               <Header />
               <Routes>
-                <Route path={`${AGENCY_LIST_SLUG}/:agencyId`}>
-                  <ChartStateProvider reducer={chartReducer} initialState={initialChartState}>
-                    <AgencyData />
-                  </ChartStateProvider>
-                </Route>
-                <Route path={AGENCY_LIST_SLUG}>
-                  <AgencyList />
-                </Route>
+                <Route path={`${AGENCY_LIST_SLUG}/:agencyId`}
+                   element={
+                     <ChartStateProvider reducer={chartReducer} initialState={initialChartState}>
+                       <AgencyData/>
+                     </ChartStateProvider>
+                   }
+                />
+                <Route path={AGENCY_LIST_SLUG}
+                  element={<AgencyList />}
+                  />
+                  {/* TODO: Figure out how to show stop results using v6 react-router-dom */}
+                {/*<Route*/}
+                {/*  path={FIND_A_STOP_SLUG}*/}
+                {/*  element={<FindAStopResults />}*/}
+                {/*/>*/}
                 <Route
                   path={FIND_A_STOP_SLUG}
-                  render={(props) =>
-                    props.location.search ? <FindAStopResults /> : <FindAStopPage />
-                  }
-                ></Route>
-                <Route exact path={ABOUT_SLUG}>
-                  <About />
-                </Route>
-                <Route path={HOME_SLUG}>
-                  <HomePage />
-                </Route>
+                  element={<FindAStopPage />}
+                />
+                <Route exact path={ABOUT_SLUG} element={<About />} />
+                <Route path={HOME_SLUG} element={<HomePage />} />
               </Routes>
             </LayoutStyled>
           </RootContextProvider>

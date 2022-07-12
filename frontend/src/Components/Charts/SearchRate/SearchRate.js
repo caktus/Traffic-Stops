@@ -164,7 +164,7 @@ function SearchRate() {
                 </P>
                 <P>
                   For a better comparison, view{' '}
-                  <S.NoBaseLink onClick={() => history.push(getSearchesUrlForOfficer())}>
+                  <S.NoBaseLink onClick={() => history(getSearchesUrlForOfficer())}>
                     search counts and percentages
                   </S.NoBaseLink>
                   .

@@ -74,7 +74,7 @@ function FindAStopResults() {
   };
 
   const handleOfficerIdSelected = (officerId) => {
-    history.push({
+    history({
       pathname: _getAgencyURLFromQueryString(),
       search: `officer=${officerId}`,
     });
@@ -100,7 +100,7 @@ function FindAStopResults() {
             <H2>No stops matching these criteria have been reported to the SBI.</H2>
             <P>
               Has{' '}
-              <S.DeptLink onClick={() => history.push(_getAgencyURLFromQueryString())}>
+              <S.DeptLink onClick={() => history(_getAgencyURLFromQueryString())}>
                 this department
               </S.DeptLink>{' '}
               reported stops within your date range?

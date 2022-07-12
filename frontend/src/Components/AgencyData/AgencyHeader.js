@@ -25,7 +25,7 @@ function AgencyHeader({ agencyHeaderOpen, agencyDetails }) {
   const officerId = useOfficerId();
 
   const handleGoToAgency = () => {
-    history.push(`${AGENCY_LIST_SLUG}/${agencyId}`);
+    history(`${AGENCY_LIST_SLUG}/${agencyId}`);
   };
 
   let lastReportedStop = () => {

@@ -139,7 +139,7 @@ function HomePage() {
                 placeholder="Search for a police or sheriff's department..."
               />
             </S.SearchWrapper>
-            <S.ViewAllDepts onClick={() => history.push(AGENCY_LIST_SLUG)}>
+            <S.ViewAllDepts onClick={() => history(AGENCY_LIST_SLUG)}>
               View all departments
               <S.ViewAllIcon
                 icon={ICONS.arrowRight}
@@ -159,7 +159,7 @@ function HomePage() {
             </P>
             <S.ButtonWrapper>
               <FjButton
-                onClick={() => history.push(FIND_A_STOP_SLUG)}
+                onClick={() => history(FIND_A_STOP_SLUG)}
                 variant="positive"
                 bg={theme.colors.secondary}
                 width="100%"

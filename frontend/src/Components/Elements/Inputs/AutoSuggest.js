@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import * as Styled from 'Components/AutoSuggest.styled';
+import * as Styled from './AutoSuggest.styled';
 
 import { Select } from 'reaktus';
 
-import { HelpText } from 'Components/Elements/Inputs/Input.styled';
+import { HelpText } from '../../Elements/Inputs/Input.styled';
 // import AutosuggestHighlightMatch from 'autosuggest-highlight/match';
 // import AutosuggestHighlightParse from 'autosuggest-highlight/parse';
 

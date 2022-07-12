@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import * as serviceWorker from './serviceWorker';
 
 import * as Sentry from '@sentry/react';
@@ -8,17 +8,17 @@ import * as Sentry from '@sentry/react';
 import { SENTRY_DSN } from './settings';
 
 // Children
-import App from "./Components/App";
+import App from './Components/App';
 
 // Eventually, we'll want to make sure NODE_ENV is set up
 // so that the following commented code wont run locally.
 if (process.env.NODE_ENV !== 'development') Sentry.init({ dsn: SENTRY_DSN });
 
-ReactDOM.render(
+const root = createRoot(document.getElementById('root'));
+root.render(
   <React.StrictMode>
     <App />
-  </React.StrictMode>,
-  document.getElementById('root')
+  </React.StrictMode>
 );
 
 // If you want your app to work offline and load faster, you can change

@@ -1,9 +1,9 @@
 import React from 'react';
-import * as S from 'Components/ShareList.styled';
+import * as S from './ShareList.styled';
 
 // Derps
-import TwitterLogo from 'img/twitter_logo_blue.png';
-import FacebookLogo from 'img/f_logo_RGB-Blue_58.png';
+import TwitterLogo from '../../../img/twitter_logo_blue.png';
+import FacebookLogo from '../../../img/f_logo_RGB-Blue_58.png';
 
 const ShareList = React.forwardRef(function ({ shareUrl, twitterTitle }, ref) {
   return (

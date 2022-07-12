@@ -12,7 +12,7 @@ function LogoFull({ solid, white }) {
     if (white) return CopWatchLogoWhite;
     else return CopWatchLogoSolid;
   };
-  return <LogoStyled onClick={() => history.push(HOME_SLUG)} src={_getLogo()} />;
+  return <LogoStyled onClick={() => history(HOME_SLUG)} src={_getLogo()} />;
 }
 
 export default LogoFull;

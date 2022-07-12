@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from 'styled-components';
-import * as Styled from 'Components/DepartmentSearch.styled';
+import * as Styled from './DepartmentSearch.styled';
 import PropTypes from 'prop-types';
 
 // Router
@@ -26,7 +26,7 @@ function SeeAllDepartments({ selectRef }) {
   const history = useNavigate();
   const handleClick = (e) => {
     e.preventDefault();
-    history.push(AGENCY_LIST_SLUG);
+    history(AGENCY_LIST_SLUG);
     if (selectRef?.current) selectRef.current.closeDropdown();
   };
   return (
@@ -70,7 +70,7 @@ function DepartmentSearch({
 
   const handleSuggestionSelected = (department) => {
     if (navigateOnSelect) {
-      history.push(`${AGENCY_LIST_SLUG}/${department.id}`);
+      history(`${AGENCY_LIST_SLUG}/${department.id}`);
     } else onChange(department);
   };
 

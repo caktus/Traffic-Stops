@@ -95,7 +95,7 @@ function FindAStopPage() {
       // Search just appends the query params to the current url
       // Routing renders a new component when it detects params
       // This way, users can navigate direclty to /stops?[query params] and get the results
-      history.push({
+      history({
         pathname: '',
         search: _buildQueryString(),
       });

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from 'styled-components';
-import * as S from 'Components/Dropdown.styled';
-import { ICONS } from 'img/icons/Icon';
+import * as S from './Dropdown.styled';
+import { ICONS } from '../../../img/icons/Icon';
 
 export function Dropdown({ value, onChange, options, dropUp }) {
   const theme = useTheme();

@@ -1,5 +1,5 @@
 import React from 'react';
-import * as S from 'Components/OfficerBadge.styled';
+import * as S from './OfficerBadge.styled';
 
 function OfficerBadge({ officerId }) {
   return (
