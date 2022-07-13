@@ -3,7 +3,7 @@ import Datepicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
 // Children
-import Input, { iconPositions } from '../../Elements/Inputs/Input';
+import Input, { iconPositions } from './Input';
 import { ICONS } from '../../../img/icons/Icon';
 
 function DatePicker({ value, onChange, inputProps, ...props }) {

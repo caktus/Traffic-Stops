@@ -19,7 +19,7 @@ export const STOP_TYPES = [
   'Investigation',
   'Other Motor Vehicle Violation',
   'Checkpoint',
-  'Average'
+  'Average',
 ];
 export const YEARS_DEFAULT = 'All';
 export const PURPOSE_DEFAULT = 'All';
@@ -56,7 +56,9 @@ export function calculateYearTotal(yearData, filteredKeys = RACES) {
 
 export function reduceYearsToTotal(data, ethnicGroup) {
   if (data.length === 0) return { [ethnicGroup]: 0 };
-  return data.reduce((acc, curr) => ({ [ethnicGroup]: parseInt(acc[ethnicGroup]) + parseInt(curr[ethnicGroup]) }));
+  return data.reduce((acc, curr) => ({
+    [ethnicGroup]: parseInt(acc[ethnicGroup]) + parseInt(curr[ethnicGroup]),
+  }));
 }
 
 export function filterSinglePurpose(data, purpose) {
@@ -65,12 +67,11 @@ export function filterSinglePurpose(data, purpose) {
 
 export const filterDataBySearchType = (data, searchTypeFilter) => {
   if (searchTypeFilter === SEARCH_TYPE_DEFAULT) return data;
-  else return data.filter((d) => d.search_type === searchTypeFilter);
+  return data.filter((d) => d.search_type === searchTypeFilter);
 };
 
-export const getQuantityForYear = (data, year, ethnicGroup) => {
-  return data.find((d) => d.year === year)[ethnicGroup];
-};
+export const getQuantityForYear = (data, year, ethnicGroup) =>
+  data.find((d) => d.year === year)[ethnicGroup];
 
 /**
  * Given an Array of objects with shape { year, asian, black, etc. }, reduce to percentages of total by race.
@@ -121,14 +122,12 @@ export function buildStackedBarData(data, filteredKeys, theme) {
     const groupSet = {};
     groupSet.id = toTitleCase(ethnicGroup);
     groupSet.color = theme.colors.ethnicGroup[ethnicGroup];
-    groupSet.data = data.map((datum) => {
-      return {
-        x: datum.year,
-        y: calculatePercentage(datum[ethnicGroup], yearTotals[datum.year]),
-        displayName: toTitleCase(ethnicGroup),
-        color: theme.colors.ethnicGroup[ethnicGroup]
-      };
-    });
+    groupSet.data = data.map((datum) => ({
+      x: datum.year,
+      y: calculatePercentage(datum[ethnicGroup], yearTotals[datum.year]),
+      displayName: toTitleCase(ethnicGroup),
+      color: theme.colors.ethnicGroup[ethnicGroup],
+    }));
     mappedData.push(groupSet);
   });
   return mappedData;
@@ -149,15 +148,14 @@ export function getSearchRateForYearByGroup(searches, stops, year, ethnicGroup, 
       totalStops += stopsForYear[g];
     });
     return calculatePercentage(totalSearches, totalStops);
-  } else {
-    const searchesForGroup = searchesForYear ? searchesForYear[ethnicGroup] : 0;
-    const stopsForGroup = stopsForYear ? stopsForYear[ethnicGroup] : 0;
-    return calculatePercentage(searchesForGroup, stopsForGroup);
   }
+  const searchesForGroup = searchesForYear ? searchesForYear[ethnicGroup] : 0;
+  const stopsForGroup = stopsForYear ? stopsForYear[ethnicGroup] : 0;
+  return calculatePercentage(searchesForGroup, stopsForGroup);
 }
 
-export const reduceStopReasonsByEthnicity = (data, yearsSet, ethnicGroup, searchTypeFilter) => {
-  return yearsSet.map((year) => {
+export const reduceStopReasonsByEthnicity = (data, yearsSet, ethnicGroup, searchTypeFilter) =>
+  yearsSet.map((year) => {
     const tick = {};
     tick.x = year;
     tick.symbol = 'circle';
@@ -167,9 +165,9 @@ export const reduceStopReasonsByEthnicity = (data, yearsSet, ethnicGroup, search
       // No searches this year
       if (yrSet.length === 0) tick.y = 0;
       else {
-        const stopTotal = yrSet.reduce((acc, curr) => {
-          return { [ethnicGroup]: acc[ethnicGroup] + curr[ethnicGroup] };
-        })[ethnicGroup];
+        const stopTotal = yrSet.reduce((acc, curr) => ({
+          [ethnicGroup]: acc[ethnicGroup] + curr[ethnicGroup],
+        }))[ethnicGroup];
         tick.y = stopTotal;
       }
     } else {
@@ -178,7 +176,6 @@ export const reduceStopReasonsByEthnicity = (data, yearsSet, ethnicGroup, search
     }
     return tick;
   });
-};
 
 export const getGroupValueBasedOnYear = (data, group, yr, keys) => {
   const groupedData = {};
@@ -208,10 +205,10 @@ export const getRatesAgainstBase = (baseSearches, baseStops, groupSearches, grou
 };
 
 export const calculateAveragePercentage = (data) => {
-  data.forEach(da => {
-    let dataPoints = da.data.filter(d => d.x !== "Average").map(p => p.y);
-    let averageDataPoint = da.data.filter(d => d.x === "Average")[0];
-    averageDataPoint["y"] = (dataPoints.reduce((a, b) => a + b, 0)) / dataPoints.length;
-  })
+  data.forEach((da) => {
+    const dataPoints = da.data.filter((d) => d.x !== 'Average').map((p) => p.y);
+    const averageDataPoint = da.data.filter((d) => d.x === 'Average')[0];
+    averageDataPoint['y'] = dataPoints.reduce((a, b) => a + b, 0) / dataPoints.length;
+  });
   return data;
-}
+};

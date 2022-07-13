@@ -12,7 +12,7 @@ function DataLoading() {
 
   return (
     <DataLoadingStyled>
-      <h3>Loading {officerId ? "Officer" : "Agency"} data...</h3>
+      <h3>Loading {officerId ? 'Officer' : 'Agency'} data...</h3>
       <PieSkeleton scale={2} />
     </DataLoadingStyled>
   );

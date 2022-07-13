@@ -1,5 +1,9 @@
 import styled from 'styled-components';
-import { phoneOnly, smallerThanDesktop, smallerThanTabletLandscape } from '../../../styles/breakpoints';
+import {
+  phoneOnly,
+  smallerThanDesktop,
+  smallerThanTabletLandscape,
+} from '../../../styles/breakpoints';
 import { P } from '../../../styles/StyledComponents/Typography';
 import FJIcon from '../../../img/icons/Icon';
 

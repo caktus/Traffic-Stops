@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import FullWidthPage from 'styles/StyledComponents/FullWidthPage';
+import FullWidthPage from '../../styles/StyledComponents/FullWidthPage';
 
 export const Page = styled(FullWidthPage)`
   padding: 2em 0;

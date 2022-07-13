@@ -24,7 +24,7 @@ function Sidebar() {
 
   return (
     <S.Sidebar data-testid="Sidebar">
-      <S.Heading>{officerId !== null ? "Officer" : "Department"} Data</S.Heading>
+      <S.Heading>{officerId !== null ? 'Officer' : 'Department'} Data</S.Heading>
       <S.SidebarNav>
         <SidebarLink data-testid="OverviewNavLink" to={buildUrl(slugs.OVERVIEW_SLUG)}>
           Overview

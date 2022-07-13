@@ -1,11 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {VictoryChart, VictoryGroup, VictoryBar, VictoryAxis, VictoryContainer, VictoryTooltip} from 'victory';
+import {
+  VictoryChart,
+  VictoryGroup,
+  VictoryBar,
+  VictoryAxis,
+  VictoryContainer,
+  VictoryTooltip,
+} from 'victory';
 import { AXIS_STYLE } from './chartConstants';
-import ChartLoading from '../ChartPrimitives/ChartLoading';
-import EmptyChartMessage from "../ChartSections/EmptyChartMessage";
-import BarSkeleton from "../../Elements/Skeletons/BarSkeleton";
+import ChartLoading from './ChartLoading';
+import EmptyChartMessage from '../ChartSections/EmptyChartMessage';
+import BarSkeleton from '../../Elements/Skeletons/BarSkeleton';
 
 function GroupedBar({
   data,
@@ -17,50 +24,52 @@ function GroupedBar({
   dAxisProps,
   iAxisProps,
   barProps,
-  toolTipFontSize
+  toolTipFontSize,
 }) {
-  if (loading) return <ChartLoading skeleton={BarSkeleton} />
+  if (loading) return <ChartLoading skeleton={BarSkeleton} />;
 
   return (
-  <>
-    <EmptyChartMessage data={data} />
-    <VictoryChart
-      domainPadding={15}
-      width={700}
-      {...chartProps}
-      containerComponent={<VictoryContainer style={{ touchAction: 'auto' }} />}
-    >
-      <VictoryAxis dependentAxis style={AXIS_STYLE} {...dAxisProps} />
-      <VictoryAxis
-        style={AXIS_STYLE}
-        tickValues={iTickValues}
-        tickFormat={iTickFormat}
-        {...iAxisProps}
-      />
-      <VictoryGroup offset={5}>
-        {data.map((bar) => (
-          <VictoryBar
-            barWidth={4}
-            horizontal={horizontal}
-            key={bar.id}
-            data={bar.data}
-            style={{
-              data: { fill: bar.color },
-            }}
-            labels={({ datum }) => `${datum.ethnicGroup}, ${datum.x}, ${dAxisProps.tickFormat(datum.y)}`}
-            labelComponent={
-              <VictoryTooltip
+    <>
+      <EmptyChartMessage data={data} />
+      <VictoryChart
+        domainPadding={15}
+        width={700}
+        {...chartProps}
+        containerComponent={<VictoryContainer style={{ touchAction: 'auto' }} />}
+      >
+        <VictoryAxis dependentAxis style={AXIS_STYLE} {...dAxisProps} />
+        <VictoryAxis
+          style={AXIS_STYLE}
+          tickValues={iTickValues}
+          tickFormat={iTickFormat}
+          {...iAxisProps}
+        />
+        <VictoryGroup offset={5}>
+          {data.map((bar) => (
+            <VictoryBar
+              barWidth={4}
+              horizontal={horizontal}
+              key={bar.id}
+              data={bar.data}
+              style={{
+                data: { fill: bar.color },
+              }}
+              labels={({ datum }) =>
+                `${datum.ethnicGroup}, ${datum.x}, ${dAxisProps.tickFormat(datum.y)}`
+              }
+              labelComponent={
+                <VictoryTooltip
                   constrainToVisibleArea
                   flyoutStyle={{ opacity: 0.8 }}
                   style={{ fontSize: toolTipFontSize }}
-              />
-            }
-            {...barProps}
-          />
-        ))}
-      </VictoryGroup>
-    </VictoryChart>
-  </>
+                />
+              }
+              {...barProps}
+            />
+          ))}
+        </VictoryGroup>
+      </VictoryChart>
+    </>
   );
 }
 
@@ -73,4 +82,3 @@ GroupedBar.defaultProps = {
 };
 
 export default GroupedBar;
-

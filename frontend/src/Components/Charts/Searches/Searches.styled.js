@@ -1,4 +1,4 @@
 import styled from 'styled-components';
-import ChartPageBase from '../../Charts/ChartSections/ChartPageBase';
+import ChartPageBase from '../ChartSections/ChartPageBase';
 
 export const SearchesStyled = styled(ChartPageBase)``;

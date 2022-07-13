@@ -2,7 +2,7 @@ import React from 'react';
 
 // Deps
 import ContentLoader from 'react-content-loader';
-import LoaderBase from '../../Elements/Skeletons/LoaderBase';
+import LoaderBase from './LoaderBase';
 
 function BarSkeleton() {
   return (

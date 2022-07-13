@@ -48,7 +48,7 @@ const FETCH_ERROR = 'FETCH_ERROR';
 function ObservableFetch({ children, urls, scrollAreaRef, fetchMethod }) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  let observableRef = React.createRef();
+  const observableRef = React.createRef();
 
   useEffect(() => {
     const element = scrollAreaRef.current || observableRef.current;
@@ -76,7 +76,7 @@ function ObservableFetch({ children, urls, scrollAreaRef, fetchMethod }) {
     }
     if (element) {
       const observerOptions = {};
-      let observer = new IntersectionObserver(handleObserved, observerOptions);
+      const observer = new IntersectionObserver(handleObserved, observerOptions);
       observer.observe(element);
     }
   }, []);

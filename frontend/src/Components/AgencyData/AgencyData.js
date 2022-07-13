@@ -11,7 +11,7 @@ import { useParams } from 'react-router-dom';
 import useDataset, { AGENCY_DETAILS } from '../../Hooks/useDataset';
 
 // Children
-import AgencyHeader from '../AgencyData/AgencyHeader';
+import AgencyHeader from './AgencyHeader';
 import Sidebar from '../Sidebar/Sidebar';
 import ChartRoutes from '../Charts/ChartRoutes';
 

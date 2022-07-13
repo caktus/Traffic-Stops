@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import * as breakpoints from '../../styles/breakpoints';
+import * as breakpoints from '../breakpoints';
 
 export const FullWidthPage = styled.main`
   flex: 1;

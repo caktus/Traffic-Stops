@@ -29,7 +29,7 @@ import AgencyData from './AgencyData/AgencyData';
 import HomePage from './HomePage/HomePage';
 import FindAStopPage from './FindAStopPage/FindAStopPage';
 import FindAStopResults from './FindAStopPage/FindAStopResults';
-import Header from "./Header/Header";
+import Header from './Header/Header';
 
 function App() {
   return (
@@ -56,7 +56,7 @@ function App() {
                   render={(props) =>
                     props.location.search ? <FindAStopResults /> : <FindAStopPage />
                   }
-                ></Route>
+                />
                 <Route exact path={ABOUT_SLUG}>
                   <About />
                 </Route>

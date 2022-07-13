@@ -33,7 +33,6 @@ export const AboutPageParagraph = styled(P)`
   line-height: 2;
 `;
 
-
 export const AboutPageBoldParagraph = styled(P)`
   margin: 1.5em 0;
   line-height: 2;

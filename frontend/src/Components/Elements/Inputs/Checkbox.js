@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import * as Styled from './Checkbox.styled';
 import CheckboxIcon from '../../../img/icons/CheckboxIcon';
-import {HelpText} from "./Input.styled";
+import { HelpText } from './Input.styled';
 
 function Checkbox({ value, checked, onChange, label, helpText }) {
   return (

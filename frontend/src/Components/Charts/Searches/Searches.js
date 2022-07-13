@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { SearchesStyled } from './Searches.styled';
-import * as S from '../../Charts/ChartSections/ChartsCommon.styled';
+import * as S from '../ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
 
 // Router
@@ -29,14 +29,14 @@ import useTableModal from '../../../Hooks/useTableModal';
 import { P } from '../../../styles/StyledComponents/Typography';
 
 // Children
-import Line from '../../Charts/ChartPrimitives/Line';
-import Legend from '../../Charts/ChartSections/Legend/Legend';
-import ChartHeader from '../../Charts/ChartSections/ChartHeader';
-import DataSubsetPicker from '../../Charts/ChartSections/DataSubsetPicker/DataSubsetPicker';
-import useOfficerId from "../../../Hooks/useOfficerId";
+import Line from '../ChartPrimitives/Line';
+import Legend from '../ChartSections/Legend/Legend';
+import ChartHeader from '../ChartSections/ChartHeader';
+import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
+import useOfficerId from '../../../Hooks/useOfficerId';
 
 function Searches() {
-  let { agencyId } = useParams();
+  const { agencyId } = useParams();
   const theme = useTheme();
 
   const officerId = useOfficerId();
@@ -160,11 +160,12 @@ function Searches() {
 
   const subjectObserving = () => {
     if (officerId) {
-      return "officer";
-    } else if (agencyId) {
-      return "department";
+      return 'officer';
     }
-  }
+    if (agencyId) {
+      return 'department';
+    }
+  };
 
   return (
     <SearchesStyled>
@@ -208,8 +209,8 @@ function Searches() {
       <S.ChartSection>
         <ChartHeader chartTitle="Searches By Count" handleViewData={handleViewCountData} />
         <P>
-          Shows the number of searches performed by the {subjectObserving()}, broken down by search type and
-          race / ethnicity.
+          Shows the number of searches performed by the {subjectObserving()}, broken down by search
+          type and race / ethnicity.
         </P>
         <S.ChartSubsection>
           <S.LineWrapper>

@@ -14,8 +14,8 @@ import { SET_SHOW_SEARCH } from '../../Context/root-reducer';
 
 // Components
 import LogoFull from '../Elements/LogoFull';
-import Navbar from '../Header/Navbar';
-import HeaderSearch from '../Header/HeaderSearch';
+import Navbar from './Navbar';
+import HeaderSearch from './HeaderSearch';
 
 const SLUGS_WITHOUT_SEARCH = [HOME_SLUG];
 

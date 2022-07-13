@@ -4,7 +4,7 @@ import * as S from '../ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
 
 // Router
-import {useHistory, useParams, useRouteMatch} from 'react-router-dom';
+import { useHistory, useParams, useRouteMatch } from 'react-router-dom';
 
 // Data
 import useDataset, { LIKELIHOOD_OF_SEARCH } from '../../../Hooks/useDataset';
@@ -20,7 +20,8 @@ import {
   YEARS_DEFAULT,
   getGroupValueBasedOnYear,
   getRatesAgainstBase,
-  STOP_TYPES, calculateAveragePercentage,
+  STOP_TYPES,
+  calculateAveragePercentage,
 } from '../chartUtils';
 import { AGENCY_LIST_SLUG, SEARCHES_SLUG } from '../../../Routes/slugs';
 
@@ -32,9 +33,8 @@ import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker
 import GroupedBar from '../ChartPrimitives/GroupedBar';
 import { VictoryLabel } from 'victory';
 
-
 function SearchRate() {
-  let { agencyId } = useParams();
+  const { agencyId } = useParams();
   const theme = useTheme();
   const history = useHistory();
   const officerId = useOfficerId();
@@ -65,9 +65,9 @@ function SearchRate() {
       if (_entityHasNoBaseSearches(baseGroupTotalSearches)) {
         setNoBaseSearches(true);
         return;
-      } else {
-        setNoBaseSearches(false);
       }
+      setNoBaseSearches(false);
+
       const baseGroupTotalStops = getGroupValueBasedOnYear(data.stops, 'white', year, STOP_TYPES);
       let mappedData = ethnicGroupKeys
         .filter((g) => g.selected && g.value !== 'white')
@@ -107,9 +107,8 @@ function SearchRate() {
     }
   }, [chartState.data[LIKELIHOOD_OF_SEARCH], ethnicGroupKeys, year]);
 
-  const _entityHasNoBaseSearches = (baseGroupSearches) => {
-    return Object.values(baseGroupSearches).every((v) => v === 0);
-  };
+  const _entityHasNoBaseSearches = (baseGroupSearches) =>
+    Object.values(baseGroupSearches).every((v) => v === 0);
 
   /* INTERACTIONS */
   // Handle year dropdown state
@@ -132,9 +131,8 @@ function SearchRate() {
     openModal(LIKELIHOOD_OF_SEARCH, TABLE_COLUMNS);
   };
 
-  const getSearchesUrlForOfficer = () => {
-    return `${AGENCY_LIST_SLUG}/${agencyId}${SEARCHES_SLUG}/?officer=${officerId}`;
-  };
+  const getSearchesUrlForOfficer = () =>
+    `${AGENCY_LIST_SLUG}/${agencyId}${SEARCHES_SLUG}/?officer=${officerId}`;
 
   return (
     <SearchRateStyled>

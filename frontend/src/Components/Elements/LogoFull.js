@@ -10,7 +10,7 @@ function LogoFull({ solid, white }) {
 
   const _getLogo = () => {
     if (white) return CopWatchLogoWhite;
-    else return CopWatchLogoSolid;
+    return CopWatchLogoSolid;
   };
   return <LogoStyled onClick={() => history.push(HOME_SLUG)} src={_getLogo()} />;
 }

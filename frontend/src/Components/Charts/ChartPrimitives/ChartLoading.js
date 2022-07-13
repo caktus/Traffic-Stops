@@ -9,7 +9,7 @@ function ChartLoading({ skeleton: Skeleton }) {
 
   return (
     <S.ChartLoading>
-      <h3>Loading {officerId ? "Officer" : "Agency"} data...</h3>
+      <h3>Loading {officerId ? 'Officer' : 'Agency'} data...</h3>
       <Skeleton scale={2} />
     </S.ChartLoading>
   );

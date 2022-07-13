@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components';
-import FJIcon from 'img/icons/Icon';
+import FJIcon from '../../../img/icons/Icon';
 
 export const DropdownContainer = styled.div`
   position: relative;

@@ -25,12 +25,12 @@ import useDataset, { CONTRABAND_HIT_RATE } from '../../../Hooks/useDataset';
 
 // Children
 import { P } from '../../../styles/StyledComponents/Typography';
-import Bar from "../ChartPrimitives/Bar";
-import ChartHeader from "../ChartSections/ChartHeader";
-import DataSubsetPicker from "../ChartSections/DataSubsetPicker/DataSubsetPicker";
+import Bar from '../ChartPrimitives/Bar';
+import ChartHeader from '../ChartSections/ChartHeader';
+import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
 
 function SearchRate() {
-  let { agencyId } = useParams();
+  const { agencyId } = useParams();
   const theme = useTheme();
 
   const [chartState] = useDataset(agencyId, CONTRABAND_HIT_RATE);
@@ -109,7 +109,8 @@ function SearchRate() {
                   tickFormat: (t) => {
                     if (t === 'Native American') {
                       return 'Native \n American';
-                    } else return t;
+                    }
+                    return t;
                   },
                 }}
                 barProps={{

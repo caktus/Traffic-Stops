@@ -22,22 +22,16 @@ function Table({
   pageSize,
 }) {
   const theme = useTheme();
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    prepareRow,
-    page,
-    ...paginationProps
-  } = useTable(
-    {
-      columns,
-      data,
-      initialState: { pageIndex: 0, pageSize, ...intitialTableState },
-    },
-    sortable ? useSortBy : '',
-    paginated ? usePagination : ''
-  );
+  const { getTableProps, getTableBodyProps, headerGroups, prepareRow, page, ...paginationProps } =
+    useTable(
+      {
+        columns,
+        data,
+        initialState: { pageIndex: 0, pageSize, ...intitialTableState },
+      },
+      sortable ? useSortBy : '',
+      paginated ? usePagination : ''
+    );
 
   return (
     <S.TableWrapper>
