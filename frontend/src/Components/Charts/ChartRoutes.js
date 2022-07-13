@@ -14,7 +14,7 @@ import Searches from "./Searches/Searches";
 import SearchRate from "./SearchRate/SearchRate";
 import Contraband from "./Contraband/Contraband";
 import UseOfForce from "./UseOfForce/UseOfForce";
-import FJRoute from "../Containers/AsyncRoute";
+import FJRoute from "../Containers/FJRoute";
 
 function Charts() {
   const match = useRouteMatch();
