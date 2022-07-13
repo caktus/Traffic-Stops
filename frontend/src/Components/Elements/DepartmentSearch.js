@@ -4,7 +4,7 @@ import * as Styled from './DepartmentSearch.styled';
 import PropTypes from 'prop-types';
 
 // Router
-import { useNavigate } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 // Context
 import { FETCH_START, FETCH_SUCCESS, FETCH_FAILURE } from 'Context/root-reducer';
@@ -23,10 +23,10 @@ import { ICONS } from 'img/icons/Icon';
 const DATA_SET = 'AGENCIES_LIST';
 
 function SeeAllDepartments({ selectRef }) {
-  const history = useNavigate();
+  const history = useHistory();
   const handleClick = (e) => {
     e.preventDefault();
-    history(AGENCY_LIST_SLUG);
+    history.push(AGENCY_LIST_SLUG);
     if (selectRef?.current) selectRef.current.closeDropdown();
   };
   return (
@@ -48,7 +48,7 @@ function DepartmentSearch({
   ...props
 }) {
   const theme = useTheme();
-  const history = useNavigate();
+  const history = useHistory();
   const [dropdownOpen, setDropdownOpen] = useState();
   const [state, dispatch] = useRootContext();
 
@@ -70,7 +70,7 @@ function DepartmentSearch({
 
   const handleSuggestionSelected = (department) => {
     if (navigateOnSelect) {
-      history(`${AGENCY_LIST_SLUG}/${department.id}`);
+      history.push(`${AGENCY_LIST_SLUG}/${department.id}`);
     } else onChange(department);
   };
 

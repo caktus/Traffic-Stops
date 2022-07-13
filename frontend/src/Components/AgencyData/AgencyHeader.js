@@ -5,7 +5,7 @@ import * as S from './AgencyHeader.styled';
 import { P, SIZES, WEIGHTS, COLORS } from '../../styles/StyledComponents/Typography';
 
 // Routing
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams, useHistory} from 'react-router-dom';
 
 // Hooks
 import useOfficerId from '../../Hooks/useOfficerId';
@@ -19,13 +19,13 @@ import { AGENCY_LIST_SLUG } from '../../Routes/slugs';
 import BackButton from "../Elements/BackButton";
 
 function AgencyHeader({ agencyHeaderOpen, agencyDetails }) {
-  const history = useNavigate();
+  const history = useHistory();
   const { agencyId } = useParams();
   const theme = useTheme();
   const officerId = useOfficerId();
 
   const handleGoToAgency = () => {
-    history(`${AGENCY_LIST_SLUG}/${agencyId}`);
+    history.push(`${AGENCY_LIST_SLUG}/${agencyId}`);
   };
 
   let lastReportedStop = () => {

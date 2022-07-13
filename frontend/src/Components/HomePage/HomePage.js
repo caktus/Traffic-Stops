@@ -3,7 +3,7 @@ import * as S from './HomePage.styled';
 import { useTheme } from 'styled-components';
 
 // Routing
-import { useNavigate } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 // Assets
 import SplashImage from '../../img/nc-copwatch-transparent--tayetheartist.png';
@@ -32,7 +32,7 @@ import CardSkeleton from '../Elements/Skeletons/CardSkeleton';
 
 function HomePage() {
   const [{ data, loading, errors }, dispatch] = React.useReducer(fetchReducer, initialState);
-  const history = useNavigate();
+  const history = useHistory();
   const theme = useTheme();
 
   useEffect(() => {
@@ -139,7 +139,7 @@ function HomePage() {
                 placeholder="Search for a police or sheriff's department..."
               />
             </S.SearchWrapper>
-            <S.ViewAllDepts onClick={() => history(AGENCY_LIST_SLUG)}>
+            <S.ViewAllDepts onClick={() => history.push(AGENCY_LIST_SLUG)}>
               View all departments
               <S.ViewAllIcon
                 icon={ICONS.arrowRight}
@@ -159,7 +159,7 @@ function HomePage() {
             </P>
             <S.ButtonWrapper>
               <FjButton
-                onClick={() => history(FIND_A_STOP_SLUG)}
+                onClick={() => history.push(FIND_A_STOP_SLUG)}
                 variant="positive"
                 bg={theme.colors.secondary}
                 width="100%"

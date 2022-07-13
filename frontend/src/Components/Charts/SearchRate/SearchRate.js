@@ -4,7 +4,7 @@ import * as S from '../ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
 
 // Router
-import { useParams, useNavigate } from 'react-router-dom';
+import {useHistory, useParams, useRouteMatch} from 'react-router-dom';
 
 // Data
 import useDataset, { LIKELIHOOD_OF_SEARCH } from '../../../Hooks/useDataset';
@@ -36,7 +36,7 @@ import { VictoryLabel } from 'victory';
 function SearchRate() {
   let { agencyId } = useParams();
   const theme = useTheme();
-  const history = useNavigate();
+  const history = useHistory();
   const officerId = useOfficerId();
 
   const [chartState] = useDataset(agencyId, LIKELIHOOD_OF_SEARCH);
@@ -164,7 +164,7 @@ function SearchRate() {
                 </P>
                 <P>
                   For a better comparison, view{' '}
-                  <S.NoBaseLink onClick={() => history(getSearchesUrlForOfficer())}>
+                  <S.NoBaseLink onClick={() => history.push(getSearchesUrlForOfficer())}>
                     search counts and percentages
                   </S.NoBaseLink>
                   .

@@ -7,7 +7,7 @@ import GlobalStyles from '../styles/StyledComponents/GlobalStyles.styled';
 import defaultTheme from '../styles/themes.styled';
 
 // Router
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import {BrowserRouter, Route, Switch} from 'react-router-dom';
 import { AGENCY_LIST_SLUG, ABOUT_SLUG, FIND_A_STOP_SLUG, HOME_SLUG } from '../Routes/slugs';
 
 // Layout
@@ -42,29 +42,28 @@ function App() {
             <LayoutStyled>
               <IconDefs />
               <Header />
-              <Routes>
-                <Route path={`${AGENCY_LIST_SLUG}/:agencyId`}
-                   element={
-                     <ChartStateProvider reducer={chartReducer} initialState={initialChartState}>
-                       <AgencyData/>
-                     </ChartStateProvider>
-                   }
-                />
-                <Route path={AGENCY_LIST_SLUG}
-                  element={<AgencyList />}
-                  />
-                  {/* TODO: Figure out how to show stop results using v6 react-router-dom */}
-                {/*<Route*/}
-                {/*  path={FIND_A_STOP_SLUG}*/}
-                {/*  element={<FindAStopResults />}*/}
-                {/*/>*/}
+              <Switch>
+                <Route path={`${AGENCY_LIST_SLUG}/:agencyId`}>
+                  <ChartStateProvider reducer={chartReducer} initialState={initialChartState}>
+                    <AgencyData />
+                  </ChartStateProvider>
+                </Route>
+                <Route path={AGENCY_LIST_SLUG}>
+                  <AgencyList />
+                </Route>
                 <Route
                   path={FIND_A_STOP_SLUG}
-                  element={<FindAStopPage />}
-                />
-                <Route exact path={ABOUT_SLUG} element={<About />} />
-                <Route path={HOME_SLUG} element={<HomePage />} />
-              </Routes>
+                  render={(props) =>
+                    props.location.search ? <FindAStopResults /> : <FindAStopPage />
+                  }
+                ></Route>
+                <Route exact path={ABOUT_SLUG}>
+                  <About />
+                </Route>
+                <Route path={HOME_SLUG}>
+                  <HomePage />
+                </Route>
+              </Switch>
             </LayoutStyled>
           </RootContextProvider>
         </BrowserRouter>

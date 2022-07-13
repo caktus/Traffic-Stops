@@ -5,7 +5,7 @@ import * as S from './FindAStopPage.styled';
 import * as chartFields from './stopSearchFields';
 
 // Router
-import { useNavigate } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 // Util
 import formatDate from '../../util/formatDate';
@@ -20,7 +20,7 @@ import Checkbox from '../Elements/Inputs/Checkbox';
 import { H1 } from '../../styles/StyledComponents/Typography';
 
 function FindAStopPage() {
-  const history = useNavigate();
+  const history = useHistory();
 
   const [errors, setErrors] = useState({});
 
@@ -95,7 +95,7 @@ function FindAStopPage() {
       // Search just appends the query params to the current url
       // Routing renders a new component when it detects params
       // This way, users can navigate direclty to /stops?[query params] and get the results
-      history({
+      history.push({
         pathname: '',
         search: _buildQueryString(),
       });

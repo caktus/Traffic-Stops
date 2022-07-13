@@ -3,7 +3,7 @@ import * as S from './Sidebar.styled';
 
 // Routing
 import * as slugs from '../../Routes/slugs';
-import { useMatch } from 'react-router-dom';
+import { useRouteMatch } from 'react-router-dom';
 
 // Hooks
 import useOfficerId from '../../Hooks/useOfficerId';
@@ -12,7 +12,7 @@ import useOfficerId from '../../Hooks/useOfficerId';
 import SidebarLink from './SidebarLink';
 
 function Sidebar() {
-  const match = useMatch();
+  const match = useRouteMatch();
   const officerId = useOfficerId();
 
   const buildUrl = (slug) => {

@@ -3,7 +3,7 @@ import * as S from './FindAStopResults.styled';
 import { AnimatePresence, motion } from 'framer-motion';
 
 // Routing
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { FIND_A_STOP_SLUG, AGENCY_LIST_SLUG } from 'Routes/slugs';
 
 // AJAX
@@ -51,7 +51,7 @@ const tableColumns = [
 
 function FindAStopResults() {
   const { search } = useLocation();
-  const history = useNavigate();
+  const history = useHistory();
 
   const [stops, setStops] = useState();
 
@@ -74,7 +74,7 @@ function FindAStopResults() {
   };
 
   const handleOfficerIdSelected = (officerId) => {
-    history({
+    history.push({
       pathname: _getAgencyURLFromQueryString(),
       search: `officer=${officerId}`,
     });
@@ -100,7 +100,7 @@ function FindAStopResults() {
             <H2>No stops matching these criteria have been reported to the SBI.</H2>
             <P>
               Has{' '}
-              <S.DeptLink onClick={() => history(_getAgencyURLFromQueryString())}>
+              <S.DeptLink onClick={() => history.push(_getAgencyURLFromQueryString())}>
                 this department
               </S.DeptLink>{' '}
               reported stops within your date range?

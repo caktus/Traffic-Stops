@@ -4,7 +4,7 @@ import { OverviewStyled } from './Overview.styled';
 import { useTheme } from 'styled-components';
 
 // Router
-import { useParams, useNavigate, useMatch } from 'react-router-dom';
+import {useHistory, useParams, useRouteMatch} from 'react-router-dom';
 
 // Constants
 import toTitleCase from '../../../util/toTitleCase';
@@ -32,8 +32,8 @@ import Pie from "../ChartPrimitives/Pie";
 function Overview() {
   const { agencyId } = useParams();
   const theme = useTheme();
-  const history = useNavigate();
-  const match = useMatch();
+  const history = useHistory();
+  const match = useRouteMatch();
   const officerId = useOfficerId();
 
   useDataset(agencyId, STOPS);
@@ -157,7 +157,7 @@ function Overview() {
             <Legend keys={STATIC_LEGEND_KEYS} isStatic showNonHispanic />
           </S.PieWrapper>
           <S.Note>Shows the race/ethnic composition of drivers stopped by this {subjectObserving()}</S.Note>
-          <S.Link onClick={() => history(`${match.url}${slugs.TRAFFIC_STOPS_SLUG}`)}>
+          <S.Link onClick={() => history.push(`${match.url}${slugs.TRAFFIC_STOPS_SLUG}`)}>
             View traffic stops over time
           </S.Link>
         </S.PieContainer>
@@ -170,7 +170,7 @@ function Overview() {
             <Legend keys={STATIC_LEGEND_KEYS} isStatic showNonHispanic />
           </S.PieWrapper>
           <S.Note>Shows the race/ethnic composition of drivers searched by this {subjectObserving()}</S.Note>
-          <S.Link onClick={() => history(`${match.url}${slugs.SEARCHES_SLUG}`)}>
+          <S.Link onClick={() => history.push(`${match.url}${slugs.SEARCHES_SLUG}`)}>
             View searches over time
           </S.Link>
         </S.PieContainer>
@@ -184,7 +184,7 @@ function Overview() {
             Shows the race/ethnic composition of drivers whom {useOfForcePieChartCopy()} reported
             using force against
           </S.Note>
-          <S.Link onClick={() => history(`${match.url}${slugs.USE_OF_FORCE_SLUG}`)}>
+          <S.Link onClick={() => history.push(`${match.url}${slugs.USE_OF_FORCE_SLUG}`)}>
             View use-of-force over time
           </S.Link>
         </S.PieContainer>

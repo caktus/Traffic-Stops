@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import * as S from './AgencyList.styled';
 
 // Router
-import { Link, useMatch } from 'react-router-dom';
+import { Link, useRouteMatch } from 'react-router-dom';
 
 // AJAX
 import axios from '../../Services/Axios';
@@ -19,7 +19,7 @@ import { H1, P } from '../../styles/StyledComponents/Typography';
 const DATA_SET = 'AGENCIES_LIST';
 
 function AgencyList() {
-  const match = useMatch();
+  const match = useRouteMatch();
 
   const [state, dispatch] = useRootContext();
   const [sortedAgencies, setSortedAgencies] = useState({});

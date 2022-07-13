@@ -1,7 +1,7 @@
 import React from 'react';
 
 // Route
-import { useMatch } from 'react-router-dom';
+import { useRouteMatch } from 'react-router-dom';
 import * as slugs from '../../Routes/slugs';
 
 // Children
@@ -11,7 +11,7 @@ import DataLoading from '../Charts/ChartPrimitives/DataLoading';
 import AsyncRoute from "../Containers/AsyncRoute";
 
 function Charts() {
-  const match = useMatch();
+  const match = useRouteMatch();
 
   // NOTE: We should consider lumping everything together into a JSON or JS file
   // with definitions for each chart.
