@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {useHistory, useRouteMatch} from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 // Styles, assets
 import { useTheme } from 'styled-components';

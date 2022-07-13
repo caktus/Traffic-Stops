@@ -43,7 +43,7 @@
     "eslint-plugin-react-hooks": "^4.6.0"
   },
   "scripts": {
-    "start": "DISABLE_ESLINT_PLUGIN=true react-scripts start",
+    "start": "GENERATE_SOURCEMAP=false DISABLE_ESLINT_PLUGIN=true react-scripts start",
     "build": "react-scripts build",
     "test": "NODE_ENV=testing cypress open",
     "eject": "react-scripts eject"

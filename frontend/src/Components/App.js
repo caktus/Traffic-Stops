@@ -7,7 +7,7 @@ import GlobalStyles from '../styles/StyledComponents/GlobalStyles.styled';
 import defaultTheme from '../styles/themes.styled';
 
 // Router
-import {BrowserRouter, Route, Switch} from 'react-router-dom';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { AGENCY_LIST_SLUG, ABOUT_SLUG, FIND_A_STOP_SLUG, HOME_SLUG } from '../Routes/slugs';
 
 // Layout

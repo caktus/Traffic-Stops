@@ -5,7 +5,7 @@ import * as S from './AgencyHeader.styled';
 import { P, SIZES, WEIGHTS, COLORS } from '../../styles/StyledComponents/Typography';
 
 // Routing
-import { useParams, useHistory} from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 
 // Hooks
 import useOfficerId from '../../Hooks/useOfficerId';

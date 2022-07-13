@@ -23,7 +23,7 @@ function Charts() {
         exact
         path={`${match.path}${slugs.OVERVIEW_SLUG}`}
         importComponent={() =>
-          import(/* webpackChunkName: 'Overview' */ '../Charts/Overview/Overview')
+          import(/* webpackChunkName: 'Overview' */ './Overview/Overview')
         }
         renderLoading={() => <DataLoading />}
         renderError={() => <ChartError chartName="Overview" />}
@@ -33,41 +33,45 @@ function Charts() {
         path={`${match.path}${slugs.TRAFFIC_STOPS_SLUG}`}
         importComponent={() =>
           import(
-            /* webpackChunkName: 'TrafficStops' */ '../Charts/TrafficStops/TrafficStops'
+            /* webpackChunkName: 'TrafficStops' */ './TrafficStops/TrafficStops'
           )
         }
         renderLoading={() => <DataLoading />}
         renderError={() => <ChartError chartName="Traffic Stops" />}
       />
       <AsyncRoute
+        exact
         path={`${match.path}${slugs.SEARCHES_SLUG}`}
         importComponent={() =>
-          import(/* webpackChunkName: 'Searches' */ '../Charts/Searches/Searches')
+          import(/* webpackChunkName: 'Searches' */ './Searches/Searches')
         }
         renderLoading={() => <DataLoading />}
         renderError={() => <ChartError chartName="Searches" />}
       />
       <AsyncRoute
+        exact
         path={`${match.path}${slugs.SEARCH_RATE_SLUG}`}
         importComponent={() =>
-          import(/* webpackChunkName: 'SearchRate' */ '../Charts/SearchRate/SearchRate')
+          import(/* webpackChunkName: 'SearchRate' */ './SearchRate/SearchRate')
         }
         renderLoading={() => <DataLoading />}
         renderError={() => <ChartError chartName="Search Rate" />}
       />
       <AsyncRoute
+        exact
         path={`${match.path}${slugs.CONTRABAND_SLUG}`}
         importComponent={() =>
-          import(/* webpackChunkName: 'Contraband' */ '../Charts/Contraband/Contraband')
+          import(/* webpackChunkName: 'Contraband' */ './Contraband/Contraband')
         }
         renderLoading={() => <DataLoading />}
         renderError={() => <ChartError chartName="Contraband" />}
       />
 
       <AsyncRoute
+        exact
         path={`${match.path}${slugs.USE_OF_FORCE_SLUG}`}
         importComponent={() =>
-          import(/* webpackChunkName: 'UseOfForce' */ '../Charts/UseOfForce/UseOfForce')
+          import(/* webpackChunkName: 'UseOfForce' */ './UseOfForce/UseOfForce')
         }
         renderLoading={() => <DataLoading />}
         renderError={() => <ChartError chartName="Use of Force" />}
