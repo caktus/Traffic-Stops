@@ -8,7 +8,13 @@ import * as slugs from '../../Routes/slugs';
 // import PieSkeleton from 'Components/Elements/Skeletons/PieSkeleton';
 import ChartError from '../Elements/ChartError';
 import DataLoading from '../Charts/ChartPrimitives/DataLoading';
-import AsyncRoute from "../Containers/AsyncRoute";
+import Overview from "./Overview/Overview";
+import TrafficStops from "./TrafficStops/TrafficStops";
+import Searches from "./Searches/Searches";
+import SearchRate from "./SearchRate/SearchRate";
+import Contraband from "./Contraband/Contraband";
+import UseOfForce from "./UseOfForce/UseOfForce";
+import FJRoute from "../Containers/AsyncRoute";
 
 function Charts() {
   const match = useRouteMatch();
@@ -19,56 +25,41 @@ function Charts() {
 
   return (
     <>
-      <AsyncRoute
+      <FJRoute
         exact
         path={`${match.path}${slugs.OVERVIEW_SLUG}`}
-        importComponent={() =>
-          import(/* webpackChunkName: 'Overview' */ 'Components/Charts/Overview/Overview')
-        }
+        importComponent={<Overview />}
         renderLoading={() => <DataLoading />}
         renderError={() => <ChartError chartName="Overview" />}
       />
-      <AsyncRoute
+      <FJRoute
         exact
         path={`${match.path}${slugs.TRAFFIC_STOPS_SLUG}`}
-        importComponent={() =>
-          import(
-            /* webpackChunkName: 'TrafficStops' */ 'Components/Charts/TrafficStops/TrafficStops'
-          )
-        }
+        importComponent={<TrafficStops />}
         renderLoading={() => <DataLoading />}
         renderError={() => <ChartError chartName="Traffic Stops" />}
       />
-      <AsyncRoute
+      <FJRoute
         path={`${match.path}${slugs.SEARCHES_SLUG}`}
-        importComponent={() =>
-          import(/* webpackChunkName: 'Searches' */ 'Components/Charts/Searches/Searches')
-        }
+        importComponent={<Searches />}
         renderLoading={() => <DataLoading />}
         renderError={() => <ChartError chartName="Searches" />}
       />
-      <AsyncRoute
+      <FJRoute
         path={`${match.path}${slugs.SEARCH_RATE_SLUG}`}
-        importComponent={() =>
-          import(/* webpackChunkName: 'SearchRate' */ 'Components/Charts/SearchRate/SearchRate')
-        }
+        importComponent={<SearchRate />}
         renderLoading={() => <DataLoading />}
         renderError={() => <ChartError chartName="Search Rate" />}
       />
-      <AsyncRoute
+      <FJRoute
         path={`${match.path}${slugs.CONTRABAND_SLUG}`}
-        importComponent={() =>
-          import(/* webpackChunkName: 'Contraband' */ 'Components/Charts/Contraband/Contraband')
-        }
+        importComponent={<Contraband />}
         renderLoading={() => <DataLoading />}
         renderError={() => <ChartError chartName="Contraband" />}
       />
-
-      <AsyncRoute
+      <FJRoute
         path={`${match.path}${slugs.USE_OF_FORCE_SLUG}`}
-        importComponent={() =>
-          import(/* webpackChunkName: 'UseOfForce' */ 'Components/Charts/UseOfForce/UseOfForce')
-        }
+        importComponent={<UseOfForce />}
         renderLoading={() => <DataLoading />}
         renderError={() => <ChartError chartName="Use of Force" />}
       />
