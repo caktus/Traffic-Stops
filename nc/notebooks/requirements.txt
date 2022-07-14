@@ -1,0 +1,6 @@
+SQLAlchemy==1.4.39
+pandas==1.4.3
+jupyterlab==3.4.3
+dash==2.5.1
+plotly==5.9.0
+psycopg2==2.9.3
