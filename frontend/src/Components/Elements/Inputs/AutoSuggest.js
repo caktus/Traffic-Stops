@@ -100,7 +100,7 @@ function AutoSuggest({
 }
 
 AutoSuggest.propTypes = {
-  data: PropTypes.array.isRequired,
+  data: PropTypes.instanceOf(Array),
 };
 AutoSuggest.defaultProps = {
   data: [],

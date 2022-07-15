@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ContrabandStyled } from './Contraband.styled';
+import ContrabandStyled from './Contraband.styled';
 import * as S from '../ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
 
@@ -51,16 +51,16 @@ function SearchRate() {
       const mappedData = [];
       RACES.forEach((ethnicGroup) => {
         const groupBar = {};
-        const displaName = toTitleCase(ethnicGroup);
-        groupBar.displayName = displaName;
+        const displayName = toTitleCase(ethnicGroup);
+        groupBar.displayName = displayName;
         groupBar.color = `${theme.colors.ethnicGroup[ethnicGroup]}90`;
-        groupBar.x = displaName;
+        groupBar.x = displayName;
         if (year === YEARS_DEFAULT) {
           const groupContraband = reduceYearsToTotal(contraband, ethnicGroup)[ethnicGroup];
           const groupSearches = reduceYearsToTotal(searches, ethnicGroup)[ethnicGroup];
           groupBar.y = calculatePercentage(groupContraband, groupSearches);
         } else {
-          const yearInt = parseInt(year);
+          const yearInt = parseInt(year, 10);
           const groupContrabandForYear = getQuantityForYear(contraband, yearInt, ethnicGroup);
           const groupSearchesForYear = getQuantityForYear(searches, yearInt, ethnicGroup);
           groupBar.y = calculatePercentage(groupContrabandForYear, groupSearchesForYear);

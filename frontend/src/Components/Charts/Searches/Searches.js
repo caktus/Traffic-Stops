@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { SearchesStyled } from './Searches.styled';
+import React, { useEffect, useState } from 'react';
+import SearchesStyled from './Searches.styled';
 import * as S from '../ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
 
@@ -8,18 +8,17 @@ import { useParams } from 'react-router-dom';
 
 // Util
 import {
-  getSearchRateForYearByGroup,
-  filterDataBySearchType,
-  reduceStopReasonsByEthnicity,
-  STATIC_LEGEND_KEYS,
-  SEARCH_TYPE_DEFAULT,
   AVERAGE,
+  filterDataBySearchType,
+  getSearchRateForYearByGroup,
+  reduceStopReasonsByEthnicity,
+  SEARCH_TYPE_DEFAULT,
   SEARCH_TYPES,
-  calculateYearTotal,
+  STATIC_LEGEND_KEYS,
 } from '../chartUtils';
 
 // State
-import useDataset, { SEARCHES, STOPS, SEARCHES_BY_TYPE } from '../../../Hooks/useDataset';
+import useDataset, { SEARCHES, SEARCHES_BY_TYPE, STOPS } from '../../../Hooks/useDataset';
 
 // Hooks
 import useMetaTags from '../../../Hooks/useMetaTags';
@@ -110,13 +109,12 @@ function Searches() {
         const group = {};
         group.id = ethnicGroup;
         group.color = theme.colors.ethnicGroup[ethnicGroup];
-        const groupData = reduceStopReasonsByEthnicity(
+        group.data = reduceStopReasonsByEthnicity(
           dataBySearchReason,
           chartState.yearRange,
           ethnicGroup,
           searchType
         );
-        group.data = groupData;
         mappedData.push(group);
       });
       setByCountLineData(mappedData);
@@ -165,6 +163,7 @@ function Searches() {
     if (agencyId) {
       return 'department';
     }
+    return '';
   };
 
   return (

@@ -1,5 +1,5 @@
 import React from 'react';
-import { DataLoadingStyled } from './DataLoading.styled';
+import DataLoadingStyled from './DataLoading.styled';
 
 // Hooks
 import useOfficerId from '../../../Hooks/useOfficerId';

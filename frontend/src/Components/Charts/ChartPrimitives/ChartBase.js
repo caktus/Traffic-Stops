@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { ChartBaseStyled } from 'Components/ChartBase.styled';
+import ChartBaseStyled from './ChartBase.styled';
 
 // Children
-import ResponsiveChartContainer from 'Components/Charts/ResponsiveChartContainer.styled';
-import Legend from 'Components/Charts/ChartPrimitives/Legend/Legend';
-import DataLoading from 'Components/Charts/ChartPrimitives/DataLoading';
+import ResponsiveChartContainer from './ResponsiveChartContainer.styled';
+import Legend from '../ChartSections/Legend/Legend';
+import DataLoading from './DataLoading';
 
 function ChartBase({
   children,

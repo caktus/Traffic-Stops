@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { SearchRateStyled } from './SearchRate.styled';
+import SearchRateStyled from './SearchRate.styled';
 import * as S from '../ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
 
 // Router
-import { useHistory, useParams, useRouteMatch } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 
 // Data
 import useDataset, { LIKELIHOOD_OF_SEARCH } from '../../../Hooks/useDataset';

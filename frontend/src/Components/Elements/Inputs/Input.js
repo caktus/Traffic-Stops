@@ -40,14 +40,14 @@ function FJInput({
   helpText,
   ...props
 }) {
-  function _getPaddingProps(iconPosition) {
+  function _getPaddingProps(iconPos) {
     const paddingProps = {
       py: 2,
       px: 3,
     };
-    if (iconPosition === iconPositions.LEFT) {
+    if (iconPos === iconPositions.LEFT) {
       paddingProps['pl'] = 5;
-    } else if (iconPosition === iconPositions.RIGHT) {
+    } else if (iconPos === iconPositions.RIGHT) {
       paddingProps['pr'] = 5;
     }
     return paddingProps;

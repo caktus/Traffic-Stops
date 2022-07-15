@@ -63,6 +63,7 @@ function FindAStopPage() {
 
   const _buildQueryString = () => {
     let qs = '';
+    // eslint-disable-next-line no-restricted-syntax
     for (const field in formFields) {
       if (Object.hasOwnProperty.call(formFields, field)) {
         let value = formFields[field];
@@ -76,9 +77,11 @@ function FindAStopPage() {
       }
     }
 
+    // eslint-disable-next-line no-restricted-syntax
     for (const field in listFields) {
       if (Object.hasOwnProperty.call(listFields, field)) {
         const values = listFields[field];
+        // eslint-disable-next-line no-loop-func
         values.forEach((v) => {
           qs += `&${field}=${v}`;
         });
@@ -94,7 +97,7 @@ function FindAStopPage() {
     } else {
       // Search just appends the query params to the current url
       // Routing renders a new component when it detects params
-      // This way, users can navigate direclty to /stops?[query params] and get the results
+      // This way, users can navigate directly to /stops?[query params] and get the results
       history.push({
         pathname: '',
         search: _buildQueryString(),
@@ -107,7 +110,7 @@ function FindAStopPage() {
       <H1>FIND A STOP</H1>
       <S.Form>
         <S.FieldSet>
-          <S.Legend>1. Choose the police or sheriff's department</S.Legend>
+          <S.Legend>1. Choose the police or sheriffs department</S.Legend>
           <S.FormGroup>
             <S.SearchInputWrapper>
               <DepartmentSearch

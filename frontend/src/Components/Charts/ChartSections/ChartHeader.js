@@ -6,12 +6,12 @@ import * as S from './ChartHeader.styled';
 import useOfficerId from '../../../Hooks/useOfficerId';
 
 // Elements
-import OfficerBadge from '../../Charts/ChartSections/OfficerBadge';
+import OfficerBadge from './OfficerBadge';
 import Button from '../../Elements/Button';
 import { ICONS } from '../../../img/icons/Icon';
 
 // Children
-import ShareList from '../../Charts/ChartSections/ShareList';
+import ShareList from './ShareList';
 
 function ChartHeader({ chartTitle, handleViewData, shareProps }) {
   const theme = useTheme();

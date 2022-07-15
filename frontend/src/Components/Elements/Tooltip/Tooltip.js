@@ -1,9 +1,10 @@
 import React from 'react';
-import { TooltipStyled, TooltipableText, TooltipText, TooltipLink } from 'Components/Tooltip.styled';
+import { TooltipStyled, TooltipableText, TooltipText, TooltipLink } from './Tooltip.styled';
 import { useTheme } from 'styled-components';
 import PropTypes from 'prop-types';
 
 // Tooltip data
+// eslint-disable-next-line import/no-unresolved
 import tooltips from 'tooltips.json';
 
 function Tooltip({ children, tooltipId }) {
@@ -32,11 +33,10 @@ function Tooltip({ children, tooltipId }) {
         tipType={tooltips[tooltipId]?.type}
         globalEventOff="click"
         aria-haspopup="true"
-        role={tooltips[tooltipId]?.type}
         theme={theme}
       >
-        <TooltipText dangerouslySetInnerHTML={{ __html: tooltips[tooltipId]?.text }}></TooltipText>
-        {tooltips[tooltipId]?.link && (
+        <TooltipText dangerouslySetInnerHTML={{ __html: tooltips[tooltipId]?.text }} />
+        {tooltips[tooltipId].link && (
           <TooltipLink
             target="_blank"
             rel="noopener noreferrer"

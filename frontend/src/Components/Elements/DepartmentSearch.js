@@ -7,18 +7,18 @@ import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
 
 // Context
-import { FETCH_START, FETCH_SUCCESS, FETCH_FAILURE } from 'Context/root-reducer';
-import { useRootContext } from 'Context/root-context';
+import { FETCH_START, FETCH_SUCCESS, FETCH_FAILURE } from '../../Context/root-reducer';
+import { useRootContext } from '../../Context/root-context';
 
 // AJAX
-import axios from 'Services/Axios';
-import { getAgenciesURL } from 'Services/endpoints';
+import axios from '../../Services/Axios';
+import { getAgenciesURL } from '../../Services/endpoints';
 
 // .
-import { AGENCY_LIST_SLUG } from 'Routes/slugs';
+import { AGENCY_LIST_SLUG } from '../../Routes/slugs';
 import AutoSuggest from './Inputs/AutoSuggest';
-import Input, { iconPositions } from 'Components/Elements/Inputs/Input';
-import { ICONS } from 'img/icons/Icon';
+import Input, { iconPositions } from './Inputs/Input';
+import { ICONS } from '../../img/icons/Icon';
 
 const DATA_SET = 'AGENCIES_LIST';
 
@@ -27,7 +27,7 @@ function SeeAllDepartments({ selectRef }) {
   const handleClick = (e) => {
     e.preventDefault();
     history.push(AGENCY_LIST_SLUG);
-    if (selectRef?.current) selectRef.current.closeDropdown();
+    if (selectRef.current) selectRef.current.closeDropdown();
   };
   return (
     <Styled.SeeAllDepartments tabIndex="0" onClick={handleClick}>
@@ -52,18 +52,19 @@ function DepartmentSearch({
   const [dropdownOpen, setDropdownOpen] = useState();
   const [state, dispatch] = useRootContext();
 
+  async function _fetchAgencyList() {
+    try {
+      const { data } = await axios.get(getAgenciesURL());
+      dispatch({ type: FETCH_SUCCESS, dataSet: DATA_SET, payload: data });
+    } catch (error) {
+      dispatch({ type: FETCH_FAILURE, dataSet: DATA_SET, payload: error.message });
+    }
+  }
+
   /* FETCH AGENCIES */
   useEffect(() => {
     if (!state.loading[DATA_SET] && !state.data[DATA_SET]) {
       dispatch({ type: FETCH_START, dataSet: DATA_SET });
-      async function _fetchAgencyList() {
-        try {
-          const { data } = await axios.get(getAgenciesURL());
-          dispatch({ type: FETCH_SUCCESS, dataSet: DATA_SET, payload: data });
-        } catch (error) {
-          dispatch({ type: FETCH_FAILURE, dataSet: DATA_SET, payload: error.message });
-        }
-      }
       _fetchAgencyList();
     }
   }, []);
@@ -85,6 +86,7 @@ function DepartmentSearch({
         borderBottomRightRadius: dropdownOpen ? 0 : '6px',
       };
     }
+    return {};
   };
   const _getIconStyles = (inverted) => {
     const styles = {
@@ -130,6 +132,7 @@ DepartmentSearch.propTypes = {
   showIndexList: PropTypes.bool,
   invertIcon: PropTypes.bool,
   onChange: PropTypes.func,
+  openOnFocus: PropTypes.bool,
 };
 
 DepartmentSearch.defaultProps = {
@@ -137,6 +140,7 @@ DepartmentSearch.defaultProps = {
   navigateOnSelect: false,
   showIndexList: false,
   openOnFocus: false,
+  onChange: () => {},
 };
 
 export default DepartmentSearch;

@@ -44,7 +44,7 @@ const mapDatasetToChartName = {
   SEARCHES_BY_TYPE: 'Searches by Count',
   USE_OF_FORCE: 'Use of Force',
   CONTRABAND_HIT_RATE: 'Contraband "Hit Rate"',
-  LIKELIHOOD_OF_SEARCH: 'Likelihood of Search'
+  LIKELIHOOD_OF_SEARCH: 'Likelihood of Search',
 };
 
 function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
@@ -74,6 +74,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
   // supress body scrolling behind modal
   useEffect(() => {
     document.body.style.overflow = 'hidden';
+    // eslint-disable-next-line no-return-assign
     return () => (document.body.style.overflow = 'visible');
   }, []);
 
@@ -86,6 +87,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       mergedData = stops.map((searchYear, i) => {
         const yearData = {};
         const stopYear = stops[i];
+        // eslint-disable-next-line no-restricted-syntax
         for (const ethnicGroup in searchYear) {
           if (searchYear.hasOwnProperty(ethnicGroup)) {
             const searchDatum = searchYear[ethnicGroup];
@@ -110,6 +112,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     };
     const sortedData = mergedData.sort((a, b) =>
       // Sort data descending by year
+      // eslint-disable-next-line no-nested-ternary
       a['year'] < b['year'] ? 1 : b['year'] < a['year'] ? -1 : 0
     );
     return [raceTotals, ...sortedData];
@@ -120,13 +123,12 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     let mergedData = [];
     const { searches, stops } = data;
     if (searches && stops) {
-      mergedData = searches.map((searchYear, i) => {
+      mergedData = searches.map((searchYear) => {
         const yearData = {};
-        const stopYear = stops[i];
+        // eslint-disable-next-line no-restricted-syntax
         for (const ethnicGroup in searchYear) {
           if (searchYear.hasOwnProperty(ethnicGroup)) {
             const searchDatum = searchYear[ethnicGroup];
-            const stopDatum = stopYear[ethnicGroup];
             if (ethnicGroup === 'year') {
               yearData.year = searchDatum;
             } else {
@@ -147,6 +149,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     };
     const sortedData = mergedData.sort((a, b) =>
       // Sort data descending by year
+      // eslint-disable-next-line no-nested-ternary
       a['year'] < b['year'] ? 1 : b['year'] < a['year'] ? -1 : 0
     );
     return [raceTotals, ...sortedData];
@@ -156,7 +159,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     const searches = chartState.data[ds[1]];
 
     let mergedData = searches.map((yearsStops) => {
-      const year = yearsStops.year;
+      const { year } = yearsStops;
       const yearsSearches = searches.find((s) => s.year === year);
       const comparedData = { year };
       Object.keys(yearsStops).forEach((key) => {
@@ -178,6 +181,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     };
     const sortedData = mergedData.sort((a, b) =>
       // Sort data descending by year
+      // eslint-disable-next-line no-nested-ternary
       a['year'] < b['year'] ? 1 : b['year'] < a['year'] ? -1 : 0
     );
     return [raceTotals, ...sortedData];
@@ -185,10 +189,9 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
 
   const mapContrbandHitrate = (ds) => {
     const data = chartState.data[ds];
-    const { contraband, searches } = data;
+    const { contraband } = data;
     const mappedData = yearRange.map((year) => {
       const hits = contraband.find((d) => d.year === year) || 0;
-      const search = searches.find((d) => d.year === year) || 0;
       const comparedData = { year };
       RACES.forEach((r) => {
         comparedData[r] = `${hits[r] || 0}`;
@@ -201,6 +204,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     };
     const sortedData = mappedData.sort((a, b) =>
       // Sort data descending by year
+      // eslint-disable-next-line no-nested-ternary
       a['year'] < b['year'] ? 1 : b['year'] < a['year'] ? -1 : 0
     );
     return [raceTotals, ...sortedData];
@@ -218,13 +222,14 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     };
     const sortedData = data.sort((a, b) =>
       // Sort data descending by year
+      // eslint-disable-next-line no-nested-ternary
       a['year'] < b['year'] ? 1 : b['year'] < a['year'] ? -1 : 0
     );
     return [raceTotals, ...sortedData];
   };
 
   const _buildTableData = (ds) => {
-    let data = [];
+    let data;
     if (ds === STOPS_BY_REASON) {
       data = mapStopsByPurpose(ds);
     } else if (ds === CONTRABAND_HIT_RATE) {
@@ -243,6 +248,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       };
       const sortedData = chartData.sort((a, b) =>
         // Sort data descending by year
+        // eslint-disable-next-line no-nested-ternary
         a['year'] < b['year'] ? 1 : b['year'] < a['year'] ? -1 : 0
       );
       data = [raceTotals, ...sortedData];

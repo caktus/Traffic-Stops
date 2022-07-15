@@ -28,7 +28,7 @@ function EmptyChartMessage({ data }) {
       }
     }
   }
-  return <></>;
+  return '';
 }
 
 export default EmptyChartMessage;

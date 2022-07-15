@@ -24,18 +24,20 @@ function AgencyList() {
   const [state, dispatch] = useRootContext();
   const [sortedAgencies, setSortedAgencies] = useState({});
 
+  async function _fetchAgencyList() {
+    try {
+      const { data } = await axios.get(getAgenciesURL());
+      dispatch({ type: FETCH_SUCCESS, dataSet: DATA_SET, payload: data });
+    } catch (error) {
+      dispatch({ type: FETCH_FAILURE, dataSet: DATA_SET, payload: error.message });
+    }
+  }
+
   /* FETCH AGENCIES */
   useEffect(() => {
     if (!state.loading[DATA_SET] && !state.data[DATA_SET]) {
       dispatch({ type: FETCH_START, dataSet: DATA_SET });
-      async function _fetchAgencyList() {
-        try {
-          const { data } = await axios.get(getAgenciesURL());
-          dispatch({ type: FETCH_SUCCESS, dataSet: DATA_SET, payload: data });
-        } catch (error) {
-          dispatch({ type: FETCH_FAILURE, dataSet: DATA_SET, payload: error.message });
-        }
-      }
+
       _fetchAgencyList();
     }
   }, []);
@@ -44,7 +46,7 @@ function AgencyList() {
   useEffect(() => {
     if (state.data[DATA_SET]) {
       const agenciesByChar = {};
-      ALPHABET.map((char) => {
+      ALPHABET.forEach((char) => {
         const agenciesForChar = state.data[DATA_SET].filter(
           (agency) => agency.name[0].toLowerCase() === char
         );

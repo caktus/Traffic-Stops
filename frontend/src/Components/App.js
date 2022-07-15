@@ -11,7 +11,7 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { AGENCY_LIST_SLUG, ABOUT_SLUG, FIND_A_STOP_SLUG, HOME_SLUG } from '../Routes/slugs';
 
 // Layout
-import { LayoutStyled } from './Layout.styled';
+import Layout from './Layout';
 
 // Meta
 import AppMeta from '../Meta/AppMeta';
@@ -28,8 +28,9 @@ import AgencyList from './AgencyList/AgencyList';
 import AgencyData from './AgencyData/AgencyData';
 import HomePage from './HomePage/HomePage';
 import FindAStopPage from './FindAStopPage/FindAStopPage';
-import FindAStopResults from './FindAStopPage/FindAStopResults';
 import Header from './Header/Header';
+// eslint-disable-next-line import/no-named-as-default,import/no-named-as-default-member
+import FindAStopResults from './FindAStopResults/FindAStopResults';
 
 function App() {
   return (
@@ -39,7 +40,7 @@ function App() {
       <AppStyled>
         <BrowserRouter>
           <RootContextProvider reducer={rootReducer} initialState={initialRootState}>
-            <LayoutStyled>
+            <Layout>
               <IconDefs />
               <Header />
               <Switch>
@@ -64,7 +65,7 @@ function App() {
                   <HomePage />
                 </Route>
               </Switch>
-            </LayoutStyled>
+            </Layout>
           </RootContextProvider>
         </BrowserRouter>
       </AppStyled>

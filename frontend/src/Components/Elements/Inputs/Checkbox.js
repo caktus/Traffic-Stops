@@ -22,8 +22,4 @@ Checkbox.propTypes = {
   onChange: PropTypes.func.isRequired,
 };
 
-Checkbox.defaultProps = {
-  checked: false,
-};
-
 export default Checkbox;

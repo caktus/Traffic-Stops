@@ -4,17 +4,17 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 // Routing
 import { useHistory, useLocation } from 'react-router-dom';
-import { FIND_A_STOP_SLUG, AGENCY_LIST_SLUG } from 'Routes/slugs';
+import { FIND_A_STOP_SLUG, AGENCY_LIST_SLUG } from '../../Routes/slugs';
 
 // AJAX
-import axios from 'Services/Axios';
-import { FIND_A_STOP_URL } from 'Services/endpoints';
+import axios from '../../Services/Axios';
+import { FIND_A_STOP_URL } from '../../Services/endpoints';
 
 // Children
-import { H1, H2, P, SIZES, COLORS } from 'styles/StyledComponents/Typography';
-import TableSkeleton from 'Components/Elements/Skeletons/TableSkeleton';
-import BackButton from 'Components/Elements/BackButton';
-import Table from 'Components/Elements/Table/Table';
+import { H1, H2, P, SIZES, COLORS } from '../../styles/StyledComponents/Typography';
+import TableSkeleton from '../Elements/Skeletons/TableSkeleton';
+import BackButton from '../Elements/BackButton';
+import Table from '../Elements/Table/Table';
 
 const MAX_STOPS_RESULTS = 100;
 
@@ -53,7 +53,7 @@ function FindAStopResults() {
   const { search } = useLocation();
   const history = useHistory();
 
-  const [stops, setStops] = useState();
+  const [stops, setStops] = useState([]);
 
   useEffect(() => {
     async function _fetchStops() {
@@ -61,6 +61,7 @@ function FindAStopResults() {
         const { data } = await axios.get(`${FIND_A_STOP_URL}${search}`);
         setStops(data.results);
       } catch (e) {
+        // eslint-disable-next-line no-console
         console.warn(e);
       }
     }
@@ -85,7 +86,7 @@ function FindAStopResults() {
       <S.Heading>
         <BackButton to={FIND_A_STOP_SLUG} text="Back to Search" />
         <H1>Stops</H1>
-        {stops?.length > 0 && (
+        {stops.length > 0 && (
           <P size={SIZES[0]} color={COLORS[0]}>
             {stops.length === MAX_STOPS_RESULTS
               ? `Returned maximum number of results (${MAX_STOPS_RESULTS}). Try limiting your search`
@@ -95,7 +96,7 @@ function FindAStopResults() {
       </S.Heading>
       <S.TableContainer>
         {!stops && <TableSkeleton />}
-        {stops?.length === 0 && (
+        {stops.length === 0 && (
           <S.NoResults>
             <H2>No stops matching these criteria have been reported to the SBI.</H2>
             <P>
@@ -107,7 +108,7 @@ function FindAStopResults() {
             </P>
           </S.NoResults>
         )}
-        {stops?.length > 0 && (
+        {stops.length > 0 && (
           <AnimatePresence>
             <motion.div
               key="StopsTable"

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import * as S from '../ChartSections/ChartsCommon.styled';
-import { OverviewStyled } from './Overview.styled';
+import OverviewStyled from './Overview.styled';
 import { useTheme } from 'styled-components';
 
 // Router
@@ -61,6 +61,7 @@ function Overview() {
     if (agencyId) {
       return 'department';
     }
+    return '';
   };
 
   /* Build Data */
@@ -114,6 +115,7 @@ function Overview() {
   }, [chartState.data[USE_OF_FORCE]]);
 
   /* Methods */
+  // eslint-disable-next-line no-unused-vars
   const handleYearSelect = (y) => {
     if (y.value === year) return;
     setYear(y);
