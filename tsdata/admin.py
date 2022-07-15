@@ -40,7 +40,7 @@ class CensusProfileAdmin(admin.ModelAdmin):
 class TopAgencyFactsInline(admin.TabularInline):
     model = TopAgencyFacts
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request, obj=None):
         return False
 
     def has_delete_permission(self, request, obj=None):
