@@ -20,7 +20,7 @@ function FJRoute({ renderLoading, renderError, importComponent, ...props }) {
 }
 
 FJRoute.propTypes = {
-  importComponent: PropTypes.func.isRequired,
+  importComponent: PropTypes.object.isRequired,
   renderLoading: PropTypes.func,
   renderError: PropTypes.func,
 };
