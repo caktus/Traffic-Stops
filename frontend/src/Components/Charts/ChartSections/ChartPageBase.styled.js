@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-import { phoneOnly, smallerThanDesktop } from 'styles/breakpoints';
+import { phoneOnly, smallerThanDesktop } from '../../../styles/breakpoints';
 
 export const ChartPageBase = styled(motion.article)`
   flex: 1;

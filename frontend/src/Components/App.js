@@ -8,28 +8,28 @@ import defaultTheme from '../styles/themes.styled';
 
 // Router
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import { AGENCY_LIST_SLUG, ABOUT_SLUG, FIND_A_STOP_SLUG, HOME_SLUG } from 'Routes/slugs';
+import { AGENCY_LIST_SLUG, ABOUT_SLUG, FIND_A_STOP_SLUG, HOME_SLUG } from '../Routes/slugs';
 
 // Layout
-import Header from 'Components/Header/Header';
 import { LayoutStyled } from './Layout.styled';
 
 // Meta
-import AppMeta from 'Meta/AppMeta';
-import IconDefs from 'img/icons/IconDefs';
+import AppMeta from '../Meta/AppMeta';
+import IconDefs from '../img/icons/IconDefs';
 // Context
-import { RootContextProvider } from 'Context/root-context';
-import rootReducer, { initialState as initialRootState } from 'Context/root-reducer';
-import { ChartStateProvider } from 'Context/chart-state';
-import chartReducer, { initialState as initialChartState } from 'Context/chart-reducer';
+import { RootContextProvider } from '../Context/root-context';
+import rootReducer, { initialState as initialRootState } from '../Context/root-reducer';
+import { ChartStateProvider } from '../Context/chart-state';
+import chartReducer, { initialState as initialChartState } from '../Context/chart-reducer';
 
 // Routes
-import About from 'Components/AboutPage/AboutPage';
-import AgencyList from 'Components/AgencyList/AgencyList';
-import AgencyData from 'Components/AgencyData/AgencyData';
-import HomePage from 'Components/HomePage/HomePage';
-import FindAStopPage from 'Components/FindAStopPage/FindAStopPage';
-import FindAStopResults from 'Components/FindAStopPage/FindAStopResults';
+import About from './AboutPage/AboutPage';
+import AgencyList from './AgencyList/AgencyList';
+import AgencyData from './AgencyData/AgencyData';
+import HomePage from './HomePage/HomePage';
+import FindAStopPage from './FindAStopPage/FindAStopPage';
+import FindAStopResults from './FindAStopPage/FindAStopResults';
+import Header from './Header/Header';
 
 function App() {
   return (
@@ -56,7 +56,7 @@ function App() {
                   render={(props) =>
                     props.location.search ? <FindAStopResults /> : <FindAStopPage />
                   }
-                ></Route>
+                />
                 <Route exact path={ABOUT_SLUG}>
                   <About />
                 </Route>

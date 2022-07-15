@@ -1,6 +1,6 @@
 import styled from 'styled-components';
-import { phoneOnly, smallerThanDesktop } from 'styles/breakpoints';
-import FullWidthPage from 'styles/StyledComponents/FullWidthPage';
+import { phoneOnly, smallerThanDesktop } from '../../styles/breakpoints';
+import FullWidthPage from '../../styles/StyledComponents/FullWidthPage';
 
 export const AgencyList = styled(FullWidthPage)``;
 

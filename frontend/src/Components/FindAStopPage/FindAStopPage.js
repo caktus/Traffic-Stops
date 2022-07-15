@@ -8,16 +8,16 @@ import * as chartFields from './stopSearchFields';
 import { useHistory } from 'react-router-dom';
 
 // Util
-import formatDate from 'util/formatDate';
+import formatDate from '../../util/formatDate';
 
 // Children
-import { HelpText } from 'Components/Elements/Inputs/Input.styled';
-import Input from 'Components/Elements/Inputs/Input';
-import DatePicker from 'Components/Elements/Inputs/DatePicker';
-import DepartmentSearch from 'Components/Elements/DepartmentSearch';
-import Button from 'Components/Elements/Button';
-import Checkbox from 'Components/Elements/Inputs/Checkbox';
-import { H1 } from 'styles/StyledComponents/Typography';
+import { HelpText } from '../Elements/Inputs/Input.styled';
+import Input from '../Elements/Inputs/Input';
+import DatePicker from '../Elements/Inputs/DatePicker';
+import DepartmentSearch from '../Elements/DepartmentSearch';
+import Button from '../Elements/Button';
+import Checkbox from '../Elements/Inputs/Checkbox';
+import { H1 } from '../../styles/StyledComponents/Typography';
 
 function FindAStopPage() {
   const history = useHistory();

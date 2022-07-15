@@ -3,15 +3,15 @@ import { useTheme } from 'styled-components';
 import * as S from './ChartHeader.styled';
 
 // Hooks
-import useOfficerId from 'Hooks/useOfficerId';
+import useOfficerId from '../../../Hooks/useOfficerId';
 
 // Elements
-import OfficerBadge from 'Components/Charts/ChartSections/OfficerBadge';
-import Button from 'Components/Elements/Button';
-import { ICONS } from 'img/icons/Icon';
+import OfficerBadge from '../../Charts/ChartSections/OfficerBadge';
+import Button from '../../Elements/Button';
+import { ICONS } from '../../../img/icons/Icon';
 
 // Children
-import ShareList from 'Components/Charts/ChartSections/ShareList';
+import ShareList from '../../Charts/ChartSections/ShareList';
 
 function ChartHeader({ chartTitle, handleViewData, shareProps }) {
   const theme = useTheme();

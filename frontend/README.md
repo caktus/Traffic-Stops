@@ -14,7 +14,7 @@ We're using [React Router](https://reactrouter.com/web/guides/quick-start) for s
 
 ## Async bundles
 
-This project makes use of [code-splitting](https://reactjs.org/docs/code-splitting.html) in tandem with routing, to allow dynamic loading of bundles based on the URL visited. See [AsyncRoute.js](src/Components/Containers/AsyncRoute.js) for implementation, and [Charts.js](src/Components/Charts/Charts.js) for example usage.
+This project makes use of [code-splitting](https://reactjs.org/docs/code-splitting.html) in tandem with routing, to allow dynamic loading of bundles based on the URL visited. See [FJRoute.js](src/Components/Containers/FJRoute.js) for implementation, and [Charts.js](src/Components/Charts/Charts.js) for example usage.
 
 ## Loading/Skeletons
 

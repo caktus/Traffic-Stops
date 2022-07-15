@@ -6,14 +6,14 @@ import { useTheme } from 'styled-components';
 import { useHistory } from 'react-router-dom';
 
 // Assets
-import SplashImage from 'img/nc-copwatch-transparent--tayetheartist.png';
+import SplashImage from '../../img/nc-copwatch-transparent--tayetheartist.png';
 
 // Contants
-import { AGENCY_LIST_SLUG, FIND_A_STOP_SLUG } from 'Routes/slugs';
+import { AGENCY_LIST_SLUG, FIND_A_STOP_SLUG } from '../../Routes/slugs';
 
 // AJAX
-import axios from 'Services/Axios';
-import { STATE_FACTS_URL } from 'Services/endpoints';
+import axios from '../../Services/Axios';
+import { STATE_FACTS_URL } from '../../Services/endpoints';
 
 // State
 import fetchReducer, {
@@ -21,14 +21,14 @@ import fetchReducer, {
   FETCH_START,
   FETCH_SUCCESS,
   FETCH_FAILURE,
-} from 'Context/fetch-reducer';
+} from '../../Context/fetch-reducer';
 
 // Elements
-import { P, SIZES, WEIGHTS } from 'styles/StyledComponents/Typography';
-import DepartmentSearch from 'Components/Elements/DepartmentSearch';
-import { ICONS } from 'img/icons/Icon';
-import FjButton from 'Components/Elements/Button';
-import CardSkeleton from 'Components/Elements/Skeletons/CardSkeleton';
+import { P, SIZES, WEIGHTS } from '../../styles/StyledComponents/Typography';
+import DepartmentSearch from '../Elements/DepartmentSearch';
+import { ICONS } from '../../img/icons/Icon';
+import FjButton from '../Elements/Button';
+import CardSkeleton from '../Elements/Skeletons/CardSkeleton';
 
 function HomePage() {
   const [{ data, loading, errors }, dispatch] = React.useReducer(fetchReducer, initialState);

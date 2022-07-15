@@ -1,37 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import { ContrabandStyled } from './Contraband.styled';
-import * as S from 'Components/Charts/ChartSections/ChartsCommon.styled';
-
+import * as S from '../ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
 
 // Router
 import { useParams } from 'react-router-dom';
 
 // Util
-import toTitleCase from 'util/toTitleCase';
+import toTitleCase from '../../../util/toTitleCase';
 import {
   RACES,
   YEARS_DEFAULT,
   reduceYearsToTotal,
   calculatePercentage,
   getQuantityForYear,
-} from 'Components/Charts/chartUtils';
+} from '../chartUtils';
 
 // Hooks
-import useMetaTags from 'Hooks/useMetaTags';
-import useTableModal from 'Hooks/useTableModal';
+import useMetaTags from '../../../Hooks/useMetaTags';
+import useTableModal from '../../../Hooks/useTableModal';
 
 // State
-import useDataset, { CONTRABAND_HIT_RATE } from 'Hooks/useDataset';
+import useDataset, { CONTRABAND_HIT_RATE } from '../../../Hooks/useDataset';
 
 // Children
-import { P } from 'styles/StyledComponents/Typography';
-import ChartHeader from 'Components/Charts/ChartSections/ChartHeader';
-import Bar from 'Components/Charts/ChartPrimitives/Bar';
-import DataSubsetPicker from 'Components/Charts/ChartSections/DataSubsetPicker/DataSubsetPicker';
+import { P } from '../../../styles/StyledComponents/Typography';
+import Bar from '../ChartPrimitives/Bar';
+import ChartHeader from '../ChartSections/ChartHeader';
+import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
 
 function SearchRate() {
-  let { agencyId } = useParams();
+  const { agencyId } = useParams();
   const theme = useTheme();
 
   const [chartState] = useDataset(agencyId, CONTRABAND_HIT_RATE);
@@ -110,7 +109,8 @@ function SearchRate() {
                   tickFormat: (t) => {
                     if (t === 'Native American') {
                       return 'Native \n American';
-                    } else return t;
+                    }
+                    return t;
                   },
                 }}
                 barProps={{

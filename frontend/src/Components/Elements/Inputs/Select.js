@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { SelectStyled, SelectLabel, SelectInput, SelectOption } from './Select.styled';
-import { options } from 'yargs';
 
 function Select({ label, nullValue, options, ...props }) {
   return (

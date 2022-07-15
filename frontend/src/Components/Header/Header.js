@@ -2,20 +2,20 @@ import React, { useEffect } from 'react';
 import * as S from './Header.styled';
 
 // Assets
-import SplashImage from 'img/nc-copwatch-transparent-small--tayetheartist.png';
+import SplashImage from '../../img/nc-copwatch-transparent-small--tayetheartist.png';
 
 // Routing
-import { HOME_SLUG } from 'Routes/slugs';
+import { HOME_SLUG } from '../../Routes/slugs';
 import { useLocation } from 'react-router-dom';
 
 // Context
-import { useRootContext } from 'Context/root-context';
-import { SET_SHOW_SEARCH } from 'Context/root-reducer';
+import { useRootContext } from '../../Context/root-context';
+import { SET_SHOW_SEARCH } from '../../Context/root-reducer';
 
 // Components
-import LogoFull from 'Components/Elements/LogoFull';
-import Navbar from 'Components/Header/Navbar';
-import HeaderSearch from 'Components/Header/HeaderSearch';
+import LogoFull from '../Elements/LogoFull';
+import Navbar from './Navbar';
+import HeaderSearch from './HeaderSearch';
 
 const SLUGS_WITHOUT_SEARCH = [HOME_SLUG];
 

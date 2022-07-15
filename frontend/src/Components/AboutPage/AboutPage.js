@@ -1,13 +1,13 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import * as S from './AboutPage.styled';
 
-import {H1, H2} from 'styles/StyledComponents/Typography';
-import Input from "../Elements/Inputs/Input";
-import {Button} from "reaktus";
-import axios from "../../Services/Axios";
-import {CONTACT_FORM_URL} from "../../Services/endpoints";
+import { H1, H2 } from '../../styles/StyledComponents/Typography';
+import Input from '../Elements/Inputs/Input';
+import { Button } from 'reaktus';
+import axios from '../../Services/Axios';
+import { CONTACT_FORM_URL } from '../../Services/endpoints';
 
-function AboutPage(props) {
+function AboutPage() {
   const [formFields, setFormFields] = useState({
     name: '',
     nameErrors: [],
@@ -15,7 +15,7 @@ function AboutPage(props) {
     emailErrors: [],
     message: '',
     messageErrors: [],
-    messageSent: false
+    messageSent: false,
   });
 
   const setFormValue = (type, value) => {
@@ -26,32 +26,35 @@ function AboutPage(props) {
   };
 
   const submitMessage = () => {
-    let postData = {
+    const postData = {
       name: formFields.name,
       email: formFields.email,
-      message: formFields.message
-    }
+      message: formFields.message,
+    };
 
-    axios.post(CONTACT_FORM_URL, postData).then(res => {
-      if (res.status === 204) {
-        setFormFields({name: '', email: '', message: '', messageSent: true})
-        setTimeout(() => {
-          setFormFields({messageSent: false});
-        }, 2000);
-      }
-    }).catch(err => {
-      if (err.response.data) {
-        setFormFields({
-          name: formFields.name,
-          email: formFields.email,
-          message: formFields.message,
-          nameErrors: err.response.data["name"],
-          emailErrors: err.response.data["email"],
-          messageErrors: err.response.data["message"]
-        })
-      }
-    });
-  }
+    axios
+      .post(CONTACT_FORM_URL, postData)
+      .then((res) => {
+        if (res.status === 204) {
+          setFormFields({ name: '', email: '', message: '', messageSent: true });
+          setTimeout(() => {
+            setFormFields({ messageSent: false });
+          }, 2000);
+        }
+      })
+      .catch((err) => {
+        if (err.response.data) {
+          setFormFields({
+            name: formFields.name,
+            email: formFields.email,
+            message: formFields.message,
+            nameErrors: err.response.data['name'],
+            emailErrors: err.response.data['email'],
+            messageErrors: err.response.data['message'],
+          });
+        }
+      });
+  };
 
   return (
     <S.AboutPageStyled data-testid="AboutPage">
@@ -104,10 +107,11 @@ function AboutPage(props) {
           </S.AboutPageParagraph>
           <S.AboutPageContent>
             <H2>Questions about NC CopWatch? Contact us here:</H2>
-            {formFields.messageSent &&
-            <S.AboutPageFlexedDiv>
-              <S.AboutPageBoldParagraph>Message sent!</S.AboutPageBoldParagraph>
-            </S.AboutPageFlexedDiv>}
+            {formFields.messageSent && (
+              <S.AboutPageFlexedDiv>
+                <S.AboutPageBoldParagraph>Message sent!</S.AboutPageBoldParagraph>
+              </S.AboutPageFlexedDiv>
+            )}
             <S.AboutPageBoldParagraph>
               <Input
                 label="Your name"
@@ -116,20 +120,20 @@ function AboutPage(props) {
                 onChange={(e) => setFormValue('name', e.target.value)}
               />
               <Input
-                  label="Your email"
-                  type="email"
-                  value={formFields.email}
-                  errors={formFields.emailErrors}
-                  onChange={(e) => setFormValue('email', e.target.value)}
+                label="Your email"
+                type="email"
+                value={formFields.email}
+                errors={formFields.emailErrors}
+                onChange={(e) => setFormValue('email', e.target.value)}
               />
               <Input
-                  label="Message"
-                  type="textarea"
-                  value={formFields.message}
-                  errors={formFields.messageErrors}
-                  cols="50"
-                  rows="8"
-                  onChange={(e) => setFormValue('message', e.target.value)}
+                label="Message"
+                type="textarea"
+                value={formFields.message}
+                errors={formFields.messageErrors}
+                cols="50"
+                rows="8"
+                onChange={(e) => setFormValue('message', e.target.value)}
               />
               <S.AboutPageFlexedDiv>
                 <Button

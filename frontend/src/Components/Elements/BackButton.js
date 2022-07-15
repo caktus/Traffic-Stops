@@ -6,9 +6,9 @@ import { useHistory } from 'react-router-dom';
 // Styles, assets
 import { useTheme } from 'styled-components';
 import * as S from './BackButton.styled';
-import { ICONS } from 'img/icons/Icon';
+import { ICONS } from '../../img/icons/Icon';
 
-import { SIZES } from 'styles/StyledComponents/Typography';
+import { SIZES } from '../../styles/StyledComponents/Typography';
 
 function BackButton({ to, text, ...props }) {
   const history = useHistory();

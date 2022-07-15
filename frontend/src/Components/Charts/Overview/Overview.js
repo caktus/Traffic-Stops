@@ -1,33 +1,38 @@
 import React, { useState, useEffect } from 'react';
-import * as S from 'Components/Charts/ChartSections/ChartsCommon.styled';
+import * as S from '../ChartSections/ChartsCommon.styled';
 import { OverviewStyled } from './Overview.styled';
 import { useTheme } from 'styled-components';
 
 // Router
-import { useParams, useHistory, useRouteMatch } from 'react-router-dom';
+import { useHistory, useParams, useRouteMatch } from 'react-router-dom';
 
 // Constants
-import toTitleCase from 'util/toTitleCase';
+import toTitleCase from '../../../util/toTitleCase';
 import {
   calculatePercentage,
   reduceFullDataset,
   YEARS_DEFAULT,
   STATIC_LEGEND_KEYS,
   RACES,
-} from 'Components/Charts/chartUtils';
-import * as slugs from 'Routes/slugs';
+} from '../chartUtils';
+import * as slugs from '../../../Routes/slugs';
 
 // Hooks
-import useMetaTags from 'Hooks/useMetaTags';
+import useMetaTags from '../../../Hooks/useMetaTags';
 
 // Data
-import useDataset, { AGENCY_DETAILS, STOPS, SEARCHES, USE_OF_FORCE } from 'Hooks/useDataset';
+import useDataset, {
+  AGENCY_DETAILS,
+  STOPS,
+  SEARCHES,
+  USE_OF_FORCE,
+} from '../../../Hooks/useDataset';
 
 // Children
-import ChartHeader from 'Components/Charts/ChartSections/ChartHeader';
-import Pie from 'Components/Charts/ChartPrimitives/Pie';
-import Legend from 'Components/Charts/ChartSections/Legend/Legend';
-import useOfficerId from "../../../Hooks/useOfficerId";
+import ChartHeader from '../ChartSections/ChartHeader';
+import Legend from '../ChartSections/Legend/Legend';
+import useOfficerId from '../../../Hooks/useOfficerId';
+import Pie from '../ChartPrimitives/Pie';
 
 function Overview() {
   const { agencyId } = useParams();
@@ -51,11 +56,12 @@ function Overview() {
 
   const subjectObserving = () => {
     if (officerId) {
-      return "officer";
-    } else if (agencyId) {
-      return "department";
+      return 'officer';
     }
-  }
+    if (agencyId) {
+      return 'department';
+    }
+  };
 
   /* Build Data */
   // CENSUS
@@ -120,11 +126,10 @@ function Overview() {
 
   const useOfForcePieChartCopy = () => {
     if (officerId) {
-      return "this officer";
-    } else {
-      return "law enforcement officers";
+      return 'this officer';
     }
-  }
+    return 'law enforcement officers';
+  };
 
   return (
     <OverviewStyled>
@@ -135,7 +140,7 @@ function Overview() {
           twitterTitle: getPageTitleForShare(),
         }}
       />
-      <S.SectionWrapper></S.SectionWrapper>
+      <S.SectionWrapper />
       <S.ChartsWrapper>
         <S.PieContainer>
           <S.ChartTitle>Census Demographics</S.ChartTitle>
@@ -156,7 +161,9 @@ function Overview() {
             <Pie loading={chartState.loading[STOPS]} data={trafficStopsData} />
             <Legend keys={STATIC_LEGEND_KEYS} isStatic showNonHispanic />
           </S.PieWrapper>
-          <S.Note>Shows the race/ethnic composition of drivers stopped by this {subjectObserving()}</S.Note>
+          <S.Note>
+            Shows the race/ethnic composition of drivers stopped by this {subjectObserving()}
+          </S.Note>
           <S.Link onClick={() => history.push(`${match.url}${slugs.TRAFFIC_STOPS_SLUG}`)}>
             View traffic stops over time
           </S.Link>
@@ -169,7 +176,9 @@ function Overview() {
             <Pie loading={chartState.loading[SEARCHES]} data={searchesData} />
             <Legend keys={STATIC_LEGEND_KEYS} isStatic showNonHispanic />
           </S.PieWrapper>
-          <S.Note>Shows the race/ethnic composition of drivers searched by this {subjectObserving()}</S.Note>
+          <S.Note>
+            Shows the race/ethnic composition of drivers searched by this {subjectObserving()}
+          </S.Note>
           <S.Link onClick={() => history.push(`${match.url}${slugs.SEARCHES_SLUG}`)}>
             View searches over time
           </S.Link>

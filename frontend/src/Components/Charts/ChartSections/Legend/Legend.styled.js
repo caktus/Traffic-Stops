@@ -1,7 +1,7 @@
 import styled from 'styled-components';
-import { phoneOnly, smallerThanTabletLandscape } from 'styles/breakpoints';
-import FJIcon from 'img/icons/Icon';
-import { P } from 'styles/StyledComponents/Typography';
+import { phoneOnly, smallerThanTabletLandscape } from '../../../../styles/breakpoints';
+import FJIcon from '../../../../img/icons/Icon';
+import { P } from '../../../../styles/StyledComponents/Typography';
 
 export const Legend = styled.div`
   display: flex;

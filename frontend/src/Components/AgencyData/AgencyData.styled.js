@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
-import MainBase from 'styles/MainBase';
-import { phoneOnly, smallerThanTabletLandscape } from 'styles/breakpoints';
+import MainBase from '../../styles/MainBase';
+import { phoneOnly, smallerThanTabletLandscape } from '../../styles/breakpoints';
 
 export const AgencyData = styled(MainBase)``;
 

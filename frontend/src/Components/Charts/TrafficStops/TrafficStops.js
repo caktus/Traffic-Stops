@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { TrafficStopsStyled } from './TrafficStops.styled';
-import * as S from 'Components/Charts/ChartSections/ChartsCommon.styled';
+import * as S from '../../Charts/ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
 
 // Router
@@ -18,26 +18,26 @@ import {
   PURPOSE_DEFAULT,
   RACES,
   STOP_TYPES,
-} from 'Components/Charts/chartUtils';
+} from '../chartUtils';
 
 // State
-import useDataset, { STOPS_BY_REASON, STOPS } from 'Hooks/useDataset';
+import useDataset, { STOPS_BY_REASON, STOPS } from '../../../Hooks/useDataset';
 
 // Elements
-import { P } from 'styles/StyledComponents/Typography';
+import { P } from '../../../styles/StyledComponents/Typography';
 
 // Hooks
-import useMetaTags from 'Hooks/useMetaTags';
-import useTableModal from 'Hooks/useTableModal';
+import useMetaTags from '../../../Hooks/useMetaTags';
+import useTableModal from '../../../Hooks/useTableModal';
 
 // Children
-import Line from 'Components/Charts/ChartPrimitives/Line';
-import StackedBar from 'Components/Charts/ChartPrimitives/StackedBar';
-import Pie from 'Components/Charts/ChartPrimitives/Pie';
-import Legend from 'Components/Charts/ChartSections/Legend/Legend';
-import ChartHeader from 'Components/Charts/ChartSections/ChartHeader';
-import DataSubsetPicker from 'Components/Charts/ChartSections/DataSubsetPicker/DataSubsetPicker';
-import toTitleCase from 'util/toTitleCase';
+import Line from '../../Charts/ChartPrimitives/Line';
+import StackedBar from '../../Charts/ChartPrimitives/StackedBar';
+import Pie from '../../Charts/ChartPrimitives/Pie';
+import Legend from '../../Charts/ChartSections/Legend/Legend';
+import ChartHeader from '../../Charts/ChartSections/ChartHeader';
+import DataSubsetPicker from '../../Charts/ChartSections/DataSubsetPicker/DataSubsetPicker';
+import toTitleCase from '../../../util/toTitleCase';
 import useOfficerId from "../../../Hooks/useOfficerId";
 
 function TrafficStops() {

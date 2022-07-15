@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChartBaseStyled } from './ChartBase.styled';
+import { ChartBaseStyled } from 'Components/ChartBase.styled';
 
 // Children
 import ResponsiveChartContainer from 'Components/Charts/ResponsiveChartContainer.styled';

@@ -1,5 +1,5 @@
 import { AGENCY_DATA_SLUG, AGENCY_LIST_SLUG } from '../../src/Routes/slugs';
-import { MIN_DELAY } from '../../src/Components/Containers/AsyncRoute';
+import { MIN_DELAY } from '../../src/./Containers/FJRoute';
 import { getStopsByReasonURL } from '../../src/Services/endpoints';
 
 describe('Chart behavior', () => {
