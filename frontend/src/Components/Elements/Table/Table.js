@@ -15,7 +15,7 @@ import TablePagination from './TablePagination';
 function Table({
   columns,
   data = [],
-  intitialTableState,
+  initialTableState,
   paginated,
   sortable,
   handleOfficerIdSelected,
@@ -27,7 +27,7 @@ function Table({
       {
         columns,
         data,
-        initialState: { pageIndex: 0, pageSize, ...intitialTableState },
+        initialState: { pageIndex: 0, pageSize, ...initialTableState },
       },
       sortable ? useSortBy : '',
       paginated ? usePagination : ''
@@ -80,7 +80,7 @@ function Table({
         </S.THead>
 
         <S.TBody {...getTableBodyProps()}>
-          {page.map((row, i) => {
+          {page.map((row) => {
             prepareRow(row);
             return (
               <S.TR {...row.getRowProps()}>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { UseOfForceStyled } from './UseOfForce.styled';
+import UseOfForceStyled from './UseOfForce.styled';
 import * as S from '../ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
 
@@ -59,6 +59,7 @@ function UseOfForce() {
     if (agencyId) {
       return 'whom law enforcement officers';
     }
+    return '';
   };
 
   /* BUILD DATA */

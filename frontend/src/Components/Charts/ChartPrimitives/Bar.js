@@ -24,10 +24,10 @@ function Bar({ data, chartProps, xAxisProps, yAxisProps, barProps }) {
 }
 
 Bar.propTypes = {
-  chartProps: PropTypes.object,
-  yAxisProps: PropTypes.object,
-  xAxisProps: PropTypes.object,
-  barProps: PropTypes.object,
+  chartProps: PropTypes.instanceOf(Object),
+  yAxisProps: PropTypes.instanceOf(Object),
+  xAxisProps: PropTypes.instanceOf(Object),
+  barProps: PropTypes.instanceOf(Object),
 };
 
 Bar.defaultProps = {

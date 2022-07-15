@@ -18,6 +18,7 @@ function Legend({ keys, onKeySelect, isStatic, showNonHispanic, heading, row }) 
             fill,
             width: 25,
             height: 25,
+            // eslint-disable-next-line no-nested-ternary
             icon: isStatic
               ? ICONS.roundedBox
               : key.selected

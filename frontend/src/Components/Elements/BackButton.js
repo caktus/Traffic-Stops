@@ -14,7 +14,7 @@ function BackButton({ to, text, ...props }) {
   const history = useHistory();
   const theme = useTheme();
 
-  const _handleClick = (e) => {
+  const _handleClick = () => {
     if (to) history.replace(to);
     else history.goBack();
   };

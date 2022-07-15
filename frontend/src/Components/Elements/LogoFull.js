@@ -5,7 +5,7 @@ import CopWatchLogoSolid from '../../img/NC_copwatch_logo_white.png';
 import { HOME_SLUG } from '../../Routes/slugs';
 import { useHistory } from 'react-router-dom';
 
-function LogoFull({ solid, white }) {
+function LogoFull({ white }) {
   const history = useHistory();
 
   const _getLogo = () => {

@@ -50,7 +50,7 @@ function StackedBar({ data, loading, tickValues, yAxisLabel }) {
 }
 
 StackedBar.propTypes = {
-  data: PropTypes.array.isRequired,
+  data: PropTypes.instanceOf(Array).isRequired,
   tickValues: PropTypes.arrayOf(PropTypes.number),
 };
 

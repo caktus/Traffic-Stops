@@ -48,16 +48,16 @@ export function calculatePercentage(part, total) {
 export function calculateYearTotal(yearData, filteredKeys = RACES) {
   if (!yearData) return 0;
   let yearSum = 0;
-  filteredKeys.forEach(
-    (ethnicGroup) => (yearSum += yearData[ethnicGroup] ? yearData[ethnicGroup] : 0)
-  );
+  filteredKeys.forEach((ethnicGroup) => {
+    yearSum += yearData[ethnicGroup] ? yearData[ethnicGroup] : 0;
+  });
   return yearSum;
 }
 
 export function reduceYearsToTotal(data, ethnicGroup) {
   if (data.length === 0) return { [ethnicGroup]: 0 };
   return data.reduce((acc, curr) => ({
-    [ethnicGroup]: parseInt(acc[ethnicGroup]) + parseInt(curr[ethnicGroup]),
+    [ethnicGroup]: parseInt(acc[ethnicGroup], 10) + parseInt(curr[ethnicGroup], 10),
   }));
 }
 
@@ -165,10 +165,9 @@ export const reduceStopReasonsByEthnicity = (data, yearsSet, ethnicGroup, search
       // No searches this year
       if (yrSet.length === 0) tick.y = 0;
       else {
-        const stopTotal = yrSet.reduce((acc, curr) => ({
+        tick.y = yrSet.reduce((acc, curr) => ({
           [ethnicGroup]: acc[ethnicGroup] + curr[ethnicGroup],
         }))[ethnicGroup];
-        tick.y = stopTotal;
       }
     } else {
       const yearData = data.find((d) => d.year === year);
@@ -193,6 +192,7 @@ export const getGroupValueBasedOnYear = (data, group, yr, keys) => {
 
 export const getRatesAgainstBase = (baseSearches, baseStops, groupSearches, groupStops) => {
   const rData = {};
+  // eslint-disable-next-line no-restricted-syntax
   for (const r in baseSearches) {
     if (Object.hasOwnProperty.call(baseSearches, r)) {
       const baseRate = calculatePercentage(baseSearches[r], baseStops[r]);

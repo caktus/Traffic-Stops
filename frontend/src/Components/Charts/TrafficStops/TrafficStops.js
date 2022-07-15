@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { TrafficStopsStyled } from './TrafficStops.styled';
-import * as S from '../../Charts/ChartSections/ChartsCommon.styled';
+import TrafficStopsStyled from './TrafficStops.styled';
+import * as S from '../ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
 
 // Router
@@ -31,17 +31,17 @@ import useMetaTags from '../../../Hooks/useMetaTags';
 import useTableModal from '../../../Hooks/useTableModal';
 
 // Children
-import Line from '../../Charts/ChartPrimitives/Line';
-import StackedBar from '../../Charts/ChartPrimitives/StackedBar';
-import Pie from '../../Charts/ChartPrimitives/Pie';
-import Legend from '../../Charts/ChartSections/Legend/Legend';
-import ChartHeader from '../../Charts/ChartSections/ChartHeader';
-import DataSubsetPicker from '../../Charts/ChartSections/DataSubsetPicker/DataSubsetPicker';
+import Line from '../ChartPrimitives/Line';
+import StackedBar from '../ChartPrimitives/StackedBar';
+import Pie from '../ChartPrimitives/Pie';
+import Legend from '../ChartSections/Legend/Legend';
+import ChartHeader from '../ChartSections/ChartHeader';
+import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
 import toTitleCase from '../../../util/toTitleCase';
-import useOfficerId from "../../../Hooks/useOfficerId";
+import useOfficerId from '../../../Hooks/useOfficerId';
 
 function TrafficStops() {
-  let { agencyId } = useParams();
+  const { agencyId } = useParams();
   const theme = useTheme();
   const officerId = useOfficerId();
 
@@ -204,15 +204,18 @@ function TrafficStops() {
     if (selectedGroups.length < percentageEthnicGroups.length) {
       return `Showing total for ${selectedGroups.join(', ')}.`;
     }
+    return '';
   };
 
   const subjectObserving = () => {
     if (officerId) {
-      return "officer";
-    } else if (agencyId) {
-      return "department";
+      return 'officer';
     }
-  }
+    if (agencyId) {
+      return 'department';
+    }
+    return '';
+  };
 
   return (
     <TrafficStopsStyled>
@@ -225,7 +228,10 @@ function TrafficStops() {
           handleViewData={handleViewPercentageData}
         />
         <S.ChartDescription>
-          <P>Shows the race/ethnic composition of drivers stopped by this {subjectObserving()} over time.</P>
+          <P>
+            Shows the race/ethnic composition of drivers stopped by this {subjectObserving()} over
+            time.
+          </P>
           <P>{getChartDetailedBreakdown()}</P>
         </S.ChartDescription>
         <S.ChartSubsection>
@@ -236,7 +242,7 @@ function TrafficStops() {
                 data={byPercentageLineData}
                 tickValues={stopsChartState.yearSet}
                 loading={stopsChartState.loading[STOPS]}
-                yAxisLabel={val => `${val}%`}
+                yAxisLabel={(val) => `${val}%`}
               />
             </S.LineWrapper>
             <S.LegendBelow>

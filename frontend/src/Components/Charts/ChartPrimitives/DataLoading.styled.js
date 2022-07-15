@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-export const DataLoadingStyled = styled.div`
+export default styled.div`
   padding: 2rem 0;
   h3 {
     text-align: center;

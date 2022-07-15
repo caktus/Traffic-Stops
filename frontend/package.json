@@ -8,6 +8,7 @@
     "@sentry/react": "^7.6.0",
     "autosuggest-highlight": "^3.3.0",
     "axios": "^0.27.2",
+    "babel-eslint": "^10.1.0",
     "date-fns": "^2.28.0",
     "framer-motion": "^4.1.17",
     "lodash.range": "^3.2.0",
@@ -31,6 +32,7 @@
     "victory": "^36.5.3"
   },
   "devDependencies": {
+    "@testing-library/react": "^13.3.0",
     "cypress": "^10.3.0",
     "eslint": "^8.19.0",
     "eslint-config-airbnb": "^19.0.4",
@@ -43,10 +45,11 @@
     "eslint-plugin-react-hooks": "^4.6.0"
   },
   "scripts": {
-    "start": "GENERATE_SOURCEMAP=false DISABLE_ESLINT_PLUGIN=true react-scripts start",
+    "start": "GENERATE_SOURCEMAP=false react-scripts start",
     "build": "react-scripts build",
     "test": "NODE_ENV=testing cypress open",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint": "eslint --fix --ext .js,.jsx ."
   },
   "eslintConfig": {
     "extends": "react-app"

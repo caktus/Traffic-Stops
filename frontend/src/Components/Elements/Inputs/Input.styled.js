@@ -26,6 +26,7 @@ export const LableSpan = styled.span`
   color: ${(props) => {
     if (props.required) return props.theme.colors.caution;
     if (props.optional) return props.theme.colors.grey;
+    return 'black';
   }};
 `;
 
@@ -59,6 +60,7 @@ export const IconContainer = styled.div`
         border-bottom-right-radius: 6px;
       `;
     }
+    return '';
   }}
 
   svg {

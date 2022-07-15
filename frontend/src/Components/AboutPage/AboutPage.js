@@ -68,10 +68,10 @@ function AboutPage() {
             enforcement accountable. As law enforcement officers keep watchful eyes on our
             communities, we too must observe the actions of law enforcement with vigilance, in an
             effort to increase transparency and stop the state sponsored killings of Black and Brown
-            people. "The blue wall of silence", and lack of clear reporting and data on officer
-            conduct and misconduct, prevents communities from being able to raise alarms and force
-            accountability when departments and officers engage in discriminatory behavior that all
-            too often turns violent or deadly.
+            people. &quot;The blue wall of silence&quot;, and lack of clear reporting and data on
+            officer conduct and misconduct, prevents communities from being able to raise alarms and
+            force accountability when departments and officers engage in discriminatory behavior
+            that all too often turns violent or deadly.
           </S.AboutPageParagraph>
           <S.AboutPageParagraph>
             According to the US Department of Justice, vehicle stops are the number one reason for

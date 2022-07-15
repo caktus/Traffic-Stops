@@ -19,7 +19,7 @@ import HeaderSearch from './HeaderSearch';
 
 const SLUGS_WITHOUT_SEARCH = [HOME_SLUG];
 
-function Header(props) {
+function Header() {
   const { pathname } = useLocation();
   const [{ showHeaderSearch }, dispatch] = useRootContext();
 

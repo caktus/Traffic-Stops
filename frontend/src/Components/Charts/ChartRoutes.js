@@ -7,14 +7,14 @@ import * as slugs from '../../Routes/slugs';
 // Children
 // import PieSkeleton from 'Components/Elements/Skeletons/PieSkeleton';
 import ChartError from '../Elements/ChartError';
-import DataLoading from '../Charts/ChartPrimitives/DataLoading';
-import Overview from "./Overview/Overview";
-import TrafficStops from "./TrafficStops/TrafficStops";
-import Searches from "./Searches/Searches";
-import SearchRate from "./SearchRate/SearchRate";
-import Contraband from "./Contraband/Contraband";
-import UseOfForce from "./UseOfForce/UseOfForce";
-import FJRoute from "../Containers/FJRoute";
+import DataLoading from './ChartPrimitives/DataLoading';
+import Overview from './Overview/Overview';
+import TrafficStops from './TrafficStops/TrafficStops';
+import Searches from './Searches/Searches';
+import SearchRate from './SearchRate/SearchRate';
+import Contraband from './Contraband/Contraband';
+import UseOfForce from './UseOfForce/UseOfForce';
+import FJRoute from '../Containers/FJRoute';
 
 function Charts() {
   const match = useRouteMatch();

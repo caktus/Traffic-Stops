@@ -35,6 +35,7 @@ function AgencyHeader({ agencyHeaderOpen, agencyDetails }) {
     if (agencyId) {
       return `last reported stop from department`;
     }
+    return '';
   };
 
   return (

@@ -25,28 +25,30 @@ import fetchReducer, {
 
 // Elements
 import { P, SIZES, WEIGHTS } from '../../styles/StyledComponents/Typography';
-import DepartmentSearch from '../Elements/DepartmentSearch';
 import { ICONS } from '../../img/icons/Icon';
 import FjButton from '../Elements/Button';
 import CardSkeleton from '../Elements/Skeletons/CardSkeleton';
+import DepartmentSearch from '../Elements/DepartmentSearch';
 
 function HomePage() {
   const [{ data, loading, errors }, dispatch] = React.useReducer(fetchReducer, initialState);
   const history = useHistory();
   const theme = useTheme();
 
-  useEffect(() => {
-    async function _fetchMetaData() {
-      dispatch({ type: FETCH_START });
-      try {
-        const { data } = await axios.get(STATE_FACTS_URL);
-        const ncData = data.find((s) => s.state_key === 'nc');
-        dispatch({ type: FETCH_SUCCESS, payload: ncData });
-      } catch (e) {
-        dispatch({ type: FETCH_FAILURE, payload: e });
-        console.warn('error: ', e);
-      }
+  async function _fetchMetaData() {
+    dispatch({ type: FETCH_START });
+    try {
+      const { data: stateFacts } = await axios.get(STATE_FACTS_URL);
+      const ncData = stateFacts.find((s) => s.state_key === 'nc');
+      dispatch({ type: FETCH_SUCCESS, payload: ncData });
+    } catch (e) {
+      dispatch({ type: FETCH_FAILURE, payload: e });
+      // eslint-disable-next-line no-console
+      console.warn('error: ', e);
     }
+  }
+
+  useEffect(() => {
     _fetchMetaData();
   }, []);
 
@@ -87,7 +89,7 @@ function HomePage() {
                   <S.AboutSubTitle>across</S.AboutSubTitle>
                   <P>
                     <S.Datum>{Number(data.total_agencies).toLocaleString()}</S.Datum>
-                    police and sheriff's departments
+                    police and sheriff&apos;s departments
                   </P>
                 </S.AboutSubSection>
                 <S.AboutSubSection>

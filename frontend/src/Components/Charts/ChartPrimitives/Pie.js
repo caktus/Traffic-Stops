@@ -15,8 +15,6 @@ const PIE_STYLES = {
   parent: { touchAction: 'auto' },
 };
 
-const LABEL_SKIP_ANGLE = 0.4;
-
 function Pie({ data, loading }) {
   const _dataIsZeros = (d) => d.length === 0 || d.every((dt) => dt.y === 0);
 
