@@ -7,7 +7,7 @@ import { Button } from 'reaktus';
 import axios from '../../Services/Axios';
 import { CONTACT_FORM_URL } from '../../Services/endpoints';
 
-function AboutPage(props) {
+function AboutPage() {
   const [formFields, setFormFields] = useState({
     name: '',
     nameErrors: [],
