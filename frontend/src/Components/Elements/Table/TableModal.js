@@ -38,12 +38,12 @@ import Button from 'Components/Elements/Button';
 import DataSubsetPicker from "../../Charts/ChartSections/DataSubsetPicker/DataSubsetPicker";
 
 const mapDatasetToChartName = {
-  STOPS: 'Traffic Stops',
+  STOPS: 'Traffic Stops By Percentage',
   SEARCHES: 'Searches',
-  STOPS_BY_REASON: 'Traffic Stops by Count and Reason',
-  SEARCHES_BY_TYPE: 'Searches by Type',
+  STOPS_BY_REASON: 'Traffic Stops by Count',
+  SEARCHES_BY_TYPE: 'Searches by Count',
   USE_OF_FORCE: 'Use of Force',
-  CONTRABAND_HIT_RATE: 'Contraband Hits',
+  CONTRABAND_HIT_RATE: 'Contraband "Hit Rate"',
   LIKELIHOOD_OF_SEARCH: 'Likelihood of Search'
 };
 
@@ -83,7 +83,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     let mergedData = [];
     const { searches, stops } = data;
     if (searches && stops) {
-      mergedData = searches.map((searchYear, i) => {
+      mergedData = stops.map((searchYear, i) => {
         const yearData = {};
         const stopYear = stops[i];
         for (const ethnicGroup in searchYear) {
@@ -156,7 +156,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     const searches = chartState.data[ds[1]];
     const stops = chartState.data[ds[0]];
 
-    let mergedData = stops.map((yearsStops) => {
+    let mergedData = searches.map((yearsStops) => {
       const year = yearsStops.year;
       const yearsSearches = searches.find((s) => s.year === year);
       const comparedData = { year };
