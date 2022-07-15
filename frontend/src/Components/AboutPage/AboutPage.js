@@ -31,7 +31,6 @@ function AboutPage(props) {
       email: formFields.email,
       message: formFields.message
     }
-    console.log(postData);
 
     axios.post(CONTACT_FORM_URL, postData).then(res => {
       if (res.status === 204) {
