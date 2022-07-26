@@ -214,4 +214,8 @@ const TABLE_COLUMNS = [
     Header: 'Hispanic',
     accessor: 'hispanic',
   },
+  {
+    Header: 'Total',
+    accessor: (row) => calculateYearTotal(row),
+  },
 ];

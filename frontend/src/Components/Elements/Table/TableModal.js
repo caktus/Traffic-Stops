@@ -95,7 +95,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
             if (ethnicGroup === 'year') {
               yearData.year = searchDatum;
             } else {
-              yearData[ethnicGroup] = `${stopDatum}`;
+              yearData[ethnicGroup] = stopDatum;
             }
           }
         }
@@ -132,7 +132,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
             if (ethnicGroup === 'year') {
               yearData.year = searchDatum;
             } else {
-              yearData[ethnicGroup] = `${searchDatum}`;
+              yearData[ethnicGroup] = searchDatum;
             }
           }
         }
@@ -168,7 +168,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
         if (!yearsSearches) groupsSearches = 0;
         else if (!yearsSearches[key]) groupsSearches = 0;
         else groupsSearches = yearsSearches[key];
-        comparedData[key] = `${groupsSearches}`;
+        comparedData[key] = groupsSearches;
       });
       return comparedData;
     });
@@ -194,7 +194,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       const hits = contraband.find((d) => d.year === year) || 0;
       const comparedData = { year };
       RACES.forEach((r) => {
-        comparedData[r] = `${hits[r] || 0}`;
+        comparedData[r] = hits[r] || 0;
       });
       return comparedData;
     });
