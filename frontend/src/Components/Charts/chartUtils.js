@@ -176,6 +176,24 @@ export const reduceStopReasonsByEthnicity = (data, yearsSet, ethnicGroup, search
     return tick;
   });
 
+export const reduceEthnicityByYears = (data, yearsSet, ethnicGroups = RACES) => {
+  const yearData = [];
+  yearsSet.forEach((yr) => {
+    const yrData = {
+      purpose: '',
+    };
+    yrData.year = yr;
+    const yrSet = data.filter((d) => d.year === yr);
+    ethnicGroups.forEach((e) => {
+      yrData[e] = yrSet.reduce((acc, curr) => ({
+        [e]: acc[e] + curr[e],
+      }))[e];
+    });
+    yearData.push(yrData);
+  });
+  return yearData;
+};
+
 export const getGroupValueBasedOnYear = (data, group, yr, keys) => {
   const groupedData = {};
   keys.forEach((k) => {

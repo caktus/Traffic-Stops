@@ -22,6 +22,7 @@ import {
   reduceFullDatasetOnlyTotals,
   STOP_TYPES,
   SEARCH_TYPES,
+  reduceEthnicityByYears,
 } from '../../Charts/chartUtils';
 
 // Hooks
@@ -36,6 +37,7 @@ import Table from './Table';
 import { ICONS } from '../../../img/icons/Icon';
 import Button from '../Button';
 import DataSubsetPicker from '../../Charts/ChartSections/DataSubsetPicker/DataSubsetPicker';
+import Checkbox from '../Inputs/Checkbox';
 
 const mapDatasetToChartName = {
   STOPS: 'Traffic Stops By Percentage',
@@ -53,6 +55,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
   const officerId = useOfficerId();
   const [yearRange] = useYearSet();
   const [purpose, setPurpose] = useState(null);
+  const [consolidateYears, setConsolidateYears] = useState(false);
 
   const _getEntityReference = () => {
     const agencyName = chartState.data[AGENCY_DETAILS].name;
@@ -84,27 +87,32 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     let mergedData = [];
     const { searches, stops } = data;
     if (searches && stops) {
-      mergedData = stops.map((searchYear, i) => {
-        const yearData = {};
-        const stopYear = stops[i];
-        // eslint-disable-next-line no-restricted-syntax
-        for (const ethnicGroup in searchYear) {
-          if (searchYear.hasOwnProperty(ethnicGroup)) {
-            const searchDatum = searchYear[ethnicGroup];
-            const stopDatum = stopYear[ethnicGroup];
-            if (ethnicGroup === 'year') {
-              yearData.year = searchDatum;
-            } else {
-              yearData[ethnicGroup] = stopDatum;
+      if (consolidateYears && !purpose) {
+        mergedData = reduceEthnicityByYears(stops, chartState.yearRange);
+      } else {
+        mergedData = stops.map((searchYear, i) => {
+          const yearData = {};
+          const stopYear = stops[i];
+          // eslint-disable-next-line no-restricted-syntax
+          for (const ethnicGroup in searchYear) {
+            if (searchYear.hasOwnProperty(ethnicGroup)) {
+              const searchDatum = searchYear[ethnicGroup];
+              const stopDatum = stopYear[ethnicGroup];
+              if (ethnicGroup === 'year') {
+                yearData.year = searchDatum;
+              } else {
+                yearData[ethnicGroup] = stopDatum;
+              }
             }
           }
+          return yearData;
+        });
+        if (purpose) {
+          mergedData = mergedData.filter((e) => e.purpose === purpose);
         }
-        return yearData;
-      });
+      }
     }
-    if (purpose) {
-      mergedData = mergedData.filter((e) => e.purpose === purpose);
-    }
+
     const raceTotals = {
       year: '',
       purpose: 'Totals',
@@ -123,25 +131,30 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     let mergedData = [];
     const { searches, stops } = data;
     if (searches && stops) {
-      mergedData = searches.map((searchYear) => {
-        const yearData = {};
-        // eslint-disable-next-line no-restricted-syntax
-        for (const ethnicGroup in searchYear) {
-          if (searchYear.hasOwnProperty(ethnicGroup)) {
-            const searchDatum = searchYear[ethnicGroup];
-            if (ethnicGroup === 'year') {
-              yearData.year = searchDatum;
-            } else {
-              yearData[ethnicGroup] = searchDatum;
+      if (consolidateYears && !purpose) {
+        mergedData = reduceEthnicityByYears(searches, chartState.yearRange);
+      } else {
+        mergedData = searches.map((searchYear) => {
+          const yearData = {};
+          // eslint-disable-next-line no-restricted-syntax
+          for (const ethnicGroup in searchYear) {
+            if (searchYear.hasOwnProperty(ethnicGroup)) {
+              const searchDatum = searchYear[ethnicGroup];
+              if (ethnicGroup === 'year') {
+                yearData.year = searchDatum;
+              } else {
+                yearData[ethnicGroup] = searchDatum;
+              }
             }
           }
+          return yearData;
+        });
+        if (purpose) {
+          mergedData = mergedData.filter((e) => e.purpose === purpose);
         }
-        return yearData;
-      });
+      }
     }
-    if (purpose) {
-      mergedData = mergedData.filter((e) => e.purpose === purpose);
-    }
+
     const raceTotals = {
       year: '',
       purpose: 'Totals',
@@ -211,16 +224,21 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
   };
 
   const mapSearchByType = (ds) => {
-    let data = chartState.data[ds];
-    if (purpose) {
-      data = data.filter((d) => d.search_type === purpose);
+    const data = chartState.data[ds];
+    let mappedData = [];
+    if (consolidateYears && !purpose) {
+      mappedData = reduceEthnicityByYears(data, chartState.yearRange);
+    } else if (purpose) {
+      mappedData = data.filter((d) => d.search_type === purpose);
+    } else {
+      mappedData = data;
     }
     const raceTotals = {
       year: 'Totals',
       search_type: '',
-      ...reduceFullDatasetOnlyTotals(data, RACES),
+      ...reduceFullDatasetOnlyTotals(mappedData, RACES),
     };
-    const sortedData = data.sort((a, b) =>
+    const sortedData = mappedData.sort((a, b) =>
       // Sort data descending by year
       // eslint-disable-next-line no-nested-ternary
       a['year'] < b['year'] ? 1 : b['year'] < a['year'] ? -1 : 0
@@ -278,6 +296,13 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     }
   };
 
+  const showConsolidateYearsSwitch = (ds) => {
+    if (purpose) {
+      return false;
+    }
+    return ds === STOPS_BY_REASON || ds === LIKELIHOOD_OF_SEARCH || ds === SEARCHES_BY_TYPE;
+  };
+
   return ReactDOM.createPortal(
     isOpen && (
       <>
@@ -312,6 +337,15 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
               value={purpose || 'All'}
               onChange={handleStopPurposeSelect}
               options={[PURPOSE_DEFAULT].concat(SEARCH_TYPES)}
+            />
+          )}
+          {showConsolidateYearsSwitch(dataSet) && (
+            <Checkbox
+              label="Consolidate years"
+              value={consolidateYears}
+              key="consolidate_years"
+              checked={consolidateYears}
+              onChange={() => setConsolidateYears(!consolidateYears)}
             />
           )}
           <S.TableWrapper>
