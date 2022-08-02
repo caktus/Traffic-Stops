@@ -16,7 +16,7 @@ import Contraband from './Contraband/Contraband';
 import UseOfForce from './UseOfForce/UseOfForce';
 import FJRoute from '../Containers/FJRoute';
 
-function Charts() {
+function Charts(props) {
   const match = useRouteMatch();
 
   // NOTE: We should consider lumping everything together into a JSON or JS file
@@ -28,14 +28,18 @@ function Charts() {
       <FJRoute
         exact
         path={`${match.path}${slugs.OVERVIEW_SLUG}`}
-        importComponent={<Overview />}
+        importComponent={
+          <Overview agencyId={props?.agencyId} compareData={props?.compareData || false} />
+        }
         renderLoading={() => <DataLoading />}
         renderError={() => <ChartError chartName="Overview" />}
       />
       <FJRoute
         exact
         path={`${match.path}${slugs.TRAFFIC_STOPS_SLUG}`}
-        importComponent={<TrafficStops />}
+        importComponent={
+          <TrafficStops agencyId={props?.agencyId} compareData={props?.compareData || false} />
+        }
         renderLoading={() => <DataLoading />}
         renderError={() => <ChartError chartName="Traffic Stops" />}
       />

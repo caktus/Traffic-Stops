@@ -4,7 +4,7 @@ import * as S from '../ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
 
 // Router
-import { useParams } from 'react-router-dom';
+// import { useParams } from 'react-router-dom';
 
 // Util
 import {
@@ -40,12 +40,13 @@ import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker
 import toTitleCase from '../../../util/toTitleCase';
 import useOfficerId from '../../../Hooks/useOfficerId';
 
-function TrafficStops() {
-  const { agencyId } = useParams();
+function TrafficStops(props) {
+  const { agencyId } = props;
+
   const theme = useTheme();
   const officerId = useOfficerId();
 
-  const [stopsChartState] = useDataset(agencyId, STOPS);
+  const [stopsChartState] = useDataset(agencyId, STOPS, props?.compareData);
   const [reasonChartState] = useDataset(agencyId, STOPS_BY_REASON);
 
   const [year, setYear] = useState(YEARS_DEFAULT);
@@ -83,17 +84,21 @@ function TrafficStops() {
   /* CALCULATE AND BUILD CHART DATA */
   // Build data for Stops by Percentage line chart
   useEffect(() => {
-    const data = stopsChartState.data[STOPS];
+    const data = props?.compareData
+      ? stopsChartState.compareData[STOPS]
+      : stopsChartState.data[STOPS];
     if (data) {
       const filteredGroups = percentageEthnicGroups.filter((g) => g.selected).map((g) => g.value);
       const derivedData = buildStackedBarData(data, filteredGroups, theme);
       setByPercentageLineData(derivedData);
     }
-  }, [stopsChartState.data[STOPS], percentageEthnicGroups]);
+  }, [stopsChartState.data[STOPS], stopsChartState.compareData[STOPS], percentageEthnicGroups]);
 
   // Build data for Stops by Percentage pie chart
   useEffect(() => {
-    const data = stopsChartState.data[STOPS];
+    const data = props?.compareData
+      ? stopsChartState.compareData[STOPS]
+      : stopsChartState.data[STOPS];
     if (data) {
       if (!year || year === 'All') {
         setByPercentagePieData(reduceFullDataset(data, RACES, theme));
@@ -110,11 +115,13 @@ function TrafficStops() {
         );
       }
     }
-  }, [stopsChartState.data[STOPS], year]);
+  }, [stopsChartState.data[STOPS], stopsChartState.compareData[STOPS], year]);
 
   // Build data for Stops By Count line chart ("All")
   useEffect(() => {
-    const data = stopsChartState.data[STOPS];
+    const data = props?.compareData
+      ? stopsChartState.compareData[STOPS]
+      : stopsChartState.data[STOPS];
     if (data && purpose === PURPOSE_DEFAULT) {
       const derivedData = countEthnicGroups
         .filter((g) => g.selected)
@@ -133,11 +140,13 @@ function TrafficStops() {
         });
       setByCountLineData(derivedData);
     }
-  }, [stopsChartState.data[STOPS], purpose, countEthnicGroups]);
+  }, [stopsChartState.data[STOPS], stopsChartState.compareData[STOPS], purpose, countEthnicGroups]);
 
   // Build data for Stops By Count line chart (single purpose)
   useEffect(() => {
-    const data = reasonChartState.data[STOPS_BY_REASON]?.stops;
+    const data = props?.compareData
+      ? reasonChartState.compareData[STOPS_BY_REASON]
+      : reasonChartState.data[STOPS_BY_REASON]?.stops;
     if (data && purpose !== PURPOSE_DEFAULT) {
       const purposeData = filterSinglePurpose(data, purpose);
       const derivedData = countEthnicGroups
@@ -156,7 +165,12 @@ function TrafficStops() {
         });
       setByCountLineData(derivedData);
     }
-  }, [reasonChartState.data[STOPS_BY_REASON], purpose, countEthnicGroups]);
+  }, [
+    reasonChartState.data[STOPS_BY_REASON],
+    reasonChartState.compareData[STOPS_BY_REASON],
+    purpose,
+    countEthnicGroups,
+  ]);
 
   /* INTERACTIONS */
   // Handle year dropdown state
