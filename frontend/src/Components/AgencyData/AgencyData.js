@@ -44,7 +44,7 @@ function AgencyData(props) {
       <AgencyHeader
         agencyHeaderOpen={agencyHeaderOpen}
         agencyDetails={chartState.data[AGENCY_DETAILS]}
-        compareDepartmentHandler={props.toggleShowCompare}
+        toggleShowCompare={props.toggleShowCompare}
         showCompareDepartments={props.showCompare}
         showCloseButton={!!props?.agencyId}
       />

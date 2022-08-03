@@ -31,11 +31,26 @@ import FindAStopPage from './FindAStopPage/FindAStopPage';
 import Header from './Header/Header';
 // eslint-disable-next-line import/no-named-as-default,import/no-named-as-default-member
 import FindAStopResults from './FindAStopResults/FindAStopResults';
+import DepartmentSearch from './Elements/DepartmentSearch';
+import * as S from './HomePage/HomePage.styled';
 
 function App() {
   const [showCompare, setShowCompare] = React.useState(false);
+  const [agencyId, setAgencyId] = React.useState(null);
 
-  const toggleShowCompare = () => setShowCompare(!showCompare);
+  const toggleShowCompare = () => {
+    if (!showCompare === false) {
+      setAgencyId(null);
+    }
+    setShowCompare(!showCompare);
+  };
+
+  const updateAgencyId = (department) => {
+    if (!department) {
+      setAgencyId(null);
+    }
+    setAgencyId(department.id);
+  };
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -49,19 +64,28 @@ function App() {
               <Header />
               <Switch>
                 <Route path={`${AGENCY_LIST_SLUG}/:agencyId`}>
-                  <div style={{ display: 'flex', overflow: 'auto' }}>
+                  <div style={{ display: 'flex', overflowY: 'auto' }}>
                     <ChartStateProvider reducer={chartReducer} initialState={initialChartState}>
                       <AgencyData showCompare={showCompare} toggleShowCompare={toggleShowCompare} />
                     </ChartStateProvider>
-                    {showCompare && (
+                    {showCompare && agencyId && (
                       <ChartStateProvider reducer={chartReducer} initialState={initialChartState}>
                         <AgencyData
-                          agencyId={71}
+                          agencyId={agencyId}
                           sidebarClosed
                           showCompare={showCompare}
-                          toggleShowCompare={toggleShowCompare}
+                          toggleShowCompare={updateAgencyId}
                         />
                       </ChartStateProvider>
+                    )}
+                    {showCompare && !agencyId && (
+                      <div style={{ width: '50%', padding: 20 }}>
+                        <S.SubHeading>Search for Additional Departments to Compare</S.SubHeading>
+                        <DepartmentSearch
+                          onChange={updateAgencyId}
+                          placeholder="Search for a police or sheriff's department..."
+                        />
+                      </div>
                     )}
                   </div>
                 </Route>

@@ -23,7 +23,7 @@ import * as ChartHeaderStyles from '../Charts/ChartSections/ChartHeader.styled';
 function AgencyHeader({
   agencyHeaderOpen,
   agencyDetails,
-  compareDepartmentHandler,
+  toggleShowCompare,
   showCompareDepartments,
   showCloseButton,
 }) {
@@ -123,7 +123,7 @@ function AgencyHeader({
                   variant="positive"
                   border={`2px solid ${theme.colors.primary}`}
                   {...ChartHeaderStyles.ButtonInlines}
-                  onClick={() => compareDepartmentHandler()}
+                  onClick={() => toggleShowCompare()}
                 >
                   <ChartHeaderStyles.Icon
                     icon={showCompareDepartments ? ICONS.checkboxFilled : ICONS.checkboxEmpty}
@@ -139,7 +139,7 @@ function AgencyHeader({
                   variant="positive"
                   border={`2px solid ${theme.colors.primary}`}
                   {...ChartHeaderStyles.ButtonInlines}
-                  onClick={() => compareDepartmentHandler()}
+                  onClick={() => toggleShowCompare()}
                 >
                   <ChartHeaderStyles.Icon
                     icon={ICONS.close}
