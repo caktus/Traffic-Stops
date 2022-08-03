@@ -3,9 +3,6 @@ import SearchesStyled from './Searches.styled';
 import * as S from '../ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
 
-// Router
-import { useParams } from 'react-router-dom';
-
 // Util
 import {
   AVERAGE,
@@ -34,8 +31,8 @@ import ChartHeader from '../ChartSections/ChartHeader';
 import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
 import useOfficerId from '../../../Hooks/useOfficerId';
 
-function Searches() {
-  const { agencyId } = useParams();
+function Searches(props) {
+  const { agencyId } = props;
   const theme = useTheme();
 
   const officerId = useOfficerId();

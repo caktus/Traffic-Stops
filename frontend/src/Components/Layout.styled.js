@@ -5,5 +5,4 @@ export default styled.div`
   display: flex;
   flex-direction: column;
   max-height: 100vh;
-  overflow: hidden;
 `;

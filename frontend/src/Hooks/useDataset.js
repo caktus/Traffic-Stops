@@ -13,7 +13,6 @@ import {
   DATASET_FETCH_START,
   DATASET_FETCH_SUCCESS,
   DATASET_FETCH_FAILURE,
-  COMPARE_DATASET_FETCH_SUCCESS,
 } from '../Context/chart-reducer';
 
 export const AGENCY_DETAILS = 'AGENCY_DETAILS';
@@ -25,7 +24,7 @@ export const USE_OF_FORCE = 'USE_OF_FORCE';
 export const CONTRABAND_HIT_RATE = 'CONTRABAND_HIT_RATE';
 export const LIKELIHOOD_OF_SEARCH = 'LIKELIHOOD_OF_SEARCH';
 
-function useDataset(agencyId, datasetKey, compareData = false) {
+function useDataset(agencyId, datasetKey) {
   const { search } = useLocation();
   const [state, dispatch] = useChartState();
 
@@ -36,7 +35,7 @@ function useDataset(agencyId, datasetKey, compareData = false) {
       try {
         const { data } = await axios.get(getEndpoint(agencyId) + search);
         dispatch({
-          type: compareData ? COMPARE_DATASET_FETCH_SUCCESS : DATASET_FETCH_SUCCESS,
+          type: DATASET_FETCH_SUCCESS,
           dataset: datasetKey,
           payload: data,
         });

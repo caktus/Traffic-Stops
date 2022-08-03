@@ -45,9 +45,14 @@ function App() {
               <Header />
               <Switch>
                 <Route path={`${AGENCY_LIST_SLUG}/:agencyId`}>
-                  <ChartStateProvider reducer={chartReducer} initialState={initialChartState}>
-                    <AgencyData />
-                  </ChartStateProvider>
+                  <div style={{ display: 'flex', overflow: 'auto' }}>
+                    <ChartStateProvider reducer={chartReducer} initialState={initialChartState}>
+                      <AgencyData />
+                    </ChartStateProvider>
+                    <ChartStateProvider reducer={chartReducer} initialState={initialChartState}>
+                      <AgencyData agencyId={71} sidebarClosed />
+                    </ChartStateProvider>
+                  </div>
                 </Route>
                 <Route path={AGENCY_LIST_SLUG}>
                   <AgencyList />

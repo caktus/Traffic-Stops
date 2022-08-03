@@ -4,7 +4,7 @@ import * as S from '../ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
 
 // Router
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 // Data
 import useDataset, { LIKELIHOOD_OF_SEARCH } from '../../../Hooks/useDataset';
@@ -33,8 +33,8 @@ import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker
 import GroupedBar from '../ChartPrimitives/GroupedBar';
 import { VictoryLabel } from 'victory';
 
-function SearchRate() {
-  const { agencyId } = useParams();
+function SearchRate(props) {
+  const { agencyId } = props;
   const theme = useTheme();
   const history = useHistory();
   const officerId = useOfficerId();

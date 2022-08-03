@@ -3,9 +3,6 @@ import UseOfForceStyled from './UseOfForce.styled';
 import * as S from '../ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
 
-// Router
-import { useParams } from 'react-router-dom';
-
 // Util
 import {
   YEARS_DEFAULT,
@@ -33,8 +30,8 @@ import useOfficerId from '../../../Hooks/useOfficerId';
 import GroupedBar from '../ChartPrimitives/GroupedBar';
 import Pie from '../ChartPrimitives/Pie';
 
-function UseOfForce() {
-  const { agencyId } = useParams();
+function UseOfForce(props) {
+  const { agencyId } = props;
   const officerId = useOfficerId();
   const theme = useTheme();
 

@@ -16,7 +16,10 @@ import Sidebar from '../Sidebar/Sidebar';
 import ChartRoutes from '../Charts/ChartRoutes';
 
 function AgencyData(props) {
-  const { agencyId } = useParams();
+  let { agencyId } = useParams();
+  if (props.agencyId) {
+    agencyId = props.agencyId;
+  }
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [agencyHeaderOpen, setAgencyHeaderOpen] = useState(false);
@@ -26,7 +29,7 @@ function AgencyData(props) {
   const [chartState] = useDataset(agencyId, AGENCY_DETAILS);
 
   useEffect(() => {
-    if (chartState.data[AGENCY_DETAILS]) setSidebarOpen(true);
+    if (chartState.data[AGENCY_DETAILS] && !props?.agencyId) setSidebarOpen(true);
   }, [chartState.data[AGENCY_DETAILS]]);
 
   useEffect(() => {
@@ -59,7 +62,6 @@ function AgencyData(props) {
           )}
         </AnimatePresence>
         {chartsOpen && <ChartRoutes agencyId={agencyId} />}
-        {showCompareDepartments && <ChartRoutes agencyId={79} compareData />}
       </S.ContentWrapper>
     </S.AgencyData>
   );

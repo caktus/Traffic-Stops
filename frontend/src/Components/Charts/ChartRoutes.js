@@ -28,42 +28,38 @@ function Charts(props) {
       <FJRoute
         exact
         path={`${match.path}${slugs.OVERVIEW_SLUG}`}
-        importComponent={
-          <Overview agencyId={props?.agencyId} compareData={props?.compareData || false} />
-        }
+        importComponent={<Overview agencyId={props.agencyId} />}
         renderLoading={() => <DataLoading />}
         renderError={() => <ChartError chartName="Overview" />}
       />
       <FJRoute
         exact
         path={`${match.path}${slugs.TRAFFIC_STOPS_SLUG}`}
-        importComponent={
-          <TrafficStops agencyId={props?.agencyId} compareData={props?.compareData || false} />
-        }
+        importComponent={<TrafficStops agencyId={props.agencyId} />}
         renderLoading={() => <DataLoading />}
         renderError={() => <ChartError chartName="Traffic Stops" />}
       />
       <FJRoute
         path={`${match.path}${slugs.SEARCHES_SLUG}`}
-        importComponent={<Searches />}
+        importComponent={<Searches agencyId={props.agencyId} />}
         renderLoading={() => <DataLoading />}
         renderError={() => <ChartError chartName="Searches" />}
       />
       <FJRoute
         path={`${match.path}${slugs.SEARCH_RATE_SLUG}`}
-        importComponent={<SearchRate />}
+        importComponent={<SearchRate agencyId={props.agencyId} />}
         renderLoading={() => <DataLoading />}
         renderError={() => <ChartError chartName="Search Rate" />}
       />
       <FJRoute
         path={`${match.path}${slugs.CONTRABAND_SLUG}`}
-        importComponent={<Contraband />}
+        importComponent={<Contraband agencyId={props.agencyId} />}
         renderLoading={() => <DataLoading />}
         renderError={() => <ChartError chartName="Contraband" />}
       />
       <FJRoute
         path={`${match.path}${slugs.USE_OF_FORCE_SLUG}`}
-        importComponent={<UseOfForce />}
+        importComponent={<UseOfForce agencyId={props.agencyId} />}
         renderLoading={() => <DataLoading />}
         renderError={() => <ChartError chartName="Use of Force" />}
       />

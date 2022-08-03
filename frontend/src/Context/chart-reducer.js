@@ -1,7 +1,6 @@
 export const DATASET_FETCH_START = 'DATASET_FETCH_START';
 export const DATASET_FETCH_SUCCESS = 'DATASET_FETCH_SUCCESS';
 export const DATASET_FETCH_FAILURE = 'DATASET_FETCH_FAILURE';
-export const COMPARE_DATASET_FETCH_SUCCESS = 'COMPARE_DATASET_FETCH_SUCCESS';
 
 export const initialState = {
   loading: {},
@@ -32,14 +31,6 @@ const chartStateReducer = (state, action) => {
         ...state,
         loading: { ...state.loading, [action.dataset]: false },
         errors: { ...state.data, [action.dataset]: action.payload },
-      };
-    }
-    case COMPARE_DATASET_FETCH_SUCCESS: {
-      return {
-        ...state,
-        loading: { ...state.loading, [action.dataset]: false },
-        compareData: { ...state.data, [action.dataset]: action.payload },
-        errors: { ...state.errors, [action.dataset]: false },
       };
     }
 
