@@ -33,6 +33,10 @@ import Header from './Header/Header';
 import FindAStopResults from './FindAStopResults/FindAStopResults';
 
 function App() {
+  const [showCompare, setShowCompare] = React.useState(false);
+
+  const toggleShowCompare = () => setShowCompare(!showCompare);
+
   return (
     <ThemeProvider theme={defaultTheme}>
       <AppMeta />
@@ -47,11 +51,18 @@ function App() {
                 <Route path={`${AGENCY_LIST_SLUG}/:agencyId`}>
                   <div style={{ display: 'flex', overflow: 'auto' }}>
                     <ChartStateProvider reducer={chartReducer} initialState={initialChartState}>
-                      <AgencyData />
+                      <AgencyData showCompare={showCompare} toggleShowCompare={toggleShowCompare} />
                     </ChartStateProvider>
-                    <ChartStateProvider reducer={chartReducer} initialState={initialChartState}>
-                      <AgencyData agencyId={71} sidebarClosed />
-                    </ChartStateProvider>
+                    {showCompare && (
+                      <ChartStateProvider reducer={chartReducer} initialState={initialChartState}>
+                        <AgencyData
+                          agencyId={71}
+                          sidebarClosed
+                          showCompare={showCompare}
+                          toggleShowCompare={toggleShowCompare}
+                        />
+                      </ChartStateProvider>
+                    )}
                   </div>
                 </Route>
                 <Route path={AGENCY_LIST_SLUG}>

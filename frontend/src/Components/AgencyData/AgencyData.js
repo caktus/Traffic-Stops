@@ -24,7 +24,6 @@ function AgencyData(props) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [agencyHeaderOpen, setAgencyHeaderOpen] = useState(false);
   const [chartsOpen, setChartsOpen] = useState(false);
-  const [showCompareDepartments, setShowCompareDepartments] = useState(false);
 
   const [chartState] = useDataset(agencyId, AGENCY_DETAILS);
 
@@ -45,7 +44,9 @@ function AgencyData(props) {
       <AgencyHeader
         agencyHeaderOpen={agencyHeaderOpen}
         agencyDetails={chartState.data[AGENCY_DETAILS]}
-        compareDepartmentHandler={() => setShowCompareDepartments(!showCompareDepartments)}
+        compareDepartmentHandler={props.toggleShowCompare}
+        showCompareDepartments={props.showCompare}
+        showCloseButton={!!props?.agencyId}
       />
       <S.ContentWrapper>
         <AnimatePresence>
