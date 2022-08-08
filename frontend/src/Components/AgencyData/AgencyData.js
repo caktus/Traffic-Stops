@@ -48,7 +48,7 @@ function AgencyData(props) {
         showCompareDepartments={props.showCompare}
         showCloseButton={!!props?.agencyId}
       />
-      <S.ContentWrapper>
+      <S.ContentWrapper showCompare={props.showCompare}>
         <AnimatePresence>
           {sidebarOpen && (
             <motion.div

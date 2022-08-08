@@ -57,7 +57,7 @@ function AgencyHeader({
           transition={{ ease: 'easeIn' }}
         >
           <S.AgencyHeader>
-            <S.SubHeaderNavRow>{!showCompareDepartments && <BackButton />}</S.SubHeaderNavRow>
+            <S.SubHeaderNavRow>{!showCloseButton && <BackButton />}</S.SubHeaderNavRow>
             <S.SubHeaderContentRow>
               <S.EntityDetails>
                 {officerId ? (
@@ -118,39 +118,39 @@ function AgencyHeader({
                   )}
                 </S.CensusRow>
               </S.CensusDemographics>
-              {!showCloseButton && (
-                <Button
-                  variant="positive"
-                  border={`2px solid ${theme.colors.primary}`}
-                  {...ChartHeaderStyles.ButtonInlines}
-                  onClick={() => toggleShowCompare()}
-                >
-                  <ChartHeaderStyles.Icon
-                    icon={showCompareDepartments ? ICONS.checkboxFilled : ICONS.checkboxEmpty}
-                    height={25}
-                    width={25}
-                    fill={theme.colors.white}
-                  />
-                  Compare Departments
-                </Button>
-              )}
-              {showCloseButton && (
-                <Button
-                  variant="positive"
-                  border={`2px solid ${theme.colors.primary}`}
-                  {...ChartHeaderStyles.ButtonInlines}
-                  onClick={() => toggleShowCompare()}
-                >
-                  <ChartHeaderStyles.Icon
-                    icon={ICONS.close}
-                    height={25}
-                    width={25}
-                    fill={theme.colors.white}
-                  />
-                  Close
-                </Button>
-              )}
             </S.SubHeaderContentRow>
+            {!showCloseButton && (
+              <Button
+                variant="positive"
+                border={`2px solid ${theme.colors.primary}`}
+                {...ChartHeaderStyles.ButtonInlines}
+                onClick={() => toggleShowCompare()}
+              >
+                <ChartHeaderStyles.Icon
+                  icon={showCompareDepartments ? ICONS.checkboxFilled : ICONS.checkboxEmpty}
+                  height={25}
+                  width={25}
+                  fill={theme.colors.white}
+                />
+                Compare Departments
+              </Button>
+            )}
+            {showCloseButton && (
+              <Button
+                variant="positive"
+                border={`2px solid ${theme.colors.primary}`}
+                {...ChartHeaderStyles.ButtonInlines}
+                onClick={() => toggleShowCompare()}
+              >
+                <ChartHeaderStyles.Icon
+                  icon={ICONS.close}
+                  height={25}
+                  width={25}
+                  fill={theme.colors.white}
+                />
+                Close
+              </Button>
+            )}
           </S.AgencyHeader>
         </motion.div>
       )}
