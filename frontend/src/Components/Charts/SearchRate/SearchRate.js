@@ -151,7 +151,7 @@ function SearchRate(props) {
             incidents. Use “View Data” to see the numbers underlying the calculations.
           </P>
         </S.ChartDescription>
-        <S.ChartSubsection>
+        <S.ChartSubsection showCompare={props.showCompare}>
           <S.LineWrapper>
             {noBaseSearches ? (
               <S.NoBaseSearches>

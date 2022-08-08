@@ -235,7 +235,7 @@ function TrafficStops(props) {
           </P>
           <P>{getChartDetailedBreakdown()}</P>
         </S.ChartDescription>
-        <S.ChartSubsection>
+        <S.ChartSubsection showCompare={props.showCompare}>
           <S.LineSection>
             <S.LineWrapper>
               <StackedBar
@@ -273,7 +273,7 @@ function TrafficStops(props) {
       <S.ChartSection>
         <ChartHeader chartTitle="Traffic Stops By Count" handleViewData={handleViewCountData} />
         <P>Shows the number of traffics stops broken down by purpose and race / ethnicity.</P>
-        <S.ChartSubsection>
+        <S.ChartSubsection showCompare={props.showCompare}>
           <S.LineWrapper>
             <Line
               data={byCountLineData}

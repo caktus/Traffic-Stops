@@ -138,7 +138,7 @@ function UseOfForce(props) {
             against
           </P>
         </S.ChartDescription>
-        <S.ChartSubsection>
+        <S.ChartSubsection showCompare={props.showCompare}>
           <S.LineSection>
             <S.LineWrapper>
               <GroupedBar

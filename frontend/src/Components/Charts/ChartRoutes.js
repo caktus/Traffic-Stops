@@ -28,38 +28,38 @@ function Charts(props) {
       <FJRoute
         exact
         path={`${match.path}${slugs.OVERVIEW_SLUG}`}
-        importComponent={<Overview agencyId={props.agencyId} />}
+        importComponent={<Overview agencyId={props.agencyId} showCompare={props.showCompare} />}
         renderLoading={() => <DataLoading />}
         renderError={() => <ChartError chartName="Overview" />}
       />
       <FJRoute
         exact
         path={`${match.path}${slugs.TRAFFIC_STOPS_SLUG}`}
-        importComponent={<TrafficStops agencyId={props.agencyId} />}
+        importComponent={<TrafficStops agencyId={props.agencyId} showCompare={props.showCompare} />}
         renderLoading={() => <DataLoading />}
         renderError={() => <ChartError chartName="Traffic Stops" />}
       />
       <FJRoute
         path={`${match.path}${slugs.SEARCHES_SLUG}`}
-        importComponent={<Searches agencyId={props.agencyId} />}
+        importComponent={<Searches agencyId={props.agencyId} showCompare={props.showCompare} />}
         renderLoading={() => <DataLoading />}
         renderError={() => <ChartError chartName="Searches" />}
       />
       <FJRoute
         path={`${match.path}${slugs.SEARCH_RATE_SLUG}`}
-        importComponent={<SearchRate agencyId={props.agencyId} />}
+        importComponent={<SearchRate agencyId={props.agencyId} showCompare={props.showCompare} />}
         renderLoading={() => <DataLoading />}
         renderError={() => <ChartError chartName="Search Rate" />}
       />
       <FJRoute
         path={`${match.path}${slugs.CONTRABAND_SLUG}`}
-        importComponent={<Contraband agencyId={props.agencyId} />}
+        importComponent={<Contraband agencyId={props.agencyId} showCompare={props.showCompare} />}
         renderLoading={() => <DataLoading />}
         renderError={() => <ChartError chartName="Contraband" />}
       />
       <FJRoute
         path={`${match.path}${slugs.USE_OF_FORCE_SLUG}`}
-        importComponent={<UseOfForce agencyId={props.agencyId} />}
+        importComponent={<UseOfForce agencyId={props.agencyId} showCompare={props.showCompare} />}
         renderLoading={() => <DataLoading />}
         renderError={() => <ChartError chartName="Use of Force" />}
       />

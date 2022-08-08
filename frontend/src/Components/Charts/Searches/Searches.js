@@ -176,7 +176,7 @@ function Searches(props) {
         <S.ChartDescription>
           <P>Shows the percent of stops that led to searches, broken down by race/ethnicity.</P>
         </S.ChartDescription>
-        <S.ChartSubsection>
+        <S.ChartSubsection showCompare={props.showCompare}>
           <S.LineWrapper>
             <Line
               data={byPercentageLineData}
@@ -208,7 +208,7 @@ function Searches(props) {
           Shows the number of searches performed by the {subjectObserving()}, broken down by search
           type and race / ethnicity.
         </P>
-        <S.ChartSubsection>
+        <S.ChartSubsection showCompare={props.showCompare}>
           <S.LineWrapper>
             <Line
               data={byCountLineData}

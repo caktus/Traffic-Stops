@@ -90,7 +90,7 @@ function SearchRate(props) {
             Shows what percentage of searches discovered contraband for a given race / ethnic group
           </P>
         </S.ChartDescription>
-        <S.ChartSubsection>
+        <S.ChartSubsection showCompare={props.showCompare}>
           <S.LineSection>
             <S.LineWrapper>
               <Bar
