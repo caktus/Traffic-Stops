@@ -8,6 +8,7 @@ export const SeeAllDepartments = styled.div`
   border-top-color: ${(props) => props.theme.colors.greySemi};
   display: flex;
   align-items: center;
+  margin-bottom: 2rem;
 `;
 
 export const SeeAllText = styled.p`
