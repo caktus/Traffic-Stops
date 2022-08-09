@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useTheme } from 'styled-components';
 import * as S from './ChartHeader.styled';
 
@@ -16,22 +16,11 @@ import ShareList from './ShareList';
 function ChartHeader({ chartTitle, handleViewData, shareProps }) {
   const theme = useTheme();
   const [shareOpen, setShareOpen] = useState(false);
-  const shareListRef = React.useRef();
   const officerId = useOfficerId();
 
   const handleShare = () => {
     setShareOpen(!shareOpen);
   };
-
-  useEffect(() => {
-    function _closeOnBlur(e) {
-      if (shareOpen && shareListRef?.current && shareListRef?.current !== e.target) {
-        setShareOpen(false);
-      }
-    }
-    document.addEventListener('click', _closeOnBlur);
-    return () => document.removeEventListener('click', _closeOnBlur);
-  }, [shareListRef.current, shareOpen]);
 
   return (
     <S.ChartHeader>
@@ -53,7 +42,7 @@ function ChartHeader({ chartTitle, handleViewData, shareProps }) {
           </Button>
         )}
         {shareOpen ? (
-          <ShareList ref={shareListRef} {...shareProps} />
+          <ShareList {...shareProps} onPressHandler={handleShare} />
         ) : (
           <Button
             variant="positive"

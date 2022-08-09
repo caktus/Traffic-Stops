@@ -133,6 +133,13 @@ function Overview() {
     return 'law enforcement officers';
   };
 
+  const buildUrl = (slug) => {
+    let url = `${match.url}${slug}`;
+    url = url.replace('//', '/');
+    if (officerId) url += `/?officer=${officerId}`;
+    return history.push(url);
+  };
+
   return (
     <OverviewStyled>
       {renderMetaTags()}
@@ -166,7 +173,7 @@ function Overview() {
           <S.Note>
             Shows the race/ethnic composition of drivers stopped by this {subjectObserving()}
           </S.Note>
-          <S.Link onClick={() => history.push(`${match.url}${slugs.TRAFFIC_STOPS_SLUG}`)}>
+          <S.Link onClick={() => buildUrl(slugs.TRAFFIC_STOPS_SLUG)}>
             View traffic stops over time
           </S.Link>
         </S.PieContainer>
@@ -181,9 +188,7 @@ function Overview() {
           <S.Note>
             Shows the race/ethnic composition of drivers searched by this {subjectObserving()}
           </S.Note>
-          <S.Link onClick={() => history.push(`${match.url}${slugs.SEARCHES_SLUG}`)}>
-            View searches over time
-          </S.Link>
+          <S.Link onClick={() => buildUrl(slugs.SEARCHES_SLUG)}>View searches over time</S.Link>
         </S.PieContainer>
         <S.PieContainer>
           <S.ChartTitle>Use of Force</S.ChartTitle>
@@ -195,7 +200,7 @@ function Overview() {
             Shows the race/ethnic composition of drivers whom {useOfForcePieChartCopy()} reported
             using force against
           </S.Note>
-          <S.Link onClick={() => history.push(`${match.url}${slugs.USE_OF_FORCE_SLUG}`)}>
+          <S.Link onClick={() => buildUrl(slugs.USE_OF_FORCE_SLUG)}>
             View use-of-force over time
           </S.Link>
         </S.PieContainer>

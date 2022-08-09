@@ -8,6 +8,7 @@ export const BackButton = styled.button`
   display: flex;
   flex-direction: row;
   align-items: center;
+  cursor: pointer;
 `;
 
 export const Icon = styled(FJIcon)``;
