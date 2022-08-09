@@ -376,4 +376,8 @@ const BY_REASON_TABLE_COLUMNS = [
     Header: 'Other*',
     accessor: 'other',
   },
+  {
+    Header: 'Total',
+    accessor: (row) => calculateYearTotal(row),
+  },
 ];
