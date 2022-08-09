@@ -181,7 +181,7 @@ class DriverStopsViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = (
         Person.objects.filter(type="D")
         .select_related("stop__agency")
-        .order_by("stop__date")
+        .order_by("-stop__date")
         .only(
             "stop__stop_id",
             "stop__date",

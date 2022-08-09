@@ -38,4 +38,5 @@ export const PageNumber = styled.button`
   font-weight: bold;
   font-size: 16px;
   border: none;
+  cursor: pointer;
 `;
