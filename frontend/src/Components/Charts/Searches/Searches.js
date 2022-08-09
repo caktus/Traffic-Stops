@@ -3,9 +3,6 @@ import SearchesStyled from './Searches.styled';
 import * as S from '../ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
 
-// Router
-import { useParams } from 'react-router-dom';
-
 // Util
 import {
   AVERAGE,
@@ -35,8 +32,8 @@ import ChartHeader from '../ChartSections/ChartHeader';
 import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
 import useOfficerId from '../../../Hooks/useOfficerId';
 
-function Searches() {
-  const { agencyId } = useParams();
+function Searches(props) {
+  const { agencyId } = props;
   const theme = useTheme();
 
   const officerId = useOfficerId();
@@ -180,7 +177,7 @@ function Searches() {
         <S.ChartDescription>
           <P>Shows the percent of stops that led to searches, broken down by race/ethnicity.</P>
         </S.ChartDescription>
-        <S.ChartSubsection>
+        <S.ChartSubsection showCompare={props.showCompare}>
           <S.LineWrapper>
             <Line
               data={byPercentageLineData}
@@ -212,7 +209,7 @@ function Searches() {
           Shows the number of searches performed by the {subjectObserving()}, broken down by search
           type and race / ethnicity.
         </P>
-        <S.ChartSubsection>
+        <S.ChartSubsection showCompare={props.showCompare}>
           <S.LineWrapper>
             <Line
               data={byCountLineData}

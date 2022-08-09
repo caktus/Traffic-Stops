@@ -6,10 +6,9 @@ import { phoneOnly, smallerThanTabletLandscape } from '../../styles/breakpoints'
 export const AgencyData = styled(MainBase)``;
 
 export const ContentWrapper = styled.div`
-  flex: 1;
   display: flex;
   flex-direction: row;
-  overflow: hidden;
+  width: ${(props) => (props.showCompare ? 'fit-content' : '100%')};
 
   @media (${smallerThanTabletLandscape}) {
     flex-direction: column;

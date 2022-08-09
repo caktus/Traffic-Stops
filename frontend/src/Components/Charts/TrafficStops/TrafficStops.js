@@ -4,7 +4,7 @@ import * as S from '../ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
 
 // Router
-import { useParams } from 'react-router-dom';
+// import { useParams } from 'react-router-dom';
 
 // Util
 import {
@@ -40,8 +40,9 @@ import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker
 import toTitleCase from '../../../util/toTitleCase';
 import useOfficerId from '../../../Hooks/useOfficerId';
 
-function TrafficStops() {
-  const { agencyId } = useParams();
+function TrafficStops(props) {
+  const { agencyId } = props;
+
   const theme = useTheme();
   const officerId = useOfficerId();
 
@@ -234,7 +235,7 @@ function TrafficStops() {
           </P>
           <P>{getChartDetailedBreakdown()}</P>
         </S.ChartDescription>
-        <S.ChartSubsection>
+        <S.ChartSubsection showCompare={props.showCompare}>
           <S.LineSection>
             <S.LineWrapper>
               <StackedBar
@@ -272,7 +273,7 @@ function TrafficStops() {
       <S.ChartSection>
         <ChartHeader chartTitle="Traffic Stops By Count" handleViewData={handleViewCountData} />
         <P>Shows the number of traffics stops broken down by purpose and race / ethnicity.</P>
-        <S.ChartSubsection>
+        <S.ChartSubsection showCompare={props.showCompare}>
           <S.LineWrapper>
             <Line
               data={byCountLineData}

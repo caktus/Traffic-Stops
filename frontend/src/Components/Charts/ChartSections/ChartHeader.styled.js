@@ -32,6 +32,7 @@ export const ButtonsWrapper = styled.div`
   flex-direction: row;
   justify-content: space-between;
   width: 400px;
+  gap: 10px;
 
   @media (${phoneOnly}) {
     flex-direction: column;

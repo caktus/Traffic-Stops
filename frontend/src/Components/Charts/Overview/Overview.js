@@ -4,7 +4,7 @@ import OverviewStyled from './Overview.styled';
 import { useTheme } from 'styled-components';
 
 // Router
-import { useHistory, useParams, useRouteMatch } from 'react-router-dom';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 
 // Constants
 import toTitleCase from '../../../util/toTitleCase';
@@ -34,8 +34,8 @@ import Legend from '../ChartSections/Legend/Legend';
 import useOfficerId from '../../../Hooks/useOfficerId';
 import Pie from '../ChartPrimitives/Pie';
 
-function Overview() {
-  const { agencyId } = useParams();
+function Overview(props) {
+  const { agencyId } = props;
   const theme = useTheme();
   const history = useHistory();
   const match = useRouteMatch();
