@@ -29,6 +29,7 @@ import { ICONS } from '../../img/icons/Icon';
 import FjButton from '../Elements/Button';
 import CardSkeleton from '../Elements/Skeletons/CardSkeleton';
 import DepartmentSearch from '../Elements/DepartmentSearch';
+import * as ChartHeaderStyles from '../Charts/ChartSections/ChartHeader.styled';
 
 function HomePage() {
   const [{ data, loading, errors }, dispatch] = React.useReducer(fetchReducer, initialState);
@@ -150,6 +151,22 @@ function HomePage() {
                 width={25}
               />
             </S.ViewAllDepts>
+            <S.ButtonWrapper>
+              <FjButton
+                variant="positive"
+                border={`2px solid ${theme.colors.primary}`}
+                {...ChartHeaderStyles.ButtonInlines}
+                onClick={() => history.push(`${AGENCY_LIST_SLUG}/-1`)}
+              >
+                <ChartHeaderStyles.Icon
+                  icon={ICONS.info}
+                  height={25}
+                  width={25}
+                  fill={theme.colors.white}
+                />
+                View all statewide data
+              </FjButton>
+            </S.ButtonWrapper>
           </S.DeptCTA>
           <S.StopCTA>
             <S.SubHeading>Find a Stop</S.SubHeading>
