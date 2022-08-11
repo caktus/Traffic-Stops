@@ -158,7 +158,7 @@ function UseOfForce(props) {
                 keys={ethnicGroupKeys}
                 onKeySelect={handleGroupKeySelected}
                 showNonHispanic
-                row
+                row={!props.showCompare}
               />
             </S.LegendBelow>
           </S.LineSection>
