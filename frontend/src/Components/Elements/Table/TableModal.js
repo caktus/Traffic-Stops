@@ -23,6 +23,7 @@ import {
   STOP_TYPES,
   SEARCH_TYPES,
   reduceEthnicityByYears,
+  calculateYearTotal,
 } from '../../Charts/chartUtils';
 
 // Hooks
@@ -105,6 +106,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
               }
             }
           }
+          yearData['total'] = calculateYearTotal(yearData);
           return yearData;
         });
         if (purpose) {
@@ -117,6 +119,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       year: '',
       purpose: 'Totals',
       ...reduceFullDatasetOnlyTotals(mergedData, RACES),
+      total: calculateYearTotal(reduceFullDatasetOnlyTotals(mergedData, RACES)),
     };
     const sortedData = mergedData.sort((a, b) =>
       // Sort data descending by year
@@ -147,6 +150,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
               }
             }
           }
+          yearData['total'] = calculateYearTotal(yearData);
           return yearData;
         });
         if (purpose) {
@@ -159,6 +163,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       year: '',
       purpose: 'Totals',
       ...reduceFullDatasetOnlyTotals(mergedData, RACES),
+      total: calculateYearTotal(reduceFullDatasetOnlyTotals(mergedData, RACES)),
     };
     const sortedData = mergedData.sort((a, b) =>
       // Sort data descending by year
@@ -183,6 +188,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
         else groupsSearches = yearsSearches[key];
         comparedData[key] = groupsSearches;
       });
+      comparedData['total'] = calculateYearTotal(comparedData);
       return comparedData;
     });
     if (purpose) {
@@ -191,6 +197,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     const raceTotals = {
       year: 'Totals',
       ...reduceFullDatasetOnlyTotals(mergedData, RACES),
+      total: calculateYearTotal(reduceFullDatasetOnlyTotals(mergedData, RACES)),
     };
     const sortedData = mergedData.sort((a, b) =>
       // Sort data descending by year
@@ -209,11 +216,13 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       RACES.forEach((r) => {
         comparedData[r] = hits[r] || 0;
       });
+      comparedData['total'] = calculateYearTotal(comparedData);
       return comparedData;
     });
     const raceTotals = {
       year: 'Totals',
       ...reduceFullDatasetOnlyTotals(mappedData, RACES),
+      total: calculateYearTotal(reduceFullDatasetOnlyTotals(mappedData, RACES)),
     };
     const sortedData = mappedData.sort((a, b) =>
       // Sort data descending by year
@@ -225,6 +234,8 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
 
   const mapSearchByType = (ds) => {
     const data = chartState.data[ds];
+    // eslint-disable-next-line no-param-reassign,no-return-assign
+    data.forEach((datum) => (datum['total'] = calculateYearTotal(datum)));
     let mappedData = [];
     if (consolidateYears && !purpose) {
       mappedData = reduceEthnicityByYears(data, chartState.yearRange);
@@ -237,6 +248,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       year: 'Totals',
       search_type: '',
       ...reduceFullDatasetOnlyTotals(mappedData, RACES),
+      total: calculateYearTotal(reduceFullDatasetOnlyTotals(mappedData, RACES)),
     };
     const sortedData = mappedData.sort((a, b) =>
       // Sort data descending by year
@@ -260,9 +272,12 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       data = mapSearchesByReason(ds);
     } else {
       const chartData = chartState.data[ds];
+      // eslint-disable-next-line no-param-reassign,no-return-assign
+      chartData.forEach((chartDatum) => (chartDatum['total'] = calculateYearTotal(chartDatum)));
       const raceTotals = {
         year: 'Totals',
         ...reduceFullDatasetOnlyTotals(chartData, RACES),
+        total: calculateYearTotal(reduceFullDatasetOnlyTotals(chartData, RACES)),
       };
       const sortedData = chartData.sort((a, b) =>
         // Sort data descending by year

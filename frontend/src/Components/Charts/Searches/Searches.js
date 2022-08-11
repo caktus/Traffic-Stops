@@ -6,7 +6,6 @@ import { useTheme } from 'styled-components';
 // Util
 import {
   AVERAGE,
-  calculateYearTotal,
   filterDataBySearchType,
   getSearchRateForYearByGroup,
   reduceStopReasonsByEthnicity,
@@ -279,7 +278,7 @@ const PERCENTAGE_COLUMNS = [
   },
   {
     Header: 'Total',
-    accessor: (row) => calculateYearTotal(row),
+    accessor: 'total',
   },
 ];
 
@@ -318,6 +317,6 @@ const COUNT_COLUMNS = [
   },
   {
     Header: 'Total',
-    accessor: (row) => calculateYearTotal(row),
+    accessor: 'total',
   },
 ];

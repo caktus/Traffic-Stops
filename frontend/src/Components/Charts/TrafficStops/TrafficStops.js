@@ -3,9 +3,6 @@ import TrafficStopsStyled from './TrafficStops.styled';
 import * as S from '../ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
 
-// Router
-// import { useParams } from 'react-router-dom';
-
 // Util
 import {
   reduceFullDataset,
@@ -340,7 +337,7 @@ const STOPS_TABLE_COLUMNS = [
   },
   {
     Header: 'Total',
-    accessor: (row) => calculateYearTotal(row),
+    accessor: 'total',
   },
 ];
 
@@ -379,6 +376,6 @@ const BY_REASON_TABLE_COLUMNS = [
   },
   {
     Header: 'Total',
-    accessor: (row) => calculateYearTotal(row),
+    accessor: 'total',
   },
 ];

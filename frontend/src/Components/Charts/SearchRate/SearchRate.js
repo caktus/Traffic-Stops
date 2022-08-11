@@ -22,7 +22,6 @@ import {
   getRatesAgainstBase,
   STOP_TYPES,
   calculateAveragePercentage,
-  calculateYearTotal,
 } from '../chartUtils';
 import { AGENCY_LIST_SLUG, SEARCHES_SLUG } from '../../../Routes/slugs';
 
@@ -249,6 +248,6 @@ const TABLE_COLUMNS = [
   },
   {
     Header: 'Total',
-    accessor: (row) => calculateYearTotal(row),
+    accessor: 'total',
   },
 ];
