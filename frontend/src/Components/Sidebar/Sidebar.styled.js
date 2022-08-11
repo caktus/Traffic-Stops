@@ -7,14 +7,14 @@ export const Sidebar = styled(motion.div)`
   flex-direction: column;
   background: ${(props) => props.theme.colors.greySemi};
 
-  width: 204px;
+  width: ${(props) => (props.showCompare ? '100%' : '204px')};
   height: 100%;
 
   overflow-x: hidden;
   overflow-y: scroll;
 
   margin-top: 2px;
-  padding: 2em 0 0 2em;
+  padding: ${(props) => (props.showCompare ? '1em' : '2em 0 0 2em;')};
 
   @media (${smallerThanTabletLandscape}) {
     width: 100%;
@@ -37,6 +37,7 @@ export const Heading = styled.p`
   font-family: ${(props) => props.theme.fonts.heading};
   font-size: 16px;
   margin-bottom: 1em;
+  ${(props) => (props.showCompare ? 'display: none;' : '')}
 
   @media (${smallerThanTabletLandscape}) {
     display: none;
@@ -46,7 +47,8 @@ export const Heading = styled.p`
 export const SidebarNav = styled.ul`
   flex: 1;
   display: flex;
-  flex-direction: column;
+  flex-direction: ${(props) => (props.showCompare ? 'row' : 'column')};
+  ${(props) => (props.showCompare ? 'justify-content: space-around;\n  align-items: center' : '')};
   @media (${smallerThanTabletLandscape}) {
     flex-direction: row;
     justify-content: space-around;

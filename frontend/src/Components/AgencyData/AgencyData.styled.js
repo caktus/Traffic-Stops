@@ -7,8 +7,8 @@ export const AgencyData = styled(MainBase)``;
 
 export const ContentWrapper = styled.div`
   display: flex;
-  flex-direction: row;
-  width: ${(props) => (props.showCompare ? 'fit-content' : '100%')};
+  flex-direction: ${(props) => (props.showCompare ? 'column' : 'row')};
+  width: 100%;
 
   @media (${smallerThanTabletLandscape}) {
     flex-direction: column;

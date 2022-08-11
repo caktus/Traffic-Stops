@@ -243,15 +243,15 @@ function TrafficStops(props) {
                 yAxisLabel={(val) => `${val}%`}
               />
             </S.LineWrapper>
-            <S.LegendBelow>
+            <S.LegendBeside>
               <Legend
                 heading="Show on graph:"
                 keys={percentageEthnicGroups}
                 onKeySelect={handlePercentageKeySelected}
                 showNonHispanic
-                row
+                row={!props.showCompare}
               />
-            </S.LegendBelow>
+            </S.LegendBeside>
           </S.LineSection>
           <S.PieSection>
             <S.PieWrapper>
