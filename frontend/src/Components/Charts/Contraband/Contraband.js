@@ -11,7 +11,6 @@ import {
   reduceYearsToTotal,
   calculatePercentage,
   getQuantityForYear,
-  calculateYearTotal,
 } from '../chartUtils';
 
 // Hooks
@@ -170,6 +169,6 @@ const TABLE_COLUMNS = [
   },
   {
     Header: 'Total',
-    accessor: (row) => calculateYearTotal(row),
+    accessor: 'total',
   },
 ];
