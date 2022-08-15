@@ -12,7 +12,7 @@ export const iconPositions = {
   RIGHT: 'right',
 };
 
-function _renderIcon(icon, { iconPosition, invertIcon, iconStyles }) {
+function _renderIcon(inputRef, icon, { iconPosition, invertIcon, iconStyles }) {
   const theme = useTheme();
   return (
     <Styled.IconContainer style={iconStyles} invertIcon={invertIcon} iconPosition={iconPosition}>
@@ -21,6 +21,7 @@ function _renderIcon(icon, { iconPosition, invertIcon, iconStyles }) {
         width="25px"
         height="25px"
         fill={invertIcon ? theme.colors.primary : theme.colors.white}
+        onClick={() => inputRef?.current?.focus()}
       />
     </Styled.IconContainer>
   );
@@ -40,6 +41,7 @@ function FJInput({
   helpText,
   ...props
 }) {
+  const inputRef = React.createRef();
   function _getPaddingProps(iconPos) {
     const paddingProps = {
       py: 2,
@@ -85,10 +87,16 @@ function FJInput({
       )}
       <Input
         type={type}
+        ref={inputRef}
         icon={
           icon
             ? (iconProps) =>
-                _renderIcon(icon, { ...iconProps, iconPosition, invertIcon, iconStyles })
+                _renderIcon(inputRef, icon, {
+                  ...iconProps,
+                  iconPosition,
+                  invertIcon,
+                  iconStyles,
+                })
             : null
         }
         errors={errors}
