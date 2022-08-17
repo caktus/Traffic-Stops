@@ -158,7 +158,7 @@ function UseOfForce(props) {
                 keys={ethnicGroupKeys}
                 onKeySelect={handleGroupKeySelected}
                 showNonHispanic
-                row
+                row={!props.showCompare}
               />
             </S.LegendBelow>
           </S.LineSection>
@@ -213,6 +213,6 @@ const TABLE_COLUMNS = [
   },
   {
     Header: 'Total',
-    accessor: (row) => calculateYearTotal(row),
+    accessor: 'total',
   },
 ];

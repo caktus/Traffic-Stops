@@ -58,7 +58,11 @@ function AgencyData(props) {
               exit={{ opacity: 0.35, x: '-100%', duration: 750 }}
               transition={{ ease: 'easeIn' }}
             >
-              <Sidebar open={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+              <Sidebar
+                open={sidebarOpen}
+                setSidebarOpen={setSidebarOpen}
+                showCompare={props.showCompare}
+              />
             </motion.div>
           )}
         </AnimatePresence>

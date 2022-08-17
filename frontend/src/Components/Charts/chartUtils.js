@@ -179,9 +179,7 @@ export const reduceStopReasonsByEthnicity = (data, yearsSet, ethnicGroup, search
 export const reduceEthnicityByYears = (data, yearsSet, ethnicGroups = RACES) => {
   const yearData = [];
   yearsSet.forEach((yr) => {
-    const yrData = {
-      purpose: '',
-    };
+    const yrData = {};
     yrData.year = yr;
     const yrSet = data.filter((d) => d.year === yr);
     ethnicGroups.forEach((e) => {
@@ -189,6 +187,7 @@ export const reduceEthnicityByYears = (data, yearsSet, ethnicGroups = RACES) => 
         [e]: acc[e] + curr[e],
       }))[e];
     });
+    yrData['total'] = calculateYearTotal(yrData);
     yearData.push(yrData);
   });
   return yearData;
