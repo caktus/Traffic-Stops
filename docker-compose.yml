@@ -21,7 +21,35 @@ services:
       - "63791:6379"
     volumes:
       - redisdata:/data
+  django:
+    environment:
+      DJANGO_SETTINGS_MODULE: traffic_stops.settings.dev
+      DATABASE_URL: postgres://postgres@db:5432/traffic_stops
+      DATABASE_URL_NC: postgres://postgres@db:5432/traffic_stops_nc
+      CACHE_HOST: redis://redis:6379/1
+      ENVIRONMENT: dev
+      DJANGO_SECRET_KEY: dummy
+      DOMAIN: localhost
+      SESSION_COOKIE_SECURE: "False"
+      DJANGO_SECURE_SSL_REDIRECT: "False"
+      AWS_PROFILE: trafficstops
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    command: ["sleep", "infinity"]
+    links:
+      - db:db
+      - redis:redis
+    ports:
+      - "8000:8000"
+      - "3000:3000"
+    volumes:
+      - ~/.aws:/root/.aws/
+      - node_modules:/code/node_modules
+      - .:/code
 
 volumes:
   pgdata:
   redisdata:
+  node_modules: {}

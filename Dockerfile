@@ -1,4 +1,4 @@
-FROM node:16.16-alpine3.16 as static_files
+FROM node:16-bullseye-slim as static_files
 
 WORKDIR /code
 ENV PATH /code/node_modules/.bin:$PATH
@@ -24,7 +24,6 @@ RUN set -ex \
     mime-support \
     postgresql-client \
     vim \
-    gdal-bin \
     " \
     && seq 1 8 | xargs -I{} mkdir -p /usr/share/man/man{} \
     && apt-get update && apt-get install -y --no-install-recommends $RUN_DEPS \
@@ -48,9 +47,10 @@ RUN set -ex \
     && apt-get update && apt-get install -y --no-install-recommends $BUILD_DEPS \
     && pip install -U -q pip-tools \
     && pip-sync requirements/base/base.txt requirements/deploy/deploy.txt \
-    \
     && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $BUILD_DEPS \
     && rm -rf /var/lib/apt/lists/*
+
+FROM base AS deploy
 
 # Copy your application code to the container (make sure you create a .dockerignore file if any large files or directories should be excluded)
 RUN mkdir /code/
@@ -67,7 +67,6 @@ EXPOSE 8000
 ENV DJANGO_SETTINGS_MODULE=traffic_stops.settings.deploy
 
 # Call collectstatic (customize the following line with the minimal environment variables needed for manage.py to run):
-RUN touch /code/.env
 RUN DATABASE_URL='' ENVIRONMENT='' DJANGO_SECRET_KEY='dummy' DOMAIN='' python manage.py collectstatic --noinput
 
 # Tell uWSGI where to find your wsgi file (change this):
@@ -90,3 +89,58 @@ ENTRYPOINT ["/code/docker-entrypoint.sh"]
 
 # Start uWSGI
 CMD ["newrelic-admin", "run-program", "uwsgi", "--single-interpreter", "--enable-threads", "--show-config"]
+
+FROM base AS dev
+
+SHELL ["/bin/bash", "-c"]
+
+# Install packages needed to develop your application (not build deps):
+#   nodejs -- for React SPA
+# We need to recreate the /usr/share/man/man{1..8} directories first because
+# they were clobbered by a parent image.
+ENV KUBE_LATEST_VERSION="v1.22.11"
+RUN --mount=type=cache,target=/var/cache/apt \
+    --mount=type=cache,target=/var/lib/apt \
+    --mount=type=cache,mode=0755,target=/root/.cache/pip \
+    set -ex \
+    && DEV_DEPS=" \
+    nodejs \
+    git-core \
+    " \
+    && seq 1 8 | xargs -I{} mkdir -p /usr/share/man/man{} \
+    && apt-get update \
+    && apt-get -y install wget curl gnupg2 lsb-release \
+    # Node
+    && sh -c 'echo "deb https://deb.nodesource.com/node_16.x $(lsb_release -cs) main" > /etc/apt/sources.list.d/nodesource.list' \
+    && wget --quiet -O- https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add - \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends $DEV_DEPS \
+    # kubectl
+    && export ARCH="$(uname -m)" && if [ ${ARCH} == "x86_64" ]; then export ARCH="amd64"; elif [ ${ARCH} == "aarch64" ]; then export ARCH="arm64"; fi \
+    && curl -L https://dl.k8s.io/release/${KUBE_LATEST_VERSION}/bin/linux/${ARCH}/kubectl -o /usr/local/bin/kubectl \
+    && chmod +x /usr/local/bin/kubectl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install build deps, then run `pip install`, then remove unneeded build deps all in a single step.
+# Correct the path to your production requirements file, if needed.
+RUN --mount=type=cache,target=/var/cache/apt \
+    --mount=type=cache,target=/var/lib/apt \
+    --mount=type=cache,mode=0755,target=/root/.cache/pip \
+    set -ex \
+    && BUILD_DEPS=" \
+    build-essential \
+    " \
+    && apt-get update && apt-get install -y --no-install-recommends $BUILD_DEPS \
+    && pip-sync requirements/base/base.txt requirements/dev/dev.txt requirements/test/test.txt \
+    && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $BUILD_DEPS \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy pre-built node_modules into dev image for React
+COPY --from=static_files /code/node_modules /code/node_modules
+
+# Copy your application code to the container (make sure you create a .dockerignore file if any large files or directories should be excluded)
+RUN mkdir -p /code/
+WORKDIR /code/
+ADD . /code/
+
+CMD ["python", "/code/manage.py", "runserver", "0.0.0.0:8000"]
