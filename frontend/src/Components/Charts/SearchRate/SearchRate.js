@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { SearchRateStyled } from './SearchRate.styled';
-import * as S from 'Components/Charts/ChartSections/ChartsCommon.styled';
+import SearchRateStyled from './SearchRate.styled';
+import * as S from '../ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
 
 // Router
-import { useParams, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 // Data
-import useDataset, { LIKELIHOOD_OF_SEARCH } from 'Hooks/useDataset';
+import useDataset, { LIKELIHOOD_OF_SEARCH } from '../../../Hooks/useDataset';
 
 // Hooks
-import useOfficerId from 'Hooks/useOfficerId';
-import useMetaTags from 'Hooks/useMetaTags';
-import useTableModal from 'Hooks/useTableModal';
+import useOfficerId from '../../../Hooks/useOfficerId';
+import useMetaTags from '../../../Hooks/useMetaTags';
+import useTableModal from '../../../Hooks/useTableModal';
 
 // Constants
 import {
@@ -20,21 +20,21 @@ import {
   YEARS_DEFAULT,
   getGroupValueBasedOnYear,
   getRatesAgainstBase,
-  STOP_TYPES, calculateAveragePercentage,
+  STOP_TYPES,
+  calculateAveragePercentage,
 } from '../chartUtils';
-import { AGENCY_LIST_SLUG, SEARCHES_SLUG } from 'Routes/slugs';
+import { AGENCY_LIST_SLUG, SEARCHES_SLUG } from '../../../Routes/slugs';
 
 // Children
-import { P } from 'styles/StyledComponents/Typography';
-import ChartHeader from 'Components/Charts/ChartSections/ChartHeader';
-import Legend from 'Components/Charts/ChartSections/Legend/Legend';
-import DataSubsetPicker from 'Components/Charts/ChartSections/DataSubsetPicker/DataSubsetPicker';
+import { P } from '../../../styles/StyledComponents/Typography';
+import ChartHeader from '../ChartSections/ChartHeader';
+import Legend from '../ChartSections/Legend/Legend';
+import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
 import GroupedBar from '../ChartPrimitives/GroupedBar';
 import { VictoryLabel } from 'victory';
 
-
-function SearchRate() {
-  let { agencyId } = useParams();
+function SearchRate(props) {
+  const { agencyId } = props;
   const theme = useTheme();
   const history = useHistory();
   const officerId = useOfficerId();
@@ -65,9 +65,9 @@ function SearchRate() {
       if (_entityHasNoBaseSearches(baseGroupTotalSearches)) {
         setNoBaseSearches(true);
         return;
-      } else {
-        setNoBaseSearches(false);
       }
+      setNoBaseSearches(false);
+
       const baseGroupTotalStops = getGroupValueBasedOnYear(data.stops, 'white', year, STOP_TYPES);
       let mappedData = ethnicGroupKeys
         .filter((g) => g.selected && g.value !== 'white')
@@ -107,9 +107,8 @@ function SearchRate() {
     }
   }, [chartState.data[LIKELIHOOD_OF_SEARCH], ethnicGroupKeys, year]);
 
-  const _entityHasNoBaseSearches = (baseGroupSearches) => {
-    return Object.values(baseGroupSearches).every((v) => v === 0);
-  };
+  const _entityHasNoBaseSearches = (baseGroupSearches) =>
+    Object.values(baseGroupSearches).every((v) => v === 0);
 
   /* INTERACTIONS */
   // Handle year dropdown state
@@ -132,9 +131,8 @@ function SearchRate() {
     openModal(LIKELIHOOD_OF_SEARCH, TABLE_COLUMNS);
   };
 
-  const getSearchesUrlForOfficer = () => {
-    return `${AGENCY_LIST_SLUG}/${agencyId}${SEARCHES_SLUG}/?officer=${officerId}`;
-  };
+  const getSearchesUrlForOfficer = () =>
+    `${AGENCY_LIST_SLUG}/${agencyId}${SEARCHES_SLUG}/?officer=${officerId}`;
 
   return (
     <SearchRateStyled>
@@ -153,7 +151,7 @@ function SearchRate() {
             incidents. Use “View Data” to see the numbers underlying the calculations.
           </P>
         </S.ChartDescription>
-        <S.ChartSubsection>
+        <S.ChartSubsection showCompare={props.showCompare}>
           <S.LineWrapper>
             {noBaseSearches ? (
               <S.NoBaseSearches>
@@ -247,5 +245,9 @@ const TABLE_COLUMNS = [
   {
     Header: 'Other*',
     accessor: 'other',
+  },
+  {
+    Header: 'Total',
+    accessor: 'total',
   },
 ];

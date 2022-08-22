@@ -4,7 +4,7 @@ import * as Styled from './AutoSuggest.styled';
 
 import { Select } from 'reaktus';
 
-import { HelpText } from 'Components/Elements/Inputs/Input.styled';
+import { HelpText } from './Input.styled';
 // import AutosuggestHighlightMatch from 'autosuggest-highlight/match';
 // import AutosuggestHighlightParse from 'autosuggest-highlight/parse';
 
@@ -100,7 +100,7 @@ function AutoSuggest({
 }
 
 AutoSuggest.propTypes = {
-  data: PropTypes.array.isRequired,
+  data: PropTypes.instanceOf(Array),
 };
 AutoSuggest.defaultProps = {
   data: [],

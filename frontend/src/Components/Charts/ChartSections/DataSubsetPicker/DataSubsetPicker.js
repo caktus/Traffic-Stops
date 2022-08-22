@@ -2,8 +2,8 @@ import React from 'react';
 import * as S from './DataSubsetPicker.styled';
 
 // Children
-import { Dropdown } from '../../../Elements/Dropdown/Dropdown';
-import { SIZES, COLORS, WEIGHTS } from 'styles/StyledComponents/Typography';
+import Dropdown from '../../../Elements/Dropdown/Dropdown';
+import { SIZES, COLORS, WEIGHTS } from '../../../../styles/StyledComponents/Typography';
 
 function DataSubsetPicker({ options, value, onChange, label, dropUp }) {
   return (

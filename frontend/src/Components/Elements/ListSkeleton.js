@@ -1,5 +1,5 @@
 import React from 'react';
-import { ListSkeletonStyled } from './ListSkeleton.styled';
+import ListSkeletonStyled from './ListSkeleton.styled';
 // Deps
 import ContentLoader from 'react-content-loader';
 

@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { TrafficStopsStyled } from './TrafficStops.styled';
-import * as S from 'Components/Charts/ChartSections/ChartsCommon.styled';
+import TrafficStopsStyled from './TrafficStops.styled';
+import * as S from '../ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
-
-// Router
-import { useParams } from 'react-router-dom';
 
 // Util
 import {
@@ -18,30 +15,31 @@ import {
   PURPOSE_DEFAULT,
   RACES,
   STOP_TYPES,
-} from 'Components/Charts/chartUtils';
+} from '../chartUtils';
 
 // State
-import useDataset, { STOPS_BY_REASON, STOPS } from 'Hooks/useDataset';
+import useDataset, { STOPS_BY_REASON, STOPS } from '../../../Hooks/useDataset';
 
 // Elements
-import { P } from 'styles/StyledComponents/Typography';
+import { P } from '../../../styles/StyledComponents/Typography';
 
 // Hooks
-import useMetaTags from 'Hooks/useMetaTags';
-import useTableModal from 'Hooks/useTableModal';
+import useMetaTags from '../../../Hooks/useMetaTags';
+import useTableModal from '../../../Hooks/useTableModal';
 
 // Children
-import Line from 'Components/Charts/ChartPrimitives/Line';
-import StackedBar from 'Components/Charts/ChartPrimitives/StackedBar';
-import Pie from 'Components/Charts/ChartPrimitives/Pie';
-import Legend from 'Components/Charts/ChartSections/Legend/Legend';
-import ChartHeader from 'Components/Charts/ChartSections/ChartHeader';
-import DataSubsetPicker from 'Components/Charts/ChartSections/DataSubsetPicker/DataSubsetPicker';
-import toTitleCase from 'util/toTitleCase';
-import useOfficerId from "../../../Hooks/useOfficerId";
+import Line from '../ChartPrimitives/Line';
+import StackedBar from '../ChartPrimitives/StackedBar';
+import Pie from '../ChartPrimitives/Pie';
+import Legend from '../ChartSections/Legend/Legend';
+import ChartHeader from '../ChartSections/ChartHeader';
+import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
+import toTitleCase from '../../../util/toTitleCase';
+import useOfficerId from '../../../Hooks/useOfficerId';
 
-function TrafficStops() {
-  let { agencyId } = useParams();
+function TrafficStops(props) {
+  const { agencyId } = props;
+
   const theme = useTheme();
   const officerId = useOfficerId();
 
@@ -204,15 +202,18 @@ function TrafficStops() {
     if (selectedGroups.length < percentageEthnicGroups.length) {
       return `Showing total for ${selectedGroups.join(', ')}.`;
     }
+    return '';
   };
 
   const subjectObserving = () => {
     if (officerId) {
-      return "officer";
-    } else if (agencyId) {
-      return "department";
+      return 'officer';
     }
-  }
+    if (agencyId) {
+      return 'department';
+    }
+    return '';
+  };
 
   return (
     <TrafficStopsStyled>
@@ -225,10 +226,13 @@ function TrafficStops() {
           handleViewData={handleViewPercentageData}
         />
         <S.ChartDescription>
-          <P>Shows the race/ethnic composition of drivers stopped by this {subjectObserving()} over time.</P>
+          <P>
+            Shows the race/ethnic composition of drivers stopped by this {subjectObserving()} over
+            time.
+          </P>
           <P>{getChartDetailedBreakdown()}</P>
         </S.ChartDescription>
-        <S.ChartSubsection>
+        <S.ChartSubsection showCompare={props.showCompare}>
           <S.LineSection>
             <S.LineWrapper>
               <StackedBar
@@ -236,18 +240,18 @@ function TrafficStops() {
                 data={byPercentageLineData}
                 tickValues={stopsChartState.yearSet}
                 loading={stopsChartState.loading[STOPS]}
-                yAxisLabel={val => `${val}%`}
+                yAxisLabel={(val) => `${val}%`}
               />
             </S.LineWrapper>
-            <S.LegendBelow>
+            <S.LegendBeside>
               <Legend
                 heading="Show on graph:"
                 keys={percentageEthnicGroups}
                 onKeySelect={handlePercentageKeySelected}
                 showNonHispanic
-                row
+                row={!props.showCompare}
               />
-            </S.LegendBelow>
+            </S.LegendBeside>
           </S.LineSection>
           <S.PieSection>
             <S.PieWrapper>
@@ -266,7 +270,7 @@ function TrafficStops() {
       <S.ChartSection>
         <ChartHeader chartTitle="Traffic Stops By Count" handleViewData={handleViewCountData} />
         <P>Shows the number of traffics stops broken down by purpose and race / ethnicity.</P>
-        <S.ChartSubsection>
+        <S.ChartSubsection showCompare={props.showCompare}>
           <S.LineWrapper>
             <Line
               data={byCountLineData}
@@ -333,7 +337,7 @@ const STOPS_TABLE_COLUMNS = [
   },
   {
     Header: 'Total',
-    accessor: (row) => calculateYearTotal(row),
+    accessor: 'total',
   },
 ];
 
@@ -369,5 +373,9 @@ const BY_REASON_TABLE_COLUMNS = [
   {
     Header: 'Other*',
     accessor: 'other',
+  },
+  {
+    Header: 'Total',
+    accessor: 'total',
   },
 ];

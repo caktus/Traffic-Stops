@@ -4,12 +4,11 @@ import React from 'react';
 import { AXIS_STYLE } from './chartConstants';
 
 // Deps
-import CopwatchChart, {CopwatchTooltip} from 'Components/Charts/ChartPrimitives/CopwatchChart';
-import {VictoryLine, VictoryAxis, VictoryTooltip} from 'victory';
-import ChartLoading from 'Components/Charts/ChartPrimitives/ChartLoading';
-import BarSkeleton from 'Components/Elements/Skeletons/BarSkeleton';
-import EmptyChartMessage from "../ChartSections/EmptyChartMessage";
-
+import { VictoryLine, VictoryAxis, VictoryTooltip } from 'victory';
+import ChartLoading from './ChartLoading';
+import BarSkeleton from '../../Elements/Skeletons/BarSkeleton';
+import EmptyChartMessage from '../ChartSections/EmptyChartMessage';
+import CopwatchChart from './CopwatchChart';
 
 function Line({
   data = [],
@@ -20,42 +19,43 @@ function Line({
   dTickFormat,
   dAxisProps = {},
   iAxisProps = {},
-  yAxisLabel
+  yAxisLabel,
 }) {
-  if (loading) return <ChartLoading skeleton={BarSkeleton} />
+  if (loading) return <ChartLoading skeleton={BarSkeleton} />;
 
   return (
-  <>
-    <EmptyChartMessage data={data} />
-    <CopwatchChart yAxisLabel={yAxisLabel}>
-      <VictoryAxis
-        dependentAxis
-        style={AXIS_STYLE}
-        tickFormat={dTickFormat}
-        tickValues={dTickValues}
-        {...dAxisProps}
-
-      />
-      <VictoryAxis
-        label="Year"
-        style={AXIS_STYLE}
-        tickFormat={iTickFormat}
-        tickValues={iTickValues}
-        {...iAxisProps}
-      />
-      {data.map((lineData) => (
-        <VictoryLine
-          key={lineData.id}
-          data={lineData.data}
-          style={{
-            data: { stroke: lineData.color },
-          }}
-          labels={({ datum }) => `${datum.x}, ${datum.displayName}, ${dAxisProps.tickFormat(datum.y)}`}
-          labelComponent={<VictoryTooltip style={{ fontSize: 10 }}/>}
+    <>
+      <EmptyChartMessage data={data} />
+      <CopwatchChart yAxisLabel={yAxisLabel}>
+        <VictoryAxis
+          dependentAxis
+          style={AXIS_STYLE}
+          tickFormat={dTickFormat}
+          tickValues={dTickValues}
+          {...dAxisProps}
         />
-      ))}
-    </CopwatchChart>
-  </>
+        <VictoryAxis
+          label="Year"
+          style={AXIS_STYLE}
+          tickFormat={iTickFormat}
+          tickValues={iTickValues}
+          {...iAxisProps}
+        />
+        {data.map((lineData) => (
+          <VictoryLine
+            key={lineData.id}
+            data={lineData.data}
+            style={{
+              data: { stroke: lineData.color },
+            }}
+            labels={({ datum }) =>
+              `${datum.x}, ${datum.displayName}, ${dAxisProps.tickFormat(datum.y)}`
+            }
+            labelComponent={<VictoryTooltip style={{ fontSize: 10 }} />}
+          />
+        ))}
+      </CopwatchChart>
+    </>
   );
 }
 

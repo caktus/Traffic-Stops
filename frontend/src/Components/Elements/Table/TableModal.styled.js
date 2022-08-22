@@ -1,7 +1,11 @@
 import styled from 'styled-components';
-import { phoneOnly, smallerThanDesktop, smallerThanTabletLandscape } from 'styles/breakpoints';
-import { P } from 'styles/StyledComponents/Typography';
-import FJIcon from 'img/icons/Icon';
+import {
+  phoneOnly,
+  smallerThanDesktop,
+  smallerThanTabletLandscape,
+} from '../../../styles/breakpoints';
+import { P } from '../../../styles/StyledComponents/Typography';
+import FJIcon from '../../../img/icons/Icon';
 
 export const TableModal = styled.div`
   z-index: 21;

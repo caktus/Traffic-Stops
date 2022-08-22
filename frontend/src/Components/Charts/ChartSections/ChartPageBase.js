@@ -1,8 +1,8 @@
 import React from 'react';
 import * as S from './ChartPageBase.styled';
+import Footer from '../../Footer/Footer';
 
 // Children
-import Footer from 'Components/Footer/Footer';
 
 function ChartPageBase({ children, ...props }) {
   return (

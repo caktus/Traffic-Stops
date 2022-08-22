@@ -1,7 +1,7 @@
 import styled from 'styled-components';
-import * as breakpoints from 'styles/breakpoints';
-import FullWidthPage from 'styles/StyledComponents/FullWidthPage';
-import { smallerThanTabletLandscape } from 'styles/breakpoints';
+import * as breakpoints from '../../styles/breakpoints';
+import FullWidthPage from '../../styles/StyledComponents/FullWidthPage';
+import { smallerThanTabletLandscape } from '../../styles/breakpoints';
 
 export const Page = styled(FullWidthPage)`
   padding: 2em 0;

@@ -2,11 +2,11 @@ import React from 'react';
 import styled from 'styled-components';
 
 // Elements
-import ChartLoading from 'Components/Charts/ChartPrimitives/ChartLoading'
-import PieSkeleton from 'Components/Elements/Skeletons/PieSkeleton';
+import PieSkeleton from '../../Elements/Skeletons/PieSkeleton';
 import { VictoryPie } from 'victory';
-import { P, WEIGHTS } from 'styles/StyledComponents/Typography';
+import { P, WEIGHTS } from '../../../styles/StyledComponents/Typography';
 import { CopwatchTooltip } from './CopwatchChart';
+import ChartLoading from './ChartLoading';
 
 const PIE_STYLES = {
   data: {
@@ -15,13 +15,8 @@ const PIE_STYLES = {
   parent: { touchAction: 'auto' },
 };
 
-const LABEL_SKIP_ANGLE = 0.4;
-
 function Pie({ data, loading }) {
-
-  const _dataIsZeros = (d) => {
-    return d.length === 0 || d.every((dt) => dt.y === 0);
-  };
+  const _dataIsZeros = (d) => d.length === 0 || d.every((dt) => dt.y === 0);
 
   if (loading) return <ChartLoading skeleton={PieSkeleton} />;
 
@@ -37,8 +32,8 @@ function Pie({ data, loading }) {
     <VictoryPie
       data={data}
       style={PIE_STYLES}
-      labelComponent={<CopwatchTooltip pie yAxisLabel={val => `${val}%`} />}
-      labels={() => " "}
+      labelComponent={<CopwatchTooltip pie yAxisLabel={(val) => `${val}%`} />}
+      labels={() => ' '}
       labelRadius={({ innerRadius }) => innerRadius + 80}
     />
   );

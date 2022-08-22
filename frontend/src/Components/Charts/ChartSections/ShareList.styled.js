@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { phoneOnly } from 'styles/breakpoints';
+import { phoneOnly } from '../../../styles/breakpoints';
 
 export const ShareList = styled.div`
   display: flex;

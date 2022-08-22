@@ -1,6 +1,6 @@
 import styled from 'styled-components';
-import { P } from 'styles/StyledComponents/Typography';
-import FJIcon from 'img/icons/Icon';
+import { P } from '../../styles/StyledComponents/Typography';
+import FJIcon from '../../img/icons/Icon';
 
 export const BackButton = styled.button`
   border: none;
@@ -8,6 +8,7 @@ export const BackButton = styled.button`
   display: flex;
   flex-direction: row;
   align-items: center;
+  cursor: pointer;
 `;
 
 export const Icon = styled(FJIcon)``;

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from 'styled-components';
 import * as S from './Dropdown.styled';
-import { ICONS } from 'img/icons/Icon';
+import { ICONS } from '../../../img/icons/Icon';
 
-export function Dropdown({ value, onChange, options, dropUp }) {
+export default function Dropdown({ value, onChange, options, dropUp }) {
   const theme = useTheme();
   const inputRef = React.useRef();
   const containerRef = React.useRef();
@@ -18,7 +18,7 @@ export function Dropdown({ value, onChange, options, dropUp }) {
   useEffect(() => {
     function _closeOnBlur(e) {
       if (e.target === containerRef.current || e.target === inputRef.current) return;
-      else setIsOpen(false);
+      setIsOpen(false);
     }
     document.addEventListener('click', _closeOnBlur, false);
     return () => document.removeEventListener('click', _closeOnBlur, false);

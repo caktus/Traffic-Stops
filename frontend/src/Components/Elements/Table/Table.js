@@ -7,7 +7,7 @@ import { useTable, usePagination, useSortBy } from 'react-table';
 import { format } from 'date-fns';
 
 // Constants
-import { ICONS } from 'img/icons/Icon';
+import { ICONS } from '../../../img/icons/Icon';
 
 // Children
 import TablePagination from './TablePagination';
@@ -15,29 +15,23 @@ import TablePagination from './TablePagination';
 function Table({
   columns,
   data = [],
-  intitialTableState,
+  initialTableState,
   paginated,
   sortable,
   handleOfficerIdSelected,
   pageSize,
 }) {
   const theme = useTheme();
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    prepareRow,
-    page,
-    ...paginationProps
-  } = useTable(
-    {
-      columns,
-      data,
-      initialState: { pageIndex: 0, pageSize, ...intitialTableState },
-    },
-    sortable ? useSortBy : '',
-    paginated ? usePagination : ''
-  );
+  const { getTableProps, getTableBodyProps, headerGroups, prepareRow, page, ...paginationProps } =
+    useTable(
+      {
+        columns,
+        data,
+        initialState: { pageIndex: 0, pageSize, ...initialTableState },
+      },
+      sortable ? useSortBy : '',
+      paginated ? usePagination : ''
+    );
 
   return (
     <S.TableWrapper>
@@ -86,7 +80,7 @@ function Table({
         </S.THead>
 
         <S.TBody {...getTableBodyProps()}>
-          {page.map((row, i) => {
+          {page.map((row) => {
             prepareRow(row);
             return (
               <S.TR {...row.getRowProps()}>

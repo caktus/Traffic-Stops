@@ -2,7 +2,7 @@ import React from 'react';
 
 // Deps
 import ContentLoader from 'react-content-loader';
-import LoaderBase from 'Components/Elements/Skeletons/LoaderBase';
+import LoaderBase from './LoaderBase';
 
 function CardSkeleton() {
   return (

@@ -3,16 +3,16 @@ import PropTypes from 'prop-types';
 import { useTheme } from 'styled-components';
 import * as Styled from './Input.styled';
 
-import Icon, { ICONS } from 'img/icons/Icon';
+import Icon, { ICONS } from '../../../img/icons/Icon';
 import { Input } from 'reaktus';
-import {TextArea} from "./Input.styled";
+import { TextArea } from './Input.styled';
 
 export const iconPositions = {
   LEFT: 'left',
   RIGHT: 'right',
 };
 
-function _renderIcon(icon, { iconPosition, invertIcon, iconStyles }) {
+function _renderIcon(inputRef, icon, { iconPosition, invertIcon, iconStyles }) {
   const theme = useTheme();
   return (
     <Styled.IconContainer style={iconStyles} invertIcon={invertIcon} iconPosition={iconPosition}>
@@ -21,13 +21,14 @@ function _renderIcon(icon, { iconPosition, invertIcon, iconStyles }) {
         width="25px"
         height="25px"
         fill={invertIcon ? theme.colors.primary : theme.colors.white}
+        onClick={() => inputRef?.current?.focus()}
       />
     </Styled.IconContainer>
   );
 }
 
 function FJInput({
-  type = "text",
+  type = 'text',
   label,
   errors = [],
   loading,
@@ -40,36 +41,37 @@ function FJInput({
   helpText,
   ...props
 }) {
-  function _getPaddingProps(iconPosition) {
+  const inputRef = React.createRef();
+  function _getPaddingProps(iconPos) {
     const paddingProps = {
       py: 2,
       px: 3,
     };
-    if (iconPosition === iconPositions.LEFT) {
+    if (iconPos === iconPositions.LEFT) {
       paddingProps['pl'] = 5;
-    } else if (iconPosition === iconPositions.RIGHT) {
+    } else if (iconPos === iconPositions.RIGHT) {
       paddingProps['pr'] = 5;
     }
     return paddingProps;
   }
 
-  if (type === "textarea") {
+  if (type === 'textarea') {
     return (
-        <Styled.Wrapper>
-          {label && (
-            <Input.Label errors={errors} py="2">
-              {label}{' '}
-              <Styled.LableSpan required={required} optional={optional}>
-                {required && '(required)'}
-                {optional && '(optional)'}
-              </Styled.LableSpan>
-            </Input.Label>
-          )}
-          <TextArea {...props} />
-          <Input.Errors errors={errors} />
-          {helpText && <Styled.HelpText>{helpText}</Styled.HelpText>}
-        </Styled.Wrapper>
-    )
+      <Styled.Wrapper>
+        {label && (
+          <Input.Label errors={errors} py="2">
+            {label}{' '}
+            <Styled.LableSpan required={required} optional={optional}>
+              {required && '(required)'}
+              {optional && '(optional)'}
+            </Styled.LableSpan>
+          </Input.Label>
+        )}
+        <TextArea {...props} />
+        <Input.Errors errors={errors} />
+        {helpText && <Styled.HelpText>{helpText}</Styled.HelpText>}
+      </Styled.Wrapper>
+    );
   }
 
   return (
@@ -85,10 +87,16 @@ function FJInput({
       )}
       <Input
         type={type}
+        ref={inputRef}
         icon={
           icon
             ? (iconProps) =>
-                _renderIcon(icon, { ...iconProps, iconPosition, invertIcon, iconStyles })
+                _renderIcon(inputRef, icon, {
+                  ...iconProps,
+                  iconPosition,
+                  invertIcon,
+                  iconStyles,
+                })
             : null
         }
         errors={errors}
@@ -121,7 +129,7 @@ FJInput.defaultProps = {
   invertIcon: false,
   required: false,
   optional: false,
-  type: "text"
+  type: 'text',
 };
 
 export default FJInput;

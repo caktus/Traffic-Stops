@@ -1,4 +1,5 @@
 import { useRef, useEffect } from 'react';
+
 function createRootElement(id) {
   const rootContainer = document.createElement('div');
   rootContainer.setAttribute('id', id);
@@ -9,7 +10,7 @@ function addRootElement(rootElem) {
 }
 const usePortal = (id) => {
   const rootElemRef = useRef(null);
-  useEffect(function setupElement() {
+  useEffect(() => {
     const existingParent = document.querySelector(`#${id}`);
     const parentElem = existingParent || createRootElement(id);
     if (!existingParent) {

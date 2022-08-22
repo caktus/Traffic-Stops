@@ -2,23 +2,31 @@ import React from 'react';
 import { useTheme } from 'styled-components';
 import { AnimatePresence, motion } from 'framer-motion';
 import * as S from './AgencyHeader.styled';
-import { P, SIZES, WEIGHTS, COLORS } from 'styles/StyledComponents/Typography';
+import { P, SIZES, WEIGHTS, COLORS } from '../../styles/StyledComponents/Typography';
 
 // Routing
 import { useHistory, useParams } from 'react-router-dom';
 
 // Hooks
-import useOfficerId from 'Hooks/useOfficerId';
+import useOfficerId from '../../Hooks/useOfficerId';
 
 // Util
-import { calculatePercentage, RACES } from 'Components/Charts/chartUtils';
-import toTitleCase from 'util/toTitleCase';
+import { calculatePercentage, RACES } from '../Charts/chartUtils';
+import toTitleCase from '../../util/toTitleCase';
 
-import BackButton from 'Components/Elements/BackButton';
-import { ICONS } from 'img/icons/Icon';
-import { AGENCY_LIST_SLUG } from 'Routes/slugs';
+import { ICONS } from '../../img/icons/Icon';
+import { AGENCY_LIST_SLUG } from '../../Routes/slugs';
+import BackButton from '../Elements/BackButton';
+import Button from '../Elements/Button';
+import * as ChartHeaderStyles from '../Charts/ChartSections/ChartHeader.styled';
 
-function AgencyHeader({ agencyHeaderOpen, agencyDetails }) {
+function AgencyHeader({
+  agencyHeaderOpen,
+  agencyDetails,
+  toggleShowCompare,
+  showCompareDepartments,
+  showCloseButton,
+}) {
   const history = useHistory();
   const { agencyId } = useParams();
   const theme = useTheme();
@@ -28,13 +36,15 @@ function AgencyHeader({ agencyHeaderOpen, agencyDetails }) {
     history.push(`${AGENCY_LIST_SLUG}/${agencyId}`);
   };
 
-  let lastReportedStop = () => {
+  const lastReportedStop = () => {
     if (officerId) {
       return `last reported stop from officer`;
-    } else if (agencyId) {
+    }
+    if (agencyId) {
       return `last reported stop from department`;
     }
-  }
+    return '';
+  };
 
   return (
     <AnimatePresence>
@@ -47,9 +57,7 @@ function AgencyHeader({ agencyHeaderOpen, agencyDetails }) {
           transition={{ ease: 'easeIn' }}
         >
           <S.AgencyHeader>
-            <S.SubHeaderNavRow>
-              <BackButton />
-            </S.SubHeaderNavRow>
+            <S.SubHeaderNavRow>{!showCloseButton && <BackButton />}</S.SubHeaderNavRow>
             <S.SubHeaderContentRow>
               <S.EntityDetails>
                 {officerId ? (
@@ -72,17 +80,16 @@ function AgencyHeader({ agencyHeaderOpen, agencyDetails }) {
                   <S.AgencyTitle>{agencyDetails.name}</S.AgencyTitle>
                 )}
                 <P size={SIZES[0]} color={COLORS[0]} weight={WEIGHTS[0]}>
-                  {lastReportedStop()}{' '}
-                  {agencyDetails.last_reported_stop && 'on'}
+                  {lastReportedStop()} {agencyDetails.last_reported_stop && 'on'}
                   <S.ReportedDate size={SIZES[0]} color={COLORS[0]} weight={WEIGHTS[1]}>
                     {' '}
                     <S.ReportedDate size={SIZES[0]} color={COLORS[0]} weight={WEIGHTS[1]}>
                       {agencyDetails.last_reported_stop
                         ? new Intl.DateTimeFormat('en-US', {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric',
-                        }).format(new Date(agencyDetails.last_reported_stop))
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric',
+                          }).format(new Date(agencyDetails.last_reported_stop))
                         : 'Unknown'}
                     </S.ReportedDate>
                   </S.ReportedDate>
@@ -97,7 +104,8 @@ function AgencyHeader({ agencyHeaderOpen, agencyDetails }) {
                       return (
                         <S.CensusDatum key={race}>
                           <S.CensusRace color={COLORS[0]} size={SIZES[0]}>
-                            {toTitleCase(race)}{race !== 'hispanic' && "*"}
+                            {toTitleCase(race)}
+                            {race !== 'hispanic' && '*'}
                           </S.CensusRace>
                           <S.Datum size={SIZES[0]}>
                             {calculatePercentage(profile[race], profile.total)}%
@@ -111,6 +119,40 @@ function AgencyHeader({ agencyHeaderOpen, agencyDetails }) {
                 </S.CensusRow>
               </S.CensusDemographics>
             </S.SubHeaderContentRow>
+            {!showCloseButton && (
+              <S.ShowDepartmentsButton>
+                <Button
+                  variant="positive"
+                  border={`2px solid ${theme.colors.primary}`}
+                  {...ChartHeaderStyles.ButtonInlines}
+                  onClick={() => toggleShowCompare()}
+                >
+                  <ChartHeaderStyles.Icon
+                    icon={showCompareDepartments ? ICONS.checkboxFilled : ICONS.checkboxEmpty}
+                    height={25}
+                    width={25}
+                    fill={theme.colors.white}
+                  />
+                  Compare Departments
+                </Button>
+              </S.ShowDepartmentsButton>
+            )}
+            {showCloseButton && (
+              <Button
+                variant="positive"
+                border={`2px solid ${theme.colors.primary}`}
+                {...ChartHeaderStyles.ButtonInlines}
+                onClick={() => toggleShowCompare()}
+              >
+                <ChartHeaderStyles.Icon
+                  icon={ICONS.close}
+                  height={25}
+                  width={25}
+                  fill={theme.colors.white}
+                />
+                Close
+              </Button>
+            )}
           </S.AgencyHeader>
         </motion.div>
       )}
