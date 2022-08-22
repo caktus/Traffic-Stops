@@ -120,20 +120,22 @@ function AgencyHeader({
               </S.CensusDemographics>
             </S.SubHeaderContentRow>
             {!showCloseButton && (
-              <Button
-                variant="positive"
-                border={`2px solid ${theme.colors.primary}`}
-                {...ChartHeaderStyles.ButtonInlines}
-                onClick={() => toggleShowCompare()}
-              >
-                <ChartHeaderStyles.Icon
-                  icon={showCompareDepartments ? ICONS.checkboxFilled : ICONS.checkboxEmpty}
-                  height={25}
-                  width={25}
-                  fill={theme.colors.white}
-                />
-                Compare Departments
-              </Button>
+              <S.ShowDepartmentsButton>
+                <Button
+                  variant="positive"
+                  border={`2px solid ${theme.colors.primary}`}
+                  {...ChartHeaderStyles.ButtonInlines}
+                  onClick={() => toggleShowCompare()}
+                >
+                  <ChartHeaderStyles.Icon
+                    icon={showCompareDepartments ? ICONS.checkboxFilled : ICONS.checkboxEmpty}
+                    height={25}
+                    width={25}
+                    fill={theme.colors.white}
+                  />
+                  Compare Departments
+                </Button>
+              </S.ShowDepartmentsButton>
             )}
             {showCloseButton && (
               <Button

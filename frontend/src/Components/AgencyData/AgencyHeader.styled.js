@@ -109,3 +109,10 @@ export const Other = styled(P)`
 `;
 
 export const NoCensus = styled.p``;
+
+export const ShowDepartmentsButton = styled.div`
+  display: block;
+  @media (${phoneOnly}) {
+    display: none;
+  }
+`;
