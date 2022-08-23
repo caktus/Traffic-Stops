@@ -53,4 +53,5 @@ export const ButtonInlines = {
   display: 'flex',
   flexDirection: 'row',
   alignItems: 'center',
+  pr: '30px',
 };

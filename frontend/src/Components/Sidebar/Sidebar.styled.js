@@ -44,11 +44,13 @@ export const Heading = styled.p`
 `;
 
 export const SidebarNav = styled.ul`
+  flex: 1;
   display: flex;
   flex-direction: ${(props) => (props.showCompare ? 'row' : 'column')};
-  ${(props) => (props.showCompare ? 'justify-content: space-around; align-items: center' : '')};
+  ${(props) => (props.showCompare ? 'justify-content: space-around;\n align-items: center' : '')};
   @media (${smallerThanTabletLandscape}) {
     flex-direction: row;
+    justify-content: space-around;
     align-items: center;
   }
   @media (${phoneOnly}) {

@@ -2,13 +2,16 @@ import styled from 'styled-components';
 import { NavLink } from 'react-router-dom';
 
 import Icon from '../../img/icons/Icon';
-import { phoneOnly, smallerThanDesktop } from '../../styles/breakpoints';
+import { phoneOnly, smallerThanTabletLandscape } from '../../styles/breakpoints';
 
 export const Wrapper = styled.div`
   position: relative;
   margin: 8px 0;
 
-  @media (${smallerThanDesktop}) {
+  @media (${smallerThanTabletLandscape}) {
+    margin: 0;
+  }
+  @media (${phoneOnly}) {
     border-right: 1px solid ${(p) => p.theme.colors.white};
     flex: 1;
     display: flex;
@@ -20,7 +23,7 @@ export const Wrapper = styled.div`
 export const Chevron = styled(Icon)`
   position: absolute;
   right: 105%;
-  @media (${smallerThanDesktop}) {
+  @media (${smallerThanTabletLandscape}) {
     right: 102%;
     top: 50%;
     transform: translateY(-50%);
@@ -41,7 +44,10 @@ export const SidebarLink = styled(NavLink)`
   font-weight: ${(props) => (props.active ? 'bold' : 'normal')};
   color: ${(props) => (props.active ? props.theme.colors.primaryDark : props.theme.colors.text)};
 
-  @media (${smallerThanDesktop}) {
+  @media (${smallerThanTabletLandscape}) {
+    font-size: 16px;
+  }
+  @media (${phoneOnly}) {
     font-size: 14px;
     font-weight: normal;
     line-height: 1em;
