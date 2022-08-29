@@ -37,6 +37,7 @@ import * as S from './HomePage/HomePage.styled';
 function App() {
   const [showCompare, setShowCompare] = React.useState(false);
   const [agencyId, setAgencyId] = React.useState(null);
+  const [scrollTopNum, setScrollTopNum] = React.useState(0);
 
   const toggleShowCompare = () => {
     if (!showCompare === false) {
@@ -46,11 +47,8 @@ function App() {
   };
 
   const updateAgencyId = (department) => {
-    if (department !== undefined) {
-      setAgencyId(department.id);
-    } else {
-      setAgencyId(null);
-    }
+    const departmentId = department !== undefined ? department.id : null;
+    setAgencyId(departmentId);
   };
 
   return (
@@ -67,7 +65,12 @@ function App() {
                 <Route path={`${AGENCY_LIST_SLUG}/:agencyId`}>
                   <div style={{ display: 'flex', overflowY: 'auto' }}>
                     <ChartStateProvider reducer={chartReducer} initialState={initialChartState}>
-                      <AgencyData showCompare={showCompare} toggleShowCompare={toggleShowCompare} />
+                      <AgencyData
+                        showCompare={showCompare}
+                        toggleShowCompare={toggleShowCompare}
+                        scrollTopNum={scrollTopNum}
+                        updateScrollPosition={(num) => setScrollTopNum(num)}
+                      />
                     </ChartStateProvider>
                     {showCompare && agencyId && (
                       <ChartStateProvider reducer={chartReducer} initialState={initialChartState}>
@@ -76,6 +79,8 @@ function App() {
                           sidebarClosed
                           showCompare={showCompare}
                           toggleShowCompare={updateAgencyId}
+                          scrollTopNum={scrollTopNum}
+                          updateScrollPosition={(num) => setScrollTopNum(num)}
                         />
                       </ChartStateProvider>
                     )}

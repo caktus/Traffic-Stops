@@ -6,7 +6,6 @@ export const initialState = {
   loading: {},
   errors: {},
   data: {},
-  compareData: {},
 };
 
 const chartStateReducer = (state, action) => {
