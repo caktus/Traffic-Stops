@@ -88,7 +88,7 @@ function App() {
                       <div style={{ width: '50%', padding: 20 }}>
                         <S.SubHeading>Search for Additional Departments to Compare</S.SubHeading>
                         <DepartmentSearch
-                          onChange={updateAgencyId}
+                          onChange={(d) => updateAgencyId(d)}
                           placeholder="Search for a police or sheriff's department..."
                         />
                       </div>

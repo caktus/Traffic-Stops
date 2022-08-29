@@ -63,9 +63,17 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Agency.objects.all()
     serializer_class = serializers.AgencySerializer
 
-    def query(self, results, group_by, filter_=None):
+    def get_stopsummary_qs(self, agency):
         # filter down stops by agency
-        qs = StopSummary.objects.filter(agency=self.get_object())
+        qs = StopSummary.objects.all()
+        # id == -1 means it's North Carolina state,
+        # which then we don't want to filter by agency to view all statewide data.
+        if agency.id != -1:
+            qs = qs.filter(agency=agency)
+        return qs
+
+    def query(self, results, group_by, filter_=None):
+        qs = self.get_stopsummary_qs(agency=self.get_object())
         # filter down by officer if supplied
         officer = self.request.query_params.get("officer", None)
         if officer:
