@@ -10,11 +10,10 @@ export const Sidebar = styled(motion.div)`
   width: ${(props) => (props.showCompare ? '100%' : '204px')};
   height: 100%;
 
-  overflow-x: hidden;
-  overflow-y: scroll;
+  overflow: hidden;
 
   margin-top: 2px;
-  padding: ${(props) => (props.showCompare ? '1em' : '2em 0 0 2em;')};
+  padding: ${(props) => (props.showCompare ? '0' : '2em 0 0 2em;')};
 
   @media (${smallerThanTabletLandscape}) {
     width: 100%;
@@ -48,7 +47,7 @@ export const SidebarNav = styled.ul`
   flex: 1;
   display: flex;
   flex-direction: ${(props) => (props.showCompare ? 'row' : 'column')};
-  ${(props) => (props.showCompare ? 'justify-content: space-around;\n  align-items: center' : '')};
+  ${(props) => (props.showCompare ? 'justify-content: space-around;\n align-items: center' : '')};
   @media (${smallerThanTabletLandscape}) {
     flex-direction: row;
     justify-content: space-around;
