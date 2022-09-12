@@ -9,13 +9,17 @@ export const Header = styled.header`
   border-bottom-color: ${(props) => props.theme.colors.border};
   background: ${(props) => props.theme.colors.primary};
   height: 80px;
+  min-height: 5rem;
+  max-height: 5rem;
 
   @media (${breakpoints.smallerThanTabletLandscape}) {
-    height: 140px;
+    min-height: 8.75rem;
+    max-height: 8.75rem;
   }
 
   @media (${breakpoints.phoneOnly}) {
-    height: 180px;
+    min-height: 11.25rem;
+    max-height: 11.25rem;
   }
 `;
 
