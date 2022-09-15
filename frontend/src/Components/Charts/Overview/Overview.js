@@ -93,8 +93,13 @@ function Overview(props) {
       if (!year || year === 'All') {
         setTrafficStopsData(reduceFullDataset(data, RACES, theme));
       } else {
-        const yearData = data.find((d) => d.year === year);
-        const total = calculateYearTotal(yearData);
+        let yearData = data.filter((d) => d.year === year);
+        let total = 0;
+        if (yearData.length > 0) {
+          // eslint-disable-next-line prefer-destructuring
+          yearData = yearData[0];
+          total = calculateYearTotal(yearData);
+        }
         setTrafficStopsData(
           RACES.map((race) => ({
             x: toTitleCase(race),
@@ -114,8 +119,13 @@ function Overview(props) {
       if (!year || year === 'All') {
         setSearchesData(reduceFullDataset(data, RACES, theme));
       } else {
-        const yearData = data.find((d) => d.year === year);
-        const total = calculateYearTotal(yearData);
+        let yearData = data.filter((d) => d.year === year);
+        let total = 0;
+        if (yearData.length > 0) {
+          // eslint-disable-next-line prefer-destructuring
+          yearData = yearData[0];
+          total = calculateYearTotal(yearData);
+        }
         setSearchesData(
           RACES.map((race) => ({
             x: toTitleCase(race),
@@ -135,8 +145,13 @@ function Overview(props) {
       if (!year || year === 'All') {
         setUseOfForceData(reduceFullDataset(data, RACES, theme));
       } else {
-        const yearData = data.find((d) => d.year === year);
-        const total = calculateYearTotal(yearData);
+        let yearData = data.filter((d) => d.year === year);
+        let total = 0;
+        if (yearData.length > 0) {
+          // eslint-disable-next-line prefer-destructuring
+          yearData = yearData[0];
+          total = calculateYearTotal(yearData);
+        }
         setUseOfForceData(
           RACES.map((race) => ({
             x: toTitleCase(race),
