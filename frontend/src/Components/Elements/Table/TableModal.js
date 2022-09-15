@@ -68,6 +68,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
   useEffect(() => {
     function _handleKeyUp(e) {
       if (e.key === 'Escape') {
+        document.body.style.overflow = 'visible';
         closeModal();
       }
     }
@@ -77,10 +78,13 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
 
   // supress body scrolling behind modal
   useEffect(() => {
-    document.body.style.overflow = 'hidden';
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    }
+
     // eslint-disable-next-line no-return-assign
     return () => (document.body.style.overflow = 'visible');
-  }, []);
+  }, [isOpen]);
 
   /* Build some more complicated data sets */
   const mapStopsByPurpose = (ds) => {

@@ -62,7 +62,7 @@ function App() {
               <Header />
               <Switch>
                 <Route path={`${AGENCY_LIST_SLUG}/:agencyId`}>
-                  <div style={{ display: 'flex', overflowY: 'auto' }}>
+                  <div style={{ display: 'flex', height: '100%' }}>
                     <ChartStateProvider reducer={chartReducer} initialState={initialChartState}>
                       <AgencyData showCompare={showCompare} toggleShowCompare={toggleShowCompare} />
                     </ChartStateProvider>
