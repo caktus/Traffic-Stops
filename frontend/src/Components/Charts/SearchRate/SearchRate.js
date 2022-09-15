@@ -43,7 +43,7 @@ function SearchRate(props) {
 
   const [year, setYear] = useState(YEARS_DEFAULT);
   const [ethnicGroupKeys, setEthnicGroupKeys] = useState(() =>
-    STATIC_LEGEND_KEYS.map((k) => ({ ...k }))
+    STATIC_LEGEND_KEYS.map((k) => ({ ...k })).filter((k) => k.value !== 'white')
   );
 
   const [chartData, setChartData] = useState([]);
