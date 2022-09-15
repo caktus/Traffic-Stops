@@ -41,7 +41,14 @@ export const DropdownListContainer = styled.div`
       : ''}
 
   @media (${smallerThanDesktop}) {
-    bottom: 100%;
+    ${(props) =>
+      props.dropDown
+        ? css`
+            top: 100%;
+          `
+        : css`
+            bottom: 100%;
+          `}
   }
 
   width: 300px;

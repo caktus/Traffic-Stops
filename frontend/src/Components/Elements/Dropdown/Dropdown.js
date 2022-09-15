@@ -3,7 +3,7 @@ import { useTheme } from 'styled-components';
 import * as S from './Dropdown.styled';
 import { ICONS } from '../../../img/icons/Icon';
 
-export default function Dropdown({ value, onChange, options, dropUp }) {
+export default function Dropdown({ value, onChange, options, dropUp, dropDown }) {
   const theme = useTheme();
   const inputRef = React.useRef();
   const containerRef = React.useRef();
@@ -32,7 +32,12 @@ export default function Dropdown({ value, onChange, options, dropUp }) {
           <S.Icon icon={ICONS.chevronRight} width={25} height={25} fill={theme.colors.primary} />
         </S.IconWrapper>
       </S.DropdownHeader>
-      <S.DropdownListContainer ref={containerRef} isOpen={isOpen} dropUp={dropUp}>
+      <S.DropdownListContainer
+        ref={containerRef}
+        isOpen={isOpen}
+        dropUp={dropUp}
+        dropDown={dropDown}
+      >
         <S.DropdownList>
           {options?.map((option) => (
             <S.ListItem key={option} onClick={() => handleSelect(option)}>
