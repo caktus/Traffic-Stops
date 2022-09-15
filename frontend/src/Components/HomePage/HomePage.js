@@ -9,7 +9,7 @@ import { useHistory } from 'react-router-dom';
 import SplashImage from '../../img/nc-copwatch-transparent--tayetheartist.png';
 
 // Contants
-import { AGENCY_LIST_SLUG, FIND_A_STOP_SLUG } from '../../Routes/slugs';
+import { AGENCY_LIST_SLUG, FIND_A_STOP_SLUG, STATEWIDE_DATA } from '../../Routes/slugs';
 
 // AJAX
 import axios from '../../Services/Axios';
@@ -156,7 +156,7 @@ function HomePage() {
                 variant="positive"
                 border={`2px solid ${theme.colors.primary}`}
                 {...ChartHeaderStyles.ButtonInlines}
-                onClick={() => history.push(`${AGENCY_LIST_SLUG}/-1`)}
+                onClick={() => history.push(`${STATEWIDE_DATA}`)}
               >
                 <ChartHeaderStyles.Icon
                   icon={ICONS.info}
