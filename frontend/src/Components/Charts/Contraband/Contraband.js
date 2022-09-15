@@ -27,7 +27,7 @@ import ChartHeader from '../ChartSections/ChartHeader';
 import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
 
 function SearchRate(props) {
-  const { agencyId } = props;
+  const { agencyId, showCompare } = props;
   const theme = useTheme();
 
   const [chartState] = useDataset(agencyId, CONTRABAND_HIT_RATE);
@@ -90,7 +90,7 @@ function SearchRate(props) {
             Shows what percentage of searches discovered contraband for a given race / ethnic group
           </P>
         </S.ChartDescription>
-        <S.ChartSubsection showCompare={props.showCompare}>
+        <S.ChartSubsection showCompare={showCompare}>
           <S.LineSection>
             <S.LineWrapper>
               <Bar
@@ -128,6 +128,7 @@ function SearchRate(props) {
               value={year}
               onChange={handleYearSelect}
               options={[YEARS_DEFAULT].concat(chartState.yearRange)}
+              dropUp={!!showCompare}
             />
           </S.LegendSection>
         </S.ChartSubsection>
