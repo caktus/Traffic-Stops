@@ -34,7 +34,7 @@ import GroupedBar from '../ChartPrimitives/GroupedBar';
 import { VictoryLabel } from 'victory';
 
 function SearchRate(props) {
-  const { agencyId } = props;
+  const { agencyId, showCompare } = props;
   const theme = useTheme();
   const history = useHistory();
   const officerId = useOfficerId();
@@ -151,7 +151,7 @@ function SearchRate(props) {
             incidents. Use “View Data” to see the numbers underlying the calculations.
           </P>
         </S.ChartDescription>
-        <S.ChartSubsection showCompare={props.showCompare}>
+        <S.ChartSubsection showCompare={showCompare}>
           <S.LineWrapper>
             {noBaseSearches ? (
               <S.NoBaseSearches>
@@ -202,6 +202,7 @@ function SearchRate(props) {
                 value={year}
                 onChange={handleYearSelected}
                 options={[YEARS_DEFAULT].concat(chartState.yearRange)}
+                dropUp={!!showCompare}
               />
             </S.Spacing>
           </S.LegendBelow>
