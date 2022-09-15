@@ -182,13 +182,15 @@ export const reduceEthnicityByYears = (data, yearsSet, ethnicGroups = RACES) => 
     const yrData = {};
     yrData.year = yr;
     const yrSet = data.filter((d) => d.year === yr);
-    ethnicGroups.forEach((e) => {
-      yrData[e] = yrSet.reduce((acc, curr) => ({
-        [e]: acc[e] + curr[e],
-      }))[e];
-    });
-    yrData['total'] = calculateYearTotal(yrData);
-    yearData.push(yrData);
+    if (yrSet.length > 0) {
+      ethnicGroups.forEach((e) => {
+        yrData[e] = yrSet.reduce((acc, curr) => ({
+          [e]: acc[e] + curr[e],
+        }))[e];
+      });
+      yrData['total'] = calculateYearTotal(yrData);
+      yearData.push(yrData);
+    }
   });
   return yearData;
 };
