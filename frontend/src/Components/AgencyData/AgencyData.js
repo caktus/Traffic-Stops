@@ -24,13 +24,6 @@ function AgencyData(props) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [agencyHeaderOpen, setAgencyHeaderOpen] = useState(false);
   const [chartsOpen, setChartsOpen] = useState(false);
-  const scrollRef = React.useRef();
-  if (props?.scrollTopNum !== undefined) {
-    if (scrollRef?.current) {
-      scrollRef.current.scrollTop = props?.scrollTopNum;
-    }
-  }
-
   const [chartState] = useDataset(agencyId, AGENCY_DETAILS);
 
   useEffect(() => {
@@ -46,12 +39,7 @@ function AgencyData(props) {
   }, [chartState.data[AGENCY_DETAILS]]);
 
   return (
-    <S.AgencyData
-      data-testid="AgencyData"
-      {...props}
-      ref={scrollRef}
-      onScroll={(e) => props.updateScrollPosition(e.target.scrollTop)}
-    >
+    <S.AgencyData data-testid="AgencyData" {...props}>
       <AgencyHeader
         agencyHeaderOpen={agencyHeaderOpen}
         agencyDetails={chartState.data[AGENCY_DETAILS]}
