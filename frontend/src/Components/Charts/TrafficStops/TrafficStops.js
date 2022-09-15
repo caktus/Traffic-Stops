@@ -60,7 +60,7 @@ function TrafficStops(props) {
       - Only when I make a copy of the objects inside the list do the states update
       independently.
       Conslusion is that React must make shallow copies of initalState, leaving pointers
-      to deeper variables in tact. The result here is that, while we may have separate 
+      to deeper variables in tact. The result here is that, while we may have separate
       instances of STATIC_LEGEND_KEYS in state, the pointers to the keys in its objects
       are the same-- updating one state updates the other.
     */
@@ -97,6 +97,9 @@ function TrafficStops(props) {
         setByPercentagePieData(reduceFullDataset(data, RACES, theme));
       } else {
         const yearData = data.find((d) => d.year === year);
+        if (!yearData) {
+          setByPercentagePieData([]);
+        }
         const total = calculateYearTotal(yearData);
         setByPercentagePieData(
           RACES.map((race) => ({
