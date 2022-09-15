@@ -205,6 +205,7 @@ function Overview(props) {
           value={year}
           onChange={handleYearSelect}
           options={[YEARS_DEFAULT].concat(chartState.yearRange)}
+          dropDown
         />
       </div>
       <S.SectionWrapper />
