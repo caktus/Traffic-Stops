@@ -99,16 +99,17 @@ function TrafficStops(props) {
         const yearData = data.find((d) => d.year === year);
         if (!yearData) {
           setByPercentagePieData([]);
+        } else {
+          const total = calculateYearTotal(yearData);
+          setByPercentagePieData(
+            RACES.map((race) => ({
+              x: toTitleCase(race),
+              y: calculatePercentage(yearData[race], total),
+              color: theme.colors.ethnicGroup[race],
+              fontColor: theme.colors.fontColorsByEthnicGroup[race],
+            }))
+          );
         }
-        const total = calculateYearTotal(yearData);
-        setByPercentagePieData(
-          RACES.map((race) => ({
-            x: toTitleCase(race),
-            y: calculatePercentage(yearData[race], total),
-            color: theme.colors.ethnicGroup[race],
-            fontColor: theme.colors.fontColorsByEthnicGroup[race],
-          }))
-        );
       }
     }
   }, [stopsChartState.data[STOPS], year]);
