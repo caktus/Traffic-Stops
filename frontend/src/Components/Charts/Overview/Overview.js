@@ -14,6 +14,7 @@ import {
   YEARS_DEFAULT,
   STATIC_LEGEND_KEYS,
   RACES,
+  calculateYearTotal,
 } from '../chartUtils';
 import * as slugs from '../../../Routes/slugs';
 
@@ -33,6 +34,7 @@ import ChartHeader from '../ChartSections/ChartHeader';
 import Legend from '../ChartSections/Legend/Legend';
 import useOfficerId from '../../../Hooks/useOfficerId';
 import Pie from '../ChartPrimitives/Pie';
+import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
 
 function Overview(props) {
   const { agencyId } = props;
@@ -82,7 +84,7 @@ function Overview(props) {
         }))
       );
     }
-  }, [chartState.data[AGENCY_DETAILS]]);
+  }, [chartState.data[AGENCY_DETAILS], year]);
 
   // TRAFFIC STOPS
   useEffect(() => {
@@ -90,9 +92,20 @@ function Overview(props) {
     if (data) {
       if (!year || year === 'All') {
         setTrafficStopsData(reduceFullDataset(data, RACES, theme));
+      } else {
+        const yearData = data.find((d) => d.year === year);
+        const total = calculateYearTotal(yearData);
+        setTrafficStopsData(
+          RACES.map((race) => ({
+            x: toTitleCase(race),
+            y: calculatePercentage(yearData[race], total),
+            color: theme.colors.ethnicGroup[race],
+            fontColor: theme.colors.fontColorsByEthnicGroup[race],
+          }))
+        );
       }
     }
-  }, [chartState.data[STOPS]]);
+  }, [chartState.data[STOPS], year]);
 
   // SEARCHES
   useEffect(() => {
@@ -100,9 +113,20 @@ function Overview(props) {
     if (data) {
       if (!year || year === 'All') {
         setSearchesData(reduceFullDataset(data, RACES, theme));
+      } else {
+        const yearData = data.find((d) => d.year === year);
+        const total = calculateYearTotal(yearData);
+        setSearchesData(
+          RACES.map((race) => ({
+            x: toTitleCase(race),
+            y: calculatePercentage(yearData[race], total),
+            color: theme.colors.ethnicGroup[race],
+            fontColor: theme.colors.fontColorsByEthnicGroup[race],
+          }))
+        );
       }
     }
-  }, [chartState.data[SEARCHES]]);
+  }, [chartState.data[SEARCHES], year]);
 
   // USE OF FORCE
   useEffect(() => {
@@ -110,14 +134,25 @@ function Overview(props) {
     if (data) {
       if (!year || year === 'All') {
         setUseOfForceData(reduceFullDataset(data, RACES, theme));
+      } else {
+        const yearData = data.find((d) => d.year === year);
+        const total = calculateYearTotal(yearData);
+        setUseOfForceData(
+          RACES.map((race) => ({
+            x: toTitleCase(race),
+            y: calculatePercentage(yearData[race], total),
+            color: theme.colors.ethnicGroup[race],
+            fontColor: theme.colors.fontColorsByEthnicGroup[race],
+          }))
+        );
       }
     }
-  }, [chartState.data[USE_OF_FORCE]]);
+  }, [chartState.data[USE_OF_FORCE], year]);
 
   /* Methods */
   // eslint-disable-next-line no-unused-vars
   const handleYearSelect = (y) => {
-    if (y.value === year) return;
+    if (y === year) return;
     setYear(y);
   };
 
@@ -149,6 +184,14 @@ function Overview(props) {
           twitterTitle: getPageTitleForShare(),
         }}
       />
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <DataSubsetPicker
+          label="Year"
+          value={year}
+          onChange={handleYearSelect}
+          options={[YEARS_DEFAULT].concat(chartState.yearRange)}
+        />
+      </div>
       <S.SectionWrapper />
       <S.ChartsWrapper>
         <S.PieContainer>
