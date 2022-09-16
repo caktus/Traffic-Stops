@@ -90,6 +90,20 @@ class ACS(object):
         return df
 
 
+class ACSState(ACS):
+    """
+    State County Demographics
+    ex: http://api.census.gov/data/2016/acs/acs5?get=NAME&for=county:*&in=state:24
+    """
+
+    geography = "state"
+    drop_columns = ["state"]
+    state_fip = "37"
+
+    def call_api(self):
+        return self.api.acs5.state(self.variables, self.state_fip)
+
+
 class ACSStateCounties(ACS):
     """
     State County Demographics
@@ -123,7 +137,8 @@ class ACSStatePlaces(ACS):
 
 def get_state_census_data(key):
     """Download several state Census endpoints into a single DataFrame"""
-    profiles = []
+    profiles = [ACSState(settings.NC_KEY, "NC").get()]
+    # profiles = []
     for state in [abbr.upper() for abbr, name in STATE_CHOICES]:
         profiles.append(ACSStateCounties(key, state).get())
         profiles.append(ACSStatePlaces(key, state).get())
