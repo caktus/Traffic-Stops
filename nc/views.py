@@ -66,7 +66,7 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
     def get_stopsummary_qs(self, agency):
         # filter down stops by agency
         qs = StopSummary.objects.all()
-        # id == -1 means it's North Carolina state,
+        # id == -1 means it's North Carolina State,
         # which then we don't want to filter by agency to view all statewide data.
         if agency.id != -1:
             qs = qs.filter(agency=agency)
