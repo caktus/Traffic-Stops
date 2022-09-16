@@ -3,7 +3,6 @@ import * as breakpoints from '../../styles/breakpoints';
 import { motion } from 'framer-motion';
 
 export const Header = styled.header`
-  position: relative;
   width: 100%;
   border-bottom: ${(props) => props.theme.borders.standard};
   border-bottom-color: ${(props) => props.theme.colors.border};
