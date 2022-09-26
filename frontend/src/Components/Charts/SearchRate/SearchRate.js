@@ -34,7 +34,7 @@ import GroupedBar from '../ChartPrimitives/GroupedBar';
 import { VictoryLabel } from 'victory';
 
 function SearchRate(props) {
-  const { agencyId } = props;
+  const { agencyId, showCompare } = props;
   const theme = useTheme();
   const history = useHistory();
   const officerId = useOfficerId();
@@ -43,7 +43,7 @@ function SearchRate(props) {
 
   const [year, setYear] = useState(YEARS_DEFAULT);
   const [ethnicGroupKeys, setEthnicGroupKeys] = useState(() =>
-    STATIC_LEGEND_KEYS.map((k) => ({ ...k }))
+    STATIC_LEGEND_KEYS.map((k) => ({ ...k })).filter((k) => k.value !== 'white')
   );
 
   const [chartData, setChartData] = useState([]);
@@ -142,16 +142,17 @@ function SearchRate(props) {
         <ChartHeader chartTitle="Likelihood of Search" handleViewData={handleViewData} />
         <S.ChartDescription>
           <P>
-            Shows the likelihood that drivers of a particular race / ethnicity are searched compared
-            to white drivers, based on stop cause. Stops done for “safety” purposes may be less
-            likely to show racial bias than stops done for “investigatory” purposes.
+            Shows the likelihood that drivers of a particular race / ethnicity are searched{' '}
+            <strong>compared to white drivers</strong>, based on stop cause. Stops done for “safety”
+            purposes may be less likely to show racial bias than stops done for “investigatory”
+            purposes.
           </P>
           <P>
             <strong>NOTE:</strong> Large or unexpected percentages may be based on a low number of
             incidents. Use “View Data” to see the numbers underlying the calculations.
           </P>
         </S.ChartDescription>
-        <S.ChartSubsection showCompare={props.showCompare}>
+        <S.ChartSubsection showCompare={showCompare}>
           <S.LineWrapper>
             {noBaseSearches ? (
               <S.NoBaseSearches>
@@ -202,6 +203,7 @@ function SearchRate(props) {
                 value={year}
                 onChange={handleYearSelected}
                 options={[YEARS_DEFAULT].concat(chartState.yearRange)}
+                dropUp={!!showCompare}
               />
             </S.Spacing>
           </S.LegendBelow>

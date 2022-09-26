@@ -5,7 +5,7 @@ import { phoneOnly, smallerThanDesktop } from '../../../styles/breakpoints';
 export const ChartPageBase = styled(motion.article)`
   flex: 1;
   height: 100%;
-  overflow-y: scroll;
+  overflow-y: hidden;
   width: 100%;
 `;
 

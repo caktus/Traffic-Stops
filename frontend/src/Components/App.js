@@ -46,10 +46,8 @@ function App() {
   };
 
   const updateAgencyId = (department) => {
-    if (!department) {
-      setAgencyId(null);
-    }
-    setAgencyId(department.id);
+    const departmentId = department !== undefined ? department.id : null;
+    setAgencyId(departmentId);
   };
 
   return (
@@ -64,7 +62,7 @@ function App() {
               <Header />
               <Switch>
                 <Route path={`${AGENCY_LIST_SLUG}/:agencyId`}>
-                  <div style={{ display: 'flex', overflowY: 'auto' }}>
+                  <div style={{ display: 'flex', height: '100%' }}>
                     <ChartStateProvider reducer={chartReducer} initialState={initialChartState}>
                       <AgencyData showCompare={showCompare} toggleShowCompare={toggleShowCompare} />
                     </ChartStateProvider>
@@ -82,7 +80,7 @@ function App() {
                       <div style={{ width: '50%', padding: 20 }}>
                         <S.SubHeading>Search for Additional Departments to Compare</S.SubHeading>
                         <DepartmentSearch
-                          onChange={updateAgencyId}
+                          onChange={(d) => updateAgencyId(d)}
                           placeholder="Search for a police or sheriff's department..."
                         />
                       </div>

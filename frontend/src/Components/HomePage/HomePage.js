@@ -9,7 +9,7 @@ import { useHistory } from 'react-router-dom';
 import SplashImage from '../../img/nc-copwatch-transparent--tayetheartist.png';
 
 // Contants
-import { AGENCY_LIST_SLUG, FIND_A_STOP_SLUG } from '../../Routes/slugs';
+import { AGENCY_LIST_SLUG, FIND_A_STOP_SLUG, STATEWIDE_DATA } from '../../Routes/slugs';
 
 // AJAX
 import axios from '../../Services/Axios';
@@ -29,6 +29,7 @@ import { ICONS } from '../../img/icons/Icon';
 import FjButton from '../Elements/Button';
 import CardSkeleton from '../Elements/Skeletons/CardSkeleton';
 import DepartmentSearch from '../Elements/DepartmentSearch';
+import * as ChartHeaderStyles from '../Charts/ChartSections/ChartHeader.styled';
 
 function HomePage() {
   const [{ data, loading, errors }, dispatch] = React.useReducer(fetchReducer, initialState);
@@ -150,6 +151,22 @@ function HomePage() {
                 width={25}
               />
             </S.ViewAllDepts>
+            <S.ButtonWrapper>
+              <FjButton
+                variant="positive"
+                border={`2px solid ${theme.colors.primary}`}
+                {...ChartHeaderStyles.ButtonInlines}
+                onClick={() => history.push(`${STATEWIDE_DATA}`)}
+              >
+                <ChartHeaderStyles.Icon
+                  icon={ICONS.info}
+                  height={25}
+                  width={25}
+                  fill={theme.colors.white}
+                />
+                View all statewide data
+              </FjButton>
+            </S.ButtonWrapper>
           </S.DeptCTA>
           <S.StopCTA>
             <S.SubHeading>Find a Stop</S.SubHeading>

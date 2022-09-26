@@ -31,7 +31,7 @@ import GroupedBar from '../ChartPrimitives/GroupedBar';
 import Pie from '../ChartPrimitives/Pie';
 
 function UseOfForce(props) {
-  const { agencyId } = props;
+  const { agencyId, showCompare } = props;
   const officerId = useOfficerId();
   const theme = useTheme();
 
@@ -138,7 +138,7 @@ function UseOfForce(props) {
             against
           </P>
         </S.ChartDescription>
-        <S.ChartSubsection showCompare={props.showCompare}>
+        <S.ChartSubsection showCompare={showCompare}>
           <S.LineSection>
             <S.LineWrapper>
               <GroupedBar

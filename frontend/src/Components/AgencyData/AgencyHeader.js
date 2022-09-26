@@ -57,7 +57,7 @@ function AgencyHeader({
           transition={{ ease: 'easeIn' }}
         >
           <S.AgencyHeader>
-            <S.SubHeaderNavRow>{!showCloseButton && <BackButton />}</S.SubHeaderNavRow>
+            <S.SubHeaderNavRow>{!showCompareDepartments && <BackButton />}</S.SubHeaderNavRow>
             <S.SubHeaderContentRow>
               <S.EntityDetails>
                 {officerId ? (
@@ -138,20 +138,22 @@ function AgencyHeader({
               </S.ShowDepartmentsButton>
             )}
             {showCloseButton && (
-              <Button
-                variant="positive"
-                border={`2px solid ${theme.colors.primary}`}
-                {...ChartHeaderStyles.ButtonInlines}
-                onClick={() => toggleShowCompare()}
-              >
-                <ChartHeaderStyles.Icon
-                  icon={ICONS.close}
-                  height={25}
-                  width={25}
-                  fill={theme.colors.white}
-                />
-                Close
-              </Button>
+              <div style={{ display: 'block' }}>
+                <Button
+                  variant="positive"
+                  border={`2px solid ${theme.colors.primary}`}
+                  {...ChartHeaderStyles.ButtonInlines}
+                  onClick={() => toggleShowCompare()}
+                >
+                  <ChartHeaderStyles.Icon
+                    icon={ICONS.close}
+                    height={25}
+                    width={25}
+                    fill={theme.colors.white}
+                  />
+                  Close
+                </Button>
+              </div>
             )}
           </S.AgencyHeader>
         </motion.div>

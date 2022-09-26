@@ -24,11 +24,10 @@ function AgencyData(props) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [agencyHeaderOpen, setAgencyHeaderOpen] = useState(false);
   const [chartsOpen, setChartsOpen] = useState(false);
-
   const [chartState] = useDataset(agencyId, AGENCY_DETAILS);
 
   useEffect(() => {
-    if (chartState.data[AGENCY_DETAILS] && !props?.agencyId) setSidebarOpen(true);
+    if (chartState.data[AGENCY_DETAILS]) setSidebarOpen(true);
   }, [chartState.data[AGENCY_DETAILS]]);
 
   useEffect(() => {
