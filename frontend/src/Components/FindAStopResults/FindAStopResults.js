@@ -54,15 +54,19 @@ function FindAStopResults() {
   const history = useHistory();
 
   const [stops, setStops] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     async function _fetchStops() {
+      setLoading(true);
       try {
         const { data } = await axios.get(`${FIND_A_STOP_URL}${search}`);
         setStops(data.results);
+        setLoading(false);
       } catch (e) {
         // eslint-disable-next-line no-console
         console.warn(e);
+        setLoading(false);
       }
     }
     _fetchStops();
@@ -86,7 +90,7 @@ function FindAStopResults() {
       <S.Heading>
         <BackButton to={FIND_A_STOP_SLUG} text="Back to Search" />
         <H1>Stops</H1>
-        {stops.length > 0 && (
+        {!loading && stops.length > 0 && (
           <P size={SIZES[0]} color={COLORS[0]}>
             {stops.length === MAX_STOPS_RESULTS
               ? `Returned maximum number of results (${MAX_STOPS_RESULTS}). Try limiting your search`
@@ -95,8 +99,8 @@ function FindAStopResults() {
         )}
       </S.Heading>
       <S.TableContainer>
-        {!stops && <TableSkeleton />}
-        {stops.length === 0 && (
+        {loading && <TableSkeleton />}
+        {!loading && stops.length === 0 && (
           <S.NoResults>
             <H2>No stops matching these criteria have been reported to the SBI.</H2>
             <P>
