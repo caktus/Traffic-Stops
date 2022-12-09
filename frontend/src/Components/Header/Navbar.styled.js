@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import * as breakpoints from 'styles/breakpoints';
+import * as breakpoints from '../../styles/breakpoints';
 import { NavLink } from 'react-router-dom';
 
 export const NavbarStyled = styled.nav`

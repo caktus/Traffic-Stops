@@ -1,37 +1,35 @@
-import React, { useState, useEffect } from 'react';
-import { ContrabandStyled } from './Contraband.styled';
-import * as S from 'Components/Charts/ChartSections/ChartsCommon.styled';
-
+import React, { useEffect, useState } from 'react';
+import ContrabandStyled from './Contraband.styled';
+import * as S from '../ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
 
-// Router
-import { useParams } from 'react-router-dom';
-
 // Util
-import toTitleCase from 'util/toTitleCase';
+import toTitleCase from '../../../util/toTitleCase';
 import {
-  RACES,
-  YEARS_DEFAULT,
   reduceYearsToTotal,
   calculatePercentage,
-  getQuantityForYear, SEARCH_TYPE_DEFAULT, SEARCH_TYPES, CONTRABAND_TYPES, CONTRABAND_DEFAULT,
-} from 'Components/Charts/chartUtils';
+  getQuantityForYear,
+  CONTRABAND_TYPES,
+  CONTRABAND_DEFAULT,
+  RACES,
+  YEARS_DEFAULT,
+} from '../chartUtils';
 
 // Hooks
-import useMetaTags from 'Hooks/useMetaTags';
-import useTableModal from 'Hooks/useTableModal';
+import useMetaTags from '../../../Hooks/useMetaTags';
+import useTableModal from '../../../Hooks/useTableModal';
 
 // State
-import useDataset, { CONTRABAND_HIT_RATE } from 'Hooks/useDataset';
+import useDataset, { CONTRABAND_HIT_RATE } from '../../../Hooks/useDataset';
 
 // Children
-import { P } from 'styles/StyledComponents/Typography';
-import ChartHeader from 'Components/Charts/ChartSections/ChartHeader';
-import Bar from 'Components/Charts/ChartPrimitives/Bar';
-import DataSubsetPicker from 'Components/Charts/ChartSections/DataSubsetPicker/DataSubsetPicker';
+import { P } from '../../../styles/StyledComponents/Typography';
+import Bar from '../ChartPrimitives/Bar';
+import ChartHeader from '../ChartSections/ChartHeader';
+import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
 
-function SearchRate() {
-  let { agencyId } = useParams();
+function SearchRate(props) {
+  const { agencyId, showCompare } = props;
   const theme = useTheme();
 
   const [chartState] = useDataset(agencyId, CONTRABAND_HIT_RATE);
@@ -49,9 +47,26 @@ function SearchRate() {
   useEffect(() => {
     const data = chartState.data[CONTRABAND_HIT_RATE];
     if (data) {
-      let { contraband, searches, contraband_types } = data;
+      const { contraband, searches, contrabandTypes } = data;
+      if (year && year !== YEARS_DEFAULT) {
+        // If an agency has no data for selected year
+        if (contraband.filter((c) => c.year === year).length === 0) {
+          setContrabandData(
+            RACES.map((ethnicGroup) => ({
+              displayName: toTitleCase(ethnicGroup),
+              color: `${theme.colors.ethnicGroup[ethnicGroup]}90`,
+              x: toTitleCase(ethnicGroup),
+              y: 0,
+            }))
+          );
+          return;
+        }
+      }
       const mappedData = [];
-      let contrabandData = contrabandType !== CONTRABAND_DEFAULT ? contraband_types.filter(c => c.contraband_type === contrabandType) : contraband;
+      const contrabandDataList =
+        contrabandType !== CONTRABAND_DEFAULT
+          ? contrabandTypes.filter((c) => c.contraband_type === contrabandType)
+          : contraband;
       RACES.forEach((ethnicGroup) => {
         const groupBar = {};
         const displayName = toTitleCase(ethnicGroup);
@@ -59,18 +74,22 @@ function SearchRate() {
         groupBar.color = `${theme.colors.ethnicGroup[ethnicGroup]}90`;
         groupBar.x = displayName;
         if (year === YEARS_DEFAULT) {
-          const groupContraband = reduceYearsToTotal(contrabandData, ethnicGroup)[ethnicGroup];
+          const groupContraband = reduceYearsToTotal(contrabandDataList, ethnicGroup)[ethnicGroup];
           const groupSearches = reduceYearsToTotal(searches, ethnicGroup)[ethnicGroup];
           groupBar.y = calculatePercentage(groupContraband, groupSearches);
         } else {
-          const yearInt = parseInt(year);
-          const groupContrabandForYear = getQuantityForYear(contrabandData, yearInt, ethnicGroup);
+          const yearInt = parseInt(year, 10);
+          const groupContrabandForYear = getQuantityForYear(contraband, yearInt, ethnicGroup);
           const groupSearchesForYear = getQuantityForYear(searches, yearInt, ethnicGroup);
           groupBar.y = calculatePercentage(groupContrabandForYear, groupSearchesForYear);
         }
         mappedData.push(groupBar);
       });
-      setContrabandData(mappedData.reverse());
+      if (mappedData) {
+        setContrabandData(mappedData.reverse());
+      } else {
+        setContrabandData([]);
+      }
     }
   }, [chartState.data[CONTRABAND_HIT_RATE], year, contrabandType]);
 
@@ -101,7 +120,7 @@ function SearchRate() {
             Shows what percentage of searches discovered contraband for a given race / ethnic group
           </P>
         </S.ChartDescription>
-        <S.ChartSubsection>
+        <S.ChartSubsection showCompare={showCompare}>
           <S.LineSection>
             <S.LineWrapper>
               <Bar
@@ -117,7 +136,8 @@ function SearchRate() {
                   tickFormat: (t) => {
                     if (t === 'Native American') {
                       return 'Native \n American';
-                    } else return t;
+                    }
+                    return t;
                   },
                 }}
                 barProps={{
@@ -138,6 +158,7 @@ function SearchRate() {
               value={year}
               onChange={handleYearSelect}
               options={[YEARS_DEFAULT].concat(chartState.yearRange)}
+              dropUp={!!showCompare}
             />
             <DataSubsetPicker
               label="Contraband Type"
@@ -182,5 +203,9 @@ const TABLE_COLUMNS = [
   {
     Header: 'Hispanic',
     accessor: 'hispanic',
+  },
+  {
+    Header: 'Total',
+    accessor: 'total',
   },
 ];

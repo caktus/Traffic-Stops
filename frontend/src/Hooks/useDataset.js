@@ -4,16 +4,16 @@ import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
 // AJAX
-import axios from 'Services/Axios';
-import mapDatasetKeyToEndpoint from 'Services/endpoints';
+import axios from '../Services/Axios';
+import mapDatasetKeyToEndpoint from '../Services/endpoints';
 
 // State
-import { useChartState } from 'Context/chart-state';
+import { useChartState } from '../Context/chart-state';
 import {
   DATASET_FETCH_START,
   DATASET_FETCH_SUCCESS,
   DATASET_FETCH_FAILURE,
-} from 'Context/chart-reducer';
+} from '../Context/chart-reducer';
 
 export const AGENCY_DETAILS = 'AGENCY_DETAILS';
 export const STOPS = 'STOPS';

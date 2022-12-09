@@ -26,12 +26,13 @@ export const LableSpan = styled.span`
   color: ${(props) => {
     if (props.required) return props.theme.colors.caution;
     if (props.optional) return props.theme.colors.grey;
+    return 'black';
   }};
 `;
 
 export const IconContainer = styled.div`
   position: absolute;
-  pointer-events: none;
+  pointer-events: auto;
   background: ${(props) =>
     props.invertIcon ? props.theme.colors.white : props.theme.colors.primary};
   height: 100%;
@@ -40,6 +41,7 @@ export const IconContainer = styled.div`
   justify-content: center;
   align-items: center;
   border: 1px solid;
+  cursor: pointer;
 
   ${(props) => {
     if (props.iconPosition === 'left') {
@@ -59,8 +61,8 @@ export const IconContainer = styled.div`
         border-bottom-right-radius: 6px;
       `;
     }
+    return '';
   }}
-
   svg {
     fill: ${(props) => (props.invertIcon ? props.theme.colors.primary : props.theme.colors.white)};
   }

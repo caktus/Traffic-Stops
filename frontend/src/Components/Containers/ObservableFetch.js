@@ -24,7 +24,6 @@ function reducer(state, action) {
         error: false,
       };
     case FETCH_ERROR:
-      console.error(action.payload.error);
       return {
         fetching: false,
         error: 'There was an error fetching this data.',
@@ -48,13 +47,14 @@ const FETCH_ERROR = 'FETCH_ERROR';
 function ObservableFetch({ children, urls, scrollAreaRef, fetchMethod }) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  let observableRef = React.createRef();
+  const observableRef = React.createRef();
 
   useEffect(() => {
     const element = scrollAreaRef.current || observableRef.current;
     function handleObserved([intersection], self) {
       if (intersection.isIntersecting) {
         dispatch({ type: FETCH_START });
+        // eslint-disable-next-line no-restricted-syntax,guard-for-in
         for (const fetchName in urls) {
           fetchMethod(urls[fetchName])
             .then((response) => {
@@ -76,7 +76,7 @@ function ObservableFetch({ children, urls, scrollAreaRef, fetchMethod }) {
     }
     if (element) {
       const observerOptions = {};
-      let observer = new IntersectionObserver(handleObserved, observerOptions);
+      const observer = new IntersectionObserver(handleObserved, observerOptions);
       observer.observe(element);
     }
   }, []);
@@ -94,9 +94,10 @@ ObservableFetch.propTypes = {
   /** An object containing keys whose values the urls from which to fetch. Keys will be used in resultant `data` */
   urls: PropTypes.objectOf(PropTypes.string).isRequired,
   /** Defaults to a div around the wrapped object. If provided, must be a ref of any element currently in the DOM */
+  // eslint-disable-next-line react/forbid-prop-types
   scrollAreaRef: PropTypes.shape({ current: PropTypes.any }),
   /** method by which to fetch. Must return a promise. Ex. fetchMethod={axios.get}. So that you can use a pre-configured client. */
-  fetchMethod: PropTypes.object.isRequired,
+  fetchMethod: PropTypes.instanceOf(Object),
 };
 
 ObservableFetch.defaultProps = {};

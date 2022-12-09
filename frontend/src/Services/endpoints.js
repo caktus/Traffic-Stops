@@ -5,8 +5,9 @@ import {
   STOPS_BY_REASON,
   SEARCHES_BY_TYPE,
   USE_OF_FORCE,
-  CONTRABAND_HIT_RATE, LIKELIHOOD_OF_SEARCH,
-} from 'Hooks/useDataset';
+  CONTRABAND_HIT_RATE,
+  LIKELIHOOD_OF_SEARCH,
+} from '../Hooks/useDataset';
 
 const API_BASE = '/api';
 

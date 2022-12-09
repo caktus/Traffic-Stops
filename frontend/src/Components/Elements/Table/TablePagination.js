@@ -3,7 +3,7 @@ import * as S from './TablePagination.styled';
 import { useTheme } from 'styled-components';
 
 import range from 'lodash.range';
-import Icon, { ICONS } from 'img/icons/Icon';
+import Icon, { ICONS } from '../../../img/icons/Icon';
 
 function TablePagination({
   canPreviousPage,

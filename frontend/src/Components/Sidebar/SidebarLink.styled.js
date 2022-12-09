@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 import { NavLink } from 'react-router-dom';
 
-import Icon from 'img/icons/Icon';
-import { phoneOnly, smallerThanTabletLandscape } from 'styles/breakpoints';
+import Icon from '../../img/icons/Icon';
+import { phoneOnly, smallerThanTabletLandscape } from '../../styles/breakpoints';
 
 export const Wrapper = styled.div`
   position: relative;

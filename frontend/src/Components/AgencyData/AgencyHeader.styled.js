@@ -1,7 +1,7 @@
 import styled from 'styled-components';
-import { P, H2 } from 'styles/StyledComponents/Typography';
-import FJIcon from 'img/icons/Icon';
-import { phoneOnly, smallerThanTabletLandscape } from 'styles/breakpoints';
+import { P, H2 } from '../../styles/StyledComponents/Typography';
+import FJIcon from '../../img/icons/Icon';
+import { phoneOnly, smallerThanTabletLandscape } from '../../styles/breakpoints';
 
 export const AgencyHeader = styled.div`
   box-shadow: ${(props) => props.theme.shadows.depth1};
@@ -109,3 +109,10 @@ export const Other = styled(P)`
 `;
 
 export const NoCensus = styled.p``;
+
+export const ShowDepartmentsButton = styled.div`
+  display: block;
+  @media (${phoneOnly}) {
+    display: none;
+  }
+`;

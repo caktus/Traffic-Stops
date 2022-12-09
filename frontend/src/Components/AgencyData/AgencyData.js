@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as S from './AgencyData.styled';
 
 // Animating
@@ -8,20 +8,22 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useParams } from 'react-router-dom';
 
 // State
-import useDataset, { AGENCY_DETAILS } from 'Hooks/useDataset';
+import useDataset, { AGENCY_DETAILS } from '../../Hooks/useDataset';
 
 // Children
-import AgencyHeader from 'Components/AgencyData/AgencyHeader';
-import Sidebar from 'Components/Sidebar/Sidebar';
-import ChartRoutes from 'Components/Charts/ChartRoutes';
+import AgencyHeader from './AgencyHeader';
+import Sidebar from '../Sidebar/Sidebar';
+import ChartRoutes from '../Charts/ChartRoutes';
 
 function AgencyData(props) {
-  const { agencyId } = useParams();
+  let { agencyId } = useParams();
+  if (props.agencyId) {
+    agencyId = props.agencyId;
+  }
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [agencyHeaderOpen, setAgencyHeaderOpen] = useState(false);
   const [chartsOpen, setChartsOpen] = useState(false);
-
   const [chartState] = useDataset(agencyId, AGENCY_DETAILS);
 
   useEffect(() => {
@@ -41,8 +43,11 @@ function AgencyData(props) {
       <AgencyHeader
         agencyHeaderOpen={agencyHeaderOpen}
         agencyDetails={chartState.data[AGENCY_DETAILS]}
+        toggleShowCompare={props.toggleShowCompare}
+        showCompareDepartments={props.showCompare}
+        showCloseButton={!!props?.agencyId}
       />
-      <S.ContentWrapper>
+      <S.ContentWrapper showCompare={props.showCompare}>
         <AnimatePresence>
           {sidebarOpen && (
             <motion.div
@@ -52,11 +57,15 @@ function AgencyData(props) {
               exit={{ opacity: 0.35, x: '-100%', duration: 750 }}
               transition={{ ease: 'easeIn' }}
             >
-              <Sidebar open={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+              <Sidebar
+                open={sidebarOpen}
+                setSidebarOpen={setSidebarOpen}
+                showCompare={props.showCompare}
+              />
             </motion.div>
           )}
         </AnimatePresence>
-        {chartsOpen && <ChartRoutes />}
+        {chartsOpen && <ChartRoutes agencyId={agencyId} showCompare={props.showCompare} />}
       </S.ContentWrapper>
     </S.AgencyData>
   );

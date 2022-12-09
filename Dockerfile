@@ -1,4 +1,4 @@
-FROM node:12.16-alpine as static_files
+FROM node:16.16-alpine3.16 as static_files
 
 WORKDIR /code
 ENV PATH /code/node_modules/.bin:$PATH

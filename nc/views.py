@@ -72,9 +72,17 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Agency.objects.all()
     serializer_class = serializers.AgencySerializer
 
-    def query(self, results, group_by, filter_=None):
+    def get_stopsummary_qs(self, agency):
         # filter down stops by agency
-        qs = StopSummary.objects.filter(agency=self.get_object())
+        qs = StopSummary.objects.all()
+        # id == -1 means it's North Carolina State,
+        # which then we don't want to filter by agency to view all statewide data.
+        if agency.id != -1:
+            qs = qs.filter(agency=agency)
+        return qs
+
+    def query(self, results, group_by, filter_=None):
+        qs = self.get_stopsummary_qs(agency=self.get_object())
         # filter down by officer if supplied
         officer = self.request.query_params.get("officer", None)
         if officer:
@@ -237,7 +245,6 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
                         race = GROUPS.get("H", "H")
                     else:
                         race = GROUPS.get(contraband["driver_race"], contraband["driver_race"])
-
                     data.setdefault(race, 0)
                     data[race] += contraband["contraband_type_count"]
                 results.add(**data)
@@ -249,7 +256,7 @@ class DriverStopsViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = (
         Person.objects.filter(type="D")
         .select_related("stop__agency")
-        .order_by("stop__date")
+        .order_by("-stop__date")
         .only(
             "stop__stop_id",
             "stop__date",

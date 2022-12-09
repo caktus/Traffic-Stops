@@ -1,4 +1,8 @@
 {
+  "parserOptions": {
+  // Required for certain syntax usages
+  "ecmaVersion": 2020
+},
   "extends": ["airbnb", "prettier"],
   "plugins": ["prettier", "cypress"],
   "env": {
@@ -14,6 +18,7 @@
     ],
     "prefer-template": "off",
     "react/prop-types": "off",
+    "react/require-default-props": "off",
     "dot-notation": "off",
     "no-use-before-define": "off",
     "no-underscore-dangle": "off",

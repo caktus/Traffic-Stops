@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from 'styled-components';
 import * as S from './Dropdown.styled';
-import { ICONS } from 'img/icons/Icon';
+import { ICONS } from '../../../img/icons/Icon';
 
-export function Dropdown({ value, onChange, options, dropUp }) {
+export default function Dropdown({ value, onChange, options, dropUp, dropDown }) {
   const theme = useTheme();
   const inputRef = React.useRef();
   const containerRef = React.useRef();
@@ -18,7 +18,7 @@ export function Dropdown({ value, onChange, options, dropUp }) {
   useEffect(() => {
     function _closeOnBlur(e) {
       if (e.target === containerRef.current || e.target === inputRef.current) return;
-      else setIsOpen(false);
+      setIsOpen(false);
     }
     document.addEventListener('click', _closeOnBlur, false);
     return () => document.removeEventListener('click', _closeOnBlur, false);
@@ -32,7 +32,12 @@ export function Dropdown({ value, onChange, options, dropUp }) {
           <S.Icon icon={ICONS.chevronRight} width={25} height={25} fill={theme.colors.primary} />
         </S.IconWrapper>
       </S.DropdownHeader>
-      <S.DropdownListContainer ref={containerRef} isOpen={isOpen} dropUp={dropUp}>
+      <S.DropdownListContainer
+        ref={containerRef}
+        isOpen={isOpen}
+        dropUp={dropUp}
+        dropDown={dropDown}
+      >
         <S.DropdownList>
           {options?.map((option) => (
             <S.ListItem key={option} onClick={() => handleSelect(option)}>

@@ -287,6 +287,7 @@ class AgencyTests(APITestCase):
         s4 = factories.SearchFactory(stop=p4.stop)
         s5 = factories.SearchFactory(stop=p5.stop)
         s6 = factories.SearchFactory(stop=p6.stop)
+        # p1 has both drugs and weapons, p5 also has weapons
         factories.ContrabandFactory(search=s1, person=p1, stop=p1.stop, ounces=1.0, weapons=2.0)
         factories.ContrabandFactory(search=s3, person=p3, stop=p3.stop, pints=1.0)
         factories.ContrabandFactory(search=s4, person=p4, stop=p4.stop, money=1.0)
@@ -323,12 +324,14 @@ class AgencyTests(APITestCase):
         for index, item in enumerate(contraband):
             ctype_index[contraband[index]["contraband_type"]] = index
 
+        # check the drugs for p1 are noted
         i = ctype_index["Drugs"]
         self.assertEqual(contraband[i]["contraband_type"], "Drugs")
         self.assertEqual(contraband[i]["black"], 1)
         self.assertEqual(contraband[i]["native_american"], 0)
         self.assertEqual(contraband[i]["hispanic"], 0)
 
+        # weapons for both p1 and p5 are noted
         i = ctype_index["Weapons"]
         self.assertEqual(contraband[i]["contraband_type"], "Weapons")
         self.assertEqual(contraband[i]["black"], 1)

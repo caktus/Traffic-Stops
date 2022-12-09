@@ -1,17 +1,18 @@
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-import { phoneOnly, smallerThanDesktop } from 'styles/breakpoints';
+import { phoneOnly, smallerThanDesktop } from '../../../styles/breakpoints';
 
 export const ChartPageBase = styled(motion.article)`
   flex: 1;
-  overflow-y: scroll;
-  align-self: flex-start;
   height: 100%;
+  overflow-y: hidden;
+  width: 100%;
 `;
 
 export const ChartPageContent = styled.div`
   margin: 0 auto;
   padding: 1.5em 6em 3em 4em;
+  overflow: hidden;
 
   @media (${smallerThanDesktop}) {
     overflow-y: visible;
