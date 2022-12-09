@@ -1,8 +1,14 @@
 from django.conf import settings
 from django.core.mail import send_mail
-from django.db.models import Q, Sum, Case, When, Value, F, CharField, Count
+from django.db.models import Case, Count, F, Q, Sum, Value, When
 from django.db.models.functions import ExtractYear
 from django_filters.rest_framework import DjangoFilterBackend
+from nc import serializers
+from nc.filters import DriverStopsFilter
+from nc.models import SEARCH_TYPE_CHOICES as SEARCH_TYPE_CHOICES_TUPLES
+from nc.models import Agency, Contraband, Person, StopSummary
+from nc.pagination import NoCountPagination
+from nc.serializers import ContactFormSerializer
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -10,13 +16,6 @@ from rest_framework.views import APIView
 from rest_framework_extensions.cache.decorators import cache_response
 from rest_framework_extensions.key_constructor import bits
 from rest_framework_extensions.key_constructor.constructors import DefaultObjectKeyConstructor
-
-from nc import serializers
-from nc.filters import DriverStopsFilter
-from nc.models import Agency, Person, StopSummary
-from nc.models import SEARCH_TYPE_CHOICES as SEARCH_TYPE_CHOICES_TUPLES, Contraband
-from nc.pagination import NoCountPagination
-from nc.serializers import ContactFormSerializer
 from tsdata.models import StateFacts
 from tsdata.utils import GroupedData
 
@@ -187,49 +186,61 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
         response["contraband"] = results.flatten()
 
         # # contraband types
-        qs = Contraband.objects.filter(stop__agency=self.get_object())
+        qs = Contraband.objects.filter(stop__agency=self.get_object(), person__type="D")
         # # filter down by officer if supplied
         officer = self.request.query_params.get("officer", None)
         if officer:
             qs = qs.filter(stop__officer_id=officer)
         qs = qs.annotate(
-            year=ExtractYear("stop__date__year"),
+            year=ExtractYear("stop__date"),
             driver_race=F("person__race"),
             driver_ethnicity=F("person__ethnicity"),
-            contraband_type=Case(
-                When(Q(ounces__gt=0) | Q(pounds__gt=0) | Q(dosages__gt=0) | Q(grams__gt=0) | Q(kilos__gt=0), then=Value("Drugs")),
-                When(Q(pints__gt=0) | Q(gallons__gt=0), then=Value("Alcohol")),
-                When(Q(money__gt=0), then=Value("Money")),
-                When(Q(weapons__gt=0), then=Value("Weapons")),
-                When(Q(dollar_amount__gt=0), then=Value("Other")),
-                default=Value(""),
-                output_field=CharField()
-            )
-        ).filter(
-            ~Q(contraband_type__exact="")
+            drugs_found=Case(
+                When(
+                    Q(ounces__gt=0)
+                    | Q(pounds__gt=0)
+                    | Q(dosages__gt=0)
+                    | Q(grams__gt=0)
+                    | Q(kilos__gt=0),
+                    then=Value(True),
+                ),
+                default=Value(False),
+            ),
+            alcohol_found=Case(
+                When(Q(pints__gt=0) | Q(gallons__gt=0), then=Value(True)), default=Value(False)
+            ),
+            money_found=Case(When(Q(money__gt=0), then=Value(True)), default=Value(False)),
+            weapons_found=Case(When(Q(weapons__gt=0), then=Value(True)), default=Value(False)),
+            other_found=Case(When(Q(dollar_amount__gt=0), then=Value(True)), default=Value(False)),
         )
 
-        results = GroupedData(by=("contraband_type","year"), defaults=GROUP_DEFAULTS)
+        results = GroupedData(by=("contraband_type", "year"), defaults=GROUP_DEFAULTS)
         # group by specified fields and order by year
-        group_by = ("year", "contraband_type", "driver_ethnicity", "driver_race")
-        qs = qs.values(*group_by).order_by("year")
-        qs = qs.annotate(contraband_type_count=Count("contraband_type"))
-        for contraband in qs:
-            data = {
-                "year": contraband["year"],
-                "contraband_type": CONTRABAND_CHOICES.get(contraband["contraband_type"], contraband["contraband_type"])
-            }
-            if "driver_race" in group_by:
-                # The 'Hispanic' ethnicity option is now being aggregated into its
-                # own race category, and its count excluded from the other counts.
-                if contraband["driver_ethnicity"] == "H":
-                    race = GROUPS.get("H", "H")
-                else:
-                    race = GROUPS.get(contraband["driver_race"], contraband["driver_race"])
+        group_by = ("year", "driver_ethnicity", "driver_race")
+        for contraband_type in CONTRABAND_CHOICES.values():
+            field_name = f"{contraband_type.lower()}_found"
+            type_qs = (
+                qs.filter(**{field_name: True})
+                .values(*group_by)
+                .order_by("year")
+                .annotate(contraband_type_count=Count(field_name))
+            )
+            for contraband in type_qs:
+                data = {
+                    "year": contraband["year"],
+                    "contraband_type": contraband_type,
+                }
+                if "driver_race" in group_by:
+                    # The 'Hispanic' ethnicity option is now being aggregated into its
+                    # own race category, and its count excluded from the other counts.
+                    if contraband["driver_ethnicity"] == "H":
+                        race = GROUPS.get("H", "H")
+                    else:
+                        race = GROUPS.get(contraband["driver_race"], contraband["driver_race"])
 
-                data.setdefault(race, 0)
-                data[race] += contraband["contraband_type_count"]
-            results.add(**data)
+                    data.setdefault(race, 0)
+                    data[race] += contraband["contraband_type_count"]
+                results.add(**data)
         response["contraband_types"] = results.flatten()
         return Response(response)
 
