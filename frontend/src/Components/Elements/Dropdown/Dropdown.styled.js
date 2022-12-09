@@ -1,5 +1,6 @@
 import styled, { css } from 'styled-components';
-import FJIcon from 'img/icons/Icon';
+import FJIcon from '../../../img/icons/Icon';
+import { smallerThanDesktop } from '../../../styles/breakpoints';
 
 export const DropdownContainer = styled.div`
   position: relative;
@@ -37,9 +38,18 @@ export const DropdownListContainer = styled.div`
       ? css`
           bottom: 100%;
         `
-      : css`
-          top: 100%;
-        `}
+      : ''}
+
+  @media (${smallerThanDesktop}) {
+    ${(props) =>
+      props.dropDown
+        ? css`
+            top: 100%;
+          `
+        : css`
+            bottom: 100%;
+          `}
+  }
 
   width: 300px;
   display: ${(props) => (props.isOpen ? 'block' : 'none')};

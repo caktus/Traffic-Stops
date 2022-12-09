@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { P } from 'styles/StyledComponents/Typography';
+import { P } from '../../../../styles/StyledComponents/Typography';
 
 export const DataSubsetPicker = styled.div`
   display: flex;

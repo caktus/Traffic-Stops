@@ -2,8 +2,8 @@ import React from 'react';
 import { useTheme } from 'styled-components';
 import PropTypes from 'prop-types';
 import * as S from './Legend.styled';
-import { ICONS } from 'img/icons/Icon';
-import { WEIGHTS } from 'styles/StyledComponents/Typography';
+import { ICONS } from '../../../../img/icons/Icon';
+import { WEIGHTS } from '../../../../styles/StyledComponents/Typography';
 
 function Legend({ keys, onKeySelect, isStatic, showNonHispanic, heading, row }) {
   const theme = useTheme();
@@ -18,6 +18,7 @@ function Legend({ keys, onKeySelect, isStatic, showNonHispanic, heading, row }) 
             fill,
             width: 25,
             height: 25,
+            // eslint-disable-next-line no-nested-ternary
             icon: isStatic
               ? ICONS.roundedBox
               : key.selected

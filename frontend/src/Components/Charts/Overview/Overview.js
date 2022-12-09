@@ -1,36 +1,43 @@
 import React, { useState, useEffect } from 'react';
-import * as S from 'Components/Charts/ChartSections/ChartsCommon.styled';
-import { OverviewStyled } from './Overview.styled';
+import * as S from '../ChartSections/ChartsCommon.styled';
+import OverviewStyled from './Overview.styled';
 import { useTheme } from 'styled-components';
 
 // Router
-import { useParams, useHistory, useRouteMatch } from 'react-router-dom';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 
 // Constants
-import toTitleCase from 'util/toTitleCase';
+import toTitleCase from '../../../util/toTitleCase';
 import {
   calculatePercentage,
   reduceFullDataset,
   YEARS_DEFAULT,
   STATIC_LEGEND_KEYS,
   RACES,
-} from 'Components/Charts/chartUtils';
-import * as slugs from 'Routes/slugs';
+  calculateYearTotal,
+} from '../chartUtils';
+import * as slugs from '../../../Routes/slugs';
 
 // Hooks
-import useMetaTags from 'Hooks/useMetaTags';
+import useMetaTags from '../../../Hooks/useMetaTags';
 
 // Data
-import useDataset, { AGENCY_DETAILS, STOPS, SEARCHES, USE_OF_FORCE } from 'Hooks/useDataset';
+import useDataset, {
+  AGENCY_DETAILS,
+  STOPS,
+  SEARCHES,
+  USE_OF_FORCE,
+} from '../../../Hooks/useDataset';
 
 // Children
-import ChartHeader from 'Components/Charts/ChartSections/ChartHeader';
-import Pie from 'Components/Charts/ChartPrimitives/Pie';
-import Legend from 'Components/Charts/ChartSections/Legend/Legend';
-import useOfficerId from "../../../Hooks/useOfficerId";
+import ChartHeader from '../ChartSections/ChartHeader';
+import Legend from '../ChartSections/Legend/Legend';
+import useOfficerId from '../../../Hooks/useOfficerId';
+import Pie from '../ChartPrimitives/Pie';
+import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
 
-function Overview() {
-  const { agencyId } = useParams();
+function Overview(props) {
+  const { agencyId } = props;
   const theme = useTheme();
   const history = useHistory();
   const match = useRouteMatch();
@@ -51,11 +58,13 @@ function Overview() {
 
   const subjectObserving = () => {
     if (officerId) {
-      return "officer";
-    } else if (agencyId) {
-      return "department";
+      return 'officer';
     }
-  }
+    if (agencyId) {
+      return 'department';
+    }
+    return '';
+  };
 
   /* Build Data */
   // CENSUS
@@ -75,7 +84,7 @@ function Overview() {
         }))
       );
     }
-  }, [chartState.data[AGENCY_DETAILS]]);
+  }, [chartState.data[AGENCY_DETAILS], year]);
 
   // TRAFFIC STOPS
   useEffect(() => {
@@ -83,9 +92,25 @@ function Overview() {
     if (data) {
       if (!year || year === 'All') {
         setTrafficStopsData(reduceFullDataset(data, RACES, theme));
+      } else {
+        let yearData = data.filter((d) => d.year === year);
+        let total = 0;
+        if (yearData.length > 0) {
+          // eslint-disable-next-line prefer-destructuring
+          yearData = yearData[0];
+          total = calculateYearTotal(yearData);
+        }
+        setTrafficStopsData(
+          RACES.map((race) => ({
+            x: toTitleCase(race),
+            y: calculatePercentage(yearData[race], total),
+            color: theme.colors.ethnicGroup[race],
+            fontColor: theme.colors.fontColorsByEthnicGroup[race],
+          }))
+        );
       }
     }
-  }, [chartState.data[STOPS]]);
+  }, [chartState.data[STOPS], year]);
 
   // SEARCHES
   useEffect(() => {
@@ -93,9 +118,25 @@ function Overview() {
     if (data) {
       if (!year || year === 'All') {
         setSearchesData(reduceFullDataset(data, RACES, theme));
+      } else {
+        let yearData = data.filter((d) => d.year === year);
+        let total = 0;
+        if (yearData.length > 0) {
+          // eslint-disable-next-line prefer-destructuring
+          yearData = yearData[0];
+          total = calculateYearTotal(yearData);
+        }
+        setSearchesData(
+          RACES.map((race) => ({
+            x: toTitleCase(race),
+            y: calculatePercentage(yearData[race], total),
+            color: theme.colors.ethnicGroup[race],
+            fontColor: theme.colors.fontColorsByEthnicGroup[race],
+          }))
+        );
       }
     }
-  }, [chartState.data[SEARCHES]]);
+  }, [chartState.data[SEARCHES], year]);
 
   // USE OF FORCE
   useEffect(() => {
@@ -103,13 +144,30 @@ function Overview() {
     if (data) {
       if (!year || year === 'All') {
         setUseOfForceData(reduceFullDataset(data, RACES, theme));
+      } else {
+        let yearData = data.filter((d) => d.year === year);
+        let total = 0;
+        if (yearData.length > 0) {
+          // eslint-disable-next-line prefer-destructuring
+          yearData = yearData[0];
+          total = calculateYearTotal(yearData);
+        }
+        setUseOfForceData(
+          RACES.map((race) => ({
+            x: toTitleCase(race),
+            y: calculatePercentage(yearData[race], total),
+            color: theme.colors.ethnicGroup[race],
+            fontColor: theme.colors.fontColorsByEthnicGroup[race],
+          }))
+        );
       }
     }
-  }, [chartState.data[USE_OF_FORCE]]);
+  }, [chartState.data[USE_OF_FORCE], year]);
 
   /* Methods */
+  // eslint-disable-next-line no-unused-vars
   const handleYearSelect = (y) => {
-    if (y.value === year) return;
+    if (y === year) return;
     setYear(y);
   };
 
@@ -120,11 +178,17 @@ function Overview() {
 
   const useOfForcePieChartCopy = () => {
     if (officerId) {
-      return "this officer";
-    } else {
-      return "law enforcement officers";
+      return 'this officer';
     }
-  }
+    return 'law enforcement officers';
+  };
+
+  const buildUrl = (slug) => {
+    let url = `${match.url}${slug}`;
+    url = url.replace('//', '/');
+    if (officerId) url += `/?officer=${officerId}`;
+    return history.push(url);
+  };
 
   return (
     <OverviewStyled>
@@ -135,7 +199,16 @@ function Overview() {
           twitterTitle: getPageTitleForShare(),
         }}
       />
-      <S.SectionWrapper></S.SectionWrapper>
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <DataSubsetPicker
+          label="Year"
+          value={year}
+          onChange={handleYearSelect}
+          options={[YEARS_DEFAULT].concat(chartState.yearRange)}
+          dropDown
+        />
+      </div>
+      <S.SectionWrapper />
       <S.ChartsWrapper>
         <S.PieContainer>
           <S.ChartTitle>Census Demographics</S.ChartTitle>
@@ -156,8 +229,10 @@ function Overview() {
             <Pie loading={chartState.loading[STOPS]} data={trafficStopsData} />
             <Legend keys={STATIC_LEGEND_KEYS} isStatic showNonHispanic />
           </S.PieWrapper>
-          <S.Note>Shows the race/ethnic composition of drivers stopped by this {subjectObserving()}</S.Note>
-          <S.Link onClick={() => history.push(`${match.url}${slugs.TRAFFIC_STOPS_SLUG}`)}>
+          <S.Note>
+            Shows the race/ethnic composition of drivers stopped by this {subjectObserving()}
+          </S.Note>
+          <S.Link onClick={() => buildUrl(slugs.TRAFFIC_STOPS_SLUG)}>
             View traffic stops over time
           </S.Link>
         </S.PieContainer>
@@ -169,10 +244,10 @@ function Overview() {
             <Pie loading={chartState.loading[SEARCHES]} data={searchesData} />
             <Legend keys={STATIC_LEGEND_KEYS} isStatic showNonHispanic />
           </S.PieWrapper>
-          <S.Note>Shows the race/ethnic composition of drivers searched by this {subjectObserving()}</S.Note>
-          <S.Link onClick={() => history.push(`${match.url}${slugs.SEARCHES_SLUG}`)}>
-            View searches over time
-          </S.Link>
+          <S.Note>
+            Shows the race/ethnic composition of drivers searched by this {subjectObserving()}
+          </S.Note>
+          <S.Link onClick={() => buildUrl(slugs.SEARCHES_SLUG)}>View searches over time</S.Link>
         </S.PieContainer>
         <S.PieContainer>
           <S.ChartTitle>Use of Force</S.ChartTitle>
@@ -184,7 +259,7 @@ function Overview() {
             Shows the race/ethnic composition of drivers whom {useOfForcePieChartCopy()} reported
             using force against
           </S.Note>
-          <S.Link onClick={() => history.push(`${match.url}${slugs.USE_OF_FORCE_SLUG}`)}>
+          <S.Link onClick={() => buildUrl(slugs.USE_OF_FORCE_SLUG)}>
             View use-of-force over time
           </S.Link>
         </S.PieContainer>

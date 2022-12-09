@@ -1,12 +1,12 @@
 import React from 'react';
 
-import CopWatchLogoSolid from 'img/NC_copwatch_logo_solid.png';
+import CopWatchLogoSolid from '../img/NC_copwatch_logo_solid.png';
 
 // Hooks
-import useOfficerId from 'Hooks/useOfficerId';
+import useOfficerId from './useOfficerId';
 
 // State
-import { useChartState } from 'Context/chart-state';
+import { useChartState } from '../Context/chart-state';
 import { AGENCY_DETAILS } from './useDataset';
 
 // Deps
@@ -16,18 +16,13 @@ function useMetaTags() {
   const officerId = useOfficerId();
   const [state] = useChartState();
 
-  const _getEntityReference = () => {
-    return officerId ? `Officer ${officerId}` : state.data[AGENCY_DETAILS].name;
-  };
+  const _getEntityReference = () =>
+    officerId ? `Officer ${officerId}` : state.data[AGENCY_DETAILS].name;
 
-  const _getPageTitle = () => {
-    return `Stop Data for ${_getEntityReference()}`;
-  };
-  const _getUrlForShare = () => {
-    return window.location.href;
-  };
+  const _getPageTitle = () => `Stop Data for ${_getEntityReference()}`;
+  const _getUrlForShare = () => window.location.href;
 
-  const _renderMetaTags = () => {
+  function _renderMetaTags() {
     return (
       <Helmet>
         <title>{_getPageTitle()}</title>
@@ -45,7 +40,7 @@ function useMetaTags() {
         <meta property="og:image:height" content="300" />
       </Helmet>
     );
-  };
+  }
 
   return _renderMetaTags;
 }

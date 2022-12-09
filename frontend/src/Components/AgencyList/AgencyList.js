@@ -5,16 +5,16 @@ import * as S from './AgencyList.styled';
 import { Link, useRouteMatch } from 'react-router-dom';
 
 // AJAX
-import axios from 'Services/Axios';
-import { getAgenciesURL } from 'Services/endpoints';
+import axios from '../../Services/Axios';
+import { getAgenciesURL } from '../../Services/endpoints';
 
 // Context
-import { useRootContext } from 'Context/root-context';
-import { FETCH_START, FETCH_SUCCESS, FETCH_FAILURE } from 'Context/root-reducer';
+import { useRootContext } from '../../Context/root-context';
+import { FETCH_START, FETCH_SUCCESS, FETCH_FAILURE } from '../../Context/root-reducer';
 
 // Components
-import ListSkeleton from 'Components/Elements/ListSkeleton';
-import { H1, P } from 'styles/StyledComponents/Typography';
+import ListSkeleton from '../Elements/ListSkeleton';
+import { H1, P } from '../../styles/StyledComponents/Typography';
 
 const DATA_SET = 'AGENCIES_LIST';
 
@@ -24,18 +24,20 @@ function AgencyList() {
   const [state, dispatch] = useRootContext();
   const [sortedAgencies, setSortedAgencies] = useState({});
 
+  async function _fetchAgencyList() {
+    try {
+      const { data } = await axios.get(getAgenciesURL());
+      dispatch({ type: FETCH_SUCCESS, dataSet: DATA_SET, payload: data });
+    } catch (error) {
+      dispatch({ type: FETCH_FAILURE, dataSet: DATA_SET, payload: error.message });
+    }
+  }
+
   /* FETCH AGENCIES */
   useEffect(() => {
     if (!state.loading[DATA_SET] && !state.data[DATA_SET]) {
       dispatch({ type: FETCH_START, dataSet: DATA_SET });
-      async function _fetchAgencyList() {
-        try {
-          const { data } = await axios.get(getAgenciesURL());
-          dispatch({ type: FETCH_SUCCESS, dataSet: DATA_SET, payload: data });
-        } catch (error) {
-          dispatch({ type: FETCH_FAILURE, dataSet: DATA_SET, payload: error.message });
-        }
-      }
+
       _fetchAgencyList();
     }
   }, []);
@@ -44,7 +46,7 @@ function AgencyList() {
   useEffect(() => {
     if (state.data[DATA_SET]) {
       const agenciesByChar = {};
-      ALPHABET.map((char) => {
+      ALPHABET.forEach((char) => {
         const agenciesForChar = state.data[DATA_SET].filter(
           (agency) => agency.name[0].toLowerCase() === char
         );

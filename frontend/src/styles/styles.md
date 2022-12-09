@@ -25,14 +25,14 @@ This project uses the [styled-components](https://styled-components.com/) librar
 ## Creating a reusable BaseComponent
 
 Styled components can inherit styles from other styled components, allowing us to define base styles for certain page types.
-See [MainBase](src/styles/MainBase.js) for an example base style. And see [AboutPage.styled.js](src/Components/AboutPage.styled.js) for implementation.
+See [MainBase](src/styles/MainBase.js) for an example base style. And see [AboutPage.styled.js](src/./AboutPage.styled.js) for implementation.
 
 ## Theming/Constants
 
 It's good practice to use contants whever possible for your static styling values; eg. colors, fonts, borders, shadows...
-With just a single extra step, and using styled-components, we can turn this in an implementation of theming. See [themes.styled.js](src/styles/themes.styled.js) to see what a theme looks like. In [App.js](src/Components/App.js), we use styled-components [ThemeProvider]() to set the theme, and wherever we need to pull in a constant, we reference `props.theme.myConstant`. To change themes (not implemented at time of writing), we might stick the theme name in component state in `App.js` to allow toggling somewhere in the app.
+With just a single extra step, and using styled-components, we can turn this in an implementation of theming. See [themes.styled.js](src/styles/themes.styled.js) to see what a theme looks like. In [App.js](src/./App.js), we use styled-components [ThemeProvider]() to set the theme, and wherever we need to pull in a constant, we reference `props.theme.myConstant`. To change themes (not implemented at time of writing), we might stick the theme name in component state in `App.js` to allow toggling somewhere in the app.
 
 ## Device responsiveness
 
-Media queries are defined in [breakpoints.js](src/styles/breakpoints.js). See example usage in [AgencyData.styled.js](src/Components/AgencyData/AgencyData.styled.js).
+Media queries are defined in [breakpoints.js](src/styles/breakpoints.js). See example usage in [AgencyData.styled.js](src/./AgencyData/AgencyData.styled.js).
 This project is "desktop-first"-- that is, the opposite of "mobile-first" in practice. Components are styled with desktop in mind, and media queries are used to adjust downward in screensize.

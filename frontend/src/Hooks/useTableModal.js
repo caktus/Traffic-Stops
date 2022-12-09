@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useChartState } from 'Context/chart-state';
-import TableModal from 'Components/Elements/Table/TableModal';
+import { useChartState } from '../Context/chart-state';
+import TableModal from '../Components/Elements/Table/TableModal';
 
 function useTableModal() {
   const [isOpen, setIsOpen] = useState(false);
@@ -9,7 +9,7 @@ function useTableModal() {
 
   const [chartState] = useChartState();
 
-  const _renderTableModal = () => {
+  function _renderTableModal() {
     return (
       <TableModal
         chartState={chartState}
@@ -19,7 +19,7 @@ function useTableModal() {
         closeModal={() => setIsOpen(false)}
       />
     );
-  };
+  }
 
   const openModal = (d, c) => {
     if (!d || !c || c.length === 0) {

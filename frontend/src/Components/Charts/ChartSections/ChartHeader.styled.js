@@ -1,7 +1,7 @@
 import styled from 'styled-components';
-import FJIcon from 'img/icons/Icon';
-import { H2 } from 'styles/StyledComponents/Typography';
-import { phoneOnly } from 'styles/breakpoints';
+import FJIcon from '../../../img/icons/Icon';
+import { H2 } from '../../../styles/StyledComponents/Typography';
+import { phoneOnly } from '../../../styles/breakpoints';
 
 export const ChartHeader = styled.div`
   display: flex;
@@ -32,6 +32,7 @@ export const ButtonsWrapper = styled.div`
   flex-direction: row;
   justify-content: space-between;
   width: 400px;
+  gap: 10px;
 
   @media (${phoneOnly}) {
     flex-direction: column;

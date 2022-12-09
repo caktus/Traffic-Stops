@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom';
 import { SearchWrapper } from './Header.styled';
 import { AnimatePresence } from 'framer-motion';
 
-import usePortal from 'Hooks/usePortal';
-import DepartmentSearch from 'Components/Elements/DepartmentSearch';
+import usePortal from '../../Hooks/usePortal';
+import DepartmentSearch from '../Elements/DepartmentSearch';
 
 function HeaderSearch(showHeaderSearch) {
   const portalTarget = usePortal('searchbar-root');

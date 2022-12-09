@@ -1,9 +1,9 @@
 import styled from 'styled-components';
 
-export const LayoutStyled = styled.div`
-  flex: 1;
+export default styled.div`
+  width: 100%;
   display: flex;
+  flex: 1;
   flex-direction: column;
-  max-height: 100vh;
-  overflow: hidden;
+  max-height: 100%;
 `;

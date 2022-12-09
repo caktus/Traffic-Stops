@@ -2,10 +2,10 @@ import React from 'react';
 import * as S from './Footer.styled';
 
 // Assets
-import FJLogo from 'img/FJ-logo.svg';
-import SplashImage from 'img/nc-copwatch-transparent-small--tayetheartist.png';
+import FJLogo from '../../img/FJ-logo.svg';
+import SplashImage from '../../img/nc-copwatch-transparent-small--tayetheartist.png';
 
-function Footer(props) {
+function Footer() {
   return (
     <S.Footer>
       <S.Attributions>

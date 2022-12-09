@@ -1,12 +1,13 @@
 // First level
 export const HOME_SLUG = '/';
 export const ABOUT_SLUG = '/about';
-export const ABOUT_CONTACT_SLUG = "/about/contact";
+export const ABOUT_CONTACT_SLUG = '/about/contact';
 export const AGENCY_LIST_SLUG = '/agencies';
 export const FIND_A_STOP_SLUG = '/stops';
+export const STATEWIDE_DATA = '/agencies/-1'; // -1 is NC State's static ID in DB
 
 // Second level
-export const AGENCY_DATA_SLUG = '/:agencyId';
+export const AGENCY_DATA_SLUG = '/:agencyId/*';
 
 // Third level
 export const OVERVIEW_SLUG = '';

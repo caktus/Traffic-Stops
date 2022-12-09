@@ -1,7 +1,11 @@
 import styled from 'styled-components';
-import { phoneOnly, smallerThanDesktop, smallerThanTabletLandscape } from 'styles/breakpoints';
-import { P } from 'styles/StyledComponents/Typography';
-import FJIcon from 'img/icons/Icon';
+import {
+  phoneOnly,
+  smallerThanDesktop,
+  smallerThanTabletLandscape,
+} from '../../../styles/breakpoints';
+import { P } from '../../../styles/StyledComponents/Typography';
+import FJIcon from '../../../img/icons/Icon';
 
 export const TableModal = styled.div`
   z-index: 21;
@@ -10,9 +14,9 @@ export const TableModal = styled.div`
   padding: 2.5em;
   width: 100%;
   max-width: 1000px;
-  height: 100vh;
+  height: 95%;
 
-  position: absolute;
+  position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -41,7 +45,9 @@ export const ModalUnderlay = styled.div`
   bottom: 0;
   left: 0;
   right: 0%;
-  position: absolute;
+  height: auto;
+  width: 100%;
+  position: fixed;
   background: rgba(0, 0, 0, 0.8);
   z-index: 20;
 `;

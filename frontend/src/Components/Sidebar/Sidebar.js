@@ -2,16 +2,16 @@ import React from 'react';
 import * as S from './Sidebar.styled';
 
 // Routing
-import * as slugs from 'Routes/slugs';
+import * as slugs from '../../Routes/slugs';
 import { useRouteMatch } from 'react-router-dom';
 
 // Hooks
-import useOfficerId from 'Hooks/useOfficerId';
+import useOfficerId from '../../Hooks/useOfficerId';
 
 // Children
 import SidebarLink from './SidebarLink';
 
-function Sidebar() {
+function Sidebar(props) {
   const match = useRouteMatch();
   const officerId = useOfficerId();
 
@@ -23,9 +23,11 @@ function Sidebar() {
   };
 
   return (
-    <S.Sidebar data-testid="Sidebar">
-      <S.Heading>{officerId !== null ? "Officer" : "Department"} Data</S.Heading>
-      <S.SidebarNav>
+    <S.Sidebar data-testid="Sidebar" showCompare={props.showCompare}>
+      <S.Heading showCompare={props.showCompare}>
+        {officerId !== null ? 'Officer' : 'Department'} Data
+      </S.Heading>
+      <S.SidebarNav showCompare={props.showCompare}>
         <SidebarLink data-testid="OverviewNavLink" to={buildUrl(slugs.OVERVIEW_SLUG)}>
           Overview
         </SidebarLink>

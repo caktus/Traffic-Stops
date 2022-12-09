@@ -1,8 +1,8 @@
 import styled from 'styled-components';
-import { smallerThanDesktop, smallerThanTabletLandscape } from 'styles/breakpoints';
-import FullWidthPage from 'styles/StyledComponents/FullWidthPage';
+import { smallerThanDesktop, smallerThanTabletLandscape } from '../../styles/breakpoints';
+import FullWidthPage from '../../styles/StyledComponents/FullWidthPage';
 
-import { P } from 'styles/StyledComponents/Typography';
+import { P } from '../../styles/StyledComponents/Typography';
 
 export const AboutPageStyled = styled(FullWidthPage)``;
 
@@ -32,7 +32,6 @@ export const AboutPageParagraph = styled(P)`
   margin: 1.5em 0;
   line-height: 2;
 `;
-
 
 export const AboutPageBoldParagraph = styled(P)`
   margin: 1.5em 0;

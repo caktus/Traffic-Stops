@@ -1,10 +1,10 @@
 import styled from 'styled-components';
 
-import LogoFull from 'Components/Elements/LogoFull';
-import FullWidthPage from 'styles/StyledComponents/FullWidthPage';
-import { H1point5, H2 } from 'styles/StyledComponents/Typography';
-import { smallerThanTabletLandscape } from 'styles/breakpoints';
-import FJIcon from 'img/icons/Icon';
+import LogoFull from '../Elements/LogoFull';
+import FullWidthPage from '../../styles/StyledComponents/FullWidthPage';
+import { H1point5, H2 } from '../../styles/StyledComponents/Typography';
+import { smallerThanTabletLandscape } from '../../styles/breakpoints';
+import FJIcon from '../../img/icons/Icon';
 
 export const HomePage = styled(FullWidthPage)`
   display: flex;

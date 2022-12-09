@@ -1,8 +1,14 @@
 from django.conf import settings
 from django.core.mail import send_mail
-from django.db.models import Q, Sum, Case, When, Value, F, CharField, Count
+from django.db.models import Case, CharField, Count, F, Q, Sum, Value, When
 from django.db.models.functions import ExtractYear
 from django_filters.rest_framework import DjangoFilterBackend
+from nc import serializers
+from nc.filters import DriverStopsFilter
+from nc.models import SEARCH_TYPE_CHOICES as SEARCH_TYPE_CHOICES_TUPLES
+from nc.models import Agency, Contraband, Person, StopSummary
+from nc.pagination import NoCountPagination
+from nc.serializers import ContactFormSerializer
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -10,13 +16,6 @@ from rest_framework.views import APIView
 from rest_framework_extensions.cache.decorators import cache_response
 from rest_framework_extensions.key_constructor import bits
 from rest_framework_extensions.key_constructor.constructors import DefaultObjectKeyConstructor
-
-from nc import serializers
-from nc.filters import DriverStopsFilter
-from nc.models import Agency, Person, StopSummary
-from nc.models import SEARCH_TYPE_CHOICES as SEARCH_TYPE_CHOICES_TUPLES, Contraband
-from nc.pagination import NoCountPagination
-from nc.serializers import ContactFormSerializer
 from tsdata.models import StateFacts
 from tsdata.utils import GroupedData
 
@@ -73,9 +72,17 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Agency.objects.all()
     serializer_class = serializers.AgencySerializer
 
-    def query(self, results, group_by, filter_=None):
+    def get_stopsummary_qs(self, agency):
         # filter down stops by agency
-        qs = StopSummary.objects.filter(agency=self.get_object())
+        qs = StopSummary.objects.all()
+        # id == -1 means it's North Carolina State,
+        # which then we don't want to filter by agency to view all statewide data.
+        if agency.id != -1:
+            qs = qs.filter(agency=agency)
+        return qs
+
+    def query(self, results, group_by, filter_=None):
+        qs = self.get_stopsummary_qs(agency=self.get_object())
         # filter down by officer if supplied
         officer = self.request.query_params.get("officer", None)
         if officer:
@@ -197,19 +204,24 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
             driver_race=F("person__race"),
             driver_ethnicity=F("person__ethnicity"),
             contraband_type=Case(
-                When(Q(ounces__gt=0) | Q(pounds__gt=0) | Q(dosages__gt=0) | Q(grams__gt=0) | Q(kilos__gt=0), then=Value("Drugs")),
+                When(
+                    Q(ounces__gt=0)
+                    | Q(pounds__gt=0)
+                    | Q(dosages__gt=0)
+                    | Q(grams__gt=0)
+                    | Q(kilos__gt=0),
+                    then=Value("Drugs"),
+                ),
                 When(Q(pints__gt=0) | Q(gallons__gt=0), then=Value("Alcohol")),
                 When(Q(money__gt=0), then=Value("Money")),
                 When(Q(weapons__gt=0), then=Value("Weapons")),
                 When(Q(dollar_amount__gt=0), then=Value("Other")),
                 default=Value(""),
-                output_field=CharField()
-            )
-        ).filter(
-            ~Q(contraband_type__exact="")
-        )
+                output_field=CharField(),
+            ),
+        ).filter(~Q(contraband_type__exact=""))
 
-        results = GroupedData(by=("contraband_type","year"), defaults=GROUP_DEFAULTS)
+        results = GroupedData(by=("contraband_type", "year"), defaults=GROUP_DEFAULTS)
         # group by specified fields and order by year
         group_by = ("year", "contraband_type", "driver_ethnicity", "driver_race")
         qs = qs.values(*group_by).order_by("year")
@@ -217,7 +229,9 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
         for contraband in qs:
             data = {
                 "year": contraband["year"],
-                "contraband_type": CONTRABAND_CHOICES.get(contraband["contraband_type"], contraband["contraband_type"])
+                "contraband_type": CONTRABAND_CHOICES.get(
+                    contraband["contraband_type"], contraband["contraband_type"]
+                ),
             }
             if "driver_race" in group_by:
                 # The 'Hispanic' ethnicity option is now being aggregated into its
@@ -238,7 +252,7 @@ class DriverStopsViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = (
         Person.objects.filter(type="D")
         .select_related("stop__agency")
-        .order_by("stop__date")
+        .order_by("-stop__date")
         .only(
             "stop__stop_id",
             "stop__date",

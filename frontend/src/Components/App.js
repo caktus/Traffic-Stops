@@ -8,30 +8,48 @@ import defaultTheme from '../styles/themes.styled';
 
 // Router
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import { AGENCY_LIST_SLUG, ABOUT_SLUG, FIND_A_STOP_SLUG, HOME_SLUG } from 'Routes/slugs';
+import { AGENCY_LIST_SLUG, ABOUT_SLUG, FIND_A_STOP_SLUG, HOME_SLUG } from '../Routes/slugs';
 
 // Layout
-import Header from 'Components/Header/Header';
-import { LayoutStyled } from './Layout.styled';
+import Layout from './Layout';
 
 // Meta
-import AppMeta from 'Meta/AppMeta';
-import IconDefs from 'img/icons/IconDefs';
+import AppMeta from '../Meta/AppMeta';
+import IconDefs from '../img/icons/IconDefs';
 // Context
-import { RootContextProvider } from 'Context/root-context';
-import rootReducer, { initialState as initialRootState } from 'Context/root-reducer';
-import { ChartStateProvider } from 'Context/chart-state';
-import chartReducer, { initialState as initialChartState } from 'Context/chart-reducer';
+import { RootContextProvider } from '../Context/root-context';
+import rootReducer, { initialState as initialRootState } from '../Context/root-reducer';
+import { ChartStateProvider } from '../Context/chart-state';
+import chartReducer, { initialState as initialChartState } from '../Context/chart-reducer';
 
 // Routes
-import About from 'Components/AboutPage/AboutPage';
-import AgencyList from 'Components/AgencyList/AgencyList';
-import AgencyData from 'Components/AgencyData/AgencyData';
-import HomePage from 'Components/HomePage/HomePage';
-import FindAStopPage from 'Components/FindAStopPage/FindAStopPage';
-import FindAStopResults from 'Components/FindAStopPage/FindAStopResults';
+import About from './AboutPage/AboutPage';
+import AgencyList from './AgencyList/AgencyList';
+import AgencyData from './AgencyData/AgencyData';
+import HomePage from './HomePage/HomePage';
+import FindAStopPage from './FindAStopPage/FindAStopPage';
+import Header from './Header/Header';
+// eslint-disable-next-line import/no-named-as-default,import/no-named-as-default-member
+import FindAStopResults from './FindAStopResults/FindAStopResults';
+import DepartmentSearch from './Elements/DepartmentSearch';
+import * as S from './HomePage/HomePage.styled';
 
 function App() {
+  const [showCompare, setShowCompare] = React.useState(false);
+  const [agencyId, setAgencyId] = React.useState(null);
+
+  const toggleShowCompare = () => {
+    if (!showCompare === false) {
+      setAgencyId(null);
+    }
+    setShowCompare(!showCompare);
+  };
+
+  const updateAgencyId = (department) => {
+    const departmentId = department !== undefined ? department.id : null;
+    setAgencyId(departmentId);
+  };
+
   return (
     <ThemeProvider theme={defaultTheme}>
       <AppMeta />
@@ -39,14 +57,35 @@ function App() {
       <AppStyled>
         <BrowserRouter>
           <RootContextProvider reducer={rootReducer} initialState={initialRootState}>
-            <LayoutStyled>
+            <Layout>
               <IconDefs />
               <Header />
               <Switch>
                 <Route path={`${AGENCY_LIST_SLUG}/:agencyId`}>
-                  <ChartStateProvider reducer={chartReducer} initialState={initialChartState}>
-                    <AgencyData />
-                  </ChartStateProvider>
+                  <div style={{ display: 'flex', height: '100%' }}>
+                    <ChartStateProvider reducer={chartReducer} initialState={initialChartState}>
+                      <AgencyData showCompare={showCompare} toggleShowCompare={toggleShowCompare} />
+                    </ChartStateProvider>
+                    {showCompare && agencyId && (
+                      <ChartStateProvider reducer={chartReducer} initialState={initialChartState}>
+                        <AgencyData
+                          agencyId={agencyId}
+                          sidebarClosed
+                          showCompare={showCompare}
+                          toggleShowCompare={updateAgencyId}
+                        />
+                      </ChartStateProvider>
+                    )}
+                    {showCompare && !agencyId && (
+                      <div style={{ width: '50%', padding: 20 }}>
+                        <S.SubHeading>Search for Additional Departments to Compare</S.SubHeading>
+                        <DepartmentSearch
+                          onChange={(d) => updateAgencyId(d)}
+                          placeholder="Search for a police or sheriff's department..."
+                        />
+                      </div>
+                    )}
+                  </div>
                 </Route>
                 <Route path={AGENCY_LIST_SLUG}>
                   <AgencyList />
@@ -56,7 +95,7 @@ function App() {
                   render={(props) =>
                     props.location.search ? <FindAStopResults /> : <FindAStopPage />
                   }
-                ></Route>
+                />
                 <Route exact path={ABOUT_SLUG}>
                   <About />
                 </Route>
@@ -64,7 +103,7 @@ function App() {
                   <HomePage />
                 </Route>
               </Switch>
-            </LayoutStyled>
+            </Layout>
           </RootContextProvider>
         </BrowserRouter>
       </AppStyled>

@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { smallerThanTabletLandscape } from 'styles/breakpoints';
+import { smallerThanTabletLandscape } from '../../../styles/breakpoints';
 
 export const Pagination = styled.div`
   display: flex;
@@ -38,4 +38,5 @@ export const PageNumber = styled.button`
   font-weight: bold;
   font-size: 16px;
   border: none;
+  cursor: pointer;
 `;

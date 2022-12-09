@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Icon, { ICONS } from 'img/icons/Icon';
+import Icon, { ICONS } from './Icon';
 
 function CheckboxIcon({ checked, fill, ...props }) {
   return (
