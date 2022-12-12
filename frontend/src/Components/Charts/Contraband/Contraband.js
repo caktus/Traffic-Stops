@@ -47,7 +47,7 @@ function SearchRate(props) {
   useEffect(() => {
     const data = chartState.data[CONTRABAND_HIT_RATE];
     if (data) {
-      const { contraband, searches, contrabandTypes } = data;
+      const { contraband, searches, contraband_types: contrabandTypes } = data;
       if (year && year !== YEARS_DEFAULT) {
         // If an agency has no data for selected year
         if (contraband.filter((c) => c.year === year).length === 0) {
