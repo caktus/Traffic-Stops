@@ -93,7 +93,7 @@ class AgencyTests(APITestCase):
         nc_timezone = pytz.timezone(settings.NC_TIME_ZONE)
         year = 2015
         end_of_year = nc_timezone.localize(
-            datetime.datetime(year=year, month=12, day=31, hour=23, minute=59,)
+            datetime.datetime(year=year, month=12, day=31, hour=23, minute=59)
         )
         agency = factories.AgencyFactory()
         race_code, _ = RACE_CHOICES[1]
@@ -244,27 +244,17 @@ class AgencyTests(APITestCase):
 
         # Create the following racial data for 2015: 1 black
         p1 = factories.PersonFactory(race="B", ethnicity="N", stop__agency=agency, stop__year=2015)
-        factories.SearchFactory(
-            person=p1, stop=p1.stop, type=type_code,
-        )
+        factories.SearchFactory(person=p1, stop=p1.stop, type=type_code)
 
         # Create the following racial data for 2016: 1 native american, 3 hispanic
         p2 = factories.PersonFactory(race="W", ethnicity="H", stop__agency=agency, stop__year=2016)
-        factories.SearchFactory(
-            person=p2, stop=p2.stop, type=type_code,
-        )
+        factories.SearchFactory(person=p2, stop=p2.stop, type=type_code)
         p3 = factories.PersonFactory(race="B", ethnicity="H", stop__agency=agency, stop__year=2016)
-        factories.SearchFactory(
-            person=p3, stop=p3.stop, type=type_code,
-        )
+        factories.SearchFactory(person=p3, stop=p3.stop, type=type_code)
         p4 = factories.PersonFactory(race="B", ethnicity="H", stop__agency=agency, stop__year=2016)
-        factories.SearchFactory(
-            person=p4, stop=p4.stop, type=type_code,
-        )
+        factories.SearchFactory(person=p4, stop=p4.stop, type=type_code)
         p5 = factories.PersonFactory(race="I", ethnicity="N", stop__agency=agency, stop__year=2016)
-        factories.SearchFactory(
-            person=p5, stop=p5.stop, type=type_code,
-        )
+        factories.SearchFactory(person=p5, stop=p5.stop, type=type_code)
 
         response = self.client.get(url, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -272,27 +262,13 @@ class AgencyTests(APITestCase):
         self.assertEqual(len(response.data), 2)
 
         searches = response.data
-        self.assertEqual(
-            searches[0]["year"], 2015,
-        )
-        self.assertEqual(
-            searches[0]["black"], 1,
-        )
-        self.assertEqual(
-            searches[0]["search_type"], type_label,
-        )
-        self.assertEqual(
-            searches[1]["year"], 2016,
-        )
-        self.assertEqual(
-            searches[1]["hispanic"], 3,
-        )
-        self.assertEqual(
-            searches[1]["native_american"], 1,
-        )
-        self.assertEqual(
-            searches[1]["search_type"], type_label,
-        )
+        self.assertEqual(searches[0]["year"], 2015)
+        self.assertEqual(searches[0]["black"], 1)
+        self.assertEqual(searches[0]["search_type"], type_label)
+        self.assertEqual(searches[1]["year"], 2016)
+        self.assertEqual(searches[1]["hispanic"], 3)
+        self.assertEqual(searches[1]["native_american"], 1)
+        self.assertEqual(searches[1]["search_type"], type_label)
 
     def test_contraband_hit_rate(self):
         agency = factories.AgencyFactory()
@@ -311,7 +287,8 @@ class AgencyTests(APITestCase):
         s4 = factories.SearchFactory(stop=p4.stop)
         s5 = factories.SearchFactory(stop=p5.stop)
         s6 = factories.SearchFactory(stop=p6.stop)
-        factories.ContrabandFactory(search=s1, person=p1, stop=p1.stop, ounces=1.0)
+        # p1 has both drugs and weapons, p5 also has weapons
+        factories.ContrabandFactory(search=s1, person=p1, stop=p1.stop, ounces=1.0, weapons=2.0)
         factories.ContrabandFactory(search=s3, person=p3, stop=p3.stop, pints=1.0)
         factories.ContrabandFactory(search=s4, person=p4, stop=p4.stop, money=1.0)
         factories.ContrabandFactory(search=s5, person=p5, stop=p5.stop, weapons=1.0)
@@ -343,10 +320,23 @@ class AgencyTests(APITestCase):
         self.assertEqual(contraband[1]["black"], 1)
 
         contraband = response.data["contraband_types"]
-        self.assertEqual(contraband[0]["contraband_type"], "Drugs")
-        self.assertEqual(contraband[0]["black"], 1)
-        self.assertEqual(contraband[0]["native_american"], 0)
-        self.assertEqual(contraband[0]["hispanic"], 0)
+        ctype_index = {}
+        for index, item in enumerate(contraband):
+            ctype_index[contraband[index]["contraband_type"]] = index
+
+        # check the drugs for p1 are noted
+        i = ctype_index["Drugs"]
+        self.assertEqual(contraband[i]["contraband_type"], "Drugs")
+        self.assertEqual(contraband[i]["black"], 1)
+        self.assertEqual(contraband[i]["native_american"], 0)
+        self.assertEqual(contraband[i]["hispanic"], 0)
+
+        # weapons for both p1 and p5 are noted
+        i = ctype_index["Weapons"]
+        self.assertEqual(contraband[i]["contraband_type"], "Weapons")
+        self.assertEqual(contraband[i]["black"], 1)
+        self.assertEqual(contraband[i]["native_american"], 0)
+        self.assertEqual(contraband[i]["hispanic"], 1)
 
     def test_use_of_force(self):
         pass
