@@ -79,7 +79,11 @@ function SearchRate(props) {
           groupBar.y = calculatePercentage(groupContraband, groupSearches);
         } else {
           const yearInt = parseInt(year, 10);
-          const groupContrabandForYear = getQuantityForYear(contraband, yearInt, ethnicGroup);
+          const groupContrabandForYear = getQuantityForYear(
+            contrabandDataList,
+            yearInt,
+            ethnicGroup
+          );
           const groupSearchesForYear = getQuantityForYear(searches, yearInt, ethnicGroup);
           groupBar.y = calculatePercentage(groupContrabandForYear, groupSearchesForYear);
         }
