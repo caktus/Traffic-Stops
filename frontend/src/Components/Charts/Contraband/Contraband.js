@@ -6,10 +6,12 @@ import { useTheme } from 'styled-components';
 // Util
 import toTitleCase from '../../../util/toTitleCase';
 import {
+  reduceYearsToTotal,
   calculatePercentage,
   getQuantityForYear,
+  CONTRABAND_TYPES,
+  CONTRABAND_DEFAULT,
   RACES,
-  reduceYearsToTotal,
   YEARS_DEFAULT,
 } from '../chartUtils';
 
@@ -33,6 +35,7 @@ function SearchRate(props) {
   const [chartState] = useDataset(agencyId, CONTRABAND_HIT_RATE);
 
   const [year, setYear] = useState(YEARS_DEFAULT);
+  const [contrabandType, setContrabandType] = useState(CONTRABAND_DEFAULT);
 
   const [contrabandData, setContrabandData] = useState();
 
@@ -44,7 +47,7 @@ function SearchRate(props) {
   useEffect(() => {
     const data = chartState.data[CONTRABAND_HIT_RATE];
     if (data) {
-      const { contraband, searches } = data;
+      const { contraband, searches, contraband_types: contrabandTypes } = data;
       if (year && year !== YEARS_DEFAULT) {
         // If an agency has no data for selected year
         if (contraband.filter((c) => c.year === year).length === 0) {
@@ -60,6 +63,10 @@ function SearchRate(props) {
         }
       }
       const mappedData = [];
+      const contrabandDataList =
+        contrabandType !== CONTRABAND_DEFAULT
+          ? contrabandTypes.filter((c) => c.contraband_type === contrabandType)
+          : contraband;
       RACES.forEach((ethnicGroup) => {
         const groupBar = {};
         const displayName = toTitleCase(ethnicGroup);
@@ -67,7 +74,7 @@ function SearchRate(props) {
         groupBar.color = `${theme.colors.ethnicGroup[ethnicGroup]}90`;
         groupBar.x = displayName;
         if (year === YEARS_DEFAULT) {
-          const groupContraband = reduceYearsToTotal(contraband, ethnicGroup)[ethnicGroup];
+          const groupContraband = reduceYearsToTotal(contrabandDataList, ethnicGroup)[ethnicGroup];
           const groupSearches = reduceYearsToTotal(searches, ethnicGroup)[ethnicGroup];
           groupBar.y = calculatePercentage(groupContraband, groupSearches);
         } else {
@@ -84,7 +91,7 @@ function SearchRate(props) {
         setContrabandData([]);
       }
     }
-  }, [chartState.data[CONTRABAND_HIT_RATE], year]);
+  }, [chartState.data[CONTRABAND_HIT_RATE], year, contrabandType]);
 
   /* INTERACTIONS */
   // Handle year dropdown state
@@ -95,6 +102,11 @@ function SearchRate(props) {
 
   const handleViewData = () => {
     openModal(CONTRABAND_HIT_RATE, TABLE_COLUMNS);
+  };
+
+  const handleContrabandTypeSelect = (c) => {
+    if (c === contrabandType) return;
+    setContrabandType(c);
   };
 
   return (
@@ -147,6 +159,12 @@ function SearchRate(props) {
               onChange={handleYearSelect}
               options={[YEARS_DEFAULT].concat(chartState.yearRange)}
               dropUp={!!showCompare}
+            />
+            <DataSubsetPicker
+              label="Contraband Type"
+              value={contrabandType}
+              onChange={handleContrabandTypeSelect}
+              options={[CONTRABAND_DEFAULT].concat(CONTRABAND_TYPES)}
             />
           </S.LegendSection>
         </S.ChartSubsection>
