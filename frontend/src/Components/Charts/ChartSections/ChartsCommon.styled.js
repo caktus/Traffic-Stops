@@ -1,5 +1,9 @@
 import styled from 'styled-components';
-import { phoneOnly, smallerThanDesktop } from '../../../styles/breakpoints';
+import {
+  phoneOnly,
+  smallerThanDesktop,
+  smallerThanTabletLandscape,
+} from '../../../styles/breakpoints';
 import { H2 } from '../../../styles/StyledComponents/Typography';
 
 export const ChartSection = styled.div`
@@ -66,10 +70,13 @@ export const PieSection = styled.div`
   align-items: center;
   width: 33%;
 
-  @media (${phoneOnly}) {
+  @media (${smallerThanDesktop}) {
+    flex-direction: row;
     width: 100%;
     border: none;
-    margin-top: 1em;
+  }
+  @media (${smallerThanTabletLandscape}) {
+    flex-direction: column;
   }
 `;
 
@@ -129,7 +136,7 @@ export const LegendBeside = styled.div`
   flex-direction: column;
   padding: 5em 0 5em 2em;
 
-  @media (${phoneOnly}) {
+  @media (${smallerThanDesktop}) {
     padding: 0;
     width: 100%;
   }
@@ -158,7 +165,7 @@ export const LegendSection = styled.div`
   align-items: center;
   width: 33%;
 
-  @media (${phoneOnly}) {
+  @media (${smallerThanDesktop}) {
     width: 100%;
   }
 `;

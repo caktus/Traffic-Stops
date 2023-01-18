@@ -17,16 +17,17 @@ function SidebarLink({ children, to, ...props }) {
   }, [location.pathname]);
 
   return (
-    <S.Wrapper>
+    <S.Wrapper showCompare={props.showCompare}>
       {active && (
         <S.Chevron
           icon={ICONS.chevronRight}
           width={24}
           height={24}
           fill={theme.colors.primaryDark}
+          showCompare={props.showCompare}
         />
       )}
-      <S.SidebarLink {...props} to={to} active={active}>
+      <S.SidebarLink {...props} to={to} active={active} showCompare={props.showCompare}>
         {children}
       </S.SidebarLink>
     </S.Wrapper>

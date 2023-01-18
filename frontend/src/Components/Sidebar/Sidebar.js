@@ -28,22 +28,46 @@ function Sidebar(props) {
         {officerId !== null ? 'Officer' : 'Department'} Data
       </S.Heading>
       <S.SidebarNav showCompare={props.showCompare}>
-        <SidebarLink data-testid="OverviewNavLink" to={buildUrl(slugs.OVERVIEW_SLUG)}>
+        <SidebarLink
+          data-testid="OverviewNavLink"
+          to={buildUrl(slugs.OVERVIEW_SLUG)}
+          showCompare={props.showCompare}
+        >
           Overview
         </SidebarLink>
-        <SidebarLink data-testid="TrafficStopsNavLink" to={buildUrl(slugs.TRAFFIC_STOPS_SLUG)}>
+        <SidebarLink
+          data-testid="TrafficStopsNavLink"
+          to={buildUrl(slugs.TRAFFIC_STOPS_SLUG)}
+          showCompare={props.showCompare}
+        >
           Traffic Stops
         </SidebarLink>
-        <SidebarLink data-testid="SearchesNavLink" to={buildUrl(slugs.SEARCHES_SLUG)}>
+        <SidebarLink
+          data-testid="SearchesNavLink"
+          to={buildUrl(slugs.SEARCHES_SLUG)}
+          showCompare={props.showCompare}
+        >
           Searches
         </SidebarLink>
-        <SidebarLink data-testid="SearchRateNavLink" to={buildUrl(slugs.SEARCH_RATE_SLUG)}>
+        <SidebarLink
+          data-testid="SearchRateNavLink"
+          to={buildUrl(slugs.SEARCH_RATE_SLUG)}
+          showCompare={props.showCompare}
+        >
           Search Rate
         </SidebarLink>
-        <SidebarLink data-testid="ContrabandNavLink" to={buildUrl(slugs.CONTRABAND_SLUG)}>
+        <SidebarLink
+          data-testid="ContrabandNavLink"
+          to={buildUrl(slugs.CONTRABAND_SLUG)}
+          showCompare={props.showCompare}
+        >
           Contraband
         </SidebarLink>
-        <SidebarLink data-testid="UseOfForceNavLink" to={buildUrl(slugs.USE_OF_FORCE_SLUG)}>
+        <SidebarLink
+          data-testid="UseOfForceNavLink"
+          to={buildUrl(slugs.USE_OF_FORCE_SLUG)}
+          showCompare={props.showCompare}
+        >
           Use of Force
         </SidebarLink>
       </S.SidebarNav>

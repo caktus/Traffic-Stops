@@ -18,6 +18,18 @@ export const Wrapper = styled.div`
     justify-content: center;
     padding: 0.5em;
   }
+
+  ${(props) =>
+    props.showCompare
+      ? `
+    border-right: 1px solid white;
+    flex: 1;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    padding: 0.5em;
+    `
+      : ''}
 `;
 
 export const Chevron = styled(Icon)`
@@ -32,6 +44,12 @@ export const Chevron = styled(Icon)`
   @media (${phoneOnly}) {
     display: none;
   }
+  ${(props) =>
+    props.showCompare
+      ? `
+    display: none;
+    `
+      : ''}
 `;
 
 export const SidebarLink = styled(NavLink)`
@@ -52,4 +70,12 @@ export const SidebarLink = styled(NavLink)`
     font-weight: normal;
     line-height: 1em;
   }
+  ${(props) =>
+    props.showCompare
+      ? `
+    font-size: 16px;
+    font-weight: normal;
+    line-height: 1em;
+    `
+      : ''}
 `;

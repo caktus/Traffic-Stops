@@ -1,11 +1,12 @@
 import styled from 'styled-components';
-import { phoneOnly, smallerThanTabletLandscape } from '../../../../styles/breakpoints';
+import { phoneOnly, smallerThanDesktop } from '../../../../styles/breakpoints';
 import FJIcon from '../../../../img/icons/Icon';
 import { P } from '../../../../styles/StyledComponents/Typography';
 
 export const Legend = styled.div`
   display: flex;
   flex-direction: column;
+  width: 100%;
 
   @media (${phoneOnly}) {
     width: 95%;
@@ -24,11 +25,7 @@ export const KeysList = styled.ul`
   padding: 0;
   margin: 0;
 
-  @media (${smallerThanTabletLandscape}) {
-    max-width: 100vw;
-  }
-
-  @media (${phoneOnly}) {
+  @media (${smallerThanDesktop}) {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: space-between;
