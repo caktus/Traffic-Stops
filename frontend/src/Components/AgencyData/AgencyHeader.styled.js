@@ -1,13 +1,17 @@
 import styled from 'styled-components';
 import { P, H2 } from '../../styles/StyledComponents/Typography';
 import FJIcon from '../../img/icons/Icon';
-import { phoneOnly, smallerThanTabletLandscape } from '../../styles/breakpoints';
+import {
+  phoneOnly,
+  smallerThanDesktop,
+  smallerThanTabletLandscape,
+} from '../../styles/breakpoints';
 
 export const AgencyHeader = styled.div`
   box-shadow: ${(props) => props.theme.shadows.depth1};
   padding: 0.5em 3em;
 
-  @media (${smallerThanTabletLandscape}) {
+  @media (${smallerThanDesktop}) {
     padding: 0.5em 1em;
   }
 
@@ -47,6 +51,11 @@ export const SubHeaderNavRow = styled.div`
 
 export const SubHeaderContentRow = styled.div`
   display: flex;
+  flex: 1;
+  flex-direction: row;
+  @media (${smallerThanDesktop}) {
+    flex-direction: column;
+  }
 `;
 
 export const EntityDetails = styled.div`
@@ -82,7 +91,13 @@ export const CensusRow = styled.ul`
   padding: 0;
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   list-style-type: none;
+  overflow-x: auto;
+  overflow-y: hidden;
+  @media (${smallerThanTabletLandscape}) {
+    height: 100px;
+  }
 `;
 
 export const CensusDatum = styled.li`
@@ -93,11 +108,17 @@ export const CensusDatum = styled.li`
   &:not(:last-child) {
     margin-right: 2em;
   }
+  @media (${smallerThanDesktop}) {
+    flex-direction: row;
+  }
 `;
 
 export const CensusRace = styled(P)`
   text-transform: uppercase;
   font-size: 14px;
+  @media (${smallerThanDesktop}) {
+    margin-right: 1em;
+  }
 `;
 
 export const Datum = styled(P)`

@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import FJIcon from '../../../img/icons/Icon';
 import { H2 } from '../../../styles/StyledComponents/Typography';
-import { phoneOnly } from '../../../styles/breakpoints';
+import { phoneOnly, smallerThanTabletLandscape } from '../../../styles/breakpoints';
 
 export const ChartHeader = styled.div`
   display: flex;
@@ -9,7 +9,7 @@ export const ChartHeader = styled.div`
   justify-content: space-between;
   align-items: center;
 
-  @media (${phoneOnly}) {
+  @media (${smallerThanTabletLandscape}) {
     flex-direction: column;
   }
 `;
@@ -31,11 +31,9 @@ export const ButtonsWrapper = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  width: 400px;
   gap: 10px;
 
   @media (${phoneOnly}) {
-    flex-direction: column;
     width: 90%;
     margin: 0 auto;
 
