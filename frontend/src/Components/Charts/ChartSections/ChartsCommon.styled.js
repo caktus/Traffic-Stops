@@ -82,14 +82,10 @@ export const PieSection = styled.div`
 
 export const PieWrapper = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
   & > div:first-child {
     flex: 1;
-  }
-
-  @media (${phoneOnly}) {
-    flex-direction: column;
   }
 `;
 
