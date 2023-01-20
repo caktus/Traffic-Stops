@@ -37,6 +37,14 @@ export const H2 = styled.h2`
   text-transform: uppercase;
 `;
 
+export const H3 = styled.h2`
+  font-family: ${(props) => props.theme.fonts.heading};
+  font-weight: 550;
+  font-size: 22px;
+  color: ${(props) => props.theme.colors.text};
+  text-transform: uppercase;
+`;
+
 export const H4 = styled.h4`
   font-family: ${(props) => props.theme.fonts.body};
   font-weight: 700;

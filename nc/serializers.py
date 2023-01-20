@@ -1,4 +1,5 @@
 from nc import models as stops
+from nc.models import Resource
 from rest_framework import serializers
 from tsdata.models import StateFacts, TopAgencyFacts
 
@@ -94,6 +95,17 @@ class StateFactsSerializer(serializers.ModelSerializer):
             "start_date",
             "end_date",
             "top_agencies",
+        )
+
+
+class ResourcesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Resource
+        fields = (
+            "title",
+            "agency",
+            "description",
+            "view_more_link",
         )
 
 

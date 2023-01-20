@@ -8,6 +8,7 @@ router = DefaultRouter()
 router.register(r"agency", views.AgencyViewSet, basename="agency-api")
 router.register(r"driver-stops", views.DriverStopsViewSet, basename="driver-stops-api")
 router.register(r"state-facts", views.StateFactsViewSet, basename="state-facts")
+router.register(r"resources", views.ResourcesViewSet, basename="resources")
 
 
 urlpatterns = [  # noqa

@@ -218,3 +218,16 @@ class StopSummary(pg.ReadOnlyMaterializedView):
             models.Index(fields=["engage_force"]),
             models.Index(fields=["contraband_found"]),
         ]
+
+
+class Resource(models.Model):
+    agency = models.ForeignKey(
+        "Agency", null=True, related_name="resources", on_delete=models.CASCADE
+    )
+    title = models.CharField(max_length=500, null=False, blank=False)
+    description = models.TextField(null=True, blank=True)
+    # icon = models.ImageField(null=True, blank=True)
+    view_more_link = models.URLField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.title}"
