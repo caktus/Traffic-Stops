@@ -90,57 +90,82 @@ ENTRYPOINT ["/code/docker-entrypoint.sh"]
 # Start uWSGI
 CMD ["newrelic-admin", "run-program", "uwsgi", "--single-interpreter", "--enable-threads", "--show-config"]
 
-FROM base AS dev
+FROM python:3.8-slim-bullseye AS dev
 
-SHELL ["/bin/bash", "-c"]
+ARG USERNAME=appuser
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
 
-# Install packages needed to develop your application (not build deps):
-#   nodejs -- for React SPA
-# We need to recreate the /usr/share/man/man{1..8} directories first because
-# they were clobbered by a parent image.
-ENV KUBE_LATEST_VERSION="v1.22.11"
-RUN --mount=type=cache,target=/var/cache/apt \
-    --mount=type=cache,target=/var/lib/apt \
+# Create non-root user
+RUN groupadd --gid $USER_GID $USERNAME \
+    && useradd --uid $USER_UID --gid $USER_GID --create-home --shell /bin/bash $USERNAME
+
+# Install packages for Dev Container development
+#   build-essential -- for gcc to compile non-wheel packages with C dependencies
+#   docker-ce-cli -- docker CLI
+#   docker-compose-plugin -- docker compose CLI
+#   git-core -- to pull, commit, and push from dev container
+#   gnupg2 -- GNU privacy guard - a free PGP replacement
+#   libpq-dev -- header files for PostgreSQL
+#   openssh-client -- for git over SSH
+#   sudo -- to run commands as superuser
+#   vim -- enhanced vi editor for commits
+ENV KUBE_CLIENT_VERSION="v1.22.15"
+ENV HELM_VERSION="3.8.2"
+RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/apt \
     --mount=type=cache,mode=0755,target=/root/.cache/pip \
     set -ex \
-    && DEV_DEPS=" \
-    nodejs \
+    && RUN_DEPS=" \
+    build-essential \
+    docker-ce-cli \
+    docker-compose-plugin \
     git-core \
+    gnupg2 \
+    libpcre3 \
+    libpq-dev \
+    mime-support \
+    nodejs \
+    openssh-client \
+    postgresql-client-12 \
+    sudo \
+    vim \
     " \
-    && seq 1 8 | xargs -I{} mkdir -p /usr/share/man/man{} \
-    && apt-get update \
-    && apt-get -y install wget curl gnupg2 lsb-release \
-    # Node
+    && apt-get update && apt-get -y install curl wget gnupg2 lsb-release \
+    # starship.rs prompt
+    && curl -sS https://starship.rs/install.sh | sh -s -- -y \
+    # kubectl
+    && curl --silent -L https://dl.k8s.io/release/$KUBE_CLIENT_VERSION/bin/linux/$(dpkg --print-architecture)/kubectl -o /usr/local/bin/kubectl \
+    && chmod +x /usr/local/bin/kubectl \
+    # helm
+    && curl --silent -L https://get.helm.sh/helm-v$HELM_VERSION-linux-$(dpkg --print-architecture).tar.gz --output - | tar -xzC /tmp \
+    && mv /tmp/linux-$(dpkg --print-architecture)/helm /usr/local/bin/helm \
+    && chmod +x /usr/local/bin/helm \
+    # docker
+    && curl https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor | tee /etc/apt/trusted.gpg.d/docker.gpg >/dev/null \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/trusted.gpg.d/docker.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null \
+    # nodejs
     && sh -c 'echo "deb https://deb.nodesource.com/node_16.x $(lsb_release -cs) main" > /etc/apt/sources.list.d/nodesource.list' \
     && wget --quiet -O- https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add - \
+    # PostgreSQL
+    && sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list' \
+    && curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/apt.postgresql.org.gpg >/dev/null \
+    # dev packages
     && apt-get update \
-    && apt-get install -y --no-install-recommends $DEV_DEPS \
-    # kubectl
-    && export ARCH="$(uname -m)" && if [ ${ARCH} == "x86_64" ]; then export ARCH="amd64"; elif [ ${ARCH} == "aarch64" ]; then export ARCH="arm64"; fi \
-    && curl -L https://dl.k8s.io/release/${KUBE_LATEST_VERSION}/bin/linux/${ARCH}/kubectl -o /usr/local/bin/kubectl \
-    && chmod +x /usr/local/bin/kubectl \
-    && rm -rf /var/lib/apt/lists/*
+    && apt-get install -y --no-install-recommends $RUN_DEPS \
+    # sudo
+    && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
+    && chmod 0440 /etc/sudoers.d/$USERNAME
 
-# Install build deps, then run `pip install`, then remove unneeded build deps all in a single step.
-# Correct the path to your production requirements file, if needed.
-RUN --mount=type=cache,target=/var/cache/apt \
-    --mount=type=cache,target=/var/lib/apt \
-    --mount=type=cache,mode=0755,target=/root/.cache/pip \
-    set -ex \
-    && BUILD_DEPS=" \
-    build-essential \
-    " \
-    && apt-get update && apt-get install -y --no-install-recommends $BUILD_DEPS \
-    && pip-sync requirements/base/base.txt requirements/dev/dev.txt requirements/test/test.txt \
-    && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $BUILD_DEPS \
-    && rm -rf /var/lib/apt/lists/*
+COPY --chown=$USER_UID:$USER_GID . /code/
 
-# Copy pre-built node_modules into dev image for React
-COPY --from=static_files /code/node_modules /code/node_modules
+USER $USERNAME
+RUN set -ex \
+    && touch /code/.env \
+    && echo 'eval "$(starship init bash)"' >> ~/.bashrc
 
-# Copy your application code to the container (make sure you create a .dockerignore file if any large files or directories should be excluded)
-RUN mkdir -p /code/
-WORKDIR /code/
-ADD . /code/
+ENV DJANGO_SETTINGS_MODULE=traffic_stops.settings.dev
+ENV PATH=/code/venv/bin:$PATH
+
+WORKDIR /code
 
 CMD ["python", "/code/manage.py", "runserver", "0.0.0.0:8000"]
