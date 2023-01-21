@@ -3,6 +3,7 @@ import json
 import requests
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
+
 from tsdata import acs
 
 ACS_JSON_URL = "https://nccopwatch.s3.us-east-2.amazonaws.com/acs-2018.json"

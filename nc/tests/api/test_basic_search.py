@@ -1,7 +1,8 @@
 import pytest
+from rest_framework import status
+
 from nc.models import RACE_CHOICES
 from nc.tests import factories
-from rest_framework import status
 
 pytestmark = pytest.mark.django_db
 

@@ -92,7 +92,9 @@ def compute_dataset_facts(Agency, Stop, state_key, Search=None, override_start_d
     for agency in top_agencies:
         facts.append("Id {}: {} {:,}".format(agency.id, agency.name, agency.num_stops))
         TopAgencyFacts.objects.filter(state_facts=state_facts, rank=rank).update(
-            agency_id=agency.id, stops=agency.num_stops, name=agency.name,
+            agency_id=agency.id,
+            stops=agency.num_stops,
+            name=agency.name,
         )
         rank += 1
 

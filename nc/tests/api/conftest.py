@@ -1,5 +1,6 @@
 import pytest
 from django.urls import reverse
+
 from nc.tests import factories
 
 

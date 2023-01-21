@@ -1,6 +1,6 @@
-from nc import models as stops
-from nc.models import Resource
 from rest_framework import serializers
+
+from nc import models as stops
 from tsdata.models import StateFacts, TopAgencyFacts
 
 
@@ -102,7 +102,7 @@ class ResourcesSerializer(serializers.ModelSerializer):
     image_url = serializers.SerializerMethodField()
 
     class Meta:
-        model = Resource
+        model = stops.Resource
         fields = (
             "title",
             "agency",

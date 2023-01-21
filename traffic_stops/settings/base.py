@@ -16,7 +16,7 @@ ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )
 
-DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 DATABASES = {
     "default": {

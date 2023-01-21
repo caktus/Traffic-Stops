@@ -13,8 +13,9 @@ import census
 import pandas as pd
 from django.conf import settings
 from django.db import transaction
-from tsdata.models import STATE_CHOICES, CensusProfile
 from us import states
+
+from tsdata.models import STATE_CHOICES, CensusProfile
 
 # Variables: http://api.census.gov/data/2016/acs/acs5/variables.json
 NC_RACE_VARS = {

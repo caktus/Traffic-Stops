@@ -10,6 +10,6 @@ pytest-django
 coverage
 # Linting
 flake8
-# Pinned due to bug introduced in release 20.8b0
-black==21.10b0
-pre-commit==2.20.0
+black==22.3.0
+pre-commit==2.21.0
+identify==2.5.13

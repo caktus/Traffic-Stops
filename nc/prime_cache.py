@@ -6,6 +6,7 @@ from django.core.cache import cache
 from django.db.models import Count, F, Sum
 from django.test.client import Client
 from django.urls import reverse
+
 from nc.models import Stop, StopSummary
 
 logger = logging.getLogger(__name__)

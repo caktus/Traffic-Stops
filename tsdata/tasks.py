@@ -7,6 +7,7 @@ from django.conf import settings
 from django.core.mail import EmailMessage, send_mail
 from django.db.models import Max, OuterRef, Q, Subquery
 from django.utils import timezone
+
 from nc.data.importer import run as nc_run
 from traffic_stops.celery import app
 from tsdata.models import Dataset, Import

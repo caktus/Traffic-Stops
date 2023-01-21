@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+
 from nc import prime_cache
 
 
@@ -15,7 +16,9 @@ class Command(BaseCommand):
         parser.add_argument("--skip-agencies", action="store_true", default=False)
         parser.add_argument("--skip-officers", action="store_true", default=False)
         parser.add_argument(
-            "--officer-cutoff-count", type=int, default=None,
+            "--officer-cutoff-count",
+            type=int,
+            default=None,
         )
 
     def handle(self, *args, **options):
