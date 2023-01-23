@@ -78,10 +78,11 @@ export const PieSection = styled.div`
 
 export const PieWrapper = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  & > div:first-child {
-    flex: 1;
+
+  @media (${smallerThanTabletLandscape}) {
+    flex-direction: column;
   }
 `;
 
@@ -155,7 +156,7 @@ export const LegendSection = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 33%;
+  width: 100%;
 
   @media (${smallerThanDesktop}) {
     width: 100%;

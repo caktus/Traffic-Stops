@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { phoneOnly, smallerThanDesktop } from '../../../../styles/breakpoints';
+import { smallerThanDesktop } from '../../../../styles/breakpoints';
 import FJIcon from '../../../../img/icons/Icon';
 import { P } from '../../../../styles/StyledComponents/Typography';
 
@@ -8,7 +8,7 @@ export const Legend = styled.div`
   flex-direction: column;
   width: 100%;
 
-  @media (${phoneOnly}) {
+  @media (${smallerThanDesktop}) {
     width: 95%;
     margin: 0 auto;
   }
