@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTheme } from 'styled-components';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import * as S from './AgencyHeader.styled';
 import { P, SIZES, WEIGHTS, COLORS } from '../../styles/StyledComponents/Typography';
 

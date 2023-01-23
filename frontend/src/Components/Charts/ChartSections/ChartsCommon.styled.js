@@ -1,9 +1,5 @@
 import styled from 'styled-components';
-import {
-  phoneOnly,
-  smallerThanDesktop,
-  smallerThanTabletLandscape,
-} from '../../../styles/breakpoints';
+import { smallerThanDesktop, smallerThanTabletLandscape } from '../../../styles/breakpoints';
 import { H2 } from '../../../styles/StyledComponents/Typography';
 
 export const ChartSection = styled.div`
