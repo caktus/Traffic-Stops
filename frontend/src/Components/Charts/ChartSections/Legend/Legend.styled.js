@@ -7,6 +7,7 @@ export const Legend = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
+  flex: 0;
 
   @media (${smallerThanDesktop}) {
     width: 95%;

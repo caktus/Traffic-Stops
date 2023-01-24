@@ -49,7 +49,7 @@ export const LegendBelow = styled.div`
 export const LineSection = styled.div`
   display: flex;
   flex-direction: column;
-  flex: 1;
+  width: 100%;
 `;
 
 export const LineWrapper = styled.div`
@@ -157,6 +157,7 @@ export const LegendSection = styled.div`
   flex-direction: column;
   align-items: center;
   width: 100%;
+  flex: 0;
 
   @media (${smallerThanDesktop}) {
     width: 100%;
