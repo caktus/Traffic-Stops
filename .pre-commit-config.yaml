@@ -24,7 +24,7 @@ repos:
         exclude: '^(deployment/|deploy)'
       - id: check-added-large-files
       - id: check-json
-        exclude: .devcontainer/devcontainer.json|.vscode/launch.json
+        exclude: .devcontainer/devcontainer.json|.vscode/launch.json|frontend/.eslintrc.json
       - id: check-docstring-first
       - id: check-merge-conflict
       - id: debug-statements
