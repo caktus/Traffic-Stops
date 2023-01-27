@@ -10,9 +10,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_extensions.cache.decorators import cache_response
 from rest_framework_extensions.key_constructor import bits
-from rest_framework_extensions.key_constructor.constructors import (
-    DefaultObjectKeyConstructor,
-)
+from rest_framework_extensions.key_constructor.constructors import DefaultObjectKeyConstructor
 
 from nc import serializers
 from nc.filters import DriverStopsFilter

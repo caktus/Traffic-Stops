@@ -1,5 +1,6 @@
 import factory
 import pytest
+
 from django.conf import settings
 
 from tsdata.models import StateFacts

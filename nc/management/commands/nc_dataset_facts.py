@@ -1,4 +1,5 @@
 import djclick as click
+
 from django.conf import settings
 
 from nc.models import Agency, Search, Stop

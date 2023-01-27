@@ -1,4 +1,5 @@
 import pytest
+
 from rest_framework import status
 
 from nc.models import RACE_CHOICES

@@ -1,6 +1,7 @@
 import invoke
 import kubesae
 import yaml
+
 from colorama import init
 
 init(autoreset=True)
@@ -53,6 +54,7 @@ ns.add_task(ansible_playbook, "playbook")
 ns.configure(
     {
         "app": "trafficstops_app",
+        "app_build_target": "deploy",
         "aws": {
             "region": "us-east-2",
         },
