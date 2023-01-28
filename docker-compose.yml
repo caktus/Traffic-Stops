@@ -8,7 +8,7 @@ services:
       DATABASE_URL: postgres://postgres@127.0.0.1:5432/traffic_stops
     image: postgres:12-alpine
     ports:
-      - "54344:5432"
+      - "9051:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./docker-entrypoint.postgres.sql:/docker-entrypoint-initdb.d/init.sql
@@ -18,7 +18,7 @@ services:
   redis:
     image: redis:5-alpine
     ports:
-      - "63791:6379"
+      - "9052:6379"
     volumes:
       - redisdata:/data
   django:
@@ -46,8 +46,8 @@ services:
       - db:db
       - redis:redis
     ports:
-      - "8000:8000"
-      - "3000:3000"
+      - "9050:8000"
+      - "9053:3000"
     volumes:
       - ~/.ssh:/home/appuser/.ssh:delegated
       - ~/.aws:/home/appuser/.aws/
