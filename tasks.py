@@ -40,6 +40,7 @@ def ansible_playbook(c, name, extra="", verbosity=1):
 
 @invoke.task
 def deploy_html_notebooks(c, dir_name):
+    """Upload html exports of Jupyter Notebooks to S3"""
     c.run(
         "aws s3 sync --acl public-read --exclude '*' --include '*.html' "
         f"nc/notebooks/{dir_name}/ s3://nccopwatch-share/{dir_name}/"
