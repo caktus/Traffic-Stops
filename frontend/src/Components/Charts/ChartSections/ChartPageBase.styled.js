@@ -15,6 +15,7 @@ export const ChartPageContent = styled.div`
   overflow: hidden;
 
   @media (${smallerThanDesktop}) {
+    padding: 2em 1em;
     overflow-y: visible;
   }
 
