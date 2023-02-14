@@ -8,7 +8,13 @@ import defaultTheme from '../styles/themes.styled';
 
 // Router
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import { AGENCY_LIST_SLUG, ABOUT_SLUG, FIND_A_STOP_SLUG, HOME_SLUG } from '../Routes/slugs';
+import {
+  AGENCY_LIST_SLUG,
+  ABOUT_SLUG,
+  FIND_A_STOP_SLUG,
+  HOME_SLUG,
+  RESOURCES_SLUG,
+} from '../Routes/slugs';
 
 // Layout
 import Layout from './Layout';
@@ -29,6 +35,7 @@ import AgencyData from './AgencyData/AgencyData';
 import HomePage from './HomePage/HomePage';
 import FindAStopPage from './FindAStopPage/FindAStopPage';
 import Header from './Header/Header';
+import Resources from './ResourcePage/ResourcePage';
 // eslint-disable-next-line import/no-named-as-default,import/no-named-as-default-member
 import FindAStopResults from './FindAStopResults/FindAStopResults';
 import DepartmentSearch from './Elements/DepartmentSearch';
@@ -98,6 +105,9 @@ function App() {
                 />
                 <Route exact path={ABOUT_SLUG}>
                   <About />
+                </Route>
+                <Route exact path={RESOURCES_SLUG}>
+                  <Resources />
                 </Route>
                 <Route path={HOME_SLUG}>
                   <HomePage />

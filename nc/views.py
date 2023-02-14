@@ -6,7 +6,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from nc import serializers
 from nc.filters import DriverStopsFilter
 from nc.models import SEARCH_TYPE_CHOICES as SEARCH_TYPE_CHOICES_TUPLES
-from nc.models import Agency, Contraband, Person, StopSummary
+from nc.models import Agency, Contraband, Person, Resource, StopSummary
 from nc.pagination import NoCountPagination
 from nc.serializers import ContactFormSerializer
 from rest_framework import viewsets
@@ -279,6 +279,28 @@ class DriverStopsViewSet(viewsets.ReadOnlyModelViewSet):
 class StateFactsViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = StateFacts.objects.all()
     serializer_class = serializers.StateFactsSerializer
+
+
+class ResourcesViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = serializers.ResourcesSerializer
+    queryset = Resource.objects.all()
+
+    def get_serializer_class(self):
+        return serializers.ResourcesSerializer(context={"request": self.request})
+
+    def list(self, request, *args, **kwargs):
+        """Group by agency and return a dictionary for the frontend to iterate easily"""
+        grouped_agencies = [
+            {"agency": resource["agency__name"]}
+            for resource in Resource.objects.values("agency__name").distinct()
+        ]
+        for agency in grouped_agencies:
+            agency["results"] = self.serializer_class(
+                Resource.objects.filter(agency__name=agency["agency"]),
+                many=True,
+                context={"request": self.request},
+            ).data
+        return Response({"grouped_agencies": grouped_agencies})
 
 
 class ContactView(APIView):

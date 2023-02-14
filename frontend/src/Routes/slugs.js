@@ -1,6 +1,7 @@
 // First level
 export const HOME_SLUG = '/';
 export const ABOUT_SLUG = '/about';
+export const RESOURCES_SLUG = '/resources';
 export const ABOUT_CONTACT_SLUG = '/about/contact';
 export const AGENCY_LIST_SLUG = '/agencies';
 export const FIND_A_STOP_SLUG = '/stops';

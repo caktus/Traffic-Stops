@@ -1,5 +1,5 @@
 from django.contrib import admin
-from nc.models import Agency, StopSummary
+from nc.models import Agency, Resource, StopSummary
 
 
 class AgencyAdmin(admin.ModelAdmin):
@@ -41,5 +41,10 @@ class StopSummaryAdmin(admin.ModelAdmin):
         return obj.agency.name
 
 
+class ResourceAdmin(admin.ModelAdmin):
+    list_display = ("title", "agency")
+
+
 admin.site.register(Agency, AgencyAdmin)
 admin.site.register(StopSummary, StopSummaryAdmin)
+admin.site.register(Resource, ResourceAdmin)
