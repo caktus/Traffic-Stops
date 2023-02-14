@@ -10,7 +10,7 @@ function Resource({ resource }) {
   return (
     <S.ResourceBlock>
       <div style={{ marginRight: '20px' }}>
-        <img src={resource.image_url} width={150} />
+        <img src={resource.image_url} width={150} alt={resource.title} />
       </div>
       <div>
         <H3>{resource.title} </H3>
