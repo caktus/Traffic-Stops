@@ -5,12 +5,6 @@ import { H1, H2, H3, P } from '../../styles/StyledComponents/Typography';
 import axios from '../../Services/Axios';
 import { RESOURCES_URL } from '../../Services/endpoints';
 import LinkButton from '../Elements/LinkButton';
-import {
-  ResourceBlock,
-  ResourceDividingLine,
-  ResourcePageContent,
-  ResourcePageStyled,
-} from './ResourcePage.styled';
 
 function Resource({ resource }) {
   return (
