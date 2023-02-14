@@ -2,11 +2,9 @@ import styled from 'styled-components';
 import { smallerThanDesktop, smallerThanTabletLandscape } from '../../styles/breakpoints';
 import FullWidthPage from '../../styles/StyledComponents/FullWidthPage';
 
-import { P } from '../../styles/StyledComponents/Typography';
+export const ResourcePageStyled = styled(FullWidthPage)``;
 
-export const AboutPageStyled = styled(FullWidthPage)``;
-
-export const AboutPageContent = styled.div`
+export const ResourcePageContent = styled.div`
   max-width: 1170px;
   margin: 0 auto;
   width: 100%;
@@ -21,27 +19,14 @@ export const AboutPageContent = styled.div`
   }
 `;
 
-export const AboutPageText = styled.div`
-  padding: 0 1.5em;
-
-  @media (${smallerThanTabletLandscape}) {
-    padding: 0;
-  }
-`;
-
-export const AboutPageParagraph = styled(P)`
-  margin: 1.5em 0;
-  line-height: 2;
-`;
-
-export const AboutPageBoldParagraph = styled(P)`
-  margin: 1.5em 0;
-  line-height: 2;
-  font-weight: bold;
-`;
-
-export const AboutPageFlexedDiv = styled.div`
+export const ResourceBlock = styled.div`
   display: flex;
-  justify-content: center;
-  margin-top: 1.5em;
+  margin-bottom: 50px;
+  padding: 30px;
+`;
+
+export const ResourceDividingLine = styled.div`
+  border-bottom: 1px solid darkgray;
+  padding-left: 100px;
+  padding-right: 100px;
 `;

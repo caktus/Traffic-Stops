@@ -285,6 +285,9 @@ class ResourcesViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.ResourcesSerializer
     queryset = Resource.objects.all()
 
+    def get_serializer_class(self):
+        return serializers.ResourcesSerializer(context={"request": self.request})
+
     def list(self, request, *args, **kwargs):
         """Group by agency and return a dictionary for the frontend to iterate easily"""
         grouped_agencies = [
@@ -293,7 +296,9 @@ class ResourcesViewSet(viewsets.ReadOnlyModelViewSet):
         ]
         for agency in grouped_agencies:
             agency["results"] = self.serializer_class(
-                Resource.objects.filter(agency__name=agency["agency"]), many=True
+                Resource.objects.filter(agency__name=agency["agency"]),
+                many=True,
+                context={"request": self.request},
             ).data
         return Response({"grouped_agencies": grouped_agencies})
 

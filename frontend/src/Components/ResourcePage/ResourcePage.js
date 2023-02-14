@@ -5,11 +5,19 @@ import { H1, H2, H3, P } from '../../styles/StyledComponents/Typography';
 import axios from '../../Services/Axios';
 import { RESOURCES_URL } from '../../Services/endpoints';
 import LinkButton from '../Elements/LinkButton';
+import {
+  ResourceBlock,
+  ResourceDividingLine,
+  ResourcePageContent,
+  ResourcePageStyled,
+} from './ResourcePage.styled';
 
 function Resource({ resource }) {
   return (
-    <div style={{ display: 'flex', marginBottom: '75px', padding: '30px' }}>
-      <div style={{ minWidth: '200px', backgroundColor: 'red', marginRight: '10px' }} />
+    <S.ResourceBlock>
+      <div style={{ marginRight: '20px' }}>
+        <img src={resource.image_url} width={150} alt="New Resource Policy" />
+      </div>
       <div>
         <H3>{resource.title} </H3>
         <P>{resource.description}</P>
@@ -20,7 +28,7 @@ function Resource({ resource }) {
           </div>
         )}
       </div>
-    </div>
+    </S.ResourceBlock>
   );
 }
 
@@ -31,15 +39,7 @@ function AgencyGroup({ agency }) {
       {agency.results.map((resource, index) => (
         <>
           <Resource resource={resource} />
-          {index !== agency.results.length - 1 && (
-            <div
-              style={{
-                borderBottom: '1px solid black',
-                paddingLeft: '100px',
-                paddingRight: '100px',
-              }}
-            />
-          )}
+          {index !== agency.results.length - 1 && <S.ResourceDividingLine />}
         </>
       ))}
     </div>
@@ -68,13 +68,13 @@ function ResourcePage() {
 
   const renderedResources = resources.map((agency) => <AgencyGroup agency={agency} />);
   return (
-    <S.AboutPageStyled data-testid="ResourcePage">
-      <S.AboutPageContent>
+    <S.ResourcePageStyled data-testid="ResourcePage">
+      <S.ResourcePageContent>
         <H1>Resources</H1>
         {loading ?? <H1>Loading</H1>}
         <ul>{renderedResources}</ul>
-      </S.AboutPageContent>
-    </S.AboutPageStyled>
+      </S.ResourcePageContent>
+    </S.ResourcePageStyled>
   );
 }
 

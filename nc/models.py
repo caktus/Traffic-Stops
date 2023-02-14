@@ -221,12 +221,13 @@ class StopSummary(pg.ReadOnlyMaterializedView):
 
 
 class Resource(models.Model):
+    RESOURCE_IMAGES = [("copwatch-new-policy", "New Policy")]
     agency = models.ForeignKey(
         "Agency", null=True, related_name="resources", on_delete=models.CASCADE
     )
     title = models.CharField(max_length=500, null=False, blank=False)
     description = models.TextField(null=True, blank=True)
-    # icon = models.ImageField(null=True, blank=True)
+    image = models.CharField(null=True, blank=True, choices=RESOURCE_IMAGES, max_length=200)
     view_more_link = models.URLField(null=True, blank=True)
 
     def __str__(self):
