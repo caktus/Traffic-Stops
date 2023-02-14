@@ -1,21 +1,21 @@
 import React from 'react';
+import styled from 'styled-components';
 
 function LinkButton({ href, title }) {
   return (
-    <a
-      href={href}
-      style={{
-        padding: '15px',
-        backgroundColor: '#00B2B0',
-        borderRadius: 10,
-        color: 'white',
-        fontWeight: '700',
-        textDecoration: 'none',
-      }}
-    >
+    <LinkStyled href={href} target="_blank" rel="noopener noreferrer">
       {title}
-    </a>
+    </LinkStyled>
   );
 }
 
 export default LinkButton;
+
+const LinkStyled = styled.a`
+  padding: 15px;
+  background-color: #00b2b0;
+  border-radius: 10px;
+  color: white;
+  font-weight: 700;
+  text-decoration: none;
+`;
