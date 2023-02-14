@@ -14,6 +14,7 @@ import useDataset, { AGENCY_DETAILS } from '../../Hooks/useDataset';
 import AgencyHeader from './AgencyHeader';
 import Sidebar from '../Sidebar/Sidebar';
 import ChartRoutes from '../Charts/ChartRoutes';
+import { CompareAlertBox } from '../Elements/Alert/Alert';
 
 function AgencyData(props) {
   let { agencyId } = useParams();
@@ -40,6 +41,7 @@ function AgencyData(props) {
 
   return (
     <S.AgencyData data-testid="AgencyData" {...props}>
+      {props.showCompare && !props.agencyId && <CompareAlertBox />}
       <AgencyHeader
         agencyHeaderOpen={agencyHeaderOpen}
         agencyDetails={chartState.data[AGENCY_DETAILS]}

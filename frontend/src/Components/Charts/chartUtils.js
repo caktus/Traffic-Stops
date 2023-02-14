@@ -191,8 +191,14 @@ export const reduceEthnicityByYears = (data, yearsSet, ethnicGroups = RACES) => 
         }))[e];
       });
       yrData['total'] = calculateYearTotal(yrData);
-      yearData.push(yrData);
+    } else {
+      yrData['no_data'] = true;
+      ethnicGroups.forEach((e) => {
+        yrData[e] = 0;
+      });
+      yrData['total'] = 0;
     }
+    yearData.push(yrData);
   });
   return yearData;
 };

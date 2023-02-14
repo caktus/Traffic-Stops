@@ -72,6 +72,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
         closeModal();
       }
     }
+
     document.addEventListener('keyup', _handleKeyUp);
     return () => document.removeEventListener('keyup', _handleKeyUp);
   }, [closeModal]);
@@ -85,6 +86,26 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     // eslint-disable-next-line no-return-assign
     return () => (document.body.style.overflow = 'visible');
   }, [isOpen]);
+
+  const markMissingYears = (mergedData) => {
+    for (let i = 0; i < yearRange.length; i++) {
+      const year = yearRange[i];
+      if (mergedData.filter((y) => y.year === year).length === 0) {
+        mergedData.push({
+          year,
+          no_data: true,
+          asian: 0,
+          black: 0,
+          hispanic: 0,
+          native_american: 0,
+          other: 0,
+          purpose,
+          total: 0,
+          white: 0,
+        });
+      }
+    }
+  };
 
   /* Build some more complicated data sets */
   const mapStopsByPurpose = (ds) => {
@@ -117,6 +138,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
           mergedData = mergedData.filter((e) => e.purpose === purpose);
         }
       }
+      markMissingYears(mergedData);
     }
 
     const raceTotals = {
@@ -161,6 +183,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
           mergedData = mergedData.filter((e) => e.purpose === purpose);
         }
       }
+      markMissingYears(mergedData);
     }
 
     const raceTotals = {
@@ -198,6 +221,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     if (purpose) {
       mergedData = mergedData.filter((e) => e.purpose === purpose);
     }
+    markMissingYears(mergedData);
     const raceTotals = {
       year: 'Totals',
       ...reduceFullDatasetOnlyTotals(mergedData, RACES),
@@ -217,6 +241,9 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     const mappedData = yearRange.map((year) => {
       const hits = contraband.find((d) => d.year === year) || 0;
       const comparedData = { year };
+      if (!hits) {
+        comparedData['no_data'] = true;
+      }
       RACES.forEach((r) => {
         comparedData[r] = hits[r] || 0;
       });
@@ -248,6 +275,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     } else {
       mappedData = data;
     }
+    markMissingYears(mappedData);
     const raceTotals = {
       year: 'Totals',
       search_type: '',
@@ -278,6 +306,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       const chartData = chartState.data[ds];
       // eslint-disable-next-line no-param-reassign,no-return-assign
       chartData.forEach((chartDatum) => (chartDatum['total'] = calculateYearTotal(chartDatum)));
+      markMissingYears(chartData);
       const raceTotals = {
         year: 'Totals',
         ...reduceFullDatasetOnlyTotals(chartData, RACES),

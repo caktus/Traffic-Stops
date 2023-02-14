@@ -194,6 +194,7 @@ function TrafficStops(props) {
   };
 
   const handleViewPercentageData = () => {
+    setPurpose(PURPOSE_DEFAULT);
     openModal(STOPS, STOPS_TABLE_COLUMNS);
   };
 
