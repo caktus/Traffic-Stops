@@ -221,7 +221,10 @@ class StopSummary(pg.ReadOnlyMaterializedView):
 
 
 class Resource(models.Model):
-    RESOURCE_IMAGES = [("copwatch-new-policy", "New Policy")]
+    RESOURCE_IMAGES = [
+        ("copwatch-new-policy", "New Policy"),
+        ("forward-justice-logo", "Forward Justice Logo"),
+    ]
     agency = models.ForeignKey(
         "Agency", null=True, related_name="resources", on_delete=models.CASCADE
     )
