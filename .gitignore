@@ -53,3 +53,4 @@ aws_ec2.yml
 deploy/roles
 docker-compose.override.yml
 htmlcov
+acs*.json

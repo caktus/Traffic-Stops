@@ -1,13 +1,12 @@
-# American Community Survey 5-Year Data
-# https://www.census.gov/data/developers/data-sets/acs-5year.2016.html
+# American Community Survey 5-Year Data (2018)
 #
 # Notes:
-#  - Examples: http://api.census.gov/data/2016/acs/acs5/examples.html
+#  - Examples: http://api.census.gov/data/2018/acs/acs5/examples.html
 #  - Places: https://www.census.gov/content/dam/Census/data/developers/understandingplace.pdf
 #
 # Fact Finder:
-#  - Home: http://factfinder.census.gov/faces/nav/jsf/pages/index.xhtml
-#  - Durham city, NC: https://factfinder.census.gov/bkmk/table/1.0/en/ACS/16_5YR/DP05/1600000US3719000  # noqa
+#  - NC: https://data.census.gov/table?q=B03002&g=0400000US37&y=2018&d=ACS+5-Year+Estimates+Detailed+Tables&tid=ACSDT5Y2018.B03002  # noqa
+#  - Durham city, NC: https://data.census.gov/table?q=B03002&g=1600000US3719000&y=2018&d=ACS+5-Year+Estimates+Detailed+Tables  # noqa
 
 import census
 import pandas as pd
@@ -18,7 +17,7 @@ from us import states
 
 from tsdata.models import STATE_CHOICES, CensusProfile
 
-# Variables: http://api.census.gov/data/2016/acs/acs5/variables.json
+# Variables: http://api.census.gov/data/2018/acs/acs5/variables.json
 NC_RACE_VARS = {
     "B03002_001E": "total",  # Estimate!!Total
     "B03002_003E": "white",  # Estimate!!Total!!Not Hispanic or Latino!!White alone
@@ -92,22 +91,20 @@ class ACS(object):
 
 class ACSState(ACS):
     """
-    State County Demographics
-    ex: http://api.census.gov/data/2016/acs/acs5?get=NAME&for=county:*&in=state:24
+    State Demographics
+    ex: http://api.census.gov/data/2018/acs/acs5?get=NAME&for=state:27
     """
 
     geography = "state"
-    drop_columns = ["state"]
-    state_fip = "37"
 
     def call_api(self):
-        return self.api.acs5.state(self.variables, self.state_fip)
+        return self.api.acs5.state(self.variables, self.fips)
 
 
 class ACSStateCounties(ACS):
     """
     State County Demographics
-    ex: http://api.census.gov/data/2016/acs/acs5?get=NAME&for=county:*&in=state:24
+    ex: http://api.census.gov/data/2018/acs/acs5?get=NAME&for=county:*&in=state:27
     """
 
     geography = "county"
@@ -120,7 +117,7 @@ class ACSStateCounties(ACS):
 class ACSStatePlaces(ACS):
     """
     State Place Demographics
-    ex: http://api.census.gov/data/2016/acs/acs5?get=NAME&for=place:*&in=state:24
+    ex: http://api.census.gov/data/2018/acs/acs5?get=NAME&for=place:*&in=state:27
     """
 
     geography = "place"
@@ -140,6 +137,7 @@ def get_state_census_data(key):
     profiles = [ACSState(settings.NC_KEY, "NC").get()]
     # profiles = []
     for state in [abbr.upper() for abbr, name in STATE_CHOICES]:
+        profiles.append(ACSState(key, state).get())
         profiles.append(ACSStateCounties(key, state).get())
         profiles.append(ACSStatePlaces(key, state).get())
     return pd.concat(profiles)
