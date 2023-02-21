@@ -134,8 +134,7 @@ class ACSStatePlaces(ACS):
 
 def get_state_census_data(key):
     """Download several state Census endpoints into a single DataFrame"""
-    profiles = [ACSState(settings.NC_KEY, "NC").get()]
-    # profiles = []
+    profiles = []
     for state in [abbr.upper() for abbr, name in STATE_CHOICES]:
         profiles.append(ACSState(key, state).get())
         profiles.append(ACSStateCounties(key, state).get())
