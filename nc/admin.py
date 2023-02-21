@@ -4,7 +4,9 @@ from nc.models import Agency, Resource, StopSummary
 
 
 class AgencyAdmin(admin.ModelAdmin):
-    list_display = ("name", "census_profile_id")
+    list_display = ("name", "id", "census_profile_id")
+    search_fields = ("name",)
+    ordering = ("id",)
 
 
 class StopSummaryAdmin(admin.ModelAdmin):
