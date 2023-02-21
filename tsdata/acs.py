@@ -52,12 +52,12 @@ RACE_VARIABLES = {
 class ACS(object):
     """Base class to call ACS API and normalize output"""
 
-    source = "ACS 5-Year Data (2014-2018)"
+    source = "ACS 5-Year Data (2017-2021)"
     geography = None
     drop_columns = None
 
     def __init__(self, key, state_abbr):
-        self.api = census.Census(key, year=2018)
+        self.api = census.Census(key, year=2021)
         self.fips = getattr(states, state_abbr).fips
         self.state_abbr = state_abbr
 
@@ -65,6 +65,10 @@ class ACS(object):
         # NAME = geography/location
         # GEO_ID = combination of country, state, county
         self.variables = ["NAME", "GEO_ID"] + list(self.race_variables.keys())
+        # Patch years until this upstream PR is merged:
+        # https://github.com/datamade/census/pull/126
+        years = list(self.api.acs5.years) + [2021]
+        self.api.acs5.years = years
 
     def call_api(self):
         raise NotImplementedError()
