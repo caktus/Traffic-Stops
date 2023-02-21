@@ -1,10 +1,12 @@
 import os
 import shutil
+
 from datetime import timedelta
 
-from celery.utils.log import get_task_logger
 from django.conf import settings
 from django.utils.timezone import now
+
+from celery.utils.log import get_task_logger
 from nc.data.importer import MAGIC_NC_FTP_URL
 from traffic_stops.celery import app
 from tsdata.models import Dataset

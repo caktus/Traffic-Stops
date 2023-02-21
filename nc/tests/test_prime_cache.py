@@ -1,4 +1,5 @@
 from django.test import TestCase
+
 from nc.prime_cache import run
 from nc.tests import factories
 

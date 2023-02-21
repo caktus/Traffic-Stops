@@ -8,7 +8,7 @@ services:
       DATABASE_URL: postgres://postgres@127.0.0.1:5432/traffic_stops
     image: postgres:12-alpine
     ports:
-      - "54344:5432"
+      - "9051:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./docker-entrypoint.postgres.sql:/docker-entrypoint-initdb.d/init.sql
@@ -18,10 +18,49 @@ services:
   redis:
     image: redis:5-alpine
     ports:
-      - "63791:6379"
+      - "9052:6379"
     volumes:
       - redisdata:/data
+  django:
+    environment:
+      DJANGO_SETTINGS_MODULE: traffic_stops.settings.dev
+      PGHOST: db
+      PGPORT: 5432
+      PGUSER: postgres
+      PGDATABASE: traffic_stops
+      DATABASE_URL: postgres://postgres@db:5432/traffic_stops
+      DATABASE_URL_NC: postgres://postgres@db:5432/traffic_stops_nc
+      CACHE_HOST: redis://redis:6379/1
+      ENVIRONMENT: dev
+      DJANGO_SECRET_KEY: dummy
+      DOMAIN: localhost
+      SESSION_COOKIE_SECURE: "False"
+      DJANGO_SECURE_SSL_REDIRECT: "False"
+      AWS_PROFILE: trafficstops
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    command: ["sleep", "infinity"]
+    links:
+      - db:db
+      - redis:redis
+    ports:
+      - "9050:8000"
+      - "9053:3000"
+    volumes:
+      - ~/.ssh:/home/appuser/.ssh:delegated
+      - ~/.aws:/home/appuser/.aws/
+      - .:/code/
+      - dev_media:/code/public
+      - dev_node_modules:/code/frontend/node_modules
+      - dev_venv:/code/venv
+      - dev_cache:/home/appuser/.cache/
 
 volumes:
   pgdata:
   redisdata:
+  dev_media: {}
+  dev_node_modules: {}
+  dev_venv: {}
+  dev_cache: {}

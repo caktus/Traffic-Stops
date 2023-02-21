@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
+
 from nc.models import Stop
 from traffic_stops.routers import StateDatasetRouter
 

@@ -5,6 +5,7 @@ import tempfile
 from django.conf import settings
 from django.core import mail
 from django.test import TestCase
+
 from nc.data.importer import update_nc_agencies
 
 

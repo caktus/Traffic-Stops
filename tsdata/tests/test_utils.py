@@ -1,8 +1,10 @@
 import os
 import tempfile
+
 from zipfile import ZipFile
 
 from django.test import TestCase
+
 from tsdata.utils import (
     download_and_unzip_data,
     get_csv_path,

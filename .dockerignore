@@ -16,3 +16,4 @@ frontend/node_modules
 deploy/
 .env
 .envrc
+nc/notebooks

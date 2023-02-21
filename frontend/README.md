@@ -22,7 +22,7 @@ Prefer the use of [skeleton loaders](https://design.gitlab.com/components/skelet
 
 ## Animation
 
-Animation is implemented using [Framer-Motion](https://www.framer.com/api/motion/). There's a learning curve, but once it clicks it's a very powerful animation tool.  
+Animation is implemented using [Framer-Motion](https://www.framer.com/api/motion/). There's a learning curve, but once it clicks it's a very powerful animation tool.
 Philosophically, this project utilizes animation to ease transitions for the user. An animation here should, if used in the right place, solved one or more of the following problems:
 
 1. The user has clicked a button, but isn't sure if anything happened. Animating a color change, shadow change, or showing an animated loading indicator/skeleton can indicate that their input has been recieved and understood.
