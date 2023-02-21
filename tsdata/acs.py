@@ -1,12 +1,12 @@
-# American Community Survey 5-Year Data (2018)
+# American Community Survey 5-Year Data (2021)
 #
 # Notes:
-#  - Examples: http://api.census.gov/data/2018/acs/acs5/examples.html
+#  - Examples: http://api.census.gov/data/2021/acs/acs5/examples.html
 #  - Places: https://www.census.gov/content/dam/Census/data/developers/understandingplace.pdf
 #
 # Fact Finder:
-#  - NC: https://data.census.gov/table?q=B03002&g=0400000US37&y=2018&d=ACS+5-Year+Estimates+Detailed+Tables&tid=ACSDT5Y2018.B03002  # noqa
-#  - Durham city, NC: https://data.census.gov/table?q=B03002&g=1600000US3719000&y=2018&d=ACS+5-Year+Estimates+Detailed+Tables  # noqa
+#  - NC: https://data.census.gov/table?q=B03002&g=0400000US37&y=2021&d=ACS+5-Year+Estimates+Detailed+Tables&tid=ACSDT5Y2021.B03002  # noqa
+#  - Durham city, NC: https://data.census.gov/table?q=B03002&g=1600000US3719000&y=2021&d=ACS+5-Year+Estimates+Detailed+Tables  # noqa
 
 import census
 import pandas as pd
@@ -17,7 +17,7 @@ from us import states
 
 from tsdata.models import STATE_CHOICES, CensusProfile
 
-# Variables: http://api.census.gov/data/2018/acs/acs5/variables.json
+# Variables: http://api.census.gov/data/2021/acs/acs5/variables.json
 NC_RACE_VARS = {
     "B03002_001E": "total",  # Estimate!!Total
     "B03002_003E": "white",  # Estimate!!Total!!Not Hispanic or Latino!!White alone
@@ -96,7 +96,7 @@ class ACS(object):
 class ACSState(ACS):
     """
     State Demographics
-    ex: http://api.census.gov/data/2018/acs/acs5?get=NAME&for=state:27
+    ex: http://api.census.gov/data/2021/acs/acs5?get=NAME&for=state:27
     """
 
     geography = "state"
@@ -108,7 +108,7 @@ class ACSState(ACS):
 class ACSStateCounties(ACS):
     """
     State County Demographics
-    ex: http://api.census.gov/data/2018/acs/acs5?get=NAME&for=county:*&in=state:27
+    ex: http://api.census.gov/data/2021/acs/acs5?get=NAME&for=county:*&in=state:27
     """
 
     geography = "county"
@@ -121,7 +121,7 @@ class ACSStateCounties(ACS):
 class ACSStatePlaces(ACS):
     """
     State Place Demographics
-    ex: http://api.census.gov/data/2018/acs/acs5?get=NAME&for=place:*&in=state:27
+    ex: http://api.census.gov/data/2021/acs/acs5?get=NAME&for=place:*&in=state:27
     """
 
     geography = "place"
