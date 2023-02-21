@@ -20,6 +20,6 @@ export const Navlink = styled(NavLink)`
   margin: 0 2em;
 
   @media (${breakpoints.phoneOnly}) {
-    margin: 0 1em;
+    margin: 0 0.5em;
   }
 `;
