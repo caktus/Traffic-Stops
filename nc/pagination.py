@@ -27,4 +27,10 @@ class NoCountPagination(LimitOffsetPagination):
         return list(queryset[self.offset : self.offset + self.limit])
 
     def get_paginated_response(self, data):
-        return Response(OrderedDict([("results", data),]))
+        return Response(
+            OrderedDict(
+                [
+                    ("results", data),
+                ]
+            )
+        )

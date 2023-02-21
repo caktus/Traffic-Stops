@@ -2,10 +2,12 @@ import logging
 import os
 import ssl
 import tempfile
+
 from datetime import date
 from ftplib import FTP_TLS
 
 from django.conf import settings
+
 from tsdata.utils import unzip_data
 
 logger = logging.getLogger(__name__)

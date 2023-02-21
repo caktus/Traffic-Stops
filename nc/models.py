@@ -1,6 +1,7 @@
 from caching.base import CachingManager, CachingMixin
 from django.db import models
 from django_pgviews import view as pg
+
 from tsdata.models import CensusProfile
 
 PURPOSE_CHOICES = (

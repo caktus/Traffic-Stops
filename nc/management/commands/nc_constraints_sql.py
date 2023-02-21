@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.db import connections
+
 from tsdata.sql import get_add_constraints_and_indexes
 
 

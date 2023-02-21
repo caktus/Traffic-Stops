@@ -15,6 +15,7 @@ traffic_stops.log
 traffic_stops.log.1
 reports
 env
+venv
 jmeter.log
 npm-debug.log
 .transifexrc

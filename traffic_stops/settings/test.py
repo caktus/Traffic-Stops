@@ -7,7 +7,9 @@ INTERNAL_IPS = ("127.0.0.1",)
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 CACHES = {
-    "default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache",},
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+    },
 }
 
 NC_AUTO_IMPORT_MONITORS = ("nc-monitor@example.com",)

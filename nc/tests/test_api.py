@@ -1,13 +1,15 @@
 import datetime
 
 import pytz
+
 from django.conf import settings
 from django.urls import reverse
+from rest_framework import status
+from rest_framework.test import APITestCase
+
 from nc.models import PURPOSE_CHOICES, RACE_CHOICES, SEARCH_TYPE_CHOICES
 from nc.tests import factories
 from nc.views import GROUPS
-from rest_framework import status
-from rest_framework.test import APITestCase
 from tsdata.tests.factories import CensusProfileFactory
 
 
