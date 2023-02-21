@@ -3,7 +3,6 @@ from django.core.mail import send_mail
 from django.db.models import Case, Count, F, Q, Sum, Value, When
 from django.db.models.functions import ExtractYear
 from django_filters.rest_framework import DjangoFilterBackend
-
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
