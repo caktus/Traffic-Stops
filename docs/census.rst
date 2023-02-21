@@ -16,4 +16,4 @@ Setup
 
 3. Upload to the S3 bucket:
 
-    aws s3 cp acs-2018.json s3://nccopwatch/
+    aws s3 cp acs-2018.json s3://nccopwatch/ --acl public-read
