@@ -92,9 +92,9 @@ k8s_iam_users: [copelco]
 # Pin ingress-nginx and cert-manager to current versions so future upgrades of this
 # role will not upgrade these charts without your intervention:
 # https://github.com/kubernetes/ingress-nginx/releases
-k8s_ingress_nginx_chart_version: "4.0.19"
+k8s_ingress_nginx_chart_version: "4.4.2"
 # https://github.com/jetstack/cert-manager/releases
-k8s_cert_manager_chart_version: "v1.7.2"
+k8s_cert_manager_chart_version: "v1.11.0"
 # AWS only:
 # Use the newer load balancer type (NLB). DO NOT edit k8s_aws_load_balancer_type after
 # creating your Service.
