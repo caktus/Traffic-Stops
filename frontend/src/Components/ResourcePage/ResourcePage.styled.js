@@ -25,8 +25,11 @@ export const ResourceBlock = styled.div`
   padding: 30px;
 `;
 
-export const ResourceDividingLine = styled.div`
-  border-bottom: 1px solid darkgray;
-  padding-left: 100px;
-  padding-right: 100px;
+export const ResourceTag = styled.div`
+  background-color: lightgray;
+  margin-right: 1rem;
+  padding: 5px 10px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
 `;

@@ -43,7 +43,7 @@ class StopSummaryAdmin(admin.ModelAdmin):
 
 
 class ResourceAdmin(admin.ModelAdmin):
-    list_display = ("title", "agency")
+    list_display = ("title", "created_date",)
 
 
 admin.site.register(Agency, AgencyAdmin)

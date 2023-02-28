@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import * as S from './ResourcePage.styled';
 
-import { H1, H2, H3, P } from '../../styles/StyledComponents/Typography';
+import { H1, H2, P } from '../../styles/StyledComponents/Typography';
 import axios from '../../Services/Axios';
 import { RESOURCES_URL } from '../../Services/endpoints';
 import LinkButton from '../Elements/LinkButton';
@@ -13,8 +13,14 @@ function Resource({ resource }) {
         <img src={resource.image_url} width={150} alt={resource.title} />
       </div>
       <div>
-        <H3>{resource.title} </H3>
-        <P>{resource.description}</P>
+        <H2>{resource.title} </H2>
+        <P size={14}>{new Date(resource.created_date).toLocaleDateString()}</P>
+        <P size={18}>{resource.description}</P>
+        <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+          {resource.agencies_list.map((a) => (
+            <S.ResourceTag>{a}</S.ResourceTag>
+          ))}
+        </div>
 
         {!!resource.view_more_link && (
           <div style={{ marginTop: '30px' }}>
@@ -23,20 +29,6 @@ function Resource({ resource }) {
         )}
       </div>
     </S.ResourceBlock>
-  );
-}
-
-function AgencyGroup({ agency }) {
-  return (
-    <div style={{ paddingVertical: '50px' }}>
-      <H2>{agency.agency}</H2>
-      {agency.results.map((resource, index) => (
-        <>
-          <Resource resource={resource} />
-          {index !== agency.results.length - 1 && <S.ResourceDividingLine />}
-        </>
-      ))}
-    </div>
   );
 }
 
@@ -49,7 +41,8 @@ function ResourcePage() {
       setLoading(true);
       try {
         const { data } = await axios.get(RESOURCES_URL);
-        setResources(() => data.grouped_agencies);
+        console.log(data);
+        setResources(() => data.results);
         setLoading(false);
       } catch (e) {
         // eslint-disable-next-line no-console
@@ -60,7 +53,7 @@ function ResourcePage() {
     _fetchResources();
   }, []);
 
-  const renderedResources = resources.map((agency) => <AgencyGroup agency={agency} />);
+  const renderedResources = resources.map((resource) => <Resource resource={resource} />);
   return (
     <S.ResourcePageStyled data-testid="ResourcePage">
       <S.ResourcePageContent>
