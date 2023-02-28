@@ -57,6 +57,21 @@ cloudformation_stack:
   tags:
     Environment: "{{ app_name }}"
 
+# Install Descheduler to attempt to spread out pods again after node failures
+k8s_install_descheduler: yes
+# You must set the k8s_descheduler_chart_version to match the Kubernetes
+# node version (0.23.x -> K8s 1.23.x); see:
+# https://github.com/kubernetes-sigs/descheduler#compatibility-matrix
+k8s_descheduler_chart_version: v0.22.1
+# See values.yaml for options:
+# https://github.com/kubernetes-sigs/descheduler/blob/master/charts/descheduler/values.yaml#L63
+k8s_descheduler_release_values:
+  deschedulerPolicy:
+    strategies:
+      # During upgrades or reboots, don't pre-emptively drain a node.
+      RemovePodsViolatingNodeTaints:
+        enabled: false
+
 # ----------------------------------------------------------------------------
 # caktus.k8s-web-cluster: An Ansible role to help configure Kubernetes
 #                         clusters for web apps.
@@ -77,7 +92,7 @@ k8s_iam_users: [copelco]
 # Pin ingress-nginx and cert-manager to current versions so future upgrades of this
 # role will not upgrade these charts without your intervention:
 # https://github.com/kubernetes/ingress-nginx/releases
-k8s_ingress_nginx_chart_version: "4.0.19"
+k8s_ingress_nginx_chart_version: "4.4.2"
 # https://github.com/jetstack/cert-manager/releases
 k8s_cert_manager_chart_version: "v1.7.2"
 # AWS only:
@@ -93,7 +108,7 @@ k8s_papertrail_logspout_destination: "syslog+tls://logs2.papertrailapp.com:20851
 k8s_papertrail_logspout_memory_limit: 128Mi
 
 # New Relic Infrastructure: admin+newrelic@caktusgroup.com
-k8s_newrelic_chart_version: "3.5.1"
+k8s_newrelic_chart_version: "5.0.4"
 k8s_newrelic_license_key: !vault |
   $ANSIBLE_VAULT;1.1;AES256
   37656631623333346263383231386165666531333961373931383661366338343634333362356430
