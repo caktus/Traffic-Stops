@@ -48,4 +48,11 @@ export const ResourceTag = styled.div`
   border-radius: 10px;
   font-size: 14px;
   font-weight: 600;
+
+  @media (${phoneOnly}) {
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 600;
+  }
 `;
