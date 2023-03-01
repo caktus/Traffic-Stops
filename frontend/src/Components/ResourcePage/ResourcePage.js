@@ -41,7 +41,6 @@ function ResourcePage() {
       setLoading(true);
       try {
         const { data } = await axios.get(RESOURCES_URL);
-        console.log(data);
         setResources(() => data.results);
         setLoading(false);
       } catch (e) {
