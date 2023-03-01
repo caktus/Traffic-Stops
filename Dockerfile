@@ -81,6 +81,8 @@ ENV UWSGI_WORKERS=2 UWSGI_THREADS=4
 # uWSGI static file serving configuration (customize or comment out if not needed):
 ENV UWSGI_STATIC_MAP="/static/=/code/static/" UWSGI_STATIC_EXPIRES_URI="/static/.*\.[a-f0-9]{12,}\.(css|js|png|jpg|jpeg|gif|ico|woff|ttf|otf|svg|scss|map|txt) 315360000"
 
+CMD touch /code/.env
+
 # Change to a non-root user
 USER ${APP_USER}:${APP_USER}
 
@@ -155,6 +157,9 @@ RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/
     # sudo
     && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
     && chmod 0440 /etc/sudoers.d/$USERNAME
+
+# Install Docker Buildx component for Docker v23.0.0+
+COPY --from=docker/buildx-bin:latest /buildx /usr/libexec/docker/cli-plugins/docker-buildx
 
 COPY --chown=$USER_UID:$USER_GID . /code/
 

@@ -18,7 +18,8 @@ djangorestframework==3.12.4
 dj-database-url
 drf-extensions==0.7.1
 psycopg2<2.9
-requests
+requests==2.28.2
+urllib3==1.26.14
 six
 whitenoise
 pandas<1.5
