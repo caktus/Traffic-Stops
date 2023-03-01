@@ -1,7 +1,7 @@
 # base requirements.in
 django==3.2.14
 celery
-census
+census==0.8.19
 us
 dealer
 click==8.1.3

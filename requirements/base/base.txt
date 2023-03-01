@@ -12,7 +12,7 @@ billiard==3.6.3.0
     # via celery
 celery==4.4.6
     # via -r requirements/base/base.in
-census==0.8.14
+census==0.8.19
     # via -r requirements/base/base.in
 certifi==2020.6.20
     # via requests
@@ -58,9 +58,7 @@ djangorestframework==3.12.4
 drf-extensions==0.7.1
     # via -r requirements/base/base.in
 future==0.18.2
-    # via
-    #   celery
-    #   census
+    # via celery
 idna==2.10
     # via requests
 jellyfish==0.6.1
