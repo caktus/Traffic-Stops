@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { phoneOnly } from '../../styles/breakpoints';
 
 function LinkButton({ href, title }) {
   return (
@@ -18,4 +19,8 @@ const LinkStyled = styled.a`
   color: white;
   font-weight: 700;
   text-decoration: none;
+
+  @media (${phoneOnly}) {
+    padding: 8px;
+  }
 `;

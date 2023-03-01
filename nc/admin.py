@@ -43,7 +43,7 @@ class StopSummaryAdmin(admin.ModelAdmin):
 
 
 class ResourceAdmin(admin.ModelAdmin):
-    list_display = ("title", "agency")
+    list_display = ("title", "created_date",)
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)

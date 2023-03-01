@@ -290,18 +290,11 @@ class ResourcesViewSet(viewsets.ReadOnlyModelViewSet):
         return serializers.ResourcesSerializer(context={"request": self.request})
 
     def list(self, request, *args, **kwargs):
-        """Group by agency and return a dictionary for the frontend to iterate easily"""
-        grouped_agencies = [
-            {"agency": resource["agency__name"]}
-            for resource in Resource.objects.values("agency__name").distinct()
-        ]
-        for agency in grouped_agencies:
-            agency["results"] = self.serializer_class(
-                Resource.objects.filter(agency__name=agency["agency"]),
-                many=True,
-                context={"request": self.request},
-            ).data
-        return Response({"grouped_agencies": grouped_agencies})
+        return Response({"results": self.serializer_class(
+            Resource.objects.all(),
+            many=True,
+            context={"request": self.request},
+        ).data})
 
 
 class ContactView(APIView):
