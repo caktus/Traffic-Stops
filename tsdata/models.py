@@ -13,6 +13,7 @@ STATUS_CHOICES = (
 GEOGRAPHY_CHOICES = (
     ("county", "County"),
     ("place", "Place"),
+    ("state", "State"),
 )
 
 
