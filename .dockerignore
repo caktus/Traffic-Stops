@@ -16,4 +16,7 @@ frontend/node_modules
 deploy/
 .env
 .envrc
+.devcontainer
+.github
 nc/notebooks
+venv
