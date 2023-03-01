@@ -99,6 +99,9 @@ if SENTRY_DSN:
         dsn=SENTRY_DSN,
         integrations=[DjangoIntegration(), CeleryIntegration(), RedisIntegration()],
         environment=ENVIRONMENT,
+        release=os.getenv("CONTAINER_IMAGE_TAG"),
+        # % of captured performance monitoring transactions
+        traces_sample_rate=float(os.getenv("SENTRY_TRACES_SAMPLE_RATE", 0)),
     )
 
 DATABASE_ETL_USER = "etl"
