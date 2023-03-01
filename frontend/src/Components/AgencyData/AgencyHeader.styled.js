@@ -17,6 +17,7 @@ export const AgencyHeader = styled.div`
 
   @media (${phoneOnly}) {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
   }
@@ -133,7 +134,5 @@ export const NoCensus = styled.p``;
 
 export const ShowDepartmentsButton = styled.div`
   display: block;
-  @media (${phoneOnly}) {
-    display: none;
-  }
+  margin: 10px 0;
 `;
