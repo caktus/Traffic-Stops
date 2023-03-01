@@ -1,5 +1,9 @@
 import styled from 'styled-components';
-import { smallerThanDesktop, smallerThanTabletLandscape } from '../../styles/breakpoints';
+import {
+  phoneOnly,
+  smallerThanDesktop,
+  smallerThanTabletLandscape,
+} from '../../styles/breakpoints';
 import FullWidthPage from '../../styles/StyledComponents/FullWidthPage';
 
 export const ResourcePageStyled = styled(FullWidthPage)``;
@@ -23,10 +27,32 @@ export const ResourceBlock = styled.div`
   display: flex;
   margin-bottom: 50px;
   padding: 30px;
+
+  @media (${phoneOnly}) {
+    padding: 10px;
+  }
 `;
 
-export const ResourceDividingLine = styled.div`
-  border-bottom: 1px solid darkgray;
-  padding-left: 100px;
-  padding-right: 100px;
+export const ResourceImage = styled.img`
+  width: 150px;
+
+  @media (${phoneOnly}) {
+    width: 75px;
+  }
+`;
+
+export const ResourceTag = styled.div`
+  background-color: lightgray;
+  margin-right: 1rem;
+  padding: 5px 10px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+
+  @media (${phoneOnly}) {
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 600;
+  }
 `;

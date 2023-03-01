@@ -100,12 +100,14 @@ class StateFactsSerializer(serializers.ModelSerializer):
 
 class ResourcesSerializer(serializers.ModelSerializer):
     image_url = serializers.SerializerMethodField()
+    agencies_list = serializers.SerializerMethodField()
 
     class Meta:
         model = stops.Resource
         fields = (
+            "created_date",
             "title",
-            "agency",
+            "agencies_list",
             "description",
             "view_more_link",
             "image_url",
@@ -115,6 +117,9 @@ class ResourcesSerializer(serializers.ModelSerializer):
         request = self.context.get("request")
         resource_url = f"{request.scheme}://{request.get_host()}/static/resources/{obj.image}.png"
         return resource_url
+
+    def get_agencies_list(self, obj):
+        return [ag.name for ag in obj.agencies.all()]
 
 
 class ContactFormSerializer(serializers.Serializer):

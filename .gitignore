@@ -54,3 +54,4 @@ deploy/roles
 docker-compose.override.yml
 htmlcov
 nc/notebooks/**/**.html
+acs*.json
