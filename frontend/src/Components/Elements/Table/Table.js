@@ -15,6 +15,7 @@ import TablePagination from './TablePagination';
 function Table({
   columns,
   data = [],
+  datasetName,
   initialTableState,
   paginated,
   sortable,
@@ -32,6 +33,19 @@ function Table({
       sortable ? useSortBy : '',
       paginated ? usePagination : ''
     );
+
+  const displayMissingPhrase = (ds) => {
+    const phrase = {
+      STOPS: 'stops',
+      SEARCHES: 'searches',
+      STOPS_BY_REASON: 'stops',
+      SEARCHES_BY_TYPE: 'searches',
+      USE_OF_FORCE: 'use of force',
+      CONTRABAND_HIT_RATE: 'contraband',
+      LIKELIHOOD_OF_SEARCH: 'searches',
+    }[ds];
+    return `No ${phrase} have been reported`;
+  };
 
   return (
     <S.TableWrapper>
@@ -89,7 +103,7 @@ function Table({
                 <S.TR>
                   <S.TD>{row.original.year}</S.TD>
                   {row.original.purpose && <S.TD>{row.original.purpose}</S.TD>}
-                  <S.TDBold>No data recorded</S.TDBold>
+                  <S.TDBold>{displayMissingPhrase(datasetName)}</S.TDBold>
                   {/* eslint-disable-next-line no-unused-vars */}
                   {fillerCells.map((_) => (
                     <S.TD />
