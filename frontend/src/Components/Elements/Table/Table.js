@@ -35,7 +35,7 @@ function Table({
     );
 
   const displayMissingPhrase = (ds) => {
-    const phrase = {
+    let phrase = {
       STOPS: 'stops',
       SEARCHES: 'searches',
       STOPS_BY_REASON: 'stops',
@@ -44,6 +44,9 @@ function Table({
       CONTRABAND_HIT_RATE: 'contraband',
       LIKELIHOOD_OF_SEARCH: 'searches',
     }[ds];
+    if (phrase === undefined && Array.isArray(ds)) {
+      phrase = 'searches';
+    }
     return `No ${phrase} have been reported`;
   };
 
