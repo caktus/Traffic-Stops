@@ -47,6 +47,9 @@ function Table({
     if (phrase === undefined && Array.isArray(ds)) {
       phrase = 'searches';
     }
+    if (!phrase) {
+      phrase = 'data';
+    }
     return `No ${phrase} have been reported`;
   };
 
