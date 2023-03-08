@@ -65,6 +65,14 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     return `for ${agencyName}`;
   };
 
+  const stopTypes = (ds) => {
+    let stops = [PURPOSE_DEFAULT].concat(STOP_TYPES);
+    if (ds === STOPS_BY_REASON) {
+      stops = stops.filter((st) => st !== 'Average');
+    }
+    return stops;
+  };
+
   // Close modal on "esc" press
   useEffect(() => {
     function _handleKeyUp(e) {
@@ -440,7 +448,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
               label="Filter by Stop Purpose"
               value={purpose || 'All'}
               onChange={handleStopPurposeSelect}
-              options={[PURPOSE_DEFAULT].concat(STOP_TYPES)}
+              options={stopTypes(dataSet)}
             />
           )}
           {dataSet === SEARCHES_BY_TYPE && (
