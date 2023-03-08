@@ -39,6 +39,7 @@ import { ICONS } from '../../../img/icons/Icon';
 import Button from '../Button';
 import DataSubsetPicker from '../../Charts/ChartSections/DataSubsetPicker/DataSubsetPicker';
 import Checkbox from '../Inputs/Checkbox';
+import displayMissingPhrase from '../../../util/displayMissingData';
 
 const mapDatasetToChartName = {
   STOPS: 'Traffic Stops By Percentage',
@@ -330,19 +331,6 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     return data;
   };
 
-  const missingPhraseForGraph = (ds) => {
-    const phrase = {
-      STOPS: 'stops',
-      SEARCHES: 'searches',
-      STOPS_BY_REASON: 'stops',
-      SEARCHES_BY_TYPE: 'searches',
-      USE_OF_FORCE: 'use of force',
-      CONTRABAND_HIT_RATE: 'contraband',
-      LIKELIHOOD_OF_SEARCH: 'searches',
-    }[ds];
-    return `No ${phrase} have been reported`;
-  };
-
   const setupCSVData = (ds) => {
     const csvData = JSON.parse(JSON.stringify(_buildTableData(ds)));
     // Cleanup data tables for spreadsheet download
@@ -365,7 +353,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
           datum[property] = null;
         }
         // eslint-disable-next-line no-param-reassign
-        datum[placeholderCol] = missingPhraseForGraph(ds);
+        datum[placeholderCol] = displayMissingPhrase(ds);
         // eslint-disable-next-line no-param-reassign
         datum['year'] = year;
       }
