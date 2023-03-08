@@ -433,7 +433,13 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
             {_getIsLoading(dataSet) ? (
               <TableSkeleton />
             ) : (
-              <Table data={_buildTableData(dataSet)} columns={columns} pageSize={10} paginated />
+              <Table
+                data={_buildTableData(dataSet)}
+                datasetName={dataSet}
+                columns={columns}
+                pageSize={10}
+                paginated
+              />
             )}
           </S.TableWrapper>
           <S.NonHispanic>* Non-hispanic</S.NonHispanic>
