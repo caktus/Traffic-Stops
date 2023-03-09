@@ -57,7 +57,7 @@ class ResourceAdmin(admin.ModelAdmin):
             obj.save()
 
     def save_related(self, request, form, formsets, change):
-        super().save_model(request, form, formsets, change)
+        super().save_related(request, form, formsets, change)
         form.instance.agencies.set(form.cleaned_data["agencies"], clear=True)
 
 
