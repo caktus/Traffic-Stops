@@ -223,6 +223,7 @@ class StopSummary(pg.ReadOnlyMaterializedView):
 
 class Resource(models.Model):
     created_date = models.DateTimeField(auto_now_add=True, editable=False)
+    publication_date = models.DateField(null=True, blank=True, editable=True)
     RESOURCE_IMAGES = [
         ("copwatch-new-policy", "New Policy"),
         ("forward-justice-logo", "Forward Justice Logo"),
@@ -234,7 +235,7 @@ class Resource(models.Model):
     view_more_link = models.URLField(null=True, blank=True)
 
     class Meta:
-        ordering = ('-created_date',)
+        ordering = ("-created_date",)
 
     def __str__(self):
         return f"{self.title}"
