@@ -45,13 +45,20 @@ class StopSummaryAdmin(admin.ModelAdmin):
 
 
 class ResourceAdmin(admin.ModelAdmin):
-    list_display = ("title", "created_date",)
+    list_display = (
+        "title",
+        "created_date",
+    )
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
         if not obj.image:
             obj.image = "forward-justice-logo"
             obj.save()
+
+    def save_related(self, request, form, formsets, change):
+        super().save_model(request, form, formsets, change)
+        form.instance.agencies.set(form.cleaned_data["agencies"], clear=True)
 
 
 admin.site.register(Agency, AgencyAdmin)
