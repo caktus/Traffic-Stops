@@ -1,11 +1,12 @@
 # base requirements.in
 django==3.2.14
 celery
-census
+census==0.8.19
 us
 dealer
+click==8.1.3
 django-cache-machine==1.2.0
-django-click==2.2.0
+django-click==2.3.0
 django-crispy-forms
 django-dotenv
 django-extensions
@@ -17,7 +18,8 @@ djangorestframework==3.12.4
 dj-database-url
 drf-extensions==0.7.1
 psycopg2<2.9
-requests
+requests==2.28.2
+urllib3==1.26.14
 six
 whitenoise
 pandas<1.5

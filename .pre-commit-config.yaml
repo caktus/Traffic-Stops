@@ -5,25 +5,27 @@ repos:
       - id: black
         language_version: python3.8
         exclude: migrations
-  - repo: https://github.com/pre-commit/mirrors-isort
-    rev: v4.3.21
+  - repo: https://github.com/PyCQA/flake8
+    rev: 4.0.1
+    hooks:
+      - id: flake8
+        exclude: settings|migrations|tests
+  - repo: https://github.com/pycqa/isort
+    rev: 5.12.0
     hooks:
       - id: isort
-        # Resolves conflict with black
-        args: [--multi-line=3, --trailing-comma, --force-grid-wrap=0, --use-parentheses, --line-width=100]
+        args: ["--profile", "black", "--filter-files"]
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v2.4.0
+    rev: v4.1.0
     hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+        exclude: '^(deployment/|deploy)'
+      - id: check-added-large-files
+      - id: check-json
+        exclude: .devcontainer/devcontainer.json|.vscode/launch.json|frontend/.eslintrc.json
       - id: check-docstring-first
       - id: check-merge-conflict
-      - id: check-json
-        exclude: docs/dev
-      - id: check-yaml
-        exclude: (deploy/host_vars|deploy/stack|deploy)
-      - id: check-xml
       - id: debug-statements
-      - id: detect-aws-credentials
-        args: [--allow-missing-credentials]
       - id: detect-private-key
-      - id: flake8
-        exclude: settings|migrations|test

@@ -15,6 +15,7 @@ traffic_stops.log
 traffic_stops.log.1
 reports
 env
+venv
 jmeter.log
 npm-debug.log
 .transifexrc
@@ -52,3 +53,4 @@ aws_ec2.yml
 deploy/roles
 docker-compose.override.yml
 htmlcov
+acs*.json

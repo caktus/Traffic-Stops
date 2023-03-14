@@ -11,10 +11,12 @@ import { ICONS } from '../../../img/icons/Icon';
 
 // Children
 import TablePagination from './TablePagination';
+import displayMissingPhrase from '../../../util/displayMissingData';
 
 function Table({
   columns,
   data = [],
+  datasetName,
   initialTableState,
   paginated,
   sortable,
@@ -82,6 +84,21 @@ function Table({
         <S.TBody {...getTableBodyProps()}>
           {page.map((row) => {
             prepareRow(row);
+            if (row.original.no_data === true) {
+              const offsetPurpose = row.original.purpose ? 3 : 2;
+              const fillerCells = Array(row.cells.length - offsetPurpose).fill(0);
+              return (
+                <S.TR>
+                  <S.TD>{row.original.year}</S.TD>
+                  {row.original.purpose && <S.TD>{row.original.purpose}</S.TD>}
+                  <S.TDBold>{displayMissingPhrase(datasetName)}</S.TDBold>
+                  {/* eslint-disable-next-line no-unused-vars */}
+                  {fillerCells.map((_) => (
+                    <S.TD />
+                  ))}
+                </S.TR>
+              );
+            }
             return (
               <S.TR {...row.getRowProps()}>
                 {row.cells.map((cell) => {

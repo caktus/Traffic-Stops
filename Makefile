@@ -26,3 +26,10 @@ run-tests:
 	@echo 'Checking for migrations'
 	python manage.py makemigrations --dry-run | grep 'No changes detected' || (echo 'There are changes which require migrations.' && exit 1)
 	python manage.py test
+
+
+dl-db-dump:
+	@echo 'Downloading new db dump from s3'
+	export AWS_PROFILE=copwatch
+	inv aws.configure-eks-kubeconfig
+	inv staging pod.get-db-dump --db-var=DATABASE_URL_NC

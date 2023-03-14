@@ -1,7 +1,7 @@
 version: '3.4'
 
 services:
-  app:
+  django:
     image: trafficstops_app:latest
     command: ["uwsgi", "--show-config"]
     environment:
@@ -23,7 +23,7 @@ services:
     links:
       - db:db
     depends_on:
-      - app
+      - django
       - redis
       - mailhog
   beat:
@@ -34,8 +34,36 @@ services:
     links:
       - db:db
     depends_on:
-      - app
+      - django
       - redis
       - mailhog
   mailhog:
     image: mailhog/mailhog:v1.0.0
+  db:
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_DB: traffic_stops
+      DATABASE_URL: postgres://postgres@127.0.0.1:5432/traffic_stops
+    image: postgres:12-alpine
+    ports:
+      - "9051:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./docker-entrypoint.postgres.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./docker-postgresql.conf:/etc/postgresql/postgresql.conf
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf
+    shm_size: 512mb
+  redis:
+    image: redis:5-alpine
+    ports:
+      - "9052:6379"
+    volumes:
+      - redisdata:/data
+
+volumes:
+  pgdata:
+  redisdata:
+  dev_media: {}
+  dev_node_modules: {}
+  dev_venv: {}
+  dev_cache: {}

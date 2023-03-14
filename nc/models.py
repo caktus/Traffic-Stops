@@ -1,6 +1,7 @@
 from caching.base import CachingManager, CachingMixin
 from django.db import models
 from django_pgviews import view as pg
+
 from tsdata.models import CensusProfile
 
 PURPOSE_CHOICES = (
@@ -218,3 +219,22 @@ class StopSummary(pg.ReadOnlyMaterializedView):
             models.Index(fields=["engage_force"]),
             models.Index(fields=["contraband_found"]),
         ]
+
+
+class Resource(models.Model):
+    created_date = models.DateTimeField(auto_now_add=True, editable=False)
+    RESOURCE_IMAGES = [
+        ("copwatch-new-policy", "New Policy"),
+        ("forward-justice-logo", "Forward Justice Logo"),
+    ]
+    agencies = models.ManyToManyField("Agency", related_name="resources")
+    title = models.CharField(max_length=500, null=False, blank=False)
+    description = models.TextField(null=True, blank=True)
+    image = models.CharField(null=True, blank=True, choices=RESOURCE_IMAGES, max_length=200)
+    view_more_link = models.URLField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('-created_date',)
+
+    def __str__(self):
+        return f"{self.title}"

@@ -64,6 +64,11 @@ export const TD = styled.td`
   padding: 1rem;
 `;
 
+export const TDBold = styled.td`
+  padding: 1rem;
+  font-weight: bold;
+`;
+
 export const OfficerId = styled.p`
   display: flex;
   flex-direction: row;

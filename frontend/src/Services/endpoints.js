@@ -17,6 +17,8 @@ export const FIND_A_STOP_URL = `${API_BASE}/driver-stops/`;
 
 export const CONTACT_FORM_URL = `${API_BASE}/about/contact/`;
 
+export const RESOURCES_URL = `${API_BASE}/resources/`;
+
 export const getAgenciesURL = () => `${API_BASE}/agency/`;
 
 export const getAgencyURL = (agencyId) => `${API_BASE}/agency/${agencyId}/`;

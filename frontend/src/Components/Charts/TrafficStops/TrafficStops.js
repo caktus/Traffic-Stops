@@ -50,6 +50,9 @@ function TrafficStops(props) {
 
   const [purpose, setPurpose] = useState(PURPOSE_DEFAULT);
 
+  // Don't include Average as that's only used in the Search Rate graph.
+  const stopTypes = STOP_TYPES.filter((st) => st !== 'Average');
+
   const [percentageEthnicGroups, setPercentageEthnicGroups] = useState(
     /* I sure wish I understood with certainty why this is necessary. Here's what I know:
       - Setting both of these states to STATIC_LEGEND_KEYS cause calling either setState function
@@ -194,6 +197,7 @@ function TrafficStops(props) {
   };
 
   const handleViewPercentageData = () => {
+    setPurpose(PURPOSE_DEFAULT);
     openModal(STOPS, STOPS_TABLE_COLUMNS);
   };
 
@@ -291,7 +295,7 @@ function TrafficStops(props) {
               label="Stop Purpose"
               value={purpose}
               onChange={handleStopPurposeSelect}
-              options={[PURPOSE_DEFAULT].concat(STOP_TYPES)}
+              options={[PURPOSE_DEFAULT].concat(stopTypes)}
             />
             <S.Spacing>
               <Legend

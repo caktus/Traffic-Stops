@@ -13,6 +13,7 @@ STATUS_CHOICES = (
 GEOGRAPHY_CHOICES = (
     ("county", "County"),
     ("place", "Place"),
+    ("state", "State"),
 )
 
 
@@ -35,8 +36,7 @@ class Dataset(models.Model):
 
     @property
     def agency_model(self):
-        """Return the appropriate Agency model for this Dataset's state.
-        """
+        """Return the appropriate Agency model for this Dataset's state."""
         from nc.models import Agency as NCAgency
 
         agencies = {

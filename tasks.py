@@ -1,6 +1,7 @@
 import invoke
 import kubesae
 import yaml
+
 from colorama import init
 
 init(autoreset=True)
@@ -53,7 +54,10 @@ ns.add_task(ansible_playbook, "playbook")
 ns.configure(
     {
         "app": "trafficstops_app",
-        "aws": {"region": "us-east-2",},
+        "app_build_target": "deploy",
+        "aws": {
+            "region": "us-east-2",
+        },
         "cluster": "trafficstops-stack-cluster",
         "container_name": "app",
         "hosting_services_backup_folder": "trafficstops",
@@ -61,7 +65,9 @@ ns.configure(
         "run": {
             "echo": True,
             "pty": True,
-            "env": {"COMPOSE_FILE": "docker-compose.yml:docker-compose.deploy.yml",},
+            "env": {
+                "COMPOSE_FILE": "docker-compose.yml:docker-compose.deploy.yml",
+            },
         },
     }
 )

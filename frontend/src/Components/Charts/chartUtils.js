@@ -21,9 +21,11 @@ export const STOP_TYPES = [
   'Checkpoint',
   'Average',
 ];
+export const CONTRABAND_TYPES = ['Drugs', 'Alcohol', 'Money', 'Weapons', 'Other'];
 export const YEARS_DEFAULT = 'All';
 export const PURPOSE_DEFAULT = 'All';
 export const SEARCH_TYPE_DEFAULT = 'All';
+export const CONTRABAND_DEFAULT = 'All';
 export const AVERAGE_KEY = 'average';
 export const AVERAGE = {
   value: AVERAGE_KEY,
@@ -189,8 +191,14 @@ export const reduceEthnicityByYears = (data, yearsSet, ethnicGroups = RACES) => 
         }))[e];
       });
       yrData['total'] = calculateYearTotal(yrData);
-      yearData.push(yrData);
+    } else {
+      yrData['no_data'] = true;
+      ethnicGroups.forEach((e) => {
+        yrData[e] = 0;
+      });
+      yrData['total'] = 0;
     }
+    yearData.push(yrData);
   });
   return yearData;
 };

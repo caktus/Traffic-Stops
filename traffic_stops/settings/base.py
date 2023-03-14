@@ -16,7 +16,7 @@ ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )
 
-DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 DATABASES = {
     "default": {
@@ -337,7 +337,7 @@ else:
         },
     }
 
-CENSUS_API_KEY = ""
+CENSUS_API_KEY = os.getenv("CENSUS_API_KEY", "")
 
 NC_AUTO_IMPORT_DIRECTORY = "/tmp/nc-automated-import"
 

@@ -90,14 +90,18 @@ MANAGERS = ADMINS
 SENTRY_DSN = os.getenv("SENTRY_DSN")
 if SENTRY_DSN:
     import sentry_sdk
-    from sentry_sdk.integrations.django import DjangoIntegration
+
     from sentry_sdk.integrations.celery import CeleryIntegration
+    from sentry_sdk.integrations.django import DjangoIntegration
     from sentry_sdk.integrations.redis import RedisIntegration
 
     sentry_sdk.init(
         dsn=SENTRY_DSN,
         integrations=[DjangoIntegration(), CeleryIntegration(), RedisIntegration()],
         environment=ENVIRONMENT,
+        release=os.getenv("CONTAINER_IMAGE_TAG"),
+        # % of captured performance monitoring transactions
+        traces_sample_rate=float(os.getenv("SENTRY_TRACES_SAMPLE_RATE", 0)),
     )
 
 DATABASE_ETL_USER = "etl"

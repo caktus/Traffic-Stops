@@ -19,7 +19,7 @@ jobs:
           fetch-depth: 0
       - name: Set env vars (production)
         if: endsWith(github.ref, '/main')
-        run: | 
+        run: |
           echo "ENV=production" >> $GITHUB_ENV
           echo "ENV_URL=https://nccopwatch.org/" >> $GITHUB_ENV
       - uses: actions/setup-python@v2

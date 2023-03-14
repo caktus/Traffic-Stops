@@ -5,6 +5,7 @@ import io
 from django.core import mail
 from django.test import TransactionTestCase, override_settings
 from django.utils import timezone
+
 from nc.tests.factories import AgencyFactory as NCAgencyFactory
 from nc.tests.factories import StopFactory as NCStopFactory
 from tsdata import tasks

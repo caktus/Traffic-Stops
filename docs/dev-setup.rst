@@ -10,9 +10,59 @@ your local development system:
 - `pip >= 8 or so <http://www.pip-installer.org/>`_
 - Postgres >= 12
 
+Getting Started (Docker 🐳)
+---------------------------
 
-Getting Started
----------------
+This project supports using a `Caktus Development Container`_. Make sure you
+have installed the `prerequisites`_, including the Remote Development extension
+pack for VS Code.
+
+1. **Build and start dev container:** Using the `VS Code Command Pallete`_,
+   select `Dev Containers: Reopen in Container`.
+2. **Install Python requirements:** Create virtual environment and install Python requirements::
+
+    python3 -m venv /code/venv
+    make setup
+    (cd frontend; npm install)
+
+3. **Setup pre-commit:** Install pre-commit to enforce a variety of community standards::
+
+    pre-commit clean
+    pre-commit install
+
+4. **Configure named profile for the AWS CLI:** The named profile for this project
+   is `trafficstops` and is configured for use. You should see project-related S3 buckets with::
+
+    aws s3 ls
+
+   If you see an error, please follow the `prerequisites`_ for AWS.
+5. **Reset local database:** Download copy of staging database and restore it locally::
+
+    inv aws.configure-eks-kubeconfig
+    inv staging pod.get-db-dump --db-var=DATABASE_URL_NC
+    dropdb --if-exists traffic_stops_nc && createdb traffic_stops_nc
+    pg_restore -Ox -d $DATABASE_URL_NC < trafficstops-staging_database.dump
+    rm trafficstops-staging_database.dump
+    ./migrate_all_dbs.sh
+
+6. **Import Census data:** Load American Community Survey (ACS) 5-Year Data::
+
+    python manage.py import_census
+
+7. **Start Python dev server:** Start the Django development server::
+
+    python manage.py runserver 0.0.0.0:8000
+
+8. **Start Node dev server:** Start the Node development server in a separate terminal::
+
+    (cd frontend; npm run start)
+
+.. _Caktus Development Container: https://caktus.github.io/developer-documentation/developer-onboarding/dev-containers/
+.. _prerequisites: https://caktus.github.io/developer-documentation/developer-onboarding/dev-containers/#prerequisites
+.. _VS Code Command Pallete: https://code.visualstudio.com/docs/getstarted/userinterface#_command-palette
+
+Getting Started (Manual)
+------------------------
 
 Run PostgreSQL in Docker::
 
@@ -61,7 +111,7 @@ Migrate the project databases::
 Frontend setup::
 
   (traffic-stops)$ cd frontend
-  (traffic-stops)$ npm i 
+  (traffic-stops)$ npm i
 
 If ``npm install`` fails, make sure you're using ``npm`` from a reasonable version
 of NodeJS, as documented at the top of this document.

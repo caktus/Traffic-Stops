@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 import caching.base
+
 from django.db import migrations, models
 
 
