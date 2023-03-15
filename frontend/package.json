@@ -2,7 +2,7 @@
   "name": "traffic-stops",
   "version": "0.2.0",
   "private": true,
-  "proxy": "http://localhost:8000/",
+  "proxy": "http://127.0.0.1:8000/",
   "dependencies": {
     "@loadable/component": "^5.15.2",
     "@sentry/react": "^7.6.0",
@@ -21,6 +21,7 @@
     "react-dom": "^18.2.0",
     "react-helmet": "^6.1.0",
     "react-loadable": "^5.5.0",
+    "react-month-picker": "^2.2.1",
     "react-router-dom": "^5.3.3",
     "react-scripts": "5.0.1",
     "react-table": "^7.8.0",

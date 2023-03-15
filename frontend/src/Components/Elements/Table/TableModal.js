@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { useTheme } from 'styled-components';
 import * as S from './TableModal.styled';
+import Picker from 'react-month-picker';
+import 'react-month-picker/css/month-picker.css';
 
 // Deps
 import { CSVLink } from 'react-csv';
@@ -49,6 +51,14 @@ const mapDatasetToChartName = {
   CONTRABAND_HIT_RATE: 'Contraband "Hit Rate"',
   LIKELIHOOD_OF_SEARCH: 'Likelihood of Search',
 };
+
+function MonthBox({ value, _onClick }) {
+  return (
+    <div className="box" onClick={_onClick}>
+      <p>{value}</p>
+    </div>
+  );
+}
 
 function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
   const theme = useTheme();
@@ -381,6 +391,21 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     return '';
   };
 
+  const pickerLang = {
+    months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    from: 'From',
+    to: 'To',
+  };
+  const [rangeValue, setRangeValue] = useState({
+    from: { year: 2022, month: 9 },
+    to: { year: 2023, month: 3 },
+  });
+  const makeText = (m) => {
+    if (m && m.year && m.month) return pickerLang.months[m.month - 1] + '. ' + m.year;
+    return '?';
+  };
+  const monthPickerRef = useRef(null);
+
   return ReactDOM.createPortal(
     isOpen && (
       <>
@@ -404,6 +429,20 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
           <S.Heading>
             <P>{subheadingForDataset(dataSet)}</P>
           </S.Heading>
+          <Picker
+            className="MonthYearPicker"
+            lang={pickerLang.months}
+            ref={monthPickerRef}
+            years={{ min: 2000 }}
+            value={rangeValue}
+            theme="light"
+            onDismiss={(value) => setRangeValue(value)}
+          >
+            <MonthBox
+              value={makeText(rangeValue.from) + ' ~ ' + makeText(rangeValue.to)}
+              _onClick={() => monthPickerRef.current.show()}
+            />
+          </Picker>
           {(dataSet === STOPS_BY_REASON || dataSet === LIKELIHOOD_OF_SEARCH) && (
             <DataSubsetPicker
               label="Filter by Stop Purpose"
