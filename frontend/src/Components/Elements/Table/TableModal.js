@@ -47,6 +47,7 @@ import Checkbox from '../Inputs/Checkbox';
 import { useParams } from 'react-router-dom';
 import mapDatasetKeyToEndpoint from '../../../Services/endpoints';
 import axios from '../../../Services/Axios';
+import * as ChartHeaderStyles from '../../Charts/ChartSections/ChartHeader.styled';
 
 const mapDatasetToChartName = {
   STOPS: 'Traffic Stops By Percentage',
@@ -71,7 +72,7 @@ const mapDataSetToEnum = {
 function MonthBox({ value, _onClick }) {
   return (
     <div className="box" onClick={_onClick}>
-      <p>{value}</p>
+      <Button>{value}</Button>
     </div>
   );
 }
@@ -446,6 +447,26 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     return '?';
   };
 
+  const [showDateRangePicker, setShowDateRagePicker] = useState(false);
+  const showDatePicker = () => {
+    const today = new Date();
+    setRangeValue({
+      from: {
+        year: 2000,
+        month: 1,
+      },
+      to: {
+        year: today.getFullYear(),
+        month: today.getMonth() + 1,
+      },
+    });
+    setShowDateRagePicker(true);
+  };
+  const resetDatePicker = () => {
+    setRangeValue({});
+    setShowDateRagePicker(false);
+  };
+
   return ReactDOM.createPortal(
     isOpen && (
       <>
@@ -469,20 +490,6 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
           <S.Heading>
             <P>{subheadingForDataset(dataSet)}</P>
           </S.Heading>
-          <Picker
-            className="MonthYearPicker"
-            lang={pickerLang.months}
-            ref={monthPickerRef}
-            years={{ min: 2000 }}
-            value={rangeValue}
-            theme="light"
-            onDismiss={(value) => setRangeValue(value)}
-          >
-            <MonthBox
-              value={makeText(rangeValue.from) + ' ~ ' + makeText(rangeValue.to)}
-              _onClick={() => monthPickerRef.current.show()}
-            />
-          </Picker>
           {(dataSet === STOPS_BY_REASON || dataSet === LIKELIHOOD_OF_SEARCH) && (
             <DataSubsetPicker
               label="Filter by Stop Purpose"
@@ -499,6 +506,44 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
               options={[PURPOSE_DEFAULT].concat(SEARCH_TYPES)}
             />
           )}
+          {!showDateRangePicker && (
+            <Button variant="positive" marginTop={10} {...S.ButtonInlines} onClick={showDatePicker}>
+              Filter by date range
+            </Button>
+          )}
+          {showDateRangePicker && (
+            <div style={{ display: 'flex', flexDirection: 'row', marginTop: '10' }}>
+              <Picker
+                className="MonthYearPicker"
+                lang={pickerLang.months}
+                ref={monthPickerRef}
+                years={{ min: 2000 }}
+                value={rangeValue}
+                theme="light"
+                onDismiss={(value) => setRangeValue(value)}
+              >
+                <MonthBox
+                  value={makeText(rangeValue.from) + ' ~ ' + makeText(rangeValue.to)}
+                  _onClick={() => monthPickerRef.current.show()}
+                />
+              </Picker>
+              <Button
+                variant="positive"
+                backgroundColor="white"
+                width={25}
+                height={25}
+                onClick={resetDatePicker}
+              >
+                <ChartHeaderStyles.Icon
+                  icon={ICONS.close}
+                  width={25}
+                  height={25}
+                  fill={theme.colors.positive}
+                />
+              </Button>
+            </div>
+          )}
+
           {showConsolidateYearsSwitch(dataSet) && (
             <Checkbox
               label="Consolidate years"
@@ -508,6 +553,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
               onChange={() => setConsolidateYears(!consolidateYears)}
             />
           )}
+
           <S.TableWrapper>
             {_getIsLoading(dataSet) ? (
               <TableSkeleton />
