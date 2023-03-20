@@ -14,7 +14,10 @@ import {
   CONTRABAND_HIT_RATE,
   LIKELIHOOD_OF_SEARCH,
   SEARCHES_BY_TYPE,
+  STOPS,
   STOPS_BY_REASON,
+  SEARCHES,
+  USE_OF_FORCE,
 } from '../../../Hooks/useDataset';
 
 // Constants
@@ -41,6 +44,9 @@ import { ICONS } from '../../../img/icons/Icon';
 import Button from '../Button';
 import DataSubsetPicker from '../../Charts/ChartSections/DataSubsetPicker/DataSubsetPicker';
 import Checkbox from '../Inputs/Checkbox';
+import { useParams } from 'react-router-dom';
+import mapDatasetKeyToEndpoint from '../../../Services/endpoints';
+import axios from '../../../Services/Axios';
 
 const mapDatasetToChartName = {
   STOPS: 'Traffic Stops By Percentage',
@@ -52,6 +58,16 @@ const mapDatasetToChartName = {
   LIKELIHOOD_OF_SEARCH: 'Likelihood of Search',
 };
 
+const mapDataSetToEnum = {
+  STOPS,
+  SEARCHES,
+  STOPS_BY_REASON,
+  SEARCHES_BY_TYPE,
+  USE_OF_FORCE,
+  CONTRABAND_HIT_RATE,
+  LIKELIHOOD_OF_SEARCH,
+};
+
 function MonthBox({ value, _onClick }) {
   return (
     <div className="box" onClick={_onClick}>
@@ -61,15 +77,22 @@ function MonthBox({ value, _onClick }) {
 }
 
 function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
+  const { agencyId } = useParams();
   const theme = useTheme();
   const portalTarget = usePortal('modal-root');
   const officerId = useOfficerId();
-  const [yearRange] = useYearSet();
+  const [yearRange, yearSet] = useYearSet();
   const [purpose, setPurpose] = useState(null);
   const [consolidateYears, setConsolidateYears] = useState(false);
+  const [rangeValue, setRangeValue] = useState({
+    from: { year: 2021, month: 1 },
+    to: { year: 2023, month: 3 },
+  });
+  const monthPickerRef = useRef(null);
+  const tableChartState = chartState;
 
   const _getEntityReference = () => {
-    const agencyName = chartState.data[AGENCY_DETAILS].name;
+    const agencyName = tableChartState.data[AGENCY_DETAILS].name;
     if (officerId) return `for Officer ${officerId} of the ${agencyName}`;
     return `for ${agencyName}`;
   };
@@ -94,6 +117,28 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     document.addEventListener('keyup', _handleKeyUp);
     return () => document.removeEventListener('keyup', _handleKeyUp);
   }, [closeModal]);
+
+  useEffect(() => {
+    const _fetchData = async () => {
+      setConsolidateYears(null);
+      setPurpose(null);
+      const tableDS = mapDataSetToEnum[dataSet];
+      const getEndpoint = mapDatasetKeyToEndpoint(tableDS);
+      const _from = `${rangeValue.from.year}-${rangeValue.from.month}-01`;
+      const _to = `${rangeValue.to.year}-${rangeValue.to.month}-01`;
+      const url = `${getEndpoint(agencyId)}?from=${_from}&to=${_to}`;
+      try {
+        const { data } = await axios.get(url);
+        tableChartState.data[tableDS] = data;
+      } catch (err) {
+        console.log(err);
+      }
+      _buildTableData(tableDS);
+    };
+    if (dataSet) {
+      _fetchData();
+    }
+  }, [dataSet, rangeValue.from, rangeValue.to]);
 
   // supress body scrolling behind modal
   useEffect(() => {
@@ -127,12 +172,12 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
 
   /* Build some more complicated data sets */
   const mapStopsByPurpose = (ds) => {
-    const data = chartState.data[ds];
+    const data = tableChartState.data[ds];
     let mergedData = [];
     const { searches, stops } = data;
     if (searches && stops) {
       if (consolidateYears && !purpose) {
-        mergedData = reduceEthnicityByYears(stops, chartState.yearRange);
+        mergedData = reduceEthnicityByYears(stops, tableChartState.yearRange);
       } else {
         mergedData = stops.map((searchYear, i) => {
           const yearData = {};
@@ -174,12 +219,12 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
   };
 
   const mapLikelihoodOfSearch = (ds) => {
-    const data = chartState.data[ds];
+    const data = tableChartState.data[ds];
     let mergedData = [];
     const { searches, stops } = data;
     if (searches && stops) {
       if (consolidateYears && !purpose) {
-        mergedData = reduceEthnicityByYears(searches, chartState.yearRange);
+        mergedData = reduceEthnicityByYears(searches, tableChartState.yearRange);
       } else {
         mergedData = searches.map((searchYear) => {
           const yearData = {};
@@ -219,7 +264,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
   };
 
   const mapSearchesByReason = (ds) => {
-    const searches = chartState.data[ds[1]];
+    const searches = tableChartState.data[ds[1]];
 
     let mergedData = searches.map((yearsStops) => {
       const { year } = yearsStops;
@@ -254,7 +299,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
   };
 
   const mapContrbandHitrate = (ds) => {
-    const data = chartState.data[ds];
+    const data = tableChartState.data[ds];
     const { contraband } = data;
     const mappedData = yearRange.map((year) => {
       const hits = contraband.find((d) => d.year === year) || 0;
@@ -282,12 +327,12 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
   };
 
   const mapSearchByType = (ds) => {
-    const data = chartState.data[ds];
+    const data = tableChartState.data[ds];
     // eslint-disable-next-line no-param-reassign,no-return-assign
     data.forEach((datum) => (datum['total'] = calculateYearTotal(datum)));
     let mappedData = [];
     if (consolidateYears && !purpose) {
-      mappedData = reduceEthnicityByYears(data, chartState.yearRange);
+      mappedData = reduceEthnicityByYears(data, tableChartState.yearRange);
     } else if (purpose) {
       mappedData = data.filter((d) => d.search_type === purpose);
     } else {
@@ -321,7 +366,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     } else if (Array.isArray(ds)) {
       data = mapSearchesByReason(ds);
     } else {
-      const chartData = chartState.data[ds];
+      const chartData = tableChartState.data[ds];
       // eslint-disable-next-line no-param-reassign,no-return-assign
       chartData.forEach((chartDatum) => (chartDatum['total'] = calculateYearTotal(chartDatum)));
       markMissingYears(chartData);
@@ -342,9 +387,9 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
 
   const _getIsLoading = (ds) => {
     if (Array.isArray(ds)) {
-      return ds.some((d) => chartState.loading[d]);
+      return ds.some((d) => tableChartState.loading[d]);
     }
-    return chartState.loading[ds];
+    return tableChartState.loading[ds];
   };
 
   const _getTableNameForDownload = () =>
@@ -396,15 +441,10 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     from: 'From',
     to: 'To',
   };
-  const [rangeValue, setRangeValue] = useState({
-    from: { year: 2022, month: 9 },
-    to: { year: 2023, month: 3 },
-  });
   const makeText = (m) => {
     if (m && m.year && m.month) return pickerLang.months[m.month - 1] + '. ' + m.year;
     return '?';
   };
-  const monthPickerRef = useRef(null);
 
   return ReactDOM.createPortal(
     isOpen && (

@@ -27,6 +27,11 @@ CELERY_EAGER_PROPAGATES_EXCEPTIONS = True
 
 NC_AUTO_IMPORT_MONITORS = ("nc-monitor@example.com",)
 
+CACHES["default"] = {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}
+CACHES["cache_machine"] = {
+    "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+}
+
 # Special test settings
 if "test" in sys.argv:
     PASSWORD_HASHERS = (
