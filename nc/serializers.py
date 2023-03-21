@@ -120,7 +120,7 @@ class ResourcesSerializer(serializers.ModelSerializer):
         return resource_url
 
     def get_agencies_list(self, obj):
-        return [ag.name for ag in obj.agencies.all()]
+        return [{"name": ag.name, "id": ag.id} for ag in obj.agencies.all()]
 
 
 class ContactFormSerializer(serializers.Serializer):

@@ -21,7 +21,7 @@ function Resource({ resource }) {
         <P size={18}>{resource.description}</P>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
           {resource.agencies_list.map((a) => (
-            <S.ResourceTag>{a}</S.ResourceTag>
+            <S.ResourceTag href={`/agencies/${a.id}`}>{a.name}</S.ResourceTag>
           ))}
         </div>
 
