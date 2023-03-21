@@ -58,6 +58,10 @@ class ResourceAdmin(admin.ModelAdmin):
             obj.image = "forward-justice-logo"
             obj.save()
 
+    def save_related(self, request, form, formsets, change):
+        super().save_related(request, form, formsets, change)
+        form.instance.agencies.set(form.cleaned_data["agencies"], clear=True)
+
 
 admin.site.register(Agency, AgencyAdmin)
 admin.site.register(StopSummary, StopSummaryAdmin)
