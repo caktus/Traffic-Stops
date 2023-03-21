@@ -111,6 +111,7 @@ class ResourcesSerializer(serializers.ModelSerializer):
             "description",
             "view_more_link",
             "image_url",
+            "publication_date",
         )
 
     def get_image_url(self, obj):
