@@ -14,10 +14,9 @@ function Resource({ resource }) {
       </div>
       <div>
         <H2>{resource.title} </H2>
-        <P size={14}>
-          Published:{' '}
-          {resource.publication_date && new Date(resource.publication_date).toLocaleDateString()}
-        </P>
+        {resource.publication_date && (
+          <P size={14}>Published: {new Date(resource.publication_date).toLocaleDateString()}</P>
+        )}
         <P size={18}>{resource.description}</P>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
           {resource.agencies_list.map((a) => (
