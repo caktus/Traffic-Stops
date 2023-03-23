@@ -225,6 +225,7 @@ class StopSummary(pg.ReadOnlyMaterializedView):
 
 class Resource(models.Model):
     created_date = models.DateTimeField(auto_now_add=True, editable=False)
+    publication_date = models.DateField(null=True, blank=True, editable=True)
     RESOURCE_IMAGES = [
         ("copwatch-new-policy", "New Policy"),
         ("forward-justice-logo", "Forward Justice Logo"),
