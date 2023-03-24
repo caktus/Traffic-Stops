@@ -12,7 +12,7 @@ function useTableModal() {
   function _renderTableModal() {
     return (
       <TableModal
-        chartState={chartState}
+        chartState={JSON.parse(JSON.stringify(chartState))}
         dataSet={dataSet}
         columns={columns}
         isOpen={isOpen}

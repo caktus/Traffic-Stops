@@ -72,9 +72,24 @@ const mapDataSetToEnum = {
 function MonthBox({ value, _onClick }) {
   return (
     <div className="box" onClick={_onClick}>
-      <Button>{value}</Button>
+      <Button onClick={() => {}}>{value}</Button>
     </div>
   );
+}
+
+function getRangeValues() {
+  const today = new Date();
+
+  return {
+    from: {
+      year: 2000,
+      month: 1,
+    },
+    to: {
+      year: today.getFullYear(),
+      month: today.getMonth() + 1,
+    },
+  };
 }
 
 function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
@@ -85,10 +100,9 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
   const [yearRange, yearSet] = useYearSet();
   const [purpose, setPurpose] = useState(null);
   const [consolidateYears, setConsolidateYears] = useState(false);
-  const [rangeValue, setRangeValue] = useState({
-    from: { year: 2021, month: 1 },
-    to: { year: 2023, month: 3 },
-  });
+  const [rangeValue, setRangeValue] = useState(getRangeValues);
+  const [tableReloading, setReloading] = useState(false);
+  const [showDateRangePicker, setShowDateRagePicker] = useState(false);
   const monthPickerRef = useRef(null);
   const tableChartState = chartState;
 
@@ -111,6 +125,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     function _handleKeyUp(e) {
       if (e.key === 'Escape') {
         document.body.style.overflow = 'visible';
+        closeRangePicker();
         closeModal();
       }
     }
@@ -120,10 +135,9 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
   }, [closeModal]);
 
   useEffect(() => {
+    const tableDS = mapDataSetToEnum[dataSet];
+    setReloading(true);
     const _fetchData = async () => {
-      setConsolidateYears(null);
-      setPurpose(null);
-      const tableDS = mapDataSetToEnum[dataSet];
       const getEndpoint = mapDatasetKeyToEndpoint(tableDS);
       const _from = `${rangeValue.from.year}-${rangeValue.from.month}-01`;
       const _to = `${rangeValue.to.year}-${rangeValue.to.month}-01`;
@@ -131,10 +145,10 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       try {
         const { data } = await axios.get(url);
         tableChartState.data[tableDS] = data;
+        setReloading(false);
       } catch (err) {
-        console.log(err);
+        setReloading(false);
       }
-      _buildTableData(tableDS);
     };
     if (dataSet) {
       _fetchData();
@@ -447,30 +461,20 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     return '?';
   };
 
-  const [showDateRangePicker, setShowDateRagePicker] = useState(false);
-  const showDatePicker = () => {
-    const today = new Date();
-    setRangeValue({
-      from: {
-        year: 2000,
-        month: 1,
-      },
-      to: {
-        year: today.getFullYear(),
-        month: today.getMonth() + 1,
-      },
-    });
-    setShowDateRagePicker(true);
-  };
-  const resetDatePicker = () => {
-    setRangeValue({});
+  const closeRangePicker = () => {
     setShowDateRagePicker(false);
+    setRangeValue(getRangeValues);
+  };
+
+  const closeModalAndCleanup = () => {
+    closeRangePicker();
+    closeModal();
   };
 
   return ReactDOM.createPortal(
     isOpen && (
       <>
-        <S.ModalUnderlay onClick={closeModal} />
+        <S.ModalUnderlay onClick={closeModalAndCleanup} />
         <S.TableModal>
           <S.Header>
             <S.Heading>
@@ -507,7 +511,12 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
             />
           )}
           {!showDateRangePicker && (
-            <Button variant="positive" marginTop={10} {...S.ButtonInlines} onClick={showDatePicker}>
+            <Button
+              variant="positive"
+              marginTop={10}
+              {...S.ButtonInlines}
+              onClick={() => setShowDateRagePicker(true)}
+            >
               Filter by date range
             </Button>
           )}
@@ -532,7 +541,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
                 backgroundColor="white"
                 width={25}
                 height={25}
-                onClick={resetDatePicker}
+                onClick={closeRangePicker}
               >
                 <ChartHeaderStyles.Icon
                   icon={ICONS.close}
@@ -555,7 +564,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
           )}
 
           <S.TableWrapper>
-            {_getIsLoading(dataSet) ? (
+            {_getIsLoading(dataSet) || tableReloading ? (
               <TableSkeleton />
             ) : (
               <Table
