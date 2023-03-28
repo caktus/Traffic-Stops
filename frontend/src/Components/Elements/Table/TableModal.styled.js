@@ -110,3 +110,7 @@ export const TableWrapper = styled.div`
 export const NonHispanic = styled(P)`
   font-style: italic;
 `;
+
+export const BottomMarginTen = styled.div`
+  margin-bottom: 10px;
+`;

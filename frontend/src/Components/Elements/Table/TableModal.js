@@ -48,6 +48,8 @@ import { useParams } from 'react-router-dom';
 import mapDatasetKeyToEndpoint from '../../../Services/endpoints';
 import axios from '../../../Services/Axios';
 import * as ChartHeaderStyles from '../../Charts/ChartSections/ChartHeader.styled';
+import range from 'lodash.range';
+import ye from 'react-datepicker';
 
 const mapDatasetToChartName = {
   STOPS: 'Traffic Stops By Percentage',
@@ -97,7 +99,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
   const theme = useTheme();
   const portalTarget = usePortal('modal-root');
   const officerId = useOfficerId();
-  const [yearRange, yearSet] = useYearSet();
+  let [yearRange] = useYearSet();
   const [purpose, setPurpose] = useState(null);
   const [consolidateYears, setConsolidateYears] = useState(false);
   const [rangeValue, setRangeValue] = useState(getRangeValues);
@@ -142,8 +144,10 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       const _from = `${rangeValue.from.year}-${rangeValue.from.month}-01`;
       const _to = `${rangeValue.to.year}-${rangeValue.to.month}-01`;
       const url = `${getEndpoint(agencyId)}?from=${_from}&to=${_to}`;
+      yearRange = range(rangeValue.from.year, rangeValue.to.year + 1, 1);
       try {
         const { data } = await axios.get(url);
+        tableChartState.yearRange = yearRange;
         tableChartState.data[tableDS] = data;
         setReloading(false);
       } catch (err) {
@@ -168,19 +172,30 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
   const markMissingYears = (mergedData) => {
     for (let i = 0; i < yearRange.length; i++) {
       const year = yearRange[i];
+      const placeholderValue = {
+        year,
+        no_data: true,
+        asian: 0,
+        black: 0,
+        hispanic: 0,
+        native_american: 0,
+        other: 0,
+        purpose,
+        total: 0,
+        white: 0,
+      };
+      // If the date range picker isn't active, add the missing year data,
+      // otherwise only add it if the year is in the date range selected.
       if (mergedData.filter((y) => y.year === year).length === 0) {
-        mergedData.push({
-          year,
-          no_data: true,
-          asian: 0,
-          black: 0,
-          hispanic: 0,
-          native_american: 0,
-          other: 0,
-          purpose,
-          total: 0,
-          white: 0,
-        });
+        if (!showDateRangePicker) {
+          mergedData.push(placeholderValue);
+        } else if (
+          showDateRangePicker &&
+          year >= rangeValue.from.year &&
+          year <= rangeValue.to.year
+        ) {
+          mergedData.push(placeholderValue);
+        }
       }
     }
   };
@@ -495,20 +510,24 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
             <P>{subheadingForDataset(dataSet)}</P>
           </S.Heading>
           {(dataSet === STOPS_BY_REASON || dataSet === LIKELIHOOD_OF_SEARCH) && (
-            <DataSubsetPicker
-              label="Filter by Stop Purpose"
-              value={purpose || 'All'}
-              onChange={handleStopPurposeSelect}
-              options={stopTypes(dataSet)}
-            />
+            <S.BottomMarginTen>
+              <DataSubsetPicker
+                label="Filter by Stop Purpose"
+                value={purpose || 'All'}
+                onChange={handleStopPurposeSelect}
+                options={stopTypes(dataSet)}
+              />
+            </S.BottomMarginTen>
           )}
           {dataSet === SEARCHES_BY_TYPE && (
-            <DataSubsetPicker
-              label="Filter by Search Type"
-              value={purpose || 'All'}
-              onChange={handleStopPurposeSelect}
-              options={[PURPOSE_DEFAULT].concat(SEARCH_TYPES)}
-            />
+            <S.BottomMarginTen>
+              <DataSubsetPicker
+                label="Filter by Search Type"
+                value={purpose || 'All'}
+                onChange={handleStopPurposeSelect}
+                options={[PURPOSE_DEFAULT].concat(SEARCH_TYPES)}
+              />
+            </S.BottomMarginTen>
           )}
           {!showDateRangePicker && (
             <Button
