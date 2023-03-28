@@ -49,7 +49,7 @@ import mapDatasetKeyToEndpoint from '../../../Services/endpoints';
 import axios from '../../../Services/Axios';
 import * as ChartHeaderStyles from '../../Charts/ChartSections/ChartHeader.styled';
 import range from 'lodash.range';
-import ye from 'react-datepicker';
+import displayMissingPhrase from '../../../util/displayMissingData';
 
 const mapDatasetToChartName = {
   STOPS: 'Traffic Stops By Percentage',
@@ -172,7 +172,9 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     return () => (document.body.style.overflow = 'visible');
   }, [isOpen]);
 
-  const markMissingYears = (mergedData) => {
+  const markMissingYears = (mergedData, hasPurpose = true, hasSearchType = false) => {
+    // hasPurpose is meant for datasets that has a dedicated column for purpose, some may not
+    // hasSearchType is meant for specific datasets that include a search type and not a purpose
     for (let i = 0; i < yearRange.length; i++) {
       const year = yearRange[i];
       const placeholderValue = {
@@ -183,10 +185,15 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
         hispanic: 0,
         native_american: 0,
         other: 0,
-        purpose,
         total: 0,
         white: 0,
       };
+      if (hasPurpose) {
+        placeholderValue.purpose = purpose;
+      }
+      if (hasSearchType) {
+        placeholderValue.search_type = purpose;
+      }
       // If the date range picker isn't active, add the missing year data,
       // otherwise only add it if the year is in the date range selected.
       if (mergedData.filter((y) => y.year === year).length === 0) {
@@ -317,7 +324,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     if (purpose) {
       mergedData = mergedData.filter((e) => e.purpose === purpose);
     }
-    markMissingYears(mergedData);
+    markMissingYears(mergedData, false);
     const raceTotals = {
       year: 'Totals',
       ...reduceFullDatasetOnlyTotals(mergedData, RACES),
@@ -371,7 +378,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     } else {
       mappedData = data;
     }
-    markMissingYears(mappedData);
+    markMissingYears(mappedData, false, true);
     const raceTotals = {
       year: 'Totals',
       search_type: '',
@@ -402,7 +409,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       const chartData = tableChartState.data[ds];
       // eslint-disable-next-line no-param-reassign,no-return-assign
       chartData.forEach((chartDatum) => (chartDatum['total'] = calculateYearTotal(chartDatum)));
-      markMissingYears(chartData);
+      markMissingYears(chartData, false);
       const raceTotals = {
         year: 'Totals',
         ...reduceFullDatasetOnlyTotals(chartData, RACES),
@@ -416,6 +423,36 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       data = [raceTotals, ...sortedData];
     }
     return data;
+  };
+
+  const setupCSVData = (ds) => {
+    const csvData = JSON.parse(JSON.stringify(_buildTableData(ds)));
+    // Cleanup data tables for spreadsheet download
+    csvData.forEach((datum) => {
+      if (datum.hasOwnProperty('no_data') && datum.no_data) {
+        // eslint-disable-next-line no-param-reassign
+        delete datum['no_data'];
+        // Little hack to place the missing data phrase next to the year column;
+        let placeholderCol = 'white';
+        if (datum.hasOwnProperty('purpose')) {
+          placeholderCol = 'purpose';
+        } else if (datum.hasOwnProperty('search_type')) {
+          placeholderCol = 'search_type';
+        }
+        // eslint-disable-next-line prefer-destructuring
+        const year = datum['year'];
+        // eslint-disable-next-line guard-for-in,no-restricted-syntax
+        for (const property in datum) {
+          // eslint-disable-next-line no-param-reassign
+          datum[property] = null;
+        }
+        // eslint-disable-next-line no-param-reassign
+        datum[placeholderCol] = displayMissingPhrase(ds);
+        // eslint-disable-next-line no-param-reassign
+        datum['year'] = year;
+      }
+    });
+    return csvData;
   };
 
   const _getIsLoading = (ds) => {
@@ -601,7 +638,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
           <S.NonHispanic>* Non-hispanic</S.NonHispanic>
           {!_getIsLoading(dataSet) && (
             <S.Download>
-              <CSVLink data={_buildTableData(dataSet)} filename={_getTableNameForDownload()}>
+              <CSVLink data={setupCSVData(dataSet)} filename={_getTableNameForDownload()}>
                 <Button variant="positive" {...S.ButtonInlines} onClick={() => {}}>
                   <S.Icon icon={ICONS.download} height={25} width={25} fill={theme.colors.white} />
                   Download Data
