@@ -41,13 +41,15 @@ export const ResourceImage = styled.img`
   }
 `;
 
-export const ResourceTag = styled.div`
+export const ResourceTag = styled.a`
   background-color: lightgray;
   margin-right: 1rem;
   padding: 5px 10px;
   border-radius: 10px;
   font-size: 14px;
   font-weight: 600;
+  text-decoration: none;
+  color: black;
 
   @media (${phoneOnly}) {
     padding: 5px;
