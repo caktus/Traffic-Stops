@@ -137,7 +137,10 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
   }, [closeModal]);
 
   useEffect(() => {
-    const tableDS = mapDataSetToEnum[dataSet];
+    let tableDS = mapDataSetToEnum[dataSet];
+    if (Array.isArray(dataSet)) {
+      tableDS = mapDataSetToEnum[dataSet[1]];
+    }
     setReloading(true);
     const _fetchData = async () => {
       const getEndpoint = mapDatasetKeyToEndpoint(tableDS);
@@ -499,7 +502,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
               <P> {_getEntityReference()}</P>
             </S.Heading>
             <S.CloseButton
-              onClick={closeModal}
+              onClick={closeModalAndCleanup}
               icon={ICONS.close}
               fill={theme.colors.primary}
               width={42}
