@@ -2,6 +2,8 @@ from django.conf import settings
 from django.core.mail import send_mail
 from django.db.models import Case, Count, F, Q, Sum, Value, When
 from django.db.models.functions import ExtractYear
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import never_cache
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -289,12 +291,17 @@ class ResourcesViewSet(viewsets.ReadOnlyModelViewSet):
     def get_serializer_class(self):
         return serializers.ResourcesSerializer(context={"request": self.request})
 
+    @method_decorator(never_cache)
     def list(self, request, *args, **kwargs):
-        return Response({"results": self.serializer_class(
-            Resource.objects.all(),
-            many=True,
-            context={"request": self.request},
-        ).data})
+        return Response(
+            {
+                "results": self.serializer_class(
+                    Resource.objects.all(),
+                    many=True,
+                    context={"request": self.request},
+                ).data
+            }
+        )
 
 
 class ContactView(APIView):
