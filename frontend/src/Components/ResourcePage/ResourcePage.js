@@ -18,7 +18,7 @@ function Resource({ resource }) {
       </div>
       <div>
         <H2>{resource.title} </H2>
-        {resource.publication_date && <P size={14}>Published: {resourcePublicationDate}</P>}
+        {resource.publication_date && <P size={14}>{resourcePublicationDate}</P>}
         <P size={18}>{resource.description}</P>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
           {resource.agencies_list.map((a) => (
