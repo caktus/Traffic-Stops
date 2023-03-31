@@ -2,7 +2,7 @@
   "name": "traffic-stops",
   "version": "0.2.0",
   "private": true,
-  "proxy": "http://127.0.0.1:8000/",
+  "proxy": "http://localhost:8000/",
   "dependencies": {
     "@loadable/component": "^5.15.2",
     "@sentry/react": "^7.6.0",
