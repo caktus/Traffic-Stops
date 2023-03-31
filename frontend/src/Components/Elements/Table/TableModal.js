@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { useTheme } from 'styled-components';
 import * as S from './TableModal.styled';
+import Picker from 'react-month-picker';
+import 'react-month-picker/css/month-picker.css';
 
 // Deps
 import { CSVLink } from 'react-csv';
@@ -12,7 +14,10 @@ import {
   CONTRABAND_HIT_RATE,
   LIKELIHOOD_OF_SEARCH,
   SEARCHES_BY_TYPE,
+  STOPS,
   STOPS_BY_REASON,
+  SEARCHES,
+  USE_OF_FORCE,
 } from '../../../Hooks/useDataset';
 
 // Constants
@@ -39,6 +44,11 @@ import { ICONS } from '../../../img/icons/Icon';
 import Button from '../Button';
 import DataSubsetPicker from '../../Charts/ChartSections/DataSubsetPicker/DataSubsetPicker';
 import Checkbox from '../Inputs/Checkbox';
+import { useParams } from 'react-router-dom';
+import mapDatasetKeyToEndpoint from '../../../Services/endpoints';
+import axios from '../../../Services/Axios';
+import * as ChartHeaderStyles from '../../Charts/ChartSections/ChartHeader.styled';
+import range from 'lodash.range';
 import displayMissingPhrase from '../../../util/displayMissingData';
 
 const mapDatasetToChartName = {
@@ -51,16 +61,55 @@ const mapDatasetToChartName = {
   LIKELIHOOD_OF_SEARCH: 'Likelihood of Search',
 };
 
+const mapDataSetToEnum = {
+  STOPS,
+  SEARCHES,
+  STOPS_BY_REASON,
+  SEARCHES_BY_TYPE,
+  USE_OF_FORCE,
+  CONTRABAND_HIT_RATE,
+  LIKELIHOOD_OF_SEARCH,
+};
+
+function MonthBox({ value, _onClick }) {
+  return (
+    <div className="box" onClick={_onClick}>
+      <Button onClick={() => {}}>{value}</Button>
+    </div>
+  );
+}
+
+function getRangeValues() {
+  const today = new Date();
+
+  return {
+    from: {
+      year: 2000,
+      month: 1,
+    },
+    to: {
+      year: today.getFullYear(),
+      month: today.getMonth() + 1,
+    },
+  };
+}
+
 function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
+  const { agencyId } = useParams();
   const theme = useTheme();
   const portalTarget = usePortal('modal-root');
   const officerId = useOfficerId();
-  const [yearRange] = useYearSet();
+  let [yearRange] = useYearSet();
   const [purpose, setPurpose] = useState(null);
   const [consolidateYears, setConsolidateYears] = useState(false);
+  const [rangeValue, setRangeValue] = useState(getRangeValues);
+  const [tableReloading, setReloading] = useState(false);
+  const [showDateRangePicker, setShowDateRagePicker] = useState(false);
+  const monthPickerRef = useRef(null);
+  const tableChartState = chartState;
 
   const _getEntityReference = () => {
-    const agencyName = chartState.data[AGENCY_DETAILS].name;
+    const agencyName = tableChartState.data[AGENCY_DETAILS].name;
     if (officerId) return `for Officer ${officerId} of the ${agencyName}`;
     return `for ${agencyName}`;
   };
@@ -78,6 +127,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     function _handleKeyUp(e) {
       if (e.key === 'Escape') {
         document.body.style.overflow = 'visible';
+        closeRangePicker();
         closeModal();
       }
     }
@@ -85,6 +135,32 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     document.addEventListener('keyup', _handleKeyUp);
     return () => document.removeEventListener('keyup', _handleKeyUp);
   }, [closeModal]);
+
+  useEffect(() => {
+    let tableDS = mapDataSetToEnum[dataSet];
+    if (Array.isArray(dataSet)) {
+      tableDS = mapDataSetToEnum[dataSet[1]];
+    }
+    setReloading(true);
+    const _fetchData = async () => {
+      const getEndpoint = mapDatasetKeyToEndpoint(tableDS);
+      const _from = `${rangeValue.from.year}-${rangeValue.from.month}-01`;
+      const _to = `${rangeValue.to.year}-${rangeValue.to.month}-01`;
+      const url = `${getEndpoint(agencyId)}?from=${_from}&to=${_to}`;
+      yearRange = range(rangeValue.from.year, rangeValue.to.year + 1, 1);
+      try {
+        const { data } = await axios.get(url);
+        tableChartState.yearRange = yearRange;
+        tableChartState.data[tableDS] = data;
+        setReloading(false);
+      } catch (err) {
+        setReloading(false);
+      }
+    };
+    if (dataSet) {
+      _fetchData();
+    }
+  }, [dataSet, rangeValue.from, rangeValue.to]);
 
   // supress body scrolling behind modal
   useEffect(() => {
@@ -101,37 +177,47 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     // hasSearchType is meant for specific datasets that include a search type and not a purpose
     for (let i = 0; i < yearRange.length; i++) {
       const year = yearRange[i];
+      const placeholderValue = {
+        year,
+        no_data: true,
+        asian: 0,
+        black: 0,
+        hispanic: 0,
+        native_american: 0,
+        other: 0,
+        total: 0,
+        white: 0,
+      };
+      if (hasPurpose) {
+        placeholderValue.purpose = purpose;
+      }
+      if (hasSearchType) {
+        placeholderValue.search_type = purpose;
+      }
+      // If the date range picker isn't active, add the missing year data,
+      // otherwise only add it if the year is in the date range selected.
       if (mergedData.filter((y) => y.year === year).length === 0) {
-        const data = {
-          year,
-          no_data: true,
-          asian: 0,
-          black: 0,
-          hispanic: 0,
-          native_american: 0,
-          other: 0,
-          total: 0,
-          white: 0,
-        };
-        if (hasPurpose) {
-          data.purpose = purpose;
+        if (!showDateRangePicker) {
+          mergedData.push(placeholderValue);
+        } else if (
+          showDateRangePicker &&
+          year >= rangeValue.from.year &&
+          year <= rangeValue.to.year
+        ) {
+          mergedData.push(placeholderValue);
         }
-        if (hasSearchType) {
-          data.search_type = purpose;
-        }
-        mergedData.push(data);
       }
     }
   };
 
   /* Build some more complicated data sets */
   const mapStopsByPurpose = (ds) => {
-    const data = chartState.data[ds];
+    const data = tableChartState.data[ds];
     let mergedData = [];
     const { searches, stops } = data;
     if (searches && stops) {
       if (consolidateYears && !purpose) {
-        mergedData = reduceEthnicityByYears(stops, chartState.yearRange);
+        mergedData = reduceEthnicityByYears(stops, tableChartState.yearRange);
       } else {
         mergedData = stops.map((searchYear, i) => {
           const yearData = {};
@@ -173,12 +259,12 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
   };
 
   const mapLikelihoodOfSearch = (ds) => {
-    const data = chartState.data[ds];
+    const data = tableChartState.data[ds];
     let mergedData = [];
     const { searches, stops } = data;
     if (searches && stops) {
       if (consolidateYears && !purpose) {
-        mergedData = reduceEthnicityByYears(searches, chartState.yearRange);
+        mergedData = reduceEthnicityByYears(searches, tableChartState.yearRange);
       } else {
         mergedData = searches.map((searchYear) => {
           const yearData = {};
@@ -218,7 +304,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
   };
 
   const mapSearchesByReason = (ds) => {
-    const searches = chartState.data[ds[1]];
+    const searches = tableChartState.data[ds[1]];
 
     let mergedData = searches.map((yearsStops) => {
       const { year } = yearsStops;
@@ -253,7 +339,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
   };
 
   const mapContrbandHitrate = (ds) => {
-    const data = chartState.data[ds];
+    const data = tableChartState.data[ds];
     const { contraband } = data;
     const mappedData = yearRange.map((year) => {
       const hits = contraband.find((d) => d.year === year) || 0;
@@ -281,12 +367,12 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
   };
 
   const mapSearchByType = (ds) => {
-    const data = chartState.data[ds];
+    const data = tableChartState.data[ds];
     // eslint-disable-next-line no-param-reassign,no-return-assign
     data.forEach((datum) => (datum['total'] = calculateYearTotal(datum)));
     let mappedData = [];
     if (consolidateYears && !purpose) {
-      mappedData = reduceEthnicityByYears(data, chartState.yearRange);
+      mappedData = reduceEthnicityByYears(data, tableChartState.yearRange);
     } else if (purpose) {
       mappedData = data.filter((d) => d.search_type === purpose);
     } else {
@@ -320,7 +406,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     } else if (Array.isArray(ds)) {
       data = mapSearchesByReason(ds);
     } else {
-      const chartData = chartState.data[ds];
+      const chartData = tableChartState.data[ds];
       // eslint-disable-next-line no-param-reassign,no-return-assign
       chartData.forEach((chartDatum) => (chartDatum['total'] = calculateYearTotal(chartDatum)));
       markMissingYears(chartData, false);
@@ -371,9 +457,9 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
 
   const _getIsLoading = (ds) => {
     if (Array.isArray(ds)) {
-      return ds.some((d) => chartState.loading[d]);
+      return ds.some((d) => tableChartState.loading[d]);
     }
-    return chartState.loading[ds];
+    return tableChartState.loading[ds];
   };
 
   const _getTableNameForDownload = () =>
@@ -420,10 +506,30 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     return '';
   };
 
+  const pickerLang = {
+    months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    from: 'From',
+    to: 'To',
+  };
+  const makeText = (m) => {
+    if (m && m.year && m.month) return pickerLang.months[m.month - 1] + '. ' + m.year;
+    return '?';
+  };
+
+  const closeRangePicker = () => {
+    setShowDateRagePicker(false);
+    setRangeValue(getRangeValues);
+  };
+
+  const closeModalAndCleanup = () => {
+    closeRangePicker();
+    closeModal();
+  };
+
   return ReactDOM.createPortal(
     isOpen && (
       <>
-        <S.ModalUnderlay onClick={closeModal} />
+        <S.ModalUnderlay onClick={closeModalAndCleanup} />
         <S.TableModal>
           <S.Header>
             <S.Heading>
@@ -433,7 +539,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
               <P> {_getEntityReference()}</P>
             </S.Heading>
             <S.CloseButton
-              onClick={closeModal}
+              onClick={closeModalAndCleanup}
               icon={ICONS.close}
               fill={theme.colors.primary}
               width={42}
@@ -444,21 +550,68 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
             <P>{subheadingForDataset(dataSet)}</P>
           </S.Heading>
           {(dataSet === STOPS_BY_REASON || dataSet === LIKELIHOOD_OF_SEARCH) && (
-            <DataSubsetPicker
-              label="Filter by Stop Purpose"
-              value={purpose || 'All'}
-              onChange={handleStopPurposeSelect}
-              options={stopTypes(dataSet)}
-            />
+            <S.BottomMarginTen>
+              <DataSubsetPicker
+                label="Filter by Stop Purpose"
+                value={purpose || 'All'}
+                onChange={handleStopPurposeSelect}
+                options={stopTypes(dataSet)}
+              />
+            </S.BottomMarginTen>
           )}
           {dataSet === SEARCHES_BY_TYPE && (
-            <DataSubsetPicker
-              label="Filter by Search Type"
-              value={purpose || 'All'}
-              onChange={handleStopPurposeSelect}
-              options={[PURPOSE_DEFAULT].concat(SEARCH_TYPES)}
-            />
+            <S.BottomMarginTen>
+              <DataSubsetPicker
+                label="Filter by Search Type"
+                value={purpose || 'All'}
+                onChange={handleStopPurposeSelect}
+                options={[PURPOSE_DEFAULT].concat(SEARCH_TYPES)}
+              />
+            </S.BottomMarginTen>
           )}
+          {!showDateRangePicker && (
+            <Button
+              variant="positive"
+              marginTop={10}
+              {...S.ButtonInlines}
+              onClick={() => setShowDateRagePicker(true)}
+            >
+              Filter by date range
+            </Button>
+          )}
+          {showDateRangePicker && (
+            <div style={{ display: 'flex', flexDirection: 'row', marginTop: '10' }}>
+              <Picker
+                className="MonthYearPicker"
+                lang={pickerLang.months}
+                ref={monthPickerRef}
+                years={{ min: 2000 }}
+                value={rangeValue}
+                theme="light"
+                onDismiss={(value) => setRangeValue(value)}
+              >
+                <MonthBox
+                  value={makeText(rangeValue.from) + ' ~ ' + makeText(rangeValue.to)}
+                  _onClick={() => monthPickerRef.current.show()}
+                />
+              </Picker>
+              <Button
+                variant="positive"
+                backgroundColor="white"
+                width={25}
+                height={25}
+                onClick={closeRangePicker}
+              >
+                <ChartHeaderStyles.Icon
+                  icon={ICONS.close}
+                  width={25}
+                  height={25}
+                  fill={theme.colors.positive}
+                />
+              </Button>
+            </div>
+          )}
+
           {showConsolidateYearsSwitch(dataSet) && (
             <Checkbox
               label="Consolidate years"
@@ -468,8 +621,9 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
               onChange={() => setConsolidateYears(!consolidateYears)}
             />
           )}
+
           <S.TableWrapper>
-            {_getIsLoading(dataSet) ? (
+            {_getIsLoading(dataSet) || tableReloading ? (
               <TableSkeleton />
             ) : (
               <Table
