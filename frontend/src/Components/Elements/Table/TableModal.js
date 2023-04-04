@@ -104,7 +104,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
   const [consolidateYears, setConsolidateYears] = useState(false);
   const [rangeValue, setRangeValue] = useState(getRangeValues);
   const [tableReloading, setReloading] = useState(false);
-  const [showDateRangePicker, setShowDateRagePicker] = useState(false);
+  const [showDateRangePicker, setShowDateRangePicker] = useState(false);
   const monthPickerRef = useRef(null);
   const tableChartState = chartState;
 
@@ -517,7 +517,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
   };
 
   const closeRangePicker = () => {
-    setShowDateRagePicker(false);
+    setShowDateRangePicker(false);
     setRangeValue(getRangeValues);
   };
 
@@ -574,7 +574,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
               variant="positive"
               marginTop={10}
               {...S.ButtonInlines}
-              onClick={() => setShowDateRagePicker(true)}
+              onClick={() => setShowDateRangePicker(true)}
             >
               Filter by date range
             </Button>
