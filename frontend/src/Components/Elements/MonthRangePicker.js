@@ -31,7 +31,7 @@ function getRangeValues() {
 
   return {
     from: {
-      year: 2000,
+      year: 2001,
       month: 1,
     },
     to: {
@@ -62,26 +62,7 @@ const pickerLang = {
   to: 'To',
 };
 
-function dateRange(startDate, endDate) {
-  const start = startDate.split('-');
-  const end = endDate.split('-');
-  const startYear = parseInt(start[0], 10);
-  const endYear = parseInt(end[0], 10);
-  const dates = [];
-
-  for (let i = startYear; i <= endYear; i++) {
-    const endMonth = i !== endYear ? 11 : parseInt(end[1], 10) - 1;
-    const startMon = i === startYear ? parseInt(start[1], 10) - 1 : 0;
-    for (let j = startMon; j <= endMonth; j = j > 12 ? j % 12 || 11 : j + 1) {
-      const month = j + 1;
-      const displayMonth = month < 10 ? '0' + month : month;
-      dates.push([i, displayMonth, '01'].join('-'));
-    }
-  }
-  return dates;
-}
-
-export default function MonthRangePicker({ agencyId, dataSet, onChange }) {
+export default function MonthRangePicker({ agencyId, dataSet, onChange, onClosePicker }) {
   const theme = useTheme();
   const [rangeValue, setRangeValue] = useState(getRangeValues);
   const [showDateRangePicker, setShowDateRangePicker] = useState(false);
@@ -95,6 +76,7 @@ export default function MonthRangePicker({ agencyId, dataSet, onChange }) {
   const closeRangePicker = () => {
     setShowDateRangePicker(false);
     setRangeValue(getRangeValues);
+    onClosePicker();
   };
 
   const updateDatePicker = async (rangeVal) => {
@@ -109,16 +91,15 @@ export default function MonthRangePicker({ agencyId, dataSet, onChange }) {
     const url = `${getEndpoint(agencyId)}?from=${_from}&to=${_to}`;
     const fromDate = new Date(_from);
     const toDate = new Date(_to);
+
     let xAxis = 'year';
-    let monthsRange = null;
     const yearRange = range(rangeVal.from.year, rangeVal.to.year + 1, 1);
-    if (diffYears(fromDate, toDate) <= 2) {
+    if (diffYears(fromDate, toDate) <= 1) {
       xAxis = 'month';
-      monthsRange = dateRange(_from, _to);
     }
     try {
       const { data } = await axios.get(url);
-      onChange({ data, xAxis, monthsRange, yearRange });
+      onChange({ data, xAxis, yearRange });
     } catch (err) {
       console.log(err);
     }

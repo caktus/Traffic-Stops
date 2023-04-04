@@ -1,5 +1,6 @@
 import datetime
 
+from dateutil import relativedelta
 from django.conf import settings
 from django.core.mail import send_mail
 from django.db.models import Case, Count, F, Q, Sum, Value, When
@@ -103,29 +104,43 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
             to_date = datetime.datetime.strptime(_to_date, "%Y-%m-%d")
             if from_date and to_date:
                 if from_date.date() != to_date.date():
+                    delta = relativedelta.relativedelta(to_date, from_date)
+                    if delta.years == 0:
+                        self.group_by_month = True
+                        results.group_by = ("date",)
                     # If not single month, filter by range
                     qs = qs.filter(date__range=(from_date, to_date))
                 else:
                     # If date range is only single month, return just the stops for that month
                     qs = qs.filter(date__year=from_date.year, date__month=from_date.month)
-        # group by specified fields and order by year
-        qs = qs.values(*group_by).order_by("year")
+        # group by specified fields by month, otherwise group by year
+        group_by_tuple = group_by
+        if hasattr(self, "group_by_month") and self.group_by_month:
+            gp_list = list(group_by)
+            gp_list.remove("year")
+            gp_list.append("date")
+            group_by_tuple = tuple(gp_list)
+        qs = qs.values(*group_by_tuple)
         qs = qs.annotate(count=Sum("count"))
         for stop in qs:
             data = {}
-            if "year" in group_by:
+            if "year" in group_by_tuple:
                 data["year"] = stop["year"]
-            if "stop_purpose" in group_by:
+
+            if "date" in group_by_tuple:
+                data["date"] = stop["date"].strftime("%Y-%m")
+
+            if "stop_purpose" in group_by_tuple:
                 purpose = PURPOSE_CHOICES.get(stop["stop_purpose"], stop["stop_purpose"])
                 data["purpose"] = purpose
 
-            if "search_type" in group_by:
+            if "search_type" in group_by_tuple:
                 data["search_type"] = SEARCH_TYPE_CHOICES.get(
                     stop["search_type"],
                     stop["search_type"],
                 )
 
-            if "driver_race" in group_by:
+            if "driver_race" in group_by_tuple:
                 # The 'Hispanic' ethnicity option is now being aggreggated into its
                 # own race category, and its count excluded from the other counts.
                 if stop["driver_ethnicity"] == "H":

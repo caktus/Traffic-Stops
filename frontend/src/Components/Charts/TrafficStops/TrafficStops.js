@@ -46,6 +46,8 @@ function TrafficStops(props) {
 
   const [stopsChartState] = useDataset(agencyId, STOPS);
   const [reasonChartState] = useDataset(agencyId, STOPS_BY_REASON);
+  const [pickerActive, setPickerActive] = useState(null);
+  const [pickerXAxis, setPickerXAxis] = useState(null);
 
   const [year, setYear] = useState(YEARS_DEFAULT);
 
@@ -132,14 +134,14 @@ function TrafficStops(props) {
           };
           rGroup.data = data.map((d) => ({
             displayName: toTitleCase(race),
-            x: d.year,
+            x: pickerXAxis === 'month' ? d.date : d.year,
             y: d[race],
           }));
           return rGroup;
         });
       setByCountLineData(derivedData);
     }
-  }, [stopsChartState.data[STOPS], purpose, countEthnicGroups]);
+  }, [stopsChartState.data[STOPS], purpose, countEthnicGroups, pickerActive]);
 
   // Build data for Stops By Count line chart (single purpose)
   useEffect(() => {
@@ -155,14 +157,14 @@ function TrafficStops(props) {
             color: theme.colors.ethnicGroup[race],
             data: purposeData.map((d) => ({
               displayName: toTitleCase(race),
-              x: d.year,
+              x: pickerXAxis === 'month' ? d.date : d.year,
               y: d[race],
             })),
           };
         });
       setByCountLineData(derivedData);
     }
-  }, [reasonChartState.data[STOPS_BY_REASON], purpose, countEthnicGroups]);
+  }, [reasonChartState.data[STOPS_BY_REASON], purpose, countEthnicGroups, pickerActive]);
 
   /* INTERACTIONS */
   // Handle year dropdown state
@@ -225,12 +227,23 @@ function TrafficStops(props) {
   };
 
   const updateStopsByCount = (val) => {
-    console.log(val);
-    reasonChartState.data[STOPS] = val.data['stops'];
-    if (val['monthsRange']) {
-    } else if (val['yearRange']) {
-      reasonChartState.yearSet = val.data['yearRange'];
+    stopsChartState.yearSet = val.yearRange;
+    reasonChartState.yearSet = val.yearRange;
+    stopsChartState.data[STOPS] = val.data;
+    setPickerActive((oldVal) => !oldVal);
+    setPickerXAxis(val.xAxis);
+  };
+
+  const lineAxisFormat = (t) => {
+    if (pickerActive !== null) {
+      if (pickerXAxis === 'month') {
+        return t;
+      }
+      if (reasonChartState.yearSet.length < 6) {
+        return t;
+      }
     }
+    return t % 2 === 0 ? t : null;
   };
 
   return (
@@ -292,13 +305,14 @@ function TrafficStops(props) {
           <S.LineWrapper>
             <MonthRangePicker
               agencyId={agencyId}
-              dataSet={STOPS_BY_REASON}
+              dataSet={purpose !== PURPOSE_DEFAULT ? STOPS_BY_REASON : STOPS}
               onChange={updateStopsByCount}
+              onClosePicker={() => setPickerActive(null)}
             />
             <Line
               data={byCountLineData}
               loading={reasonChartState.loading[STOPS_BY_REASON]}
-              iTickFormat={(t) => (t % 2 === 0 ? t : null)}
+              iTickFormat={lineAxisFormat}
               iTickValues={reasonChartState.yearSet}
               dAxisProps={{
                 tickFormat: (t) => `${t}`,
