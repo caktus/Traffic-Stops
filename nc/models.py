@@ -203,7 +203,7 @@ class StopSummary(pg.ReadOnlyMaterializedView):
 
     id = models.PositiveIntegerField(primary_key=True)
     year = models.IntegerField()
-    date = models.DateTimeField(db_index=True)
+    date = models.DateTimeField()
     agency = models.ForeignKey("Agency", on_delete=models.DO_NOTHING)
     stop_purpose = models.PositiveSmallIntegerField(choices=PURPOSE_CHOICES)
     engage_force = models.BooleanField()

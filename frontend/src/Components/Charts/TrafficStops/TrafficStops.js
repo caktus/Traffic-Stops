@@ -36,6 +36,7 @@ import ChartHeader from '../ChartSections/ChartHeader';
 import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
 import toTitleCase from '../../../util/toTitleCase';
 import useOfficerId from '../../../Hooks/useOfficerId';
+import MonthRangePicker from '../../Elements/MonthRangePicker';
 
 function TrafficStops(props) {
   const { agencyId } = props;
@@ -223,6 +224,15 @@ function TrafficStops(props) {
     return '';
   };
 
+  const updateStopsByCount = (val) => {
+    console.log(val);
+    reasonChartState.data[STOPS] = val.data['stops'];
+    if (val['monthsRange']) {
+    } else if (val['yearRange']) {
+      reasonChartState.yearSet = val.data['yearRange'];
+    }
+  };
+
   return (
     <TrafficStopsStyled>
       {/* Traffic Stops by Percentage */}
@@ -280,6 +290,11 @@ function TrafficStops(props) {
         <P>Shows the number of traffics stops broken down by purpose and race / ethnicity.</P>
         <S.ChartSubsection showCompare={props.showCompare}>
           <S.LineWrapper>
+            <MonthRangePicker
+              agencyId={agencyId}
+              dataSet={STOPS_BY_REASON}
+              onChange={updateStopsByCount}
+            />
             <Line
               data={byCountLineData}
               loading={reasonChartState.loading[STOPS_BY_REASON]}

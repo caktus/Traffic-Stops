@@ -102,7 +102,12 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
             from_date = datetime.datetime.strptime(_from_date, "%Y-%m-%d")
             to_date = datetime.datetime.strptime(_to_date, "%Y-%m-%d")
             if from_date and to_date:
-                qs = qs.filter(date__range=(from_date, to_date))
+                if from_date.date() != to_date.date():
+                    # If not single month, filter by range
+                    qs = qs.filter(date__range=(from_date, to_date))
+                else:
+                    # If date range is only single month, return just the stops for that month
+                    qs = qs.filter(date__year=from_date.year, date__month=from_date.month)
         # group by specified fields and order by year
         qs = qs.values(*group_by).order_by("year")
         qs = qs.annotate(count=Sum("count"))
