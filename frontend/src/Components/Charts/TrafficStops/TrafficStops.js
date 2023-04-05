@@ -134,7 +134,7 @@ function TrafficStops(props) {
           };
           rGroup.data = data.map((d) => ({
             displayName: toTitleCase(race),
-            x: pickerXAxis === 'month' ? d.date : d.year,
+            x: pickerXAxis === 'month' || pickerXAxis === 'week' ? d.date : d.year,
             y: d[race],
           }));
           return rGroup;
@@ -157,7 +157,7 @@ function TrafficStops(props) {
             color: theme.colors.ethnicGroup[race],
             data: purposeData.map((d) => ({
               displayName: toTitleCase(race),
-              x: pickerXAxis === 'month' ? d.date : d.year,
+              x: pickerXAxis === 'month' || pickerXAxis === 'week' ? d.date : d.year,
               y: d[race],
             })),
           };
@@ -227,16 +227,34 @@ function TrafficStops(props) {
   };
 
   const updateStopsByCount = (val) => {
+    console.log(val);
     stopsChartState.yearSet = val.yearRange;
     reasonChartState.yearSet = val.yearRange;
     stopsChartState.data[STOPS] = val.data;
-    setPickerActive((oldVal) => !oldVal);
+
     setPickerXAxis(val.xAxis);
+    setPickerActive((oldVal) => !oldVal);
   };
 
   const lineAxisFormat = (t) => {
+    console.log(pickerXAxis);
     if (pickerActive !== null) {
       if (pickerXAxis === 'month') {
+        if (typeof t === 'string') {
+          // Month label is YYYY-MM
+          const month = t.split('-')[1];
+          const datasetLength = stopsChartState.data[STOPS].length;
+          if (datasetLength > 12 && datasetLength <= 24) {
+            return month % 2 === 0 ? t : null;
+          }
+          if (datasetLength > 24) {
+            return month % 4 === 0 ? t : null;
+          }
+        }
+
+        return t;
+      }
+      if (pickerXAxis === 'week') {
         return t;
       }
       if (reasonChartState.yearSet.length < 6) {
