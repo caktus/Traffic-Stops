@@ -134,7 +134,7 @@ function TrafficStops(props) {
           };
           rGroup.data = data.map((d) => ({
             displayName: toTitleCase(race),
-            x: pickerXAxis === 'month' || pickerXAxis === 'week' ? d.date : d.year,
+            x: pickerXAxis === 'Month' || pickerXAxis === 'Week' ? d.date : d.year,
             y: d[race],
           }));
           return rGroup;
@@ -157,7 +157,7 @@ function TrafficStops(props) {
             color: theme.colors.ethnicGroup[race],
             data: purposeData.map((d) => ({
               displayName: toTitleCase(race),
-              x: pickerXAxis === 'month' || pickerXAxis === 'week' ? d.date : d.year,
+              x: pickerXAxis === 'Month' || pickerXAxis === 'Week' ? d.date : d.year,
               y: d[race],
             })),
           };
@@ -227,7 +227,6 @@ function TrafficStops(props) {
   };
 
   const updateStopsByCount = (val) => {
-    console.log(val);
     stopsChartState.yearSet = val.yearRange;
     reasonChartState.yearSet = val.yearRange;
     stopsChartState.data[STOPS] = val.data;
@@ -236,10 +235,16 @@ function TrafficStops(props) {
     setPickerActive((oldVal) => !oldVal);
   };
 
+  const getWeek = (date) => {
+    const onejan = new Date(date.getFullYear(), 0, 1);
+    const today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const dayOfYear = (today - onejan + 86400000) / 86400000;
+    return Math.ceil(dayOfYear / 7);
+  };
+
   const lineAxisFormat = (t) => {
-    console.log(pickerXAxis);
     if (pickerActive !== null) {
-      if (pickerXAxis === 'month') {
+      if (pickerXAxis === 'Month') {
         if (typeof t === 'string') {
           // Month label is YYYY-MM
           const month = t.split('-')[1];
@@ -254,7 +259,13 @@ function TrafficStops(props) {
 
         return t;
       }
-      if (pickerXAxis === 'week') {
+      if (pickerXAxis === 'Week') {
+        if (typeof t === 'string') {
+          const datasetLength = stopsChartState.data[STOPS].length;
+          if (datasetLength > 12) {
+            return getWeek(new Date(t)) % 2 === 0 ? t : null;
+          }
+        }
         return t;
       }
       if (reasonChartState.yearSet.length < 6) {
@@ -335,6 +346,7 @@ function TrafficStops(props) {
               dAxisProps={{
                 tickFormat: (t) => `${t}`,
               }}
+              xAxisLabel={pickerActive !== null ? pickerXAxis : 'Year'}
             />
           </S.LineWrapper>
           <S.LegendBeside>

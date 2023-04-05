@@ -66,9 +66,10 @@ export default function MonthRangePicker({ agencyId, dataSet, onChange, onCloseP
     return '?';
   };
 
-  const closeRangePicker = () => {
+  const closeRangePicker = async () => {
     setShowDateRangePicker(false);
     setRangeValue(getRangeValues);
+    await updateDatePicker(getRangeValues());
     onClosePicker();
   };
 
@@ -86,20 +87,18 @@ export default function MonthRangePicker({ agencyId, dataSet, onChange, onCloseP
     const toDate = new Date(_to);
     const diffYears = toDate.getFullYear() - fromDate.getFullYear();
 
-    let xAxis = 'year';
+    let xAxis = 'Year';
     const yearRange = range(rangeVal.from.year, rangeVal.to.year + 1, 1);
     if (diffYears < 3) {
-      xAxis = 'month';
+      xAxis = 'Month';
       if (diffYears === 0 && toDate.getMonth() - fromDate.getMonth() < 4) {
-        xAxis = 'week';
+        xAxis = 'Week';
       }
     }
     try {
       const { data } = await axios.get(url);
-      if (xAxis === 'month') {
+      if (xAxis === 'Month' || xAxis === 'Week') {
         data.sort((a, b) => new Date(a.date) - new Date(b.date));
-      } else if (xAxis === 'week') {
-        data.sort((a, b) => parseInt(a.date, 10) - parseInt(b.date, 10));
       }
       onChange({ data, xAxis, yearRange });
     } catch (err) {
