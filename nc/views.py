@@ -105,7 +105,8 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
             if from_date and to_date:
                 delta = relativedelta.relativedelta(to_date, from_date)
                 if delta.years == 0 and delta.months < 4:
-                    # Add another month if same month is selected, that way the user doesn't see an error
+                    # Add another month if same month is selected,
+                    # that way the user doesn't see an error
                     to_date += relativedelta.relativedelta(months=1)
                     results.group_by = ("date",)
                     self.group_by_week = True
@@ -134,7 +135,11 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
                 if hasattr(self, "group_by_month") and self.group_by_month:
                     data["date"] = stop["date"].strftime("%Y-%m")
                 if hasattr(self, "group_by_week") and self.group_by_week:
-                    data["date"] = stop["date"].strftime("%U")
+                    stop_date: datetime = stop["date"]
+                    # Group weeks by their starting week day (Sunday)
+                    data["date"] = (
+                        stop_date - datetime.timedelta(days=stop_date.weekday())
+                    ).strftime("%Y-%m-%d")
 
             if "stop_purpose" in group_by_tuple:
                 purpose = PURPOSE_CHOICES.get(stop["stop_purpose"], stop["stop_purpose"])
