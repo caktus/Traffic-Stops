@@ -49,13 +49,6 @@ const mapDataSetToEnum = {
   CONTRABAND_HIT_RATE,
   LIKELIHOOD_OF_SEARCH,
 };
-
-function diffYears(dt2, dt1) {
-  let diff = (dt2.getTime() - dt1.getTime()) / 1000;
-  diff /= 60 * 60 * 24;
-  return Math.abs(Math.round(diff / 365.25));
-}
-
 const pickerLang = {
   months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
   from: 'From',
@@ -91,14 +84,23 @@ export default function MonthRangePicker({ agencyId, dataSet, onChange, onCloseP
     const url = `${getEndpoint(agencyId)}?from=${_from}&to=${_to}`;
     const fromDate = new Date(_from);
     const toDate = new Date(_to);
+    const diffYears = toDate.getFullYear() - fromDate.getFullYear();
 
     let xAxis = 'year';
     const yearRange = range(rangeVal.from.year, rangeVal.to.year + 1, 1);
-    if (diffYears(fromDate, toDate) <= 1) {
+    if (diffYears < 3) {
       xAxis = 'month';
+      if (diffYears === 0 && toDate.getMonth() - fromDate.getMonth() < 4) {
+        xAxis = 'week';
+      }
     }
     try {
       const { data } = await axios.get(url);
+      if (xAxis === 'month') {
+        data.sort((a, b) => new Date(a.date) - new Date(b.date));
+      } else if (xAxis === 'week') {
+        data.sort((a, b) => parseInt(a.date, 10) - parseInt(b.date, 10));
+      }
       onChange({ data, xAxis, yearRange });
     } catch (err) {
       console.log(err);

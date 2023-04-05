@@ -103,19 +103,22 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
             from_date = datetime.datetime.strptime(_from_date, "%Y-%m-%d")
             to_date = datetime.datetime.strptime(_to_date, "%Y-%m-%d")
             if from_date and to_date:
-                if from_date.date() != to_date.date():
-                    delta = relativedelta.relativedelta(to_date, from_date)
-                    if delta.years == 0:
-                        self.group_by_month = True
-                        results.group_by = ("date",)
-                    # If not single month, filter by range
-                    qs = qs.filter(date__range=(from_date, to_date))
-                else:
-                    # If date range is only single month, return just the stops for that month
-                    qs = qs.filter(date__year=from_date.year, date__month=from_date.month)
-        # group by specified fields by month, otherwise group by year
+                delta = relativedelta.relativedelta(to_date, from_date)
+                if delta.years == 0 and delta.months < 4:
+                    # Add another month if same month is selected, that way the user doesn't see an error
+                    to_date += relativedelta.relativedelta(months=1)
+                    results.group_by = ("date",)
+                    self.group_by_week = True
+                elif delta.years < 3:
+                    results.group_by = ("date",)
+                    self.group_by_month = True
+                qs = qs.filter(date__range=(from_date, to_date))
+
+        # group by specified fields by week/month, otherwise group by year
         group_by_tuple = group_by
-        if hasattr(self, "group_by_month") and self.group_by_month:
+        if (hasattr(self, "group_by_month") and self.group_by_month) or (
+            hasattr(self, "group_by_week") and self.group_by_week
+        ):
             gp_list = list(group_by)
             gp_list.remove("year")
             gp_list.append("date")
@@ -128,7 +131,10 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
                 data["year"] = stop["year"]
 
             if "date" in group_by_tuple:
-                data["date"] = stop["date"].strftime("%Y-%m")
+                if hasattr(self, "group_by_month") and self.group_by_month:
+                    data["date"] = stop["date"].strftime("%Y-%m")
+                if hasattr(self, "group_by_week") and self.group_by_week:
+                    data["date"] = stop["date"].strftime("%U")
 
             if "stop_purpose" in group_by_tuple:
                 purpose = PURPOSE_CHOICES.get(stop["stop_purpose"], stop["stop_purpose"])
