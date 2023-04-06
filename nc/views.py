@@ -104,22 +104,16 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
             to_date = datetime.datetime.strptime(_to_date, "%Y-%m-%d")
             if from_date and to_date:
                 delta = relativedelta.relativedelta(to_date, from_date)
-                if delta.years == 0 and delta.months < 4:
-                    # Add another month if same month is selected,
-                    # that way the user doesn't see an error
-                    to_date += relativedelta.relativedelta(months=1)
-                    results.group_by = ("date",)
-                    self.group_by_week = True
-                elif delta.years < 3:
+                if delta.years < 3:
                     results.group_by = ("date",)
                     self.group_by_month = True
+                    # To include the last month selected
+                    to_date += relativedelta.relativedelta(months=1)
                 qs = qs.filter(date__range=(from_date, to_date))
 
         # group by specified fields by week/month, otherwise group by year
         group_by_tuple = group_by
-        if (hasattr(self, "group_by_month") and self.group_by_month) or (
-            hasattr(self, "group_by_week") and self.group_by_week
-        ):
+        if hasattr(self, "group_by_month") and self.group_by_month:
             gp_list = list(group_by)
             gp_list.remove("year")
             gp_list.append("date")
@@ -133,13 +127,7 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
 
             if "date" in group_by_tuple:
                 if hasattr(self, "group_by_month") and self.group_by_month:
-                    data["date"] = stop["date"].strftime("%Y-%m")
-                if hasattr(self, "group_by_week") and self.group_by_week:
-                    stop_date: datetime = stop["date"]
-                    # Group weeks by their starting week day (Sunday)
-                    data["date"] = (
-                        stop_date - datetime.timedelta(days=stop_date.weekday())
-                    ).strftime("%Y-%m-%d")
+                    data["date"] = stop["date"].strftime("%b %Y")
 
             if "stop_purpose" in group_by_tuple:
                 purpose = PURPOSE_CHOICES.get(stop["stop_purpose"], stop["stop_purpose"])

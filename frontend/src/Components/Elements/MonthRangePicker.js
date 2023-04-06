@@ -1,9 +1,7 @@
 import Button from './Button';
-import Picker from 'react-month-picker';
 import * as ChartHeaderStyles from '../Charts/ChartSections/ChartHeader.styled';
 import { ICONS } from '../../img/icons/Icon';
-import React, { useRef, useState } from 'react';
-import 'react-month-picker/css/month-picker.css';
+import React, { forwardRef, useState } from 'react';
 import mapDatasetKeyToEndpoint from '../../Services/endpoints';
 import axios from '../../Services/Axios';
 import {
@@ -17,14 +15,7 @@ import {
 } from '../../Hooks/useDataset';
 import { useTheme } from 'styled-components';
 import range from 'lodash.range';
-
-function MonthBox({ value, _onClick }) {
-  return (
-    <div className="box" onClick={_onClick}>
-      <Button onClick={() => {}}>{value}</Button>
-    </div>
-  );
-}
+import DatePicker from 'react-datepicker';
 
 function getRangeValues() {
   const today = new Date();
@@ -49,39 +40,35 @@ const mapDataSetToEnum = {
   CONTRABAND_HIT_RATE,
   LIKELIHOOD_OF_SEARCH,
 };
-const pickerLang = {
-  months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-  from: 'From',
-  to: 'To',
-};
+
+const MonthPickerButton = forwardRef(({ value, onClick }, ref) => (
+  <Button onClick={onClick} ref={ref}>
+    {value}
+  </Button>
+));
 
 export default function MonthRangePicker({ agencyId, dataSet, onChange, onClosePicker }) {
   const theme = useTheme();
-  const [rangeValue, setRangeValue] = useState(getRangeValues);
   const [showDateRangePicker, setShowDateRangePicker] = useState(false);
-  const monthPickerRef = useRef(null);
-
-  const makeText = (m) => {
-    if (m && m.year && m.month) return pickerLang.months[m.month - 1] + '. ' + m.year;
-    return '?';
-  };
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
+  const [minDate, setMinDate] = useState(null);
 
   const closeRangePicker = async () => {
     setShowDateRangePicker(false);
-    setRangeValue(getRangeValues);
+    setMinDate(null);
     await updateDatePicker(getRangeValues());
     onClosePicker();
   };
 
   const updateDatePicker = async (rangeVal) => {
-    setRangeValue(rangeVal);
     let tableDS = mapDataSetToEnum[dataSet];
     if (Array.isArray(dataSet)) {
       tableDS = mapDataSetToEnum[dataSet[1]];
     }
     const getEndpoint = mapDatasetKeyToEndpoint(tableDS);
-    const _from = `${rangeVal.from.year}-${rangeVal.from.month}-01`;
-    const _to = `${rangeVal.to.year}-${rangeVal.to.month}-01`;
+    const _from = `${rangeVal.from.year}-${rangeVal.from.month.toString().padStart(2, 0)}-01`;
+    const _to = `${rangeVal.to.year}-${rangeVal.to.month.toString().padStart(2, 0)}-01`;
     const url = `${getEndpoint(agencyId)}?from=${_from}&to=${_to}`;
     const fromDate = new Date(_from);
     const toDate = new Date(_to);
@@ -91,18 +78,41 @@ export default function MonthRangePicker({ agencyId, dataSet, onChange, onCloseP
     const yearRange = range(rangeVal.from.year, rangeVal.to.year + 1, 1);
     if (diffYears < 3) {
       xAxis = 'Month';
-      if (diffYears === 0 && toDate.getMonth() - fromDate.getMonth() < 4) {
-        xAxis = 'Week';
-      }
     }
     try {
       const { data } = await axios.get(url);
-      if (xAxis === 'Month' || xAxis === 'Week') {
+      if (xAxis === 'Month') {
         data.sort((a, b) => new Date(a.date) - new Date(b.date));
       }
       onChange({ data, xAxis, yearRange });
     } catch (err) {
       console.log(err);
+    }
+  };
+
+  const onDateRangeChange = async (dates) => {
+    let [start, end] = dates;
+
+    setStartDate(start);
+    if (!minDate) {
+      const minDate = new Date(start);
+      setMinDate(new Date(minDate.setMonth(minDate.getMonth() + 4)));
+    }
+
+    // Don't allow same month/year selected
+    if (end && start.getDay() === end.getDay()) {
+      end = new Date(end.setMonth(end.getMonth() + 1));
+    } else {
+      setEndDate(end);
+    }
+
+    if (start && end) {
+      // Update range value on when valid start/end dates are selected
+      const rangeVal = {
+        from: { month: start.getMonth() + 1, year: start.getFullYear() },
+        to: { month: end.getMonth() + 1, year: end.getFullYear() },
+      };
+      await updateDatePicker(rangeVal);
     }
   };
 
@@ -115,20 +125,23 @@ export default function MonthRangePicker({ agencyId, dataSet, onChange, onCloseP
       )}
       {showDateRangePicker && (
         <div style={{ display: 'flex', flexDirection: 'row', marginTop: '10' }}>
-          <Picker
-            className="MonthYearPicker"
-            lang={pickerLang.months}
-            ref={monthPickerRef}
-            years={{ min: 2000 }}
-            value={rangeValue}
-            theme="light"
-            onDismiss={(value) => updateDatePicker(value)}
-          >
-            <MonthBox
-              value={makeText(rangeValue.from) + ' ~ ' + makeText(rangeValue.to)}
-              _onClick={() => monthPickerRef.current.show()}
+          <div style={{ width: '200px' }}>
+            <DatePicker
+              selected={startDate}
+              onChange={onDateRangeChange}
+              startDate={startDate}
+              endDate={endDate}
+              minDate={minDate}
+              maxDate={new Date()}
+              dateFormat="MM/yyyy"
+              showMonthYearPicker
+              selectsRange
+              customInput={<MonthPickerButton />}
+              popperPlacement="bottom-end"
+              monthClassName={() => 'fj-date-range-month'}
+              onCalendarOpen={() => setMinDate(null)}
             />
-          </Picker>
+          </div>
           <Button
             variant="positive"
             backgroundColor="white"
