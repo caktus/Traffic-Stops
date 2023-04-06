@@ -134,7 +134,7 @@ function TrafficStops(props) {
           };
           rGroup.data = data.map((d) => ({
             displayName: toTitleCase(race),
-            x: pickerXAxis === 'Month' || pickerXAxis === 'Week' ? d.date : d.year,
+            x: pickerXAxis === 'Month' ? d.date : d.year,
             y: d[race],
           }));
           return rGroup;
@@ -157,7 +157,7 @@ function TrafficStops(props) {
             color: theme.colors.ethnicGroup[race],
             data: purposeData.map((d) => ({
               displayName: toTitleCase(race),
-              x: pickerXAxis === 'Month' || pickerXAxis === 'Week' ? d.date : d.year,
+              x: pickerXAxis === 'Month' ? d.date : d.year,
               y: d[race],
             })),
           };
@@ -235,37 +235,22 @@ function TrafficStops(props) {
     setPickerActive((oldVal) => !oldVal);
   };
 
-  const getWeek = (date) => {
-    const onejan = new Date(date.getFullYear(), 0, 1);
-    const today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-    const dayOfYear = (today - onejan + 86400000) / 86400000;
-    return Math.ceil(dayOfYear / 7);
-  };
-
   const lineAxisFormat = (t) => {
     if (pickerActive !== null) {
       if (pickerXAxis === 'Month') {
         if (typeof t === 'string') {
           // Month label is YYYY-MM
-          const month = t.split('-')[1];
+          const month = new Date(t).getMonth() + 1;
+          console.log(month);
           const datasetLength = stopsChartState.data[STOPS].length;
           if (datasetLength > 12 && datasetLength <= 24) {
             return month % 2 === 0 ? t : null;
           }
           if (datasetLength > 24) {
-            return month % 4 === 0 ? t : null;
+            return month % 3 === 0 ? t : null;
           }
         }
 
-        return t;
-      }
-      if (pickerXAxis === 'Week') {
-        if (typeof t === 'string') {
-          const datasetLength = stopsChartState.data[STOPS].length;
-          if (datasetLength > 12) {
-            return getWeek(new Date(t)) % 2 === 0 ? t : null;
-          }
-        }
         return t;
       }
       if (reasonChartState.yearSet.length < 6) {
