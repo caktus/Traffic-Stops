@@ -48,7 +48,7 @@ import axios from '../../../Services/Axios';
 import * as ChartHeaderStyles from '../../Charts/ChartSections/ChartHeader.styled';
 import range from 'lodash.range';
 import displayMissingPhrase from '../../../util/displayMissingData';
-import DatePicker from '../Inputs/DatePicker';
+import DatePicker from 'react-datepicker';
 
 const mapDatasetToChartName = {
   STOPS: 'Traffic Stops By Percentage',
