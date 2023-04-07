@@ -515,6 +515,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
   ));
 
   const onDateRangeChange = (dates) => {
+    // eslint-disable-next-line prefer-const
     let [start, end] = dates;
 
     setStartDate(start);
