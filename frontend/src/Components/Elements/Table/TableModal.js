@@ -1,9 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { forwardRef, useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { useTheme } from 'styled-components';
 import * as S from './TableModal.styled';
-import Picker from 'react-month-picker';
-import 'react-month-picker/css/month-picker.css';
 
 // Deps
 import { CSVLink } from 'react-csv';
@@ -50,6 +48,7 @@ import axios from '../../../Services/Axios';
 import * as ChartHeaderStyles from '../../Charts/ChartSections/ChartHeader.styled';
 import range from 'lodash.range';
 import displayMissingPhrase from '../../../util/displayMissingData';
+import DatePicker from 'react-datepicker';
 
 const mapDatasetToChartName = {
   STOPS: 'Traffic Stops By Percentage',
@@ -70,14 +69,6 @@ const mapDataSetToEnum = {
   CONTRABAND_HIT_RATE,
   LIKELIHOOD_OF_SEARCH,
 };
-
-function MonthBox({ value, _onClick }) {
-  return (
-    <div className="box" onClick={_onClick}>
-      <Button onClick={() => {}}>{value}</Button>
-    </div>
-  );
-}
 
 function getRangeValues() {
   const today = new Date();
@@ -105,8 +96,9 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
   const [rangeValue, setRangeValue] = useState(getRangeValues);
   const [tableReloading, setReloading] = useState(false);
   const [showDateRangePicker, setShowDateRagePicker] = useState(false);
-  const monthPickerRef = useRef(null);
   const tableChartState = chartState;
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
 
   const _getEntityReference = () => {
     const agencyName = tableChartState.data[AGENCY_DETAILS].name;
@@ -144,8 +136,8 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     setReloading(true);
     const _fetchData = async () => {
       const getEndpoint = mapDatasetKeyToEndpoint(tableDS);
-      const _from = `${rangeValue.from.year}-${rangeValue.from.month}-01`;
-      const _to = `${rangeValue.to.year}-${rangeValue.to.month}-01`;
+      const _from = `${rangeValue.from.year}-${rangeValue.from.month.toString().padStart(2, 0)}-01`;
+      const _to = `${rangeValue.to.year}-${rangeValue.to.month.toString().padStart(2, 0)}-01`;
       const url = `${getEndpoint(agencyId)}?from=${_from}&to=${_to}`;
       yearRange = range(rangeValue.from.year, rangeValue.to.year + 1, 1);
       try {
@@ -506,16 +498,6 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     return '';
   };
 
-  const pickerLang = {
-    months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-    from: 'From',
-    to: 'To',
-  };
-  const makeText = (m) => {
-    if (m && m.year && m.month) return pickerLang.months[m.month - 1] + '. ' + m.year;
-    return '?';
-  };
-
   const closeRangePicker = () => {
     setShowDateRagePicker(false);
     setRangeValue(getRangeValues);
@@ -524,6 +506,34 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
   const closeModalAndCleanup = () => {
     closeRangePicker();
     closeModal();
+  };
+
+  const MonthPickerButton = forwardRef(({ value, onClick }, ref) => (
+    <Button onClick={onClick} ref={ref}>
+      {value}
+    </Button>
+  ));
+
+  const onDateRangeChange = (dates) => {
+    // eslint-disable-next-line prefer-const
+    let [start, end] = dates;
+
+    setStartDate(start);
+
+    // Don't allow same month/year selected
+    if (end && start.getDay() === end.getDay()) {
+      end = new Date(end.setMonth(end.getMonth() + 1));
+    } else {
+      setEndDate(end);
+    }
+
+    if (start && end) {
+      // Update range value on when valid start/end dates are selected
+      setRangeValue({
+        from: { month: start.getMonth() + 1, year: start.getFullYear() },
+        to: { month: end.getMonth() + 1, year: end.getFullYear() },
+      });
+    }
   };
 
   return ReactDOM.createPortal(
@@ -581,20 +591,21 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
           )}
           {showDateRangePicker && (
             <div style={{ display: 'flex', flexDirection: 'row', marginTop: '10' }}>
-              <Picker
-                className="MonthYearPicker"
-                lang={pickerLang.months}
-                ref={monthPickerRef}
-                years={{ min: 2000 }}
-                value={rangeValue}
-                theme="light"
-                onDismiss={(value) => setRangeValue(value)}
-              >
-                <MonthBox
-                  value={makeText(rangeValue.from) + ' ~ ' + makeText(rangeValue.to)}
-                  _onClick={() => monthPickerRef.current.show()}
+              <div style={{ width: '200px' }}>
+                <DatePicker
+                  selected={startDate}
+                  onChange={onDateRangeChange}
+                  startDate={startDate}
+                  endDate={endDate}
+                  maxDate={new Date()}
+                  dateFormat="MM/yyyy"
+                  showMonthYearPicker
+                  selectsRange
+                  customInput={<MonthPickerButton />}
+                  popperPlacement="bottom-end"
+                  monthClassName={() => 'fj-date-range-month'}
                 />
-              </Picker>
+              </div>
               <Button
                 variant="positive"
                 backgroundColor="white"

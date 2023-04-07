@@ -22,4 +22,9 @@ export default createGlobalStyle`
     fieldset {
       border: none;
     }
+
+    .fj-date-range-month {
+        font-size: 1.5rem;
+        margin: 15px;
+    }
 `;
