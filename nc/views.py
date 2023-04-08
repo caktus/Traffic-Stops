@@ -126,7 +126,8 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
             group_by_tuple = tuple(gp_list)
 
         qs = qs.values(*group_by_tuple)
-        qs = qs.annotate(count=Sum("count")).order_by("date")
+        order_by = "date" if date_precision == "month" else "year"
+        qs = qs.annotate(count=Sum("count")).order_by(order_by)
         for stop in qs:
             data = {}
             if "year" in group_by_tuple:
@@ -159,7 +160,7 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
             results.add(**data)
 
     @action(detail=True, methods=["get"])
-    # @cache_response(key_func=query_cache_key_func)
+    @cache_response(key_func=query_cache_key_func)
     def stops(self, request, pk=None):
         results = GroupedData(by="year", defaults=GROUP_DEFAULTS)
         self.query(results, group_by=("year", "driver_race", "driver_ethnicity"))
