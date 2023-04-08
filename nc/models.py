@@ -169,6 +169,7 @@ STOP_SUMMARY_VIEW_SQL = """
         ROW_NUMBER() OVER () AS id
         , "nc_stop"."agency_id"
         , DATE_PART('year', DATE_TRUNC('year', date AT TIME ZONE 'America/New_York'))::integer AS "year"
+        , "nc_stop"."date"
         , "nc_stop"."purpose" AS "stop_purpose"
         , "nc_stop"."engage_force"
         , "nc_search"."type" AS "search_type"
@@ -188,7 +189,7 @@ STOP_SUMMARY_VIEW_SQL = """
     LEFT OUTER JOIN "nc_contraband"
         ON ("nc_stop"."stop_id" = "nc_contraband"."stop_id")
     GROUP BY
-        2, 3, 4, 5, 6, 7, 8, 9, 10
+        2, 3, 4, 5, 6, 7, 8, 9, 10, 11
     ORDER BY "agency_id", "year" ASC;
 """  # noqa
 
@@ -202,6 +203,7 @@ class StopSummary(pg.ReadOnlyMaterializedView):
 
     id = models.PositiveIntegerField(primary_key=True)
     year = models.IntegerField()
+    date = models.DateTimeField(db_index=True)
     agency = models.ForeignKey("Agency", on_delete=models.DO_NOTHING)
     stop_purpose = models.PositiveSmallIntegerField(choices=PURPOSE_CHOICES)
     engage_force = models.BooleanField()

@@ -7,6 +7,10 @@ import { RESOURCES_URL } from '../../Services/endpoints';
 import LinkButton from '../Elements/LinkButton';
 
 function Resource({ resource }) {
+  // Published dates are in UTC, convert it to EST.
+  const resourcePublicationDate = new Date(
+    `${resource.publication_date}T05:00`
+  ).toLocaleDateString();
   return (
     <S.ResourceBlock>
       <div style={{ marginRight: '20px' }}>
@@ -14,14 +18,11 @@ function Resource({ resource }) {
       </div>
       <div>
         <H2>{resource.title} </H2>
-        <P size={14}>
-          Published:{' '}
-          {resource.publication_date && new Date(resource.publication_date).toLocaleDateString()}
-        </P>
+        {resource.publication_date && <P size={14}>{resourcePublicationDate}</P>}
         <P size={18}>{resource.description}</P>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
           {resource.agencies_list.map((a) => (
-            <S.ResourceTag>{a}</S.ResourceTag>
+            <S.ResourceTag href={`/agencies/${a.id}`}>{a.name}</S.ResourceTag>
           ))}
         </div>
 
