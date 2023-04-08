@@ -87,6 +87,23 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
             qs = qs.filter(agency=agency)
         return qs
 
+    def get_date_range(self):
+        # Only filter is from and to values are found and are valid
+        date_precision = "year"
+        date_range = Q()
+        _from_date = self.request.query_params.get("from", None)
+        _to_date = self.request.query_params.get("to", None)
+        if _from_date and _to_date:
+            from_date = datetime.datetime.strptime(_from_date, "%Y-%m-%d")
+            to_date = datetime.datetime.strptime(_to_date, "%Y-%m-%d")
+            if from_date and to_date:
+                delta = relativedelta.relativedelta(to_date, from_date)
+                if delta.years < 3:
+                    date_precision = "month"
+                    to_date += relativedelta.relativedelta(months=1)
+                date_range = Q(date__range=(from_date, to_date))
+        return date_precision, date_range
+
     def query(self, results, group_by, filter_=None):
         qs = self.get_stopsummary_qs(agency=self.get_object())
         # filter down by officer if supplied
@@ -96,38 +113,27 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
         if filter_:
             qs = qs.filter(filter_)
 
-        # Only filter is from and to values are found and are valid
-        _from_date = self.request.query_params.get("from", None)
-        _to_date = self.request.query_params.get("to", None)
-        if _from_date and _to_date:
-            from_date = datetime.datetime.strptime(_from_date, "%Y-%m-%d")
-            to_date = datetime.datetime.strptime(_to_date, "%Y-%m-%d")
-            if from_date and to_date:
-                delta = relativedelta.relativedelta(to_date, from_date)
-                if delta.years < 3:
-                    results.group_by = ("date",)
-                    self.group_by_month = True
-                    # To include the last month selected
-                    to_date += relativedelta.relativedelta(months=1)
-                qs = qs.filter(date__range=(from_date, to_date))
-
-        # group by specified fields by week/month, otherwise group by year
         group_by_tuple = group_by
-        if hasattr(self, "group_by_month") and self.group_by_month:
-            gp_list = list(group_by)
+        date_precision, date_range = self.get_date_range()
+        qs = qs.filter(date_range)
+        if date_precision == "year":
+            qs = qs.annotate(year=ExtractYear("date"))
+        elif date_precision == "month":
+            results.group_by = ("date",)
+            gp_list = list(group_by_tuple)
             gp_list.remove("year")
             gp_list.append("date")
             group_by_tuple = tuple(gp_list)
+
         qs = qs.values(*group_by_tuple)
-        qs = qs.annotate(count=Sum("count"))
+        qs = qs.annotate(count=Sum("count")).order_by("date")
         for stop in qs:
             data = {}
             if "year" in group_by_tuple:
                 data["year"] = stop["year"]
 
-            if "date" in group_by_tuple:
-                if hasattr(self, "group_by_month") and self.group_by_month:
-                    data["date"] = stop["date"].strftime("%b %Y")
+            if "date" in group_by_tuple and date_precision == "month":
+                data["date"] = stop["date"].strftime("%b %Y")
 
             if "stop_purpose" in group_by_tuple:
                 purpose = PURPOSE_CHOICES.get(stop["stop_purpose"], stop["stop_purpose"])
@@ -153,7 +159,7 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
             results.add(**data)
 
     @action(detail=True, methods=["get"])
-    @cache_response(key_func=query_cache_key_func)
+    # @cache_response(key_func=query_cache_key_func)
     def stops(self, request, pk=None):
         results = GroupedData(by="year", defaults=GROUP_DEFAULTS)
         self.query(results, group_by=("year", "driver_race", "driver_ethnicity"))
