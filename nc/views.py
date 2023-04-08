@@ -1,5 +1,7 @@
 import datetime
 
+import pandas as pd
+
 from dateutil import relativedelta
 from django.conf import settings
 from django.core.mail import send_mail
@@ -19,7 +21,7 @@ from rest_framework_extensions.key_constructor.constructors import DefaultObject
 from nc import serializers
 from nc.filters import DriverStopsFilter
 from nc.models import SEARCH_TYPE_CHOICES as SEARCH_TYPE_CHOICES_TUPLES
-from nc.models import Agency, Contraband, Person, Resource, StopSummary
+from nc.models import Agency, Contraband, Person, Resource, StopPurposeGroup, StopSummary
 from nc.pagination import NoCountPagination
 from nc.serializers import ContactFormSerializer
 from tsdata.models import StateFacts
@@ -361,3 +363,36 @@ class ContactView(APIView):
             return Response(status=204)
         else:
             return Response(data=serializer.errors, status=400)
+
+
+class AgencyStopPurposeGroupView(APIView):
+    def get(self, request, agency_id):
+        qs = (
+            StopSummary.objects.filter(agency_id=agency_id)
+            .annotate(year=ExtractYear("date"))
+            .values("year", "stop_purpose_group")
+            .annotate(count=Sum("count"))
+            .order_by("year")
+        )
+        df = pd.DataFrame(qs)
+        safety_violation_mask = df["stop_purpose_group"] == StopPurposeGroup.SAFETY_VIOLATION
+        regulatory_mask = df["stop_purpose_group"] == StopPurposeGroup.REGULATORY_EQUIPMENT
+        investigatory_mask = df["stop_purpose_group"] == StopPurposeGroup.INVESTIGATORY
+        data = {
+            "labels": df.year.unique(),
+            "datasets": [
+                {
+                    "label": StopPurposeGroup.SAFETY_VIOLATION.label,
+                    "data": df[safety_violation_mask]["count"].tolist(),
+                },
+                {
+                    "label": StopPurposeGroup.REGULATORY_EQUIPMENT.label,
+                    "data": df[regulatory_mask]["count"].tolist(),
+                },
+                {
+                    "label": StopPurposeGroup.INVESTIGATORY.label,
+                    "data": df[investigatory_mask]["count"].tolist(),
+                },
+            ],
+        }
+        return Response(data=data, status=200)
