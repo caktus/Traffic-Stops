@@ -31,8 +31,6 @@ k8s_container_resources:
   requests:
     memory: 256Mi
     cpu: 50m
-  limits:
-    cpu: 250m
 k8s_migrations_enabled: true
 k8s_migration_command:
   - bash
@@ -63,7 +61,7 @@ env_django_settings: "traffic_stops.settings.deploy"
 env_broker_url: redis://redis:6379/0
 env_cache_host: redis://redis:6379/1
 # Uploaded media files
-env_default_file_storage: "{{ app_name }}.storages.MediaBoto3Storage"
+env_default_file_storage: "traffic_stops.storages.MediaBoto3Storage"
 env_aws_default_acl: public-read
 env_media_storage_bucket_name: trafficstops-stack-assetsbucket-y0dbtam3g132
 env_media_storage_custom_domain: files.nccopwatch.org
