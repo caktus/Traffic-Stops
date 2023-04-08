@@ -57,6 +57,7 @@ class ResourceAdmin(admin.ModelAdmin):
         "created_date",
         "publication_date",
     )
+    filter_horizontal = ("agencies",)
     inlines = [InlineResourceFile]
 
     def save_model(self, request, obj, form, change):
