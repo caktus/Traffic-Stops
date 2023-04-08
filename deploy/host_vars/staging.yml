@@ -6,6 +6,8 @@ k8s_domain_names:
 env_contact_us_emails:
   - forwardjustice-team@caktusgroup.com
 
+env_media_location: "staging/"
+
 database_password: !vault |
   $ANSIBLE_VAULT;1.1;AES256
   66636130383863366430366534663963316536393136316164336535613635353339646430306536
