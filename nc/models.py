@@ -245,10 +245,10 @@ class Resource(models.Model):
 
 class ResourceFile(models.Model):
     created_date = models.DateTimeField(auto_now_add=True, editable=False)
-    file = models.FileField(blank=True, null=True)
+    file = models.FileField(upload_to="resource/")
     resource = models.ForeignKey(Resource, on_delete=models.CASCADE)
 
     def __str__(self):
         if self.file:
-            return f"{self.file.file.name} for {self.resource.title}"
+            return f"{self.file.name} for {self.resource.title}"
         return f"Resource file for {self.resource.title}"
