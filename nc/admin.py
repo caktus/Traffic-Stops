@@ -46,7 +46,10 @@ class StopSummaryAdmin(admin.ModelAdmin):
 
 class InlineResourceFile(admin.StackedInline):
     model = ResourceFile
-    fields = ("file",)
+    fields = (
+        "name",
+        "file",
+    )
     extra = 0
 
 
