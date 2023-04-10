@@ -231,8 +231,8 @@ STOP_SUMMARY_VIEW_SQL = f"""
         , DATE_TRUNC('month', date AT TIME ZONE 'America/New_York')::date AS "date"
         , "nc_stop"."purpose" AS "stop_purpose"
         , (CASE WHEN nc_stop.purpose IN ({",".join(map(str, StopPurposeGroup.safety_violation_purposes()))}) THEN 'Safety Violation'
-                WHEN nc_stop.purpose IN ({",".join(map(str, StopPurposeGroup.regulatory_purposes()))}) THEN 'Investigatory'
-                WHEN nc_stop.purpose IN ({",".join(map(str, StopPurposeGroup.investigatory_purposes()))}) THEN 'Regulatory and Equipment'
+                WHEN nc_stop.purpose IN ({",".join(map(str, StopPurposeGroup.investigatory_purposes()))}) THEN 'Investigatory'
+                WHEN nc_stop.purpose IN ({",".join(map(str, StopPurposeGroup.regulatory_purposes()))}) THEN 'Regulatory and Equipment'
                 ELSE 'Other'
            END) as stop_purpose_group
         , "nc_stop"."engage_force"

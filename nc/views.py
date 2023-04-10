@@ -382,15 +382,15 @@ class AgencyStopPurposeGroupView(APIView):
             "labels": df.year.unique(),
             "datasets": [
                 {
-                    "label": StopPurposeGroup.SAFETY_VIOLATION.label,
+                    "label": StopPurposeGroup.SAFETY_VIOLATION,
                     "data": df[safety_violation_mask]["count"].tolist(),
                 },
                 {
-                    "label": StopPurposeGroup.REGULATORY_EQUIPMENT.label,
+                    "label": StopPurposeGroup.REGULATORY_EQUIPMENT,
                     "data": df[regulatory_mask]["count"].tolist(),
                 },
                 {
-                    "label": StopPurposeGroup.INVESTIGATORY.label,
+                    "label": StopPurposeGroup.INVESTIGATORY,
                     "data": df[investigatory_mask]["count"].tolist(),
                 },
             ],
