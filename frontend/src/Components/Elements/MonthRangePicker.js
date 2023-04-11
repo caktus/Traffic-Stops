@@ -122,7 +122,7 @@ export default function MonthRangePicker({ agencyId, dataSet, onChange, onCloseP
   };
 
   return (
-    <div>
+    <div style={{ marginTop: '20px' }}>
       {!showDateRangePicker && (
         <Button variant="positive" marginTop={10} onClick={() => setShowDateRangePicker(true)}>
           Filter by date range

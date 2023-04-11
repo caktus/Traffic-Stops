@@ -242,10 +242,10 @@ function TrafficStops(props) {
           // Month label is YYYY-MM
           const month = new Date(t).getMonth() + 1;
           const datasetLength = stopsChartState.data[STOPS].length;
-          if (datasetLength > 12 && datasetLength <= 24) {
+          if (datasetLength > 12 && datasetLength <= 18) {
             return month % 2 === 0 ? t : null;
           }
-          if (datasetLength > 24) {
+          if (datasetLength > 18) {
             return month % 3 === 0 ? t : null;
           }
         }
@@ -334,14 +334,13 @@ function TrafficStops(props) {
               onChange={handleStopPurposeSelect}
               options={[PURPOSE_DEFAULT].concat(stopTypes)}
             />
-            <div style={{ marginTop: '20px' }}>
-              <MonthRangePicker
-                agencyId={agencyId}
-                dataSet={purpose !== PURPOSE_DEFAULT ? STOPS_BY_REASON : STOPS}
-                onChange={updateStopsByCount}
-                onClosePicker={() => setPickerActive(null)}
-              />
-            </div>
+            <MonthRangePicker
+              agencyId={agencyId}
+              dataSet={purpose !== PURPOSE_DEFAULT ? STOPS_BY_REASON : STOPS}
+              onChange={updateStopsByCount}
+              onClosePicker={() => setPickerActive(null)}
+              minInterval="Month"
+            />
             <S.Spacing>
               <Legend
                 heading="Show on graph:"
