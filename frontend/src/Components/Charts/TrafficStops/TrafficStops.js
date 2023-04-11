@@ -241,7 +241,6 @@ function TrafficStops(props) {
         if (typeof t === 'string') {
           // Month label is YYYY-MM
           const month = new Date(t).getMonth() + 1;
-          console.log(month);
           const datasetLength = stopsChartState.data[STOPS].length;
           if (datasetLength > 12 && datasetLength <= 24) {
             return month % 2 === 0 ? t : null;
@@ -317,12 +316,6 @@ function TrafficStops(props) {
         <P>Shows the number of traffics stops broken down by purpose and race / ethnicity.</P>
         <S.ChartSubsection showCompare={props.showCompare}>
           <S.LineWrapper>
-            <MonthRangePicker
-              agencyId={agencyId}
-              dataSet={purpose !== PURPOSE_DEFAULT ? STOPS_BY_REASON : STOPS}
-              onChange={updateStopsByCount}
-              onClosePicker={() => setPickerActive(null)}
-            />
             <Line
               data={byCountLineData}
               loading={reasonChartState.loading[STOPS_BY_REASON]}
@@ -341,6 +334,14 @@ function TrafficStops(props) {
               onChange={handleStopPurposeSelect}
               options={[PURPOSE_DEFAULT].concat(stopTypes)}
             />
+            <div style={{ marginTop: '20px' }}>
+              <MonthRangePicker
+                agencyId={agencyId}
+                dataSet={purpose !== PURPOSE_DEFAULT ? STOPS_BY_REASON : STOPS}
+                onChange={updateStopsByCount}
+                onClosePicker={() => setPickerActive(null)}
+              />
+            </div>
             <S.Spacing>
               <Legend
                 heading="Show on graph:"

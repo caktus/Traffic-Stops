@@ -70,10 +70,15 @@ export default function MonthRangePicker({ agencyId, dataSet, onChange, onCloseP
     const _from = `${rangeVal.from.year}-${rangeVal.from.month.toString().padStart(2, 0)}-01`;
     const _to = `${rangeVal.to.year}-${rangeVal.to.month.toString().padStart(2, 0)}-01`;
     const url = `${getEndpoint(agencyId)}?from=${_from}&to=${_to}`;
-    const fromDate = new Date(_from);
-    const toDate = new Date(_to);
-    const diffYears = toDate.getFullYear() - fromDate.getFullYear();
 
+    const fromDate = new Date(_from);
+    fromDate.setDate(fromDate.getDate() + 1); // To prevent getting last month's date in new year
+    fromDate.toLocaleString('en-US', { timeZone: 'America/New_York' });
+    const toDate = new Date(_to);
+    toDate.setDate(toDate.getDate() + 1); // To prevent getting last month's date in new year
+    toDate.toLocaleString('en-US', { timeZone: 'America/New_York' });
+
+    const diffYears = toDate.getFullYear() - fromDate.getFullYear();
     let xAxis = 'Year';
     const yearRange = range(rangeVal.from.year, rangeVal.to.year + 1, 1);
     if (diffYears < 3) {
