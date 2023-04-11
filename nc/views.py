@@ -119,7 +119,11 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
         if date_precision == "year":
             qs = qs.annotate(year=ExtractYear("date"))
         elif date_precision == "month":
-            results.group_by = ("date",)
+            # TODO: Cleanup this up, maybe use lists as default?
+            results_gb = list(results.group_by)
+            results_gb.remove("year")
+            results_gb.append("date")
+            results.group_by = tuple(results_gb)
             gp_list = list(group_by_tuple)
             gp_list.remove("year")
             gp_list.append("date")

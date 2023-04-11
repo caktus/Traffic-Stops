@@ -88,7 +88,7 @@ function TrafficStops(props) {
   // Build data for Stops by Percentage line chart
   useEffect(() => {
     const data = stopsChartState.data[STOPS];
-    if (data) {
+    if (data && pickerActive === null) {
       const filteredGroups = percentageEthnicGroups.filter((g) => g.selected).map((g) => g.value);
       const derivedData = buildStackedBarData(data, filteredGroups, theme);
       setByPercentageLineData(derivedData);
@@ -229,7 +229,11 @@ function TrafficStops(props) {
   const updateStopsByCount = (val) => {
     stopsChartState.yearSet = val.yearRange;
     reasonChartState.yearSet = val.yearRange;
-    stopsChartState.data[STOPS] = val.data;
+    if (purpose !== PURPOSE_DEFAULT) {
+      reasonChartState.data[STOPS_BY_REASON] = val.data;
+    } else {
+      stopsChartState.data[STOPS] = val.data;
+    }
 
     setPickerXAxis(val.xAxis);
     setPickerActive((oldVal) => !oldVal);
@@ -239,9 +243,15 @@ function TrafficStops(props) {
     if (pickerActive !== null) {
       if (pickerXAxis === 'Month') {
         if (typeof t === 'string') {
+          console.log(t);
           // Month label is YYYY-MM
           const month = new Date(t).getMonth() + 1;
-          const datasetLength = stopsChartState.data[STOPS].length;
+          let datasetLength;
+          if (purpose !== PURPOSE_DEFAULT) {
+            datasetLength = reasonChartState.data[STOPS_BY_REASON]?.stops.length;
+          } else {
+            datasetLength = stopsChartState.data[STOPS].length;
+          }
           if (datasetLength > 12 && datasetLength <= 18) {
             return month % 2 === 0 ? t : null;
           }
@@ -250,9 +260,6 @@ function TrafficStops(props) {
           }
         }
 
-        return t;
-      }
-      if (reasonChartState.yearSet.length < 6) {
         return t;
       }
     }

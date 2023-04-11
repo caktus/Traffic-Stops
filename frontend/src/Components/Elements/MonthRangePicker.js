@@ -1,7 +1,7 @@
 import Button from './Button';
 import * as ChartHeaderStyles from '../Charts/ChartSections/ChartHeader.styled';
 import { ICONS } from '../../img/icons/Icon';
-import React, { forwardRef, useState } from 'react';
+import React, { forwardRef, useEffect, useState } from 'react';
 import mapDatasetKeyToEndpoint from '../../Services/endpoints';
 import axios from '../../Services/Axios';
 import {
@@ -57,6 +57,8 @@ export default function MonthRangePicker({ agencyId, dataSet, onChange, onCloseP
   const closeRangePicker = async () => {
     setShowDateRangePicker(false);
     setMinDate(null);
+    setStartDate(new Date());
+    setEndDate(new Date());
     await updateDatePicker(getRangeValues());
     onClosePicker();
   };
@@ -86,9 +88,6 @@ export default function MonthRangePicker({ agencyId, dataSet, onChange, onCloseP
     }
     try {
       const { data } = await axios.get(url);
-      if (xAxis === 'Month') {
-        data.sort((a, b) => new Date(a.date) - new Date(b.date));
-      }
       onChange({ data, xAxis, yearRange });
     } catch (err) {
       console.log(err);
