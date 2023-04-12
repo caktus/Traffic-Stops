@@ -112,7 +112,7 @@ function AgencyHeader({
               </P>
             </S.EntityDetails>
             <S.Tooltip ref={setPopperElement} style={styles.popper} {...attributes.popper}>
-              Sourced from U.S. Year Census, For more info go to the about page
+              Sourced from U.S. Census Bureau. See About page for more info.
             </S.Tooltip>
             <S.CensusDemographics>
               <S.CensusTitle
