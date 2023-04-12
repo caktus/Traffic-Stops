@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTheme } from 'styled-components';
 import { AnimatePresence } from 'framer-motion';
 import * as S from './AgencyHeader.styled';
 import { P, SIZES, WEIGHTS, COLORS } from '../../styles/StyledComponents/Typography';
+import { usePopper } from 'react-popper';
 
 // Routing
 import { useHistory, useParams } from 'react-router-dom';
@@ -15,7 +16,7 @@ import { calculatePercentage, RACES } from '../Charts/chartUtils';
 import toTitleCase from '../../util/toTitleCase';
 
 import { ICONS } from '../../img/icons/Icon';
-import { AGENCY_LIST_SLUG } from '../../Routes/slugs';
+import { ABOUT_SLUG, AGENCY_LIST_SLUG } from '../../Routes/slugs';
 import BackButton from '../Elements/BackButton';
 import Button from '../Elements/Button';
 import * as ChartHeaderStyles from '../Charts/ChartSections/ChartHeader.styled';
@@ -44,6 +45,28 @@ function AgencyHeader({
       return `last reported stop from department`;
     }
     return '';
+  };
+
+  const [referenceElement, setReferenceElement] = useState(null);
+  const [popperElement, setPopperElement] = useState(null);
+  const { styles, attributes } = usePopper(referenceElement, popperElement, {
+    placement: 'top',
+    modifiers: [
+      {
+        name: 'offset',
+        options: {
+          offset: [showCompareDepartments ? 0 : -300, 10],
+        },
+      },
+    ],
+  });
+
+  const showTooltip = () => {
+    popperElement.setAttribute('data-show', true);
+  };
+
+  const hideTooltip = () => {
+    popperElement.removeAttribute('data-show');
   };
 
   return (
@@ -88,8 +111,18 @@ function AgencyHeader({
                 </S.ReportedDate>
               </P>
             </S.EntityDetails>
+            <S.Tooltip ref={setPopperElement} style={styles.popper} {...attributes.popper}>
+              Sourced from U.S. Year Census, For more info go to the about page
+            </S.Tooltip>
             <S.CensusDemographics>
-              <S.CensusTitle>CENSUS DEMOGRAPHICS</S.CensusTitle>
+              <S.CensusTitle
+                onMouseEnter={showTooltip}
+                onMouseLeave={hideTooltip}
+                ref={setReferenceElement}
+                onClick={() => history.push(ABOUT_SLUG)}
+              >
+                CENSUS DEMOGRAPHICS
+              </S.CensusTitle>
               <S.CensusRow>
                 {Object.keys(agencyDetails.census_profile).length > 0 ? (
                   RACES.map((race) => {
