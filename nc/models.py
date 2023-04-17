@@ -240,3 +240,15 @@ class Resource(models.Model):
 
     def __str__(self):
         return f"{self.title}"
+
+
+class ResourceFile(models.Model):
+    created_date = models.DateTimeField(auto_now_add=True, editable=False)
+    name = models.CharField(max_length=200, null=False, blank=False)
+    file = models.FileField(upload_to="resource/")
+    resource = models.ForeignKey(Resource, on_delete=models.CASCADE)
+
+    def __str__(self):
+        if self.file:
+            return f"{self.file.name} for {self.resource.title}"
+        return f"Resource file for {self.resource.title}"

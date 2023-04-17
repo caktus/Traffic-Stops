@@ -36,7 +36,7 @@ jobs:
           sudo apt update
           sudo apt install -y --no-install-recommends postgresql-client-14
           python -m pip install pip-tools
-          pip-sync requirements/base/base.txt requirements/test/test.txt
+          pip-sync requirements/base/base.txt requirements/dev/dev.txt requirements/test/test.txt
       - name: Create NC database
         run: |
           psql $DATABASE_URL -c 'CREATE DATABASE traffic_stops_nc;'
@@ -49,3 +49,6 @@ jobs:
           DJANGO_SETTINGS_MODULE: traffic_stops.settings.dev
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/traffic_stops
           DATABASE_URL_NC: postgres://postgres:postgres@localhost:5432/traffic_stops_nc
+      - name: Test deploy image build
+        run: |
+          inv image.build

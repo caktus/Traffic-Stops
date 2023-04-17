@@ -327,17 +327,19 @@ class StateFactsViewSet(viewsets.ReadOnlyModelViewSet):
 
 class ResourcesViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.ResourcesSerializer
-    queryset = Resource.objects.all()
 
     def get_serializer_class(self):
         return serializers.ResourcesSerializer(context={"request": self.request})
+
+    def get_queryset(self):
+        return Resource.objects.prefetch_related("resourcefile_set").all()
 
     @method_decorator(never_cache)
     def list(self, request, *args, **kwargs):
         return Response(
             {
                 "results": self.serializer_class(
-                    Resource.objects.all(),
+                    self.get_queryset(),
                     many=True,
                     context={"request": self.request},
                 ).data

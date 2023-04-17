@@ -1,3 +1,4 @@
+from django.conf import settings
 from rest_framework import serializers
 
 from nc import models as stops
@@ -101,6 +102,7 @@ class StateFactsSerializer(serializers.ModelSerializer):
 class ResourcesSerializer(serializers.ModelSerializer):
     image_url = serializers.SerializerMethodField()
     agencies_list = serializers.SerializerMethodField()
+    resource_files = serializers.SerializerMethodField()
 
     class Meta:
         model = stops.Resource
@@ -112,6 +114,7 @@ class ResourcesSerializer(serializers.ModelSerializer):
             "view_more_link",
             "image_url",
             "publication_date",
+            "resource_files",
         )
 
     def get_image_url(self, obj):
@@ -121,6 +124,19 @@ class ResourcesSerializer(serializers.ModelSerializer):
 
     def get_agencies_list(self, obj):
         return [{"name": ag.name, "id": ag.id} for ag in obj.agencies.all()]
+
+    def get_resource_files(self, obj):
+        request = self.context.get("request")
+        resource_location = f"{request.scheme}://{request.get_host()}"
+        return [
+            {
+                # For local dev, prepend local server location,
+                # otherwise use file url in staging/prod
+                "url": f"{resource_location}{rf.file.url}" if settings.DEBUG else rf.file.url,
+                "name": rf.name,
+            }
+            for rf in obj.resourcefile_set.all()
+        ]
 
 
 class ContactFormSerializer(serializers.Serializer):
