@@ -47,17 +47,47 @@ const MonthPickerButton = forwardRef(({ value, onClick }, ref) => (
   </Button>
 ));
 
-export default function MonthRangePicker({ agencyId, dataSet, onChange, onClosePicker }) {
+export default function MonthRangePicker({
+  agencyId,
+  dataSet,
+  deactivatePicker,
+  forcePickerRerender,
+  onChange,
+  onClosePicker,
+}) {
   const theme = useTheme();
+  const startYear = new Date().setFullYear(2000, 1, 1);
   const [showDateRangePicker, setShowDateRangePicker] = useState(false);
-  const [startDate, setStartDate] = useState(new Date());
+  const [startDate, setStartDate] = useState(startYear);
   const [endDate, setEndDate] = useState(new Date());
   const [minDate, setMinDate] = useState(null);
+
+  useEffect(() => {
+    if (deactivatePicker) {
+      setShowDateRangePicker(false);
+      setMinDate(null);
+      setStartDate(startYear);
+      setEndDate(new Date());
+    }
+  }, [deactivatePicker]);
+
+  useEffect(() => {
+    const rerenderData = async () => {
+      const rangeVal = {
+        from: { month: startDate.getMonth() + 1, year: startDate.getFullYear() },
+        to: { month: endDate.getMonth() + 1, year: endDate.getFullYear() },
+      };
+      await updateDatePicker(rangeVal);
+    };
+    if (forcePickerRerender) {
+      rerenderData().catch((err) => console.log(err));
+    }
+  }, [forcePickerRerender]);
 
   const closeRangePicker = async () => {
     setShowDateRangePicker(false);
     setMinDate(null);
-    setStartDate(new Date());
+    setStartDate(startYear);
     setEndDate(new Date());
     await updateDatePicker(getRangeValues());
     onClosePicker();
@@ -95,12 +125,13 @@ export default function MonthRangePicker({ agencyId, dataSet, onChange, onCloseP
   };
 
   const onDateRangeChange = async (dates) => {
+    // eslint-disable-next-line prefer-const
     let [start, end] = dates;
 
     setStartDate(start);
     if (!minDate) {
-      const minDate = new Date(start);
-      setMinDate(new Date(minDate.setMonth(minDate.getMonth() + 4)));
+      const _minDate = new Date(start);
+      setMinDate(new Date(_minDate.setMonth(_minDate.getMonth() + 4)));
     }
 
     // Don't allow same month/year selected
