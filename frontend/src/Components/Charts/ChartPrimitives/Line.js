@@ -20,7 +20,6 @@ function Line({
   dAxisProps = {},
   iAxisProps = {},
   yAxisLabel,
-  xAxisLabel = 'Year',
 }) {
   if (loading) return <ChartLoading skeleton={BarSkeleton} />;
 
@@ -36,7 +35,7 @@ function Line({
           {...dAxisProps}
         />
         <VictoryAxis
-          label={xAxisLabel}
+          label="Year"
           style={AXIS_STYLE}
           tickFormat={iTickFormat}
           tickValues={iTickValues}

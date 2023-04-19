@@ -36,7 +36,6 @@ import ChartHeader from '../ChartSections/ChartHeader';
 import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
 import toTitleCase from '../../../util/toTitleCase';
 import useOfficerId from '../../../Hooks/useOfficerId';
-import MonthRangePicker from '../../Elements/MonthRangePicker';
 
 function TrafficStops(props) {
   const { agencyId } = props;
@@ -46,8 +45,6 @@ function TrafficStops(props) {
 
   const [stopsChartState] = useDataset(agencyId, STOPS);
   const [reasonChartState] = useDataset(agencyId, STOPS_BY_REASON);
-  const [pickerActive, setPickerActive] = useState(null);
-  const [pickerXAxis, setPickerXAxis] = useState(null);
 
   const [year, setYear] = useState(YEARS_DEFAULT);
 
@@ -134,14 +131,14 @@ function TrafficStops(props) {
           };
           rGroup.data = data.map((d) => ({
             displayName: toTitleCase(race),
-            x: pickerXAxis === 'Month' ? d.date : d.year,
+            x: d.year,
             y: d[race],
           }));
           return rGroup;
         });
       setByCountLineData(derivedData);
     }
-  }, [stopsChartState.data[STOPS], purpose, countEthnicGroups, pickerActive]);
+  }, [stopsChartState.data[STOPS], purpose, countEthnicGroups]);
 
   // Build data for Stops By Count line chart (single purpose)
   useEffect(() => {
@@ -157,14 +154,14 @@ function TrafficStops(props) {
             color: theme.colors.ethnicGroup[race],
             data: purposeData.map((d) => ({
               displayName: toTitleCase(race),
-              x: pickerXAxis === 'Month' ? d.date : d.year,
+              x: d.year,
               y: d[race],
             })),
           };
         });
       setByCountLineData(derivedData);
     }
-  }, [reasonChartState.data[STOPS_BY_REASON], purpose, countEthnicGroups, pickerActive]);
+  }, [reasonChartState.data[STOPS_BY_REASON], purpose, countEthnicGroups]);
 
   /* INTERACTIONS */
   // Handle year dropdown state
@@ -226,40 +223,6 @@ function TrafficStops(props) {
     return '';
   };
 
-  const updateStopsByCount = (val) => {
-    stopsChartState.yearSet = val.yearRange;
-    reasonChartState.yearSet = val.yearRange;
-    stopsChartState.data[STOPS] = val.data;
-
-    setPickerXAxis(val.xAxis);
-    setPickerActive((oldVal) => !oldVal);
-  };
-
-  const lineAxisFormat = (t) => {
-    if (pickerActive !== null) {
-      if (pickerXAxis === 'Month') {
-        if (typeof t === 'string') {
-          // Month label is YYYY-MM
-          const month = new Date(t).getMonth() + 1;
-          console.log(month);
-          const datasetLength = stopsChartState.data[STOPS].length;
-          if (datasetLength > 12 && datasetLength <= 24) {
-            return month % 2 === 0 ? t : null;
-          }
-          if (datasetLength > 24) {
-            return month % 3 === 0 ? t : null;
-          }
-        }
-
-        return t;
-      }
-      if (reasonChartState.yearSet.length < 6) {
-        return t;
-      }
-    }
-    return t % 2 === 0 ? t : null;
-  };
-
   return (
     <TrafficStopsStyled>
       {/* Traffic Stops by Percentage */}
@@ -317,21 +280,14 @@ function TrafficStops(props) {
         <P>Shows the number of traffics stops broken down by purpose and race / ethnicity.</P>
         <S.ChartSubsection showCompare={props.showCompare}>
           <S.LineWrapper>
-            <MonthRangePicker
-              agencyId={agencyId}
-              dataSet={purpose !== PURPOSE_DEFAULT ? STOPS_BY_REASON : STOPS}
-              onChange={updateStopsByCount}
-              onClosePicker={() => setPickerActive(null)}
-            />
             <Line
               data={byCountLineData}
               loading={reasonChartState.loading[STOPS_BY_REASON]}
-              iTickFormat={lineAxisFormat}
+              iTickFormat={(t) => (t % 2 === 0 ? t : null)}
               iTickValues={reasonChartState.yearSet}
               dAxisProps={{
                 tickFormat: (t) => `${t}`,
               }}
-              xAxisLabel={pickerActive !== null ? pickerXAxis : 'Year'}
             />
           </S.LineWrapper>
           <S.LegendBeside>
