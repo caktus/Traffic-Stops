@@ -384,14 +384,20 @@ class AgencyStopPurposeGroupView(APIView):
                 {
                     "label": StopPurposeGroup.SAFETY_VIOLATION,
                     "data": df[safety_violation_mask]["count"].tolist(),
+                    "borderColor": "#BD3039",
+                    "backgroundColor": "#fd5c63",
                 },
                 {
                     "label": StopPurposeGroup.REGULATORY_EQUIPMENT,
                     "data": df[regulatory_mask]["count"].tolist(),
+                    "borderColor": "#00308F",
+                    "backgroundColor": "#F0F8FF",
                 },
                 {
                     "label": StopPurposeGroup.INVESTIGATORY,
                     "data": df[investigatory_mask]["count"].tolist(),
+                    "borderColor": "#1B4D3E",
+                    "backgroundColor": "#ACE1AF",
                 },
             ],
         }

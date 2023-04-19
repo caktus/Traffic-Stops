@@ -96,7 +96,6 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
   const [rangeValue, setRangeValue] = useState(getRangeValues);
   const [tableReloading, setReloading] = useState(false);
   const [showDateRangePicker, setShowDateRangePicker] = useState(false);
-  const monthPickerRef = useRef(null);
   const tableChartState = chartState;
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());

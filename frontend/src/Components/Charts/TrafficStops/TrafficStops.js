@@ -36,6 +36,8 @@ import ChartHeader from '../ChartSections/ChartHeader';
 import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
 import toTitleCase from '../../../util/toTitleCase';
 import useOfficerId from '../../../Hooks/useOfficerId';
+import LineChart from '../../NewCharts/LineChart';
+import axios from '../../../Services/Axios';
 
 function TrafficStops(props) {
   const { agencyId } = props;
@@ -80,6 +82,18 @@ function TrafficStops(props) {
 
   const renderMetaTags = useMetaTags();
   const [renderTableModal, { openModal }] = useTableModal();
+
+  const [stopPurposeGroupsData, setStopPurposeGroups] = useState({ labels: [], datasets: [] });
+
+  // Build Stop Purpose Groups
+  useEffect(() => {
+    axios
+      .get(`/api/agency/${agencyId}/stop-purpose-groups/`)
+      .then((res) => {
+        setStopPurposeGroups(res.data);
+      })
+      .catch((err) => console.log(err));
+  }, []);
 
   /* CALCULATE AND BUILD CHART DATA */
   // Build data for Stops by Percentage line chart
@@ -307,6 +321,14 @@ function TrafficStops(props) {
             </S.Spacing>
           </S.LegendBeside>
         </S.ChartSubsection>
+      </S.ChartSection>
+      <S.ChartSection>
+        <ChartHeader
+          chartTitle="Traffic Stop Purposes By Group"
+          handleViewData={handleViewCountData}
+        />
+        <P>Shows the number of traffics stops broken down by purpose and race / ethnicity.</P>
+        <LineChart data={stopPurposeGroupsData} title="Stop Purposes By Group" />
       </S.ChartSection>
     </TrafficStopsStyled>
   );
