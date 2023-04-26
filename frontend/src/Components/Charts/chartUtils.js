@@ -74,7 +74,10 @@ export const filterDataBySearchType = (data, searchTypeFilter) => {
 
 export const getQuantityForYear = (data, year, ethnicGroup) => {
   if (data.length > 0) {
-    return data.find((d) => d.year === year)[ethnicGroup];
+    const statForYear = data.find((d) => d.year === year);
+    if (statForYear) {
+      return statForYear[ethnicGroup];
+    }
   }
   return 0;
 };
