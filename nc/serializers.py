@@ -103,6 +103,7 @@ class ResourcesSerializer(serializers.ModelSerializer):
     image_url = serializers.SerializerMethodField()
     agencies_list = serializers.SerializerMethodField()
     resource_files = serializers.SerializerMethodField()
+    view_more_link = serializers.SerializerMethodField()
 
     class Meta:
         model = stops.Resource
@@ -125,7 +126,35 @@ class ResourcesSerializer(serializers.ModelSerializer):
     def get_agencies_list(self, obj):
         return [{"name": ag.name, "id": ag.id} for ag in obj.agencies.all()]
 
+    def get_view_more_link(self, obj):
+        if obj.view_more_link:
+            return obj.view_more_link
+        else:
+            # For local dev, prepend local server location,
+            # otherwise use file url in staging/prod
+            request = self.context.get("request")
+            resource_location = f"{request.scheme}://{request.get_host()}"
+            if obj.resourcefile_set.count() > 0:
+                first_resource = obj.resourcefile_set.first()
+                return (
+                    f"{resource_location}{first_resource.file.url}"
+                    if settings.DEBUG
+                    else first_resource.file.url
+                )
+        return None
+
     def get_resource_files(self, obj):
+        # For local dev, use 'media' key for identifying if url is
+        # from a resource file, otherwise check for subdomain
+        kw_resource_file = "media" if settings.DEBUG else "files.nccopwatch.org"
+        view_more_resource = kw_resource_file in self.get_view_more_link(obj)
+
+        resources = obj.resourcefile_set.all()
+        if view_more_resource:
+            # If the view more button is a resource link instead of
+            # a plain url link, drop the first resource
+            resources = resources[1:]
+
         request = self.context.get("request")
         resource_location = f"{request.scheme}://{request.get_host()}"
         return [
@@ -135,7 +164,7 @@ class ResourcesSerializer(serializers.ModelSerializer):
                 "url": f"{resource_location}{rf.file.url}" if settings.DEBUG else rf.file.url,
                 "name": rf.name,
             }
-            for rf in obj.resourcefile_set.all()
+            for rf in resources
         ]
 
 
