@@ -211,7 +211,6 @@ function SearchRate(props) {
                 >
                   {tooltipText}
                 </Tooltip>
-                )
                 <GroupedBar
                   data={chartData}
                   loading={chartState.loading[LIKELIHOOD_OF_SEARCH]}
@@ -221,7 +220,13 @@ function SearchRate(props) {
                       <VictoryLabel
                         x={100}
                         dx={-50}
-                        style={{ fontSize: 6 }}
+                        style={{
+                          fontSize: 6,
+                          cursor: 'default',
+                          textDecorationLine: 'underline',
+                          textDecorationStyle: 'dotted',
+                          textUnderlineOffset: '5px',
+                        }}
                         id={(t) => (Array.isArray(t.text) ? t.text.join('') : null)}
                         events={{
                           onMouseEnter: (evt) => showTooltip(evt),
