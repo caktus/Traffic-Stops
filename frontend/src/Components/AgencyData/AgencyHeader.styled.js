@@ -85,6 +85,10 @@ export const ReportedDate = styled(P)`
 
 export const CensusTitle = styled(H2)`
   font-size: 18px;
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 5px;
+  cursor: pointer;
 `;
 
 export const CensusRow = styled.ul`
