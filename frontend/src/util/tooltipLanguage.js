@@ -1,6 +1,6 @@
 export const tooltipLanguage = (stopCause) =>
   ({
-    Average: 'REPLACE ME',
+    Average: '',
     Checkpoint:
       'A checkpoint can be a barrier, or a manned entrance, where drivers are subjected to a security check, often by law enforcement. For example, a checkpoint could be where police set up roadblocks so they can stop and inspect all (or almost all) drivers and vehicles that pass through.',
     OtherMotorVehicleViolation:
