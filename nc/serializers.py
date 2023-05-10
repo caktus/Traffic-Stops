@@ -1,4 +1,3 @@
-from django.conf import settings
 from rest_framework import serializers
 
 from nc import models as stops
@@ -129,39 +128,22 @@ class ResourcesSerializer(serializers.ModelSerializer):
     def get_view_more_link(self, obj):
         if obj.view_more_link:
             return obj.view_more_link
-        else:
-            # For local dev, prepend local server location,
-            # otherwise use file url in staging/prod
-            request = self.context.get("request")
-            resource_location = f"{request.scheme}://{request.get_host()}"
-            if obj.resourcefile_set.count() > 0:
-                first_resource = obj.resourcefile_set.first()
-                return (
-                    f"{resource_location}{first_resource.file.url}"
-                    if settings.DEBUG
-                    else first_resource.file.url
-                )
+        first_resource = obj.resourcefile_set.first()
+        if first_resource:
+            return self.context["request"].build_absolute_uri(first_resource.file.url)
         return None
 
     def get_resource_files(self, obj):
-        # For local dev, use 'media' key for identifying if url is
-        # from a resource file, otherwise check for subdomain
-        kw_resource_file = "media" if settings.DEBUG else "files.nccopwatch.org"
-        view_more_resource = kw_resource_file in self.get_view_more_link(obj)
-
-        resources = obj.resourcefile_set.all()
-        if view_more_resource:
+        resources = list(obj.resourcefile_set.order_by("id"))
+        if not obj.view_more_link and len(resources) > 0:
             # If the view more button is a resource link instead of
             # a plain url link, drop the first resource
             resources = resources[1:]
 
         request = self.context.get("request")
-        resource_location = f"{request.scheme}://{request.get_host()}"
         return [
             {
-                # For local dev, prepend local server location,
-                # otherwise use file url in staging/prod
-                "url": f"{resource_location}{rf.file.url}" if settings.DEBUG else rf.file.url,
+                "url": request.build_absolute_uri(rf.file.url),
                 "name": rf.name,
             }
             for rf in resources
