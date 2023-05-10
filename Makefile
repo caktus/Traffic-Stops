@@ -33,3 +33,9 @@ dl-db-dump:
 	export AWS_PROFILE=copwatch
 	inv aws.configure-eks-kubeconfig
 	inv staging pod.get-db-dump --db-var=DATABASE_URL_NC
+
+refresh-view:
+	@echo 'Migrating all databases'
+	./migrate_all_dbs.sh
+	@echo 'Refreshing the StopSummary materialized view'
+	python manage.py refresh_pgviews --database=traffic_stops_nc
