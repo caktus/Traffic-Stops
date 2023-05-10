@@ -519,13 +519,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     let [start, end] = dates;
 
     setStartDate(start);
-
-    // Don't allow same month/year selected
-    if (end && start.getDay() === end.getDay()) {
-      end = new Date(end.setMonth(end.getMonth() + 1));
-    } else {
-      setEndDate(end);
-    }
+    setEndDate(end);
 
     if (start && end) {
       // Update range value on when valid start/end dates are selected
