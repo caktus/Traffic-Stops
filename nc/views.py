@@ -1,5 +1,6 @@
 import datetime
 
+from dateutil import relativedelta
 from django.conf import settings
 from django.core.mail import send_mail
 from django.db.models import Case, Count, F, Q, Sum, Value, When
@@ -102,6 +103,8 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
             from_date = datetime.datetime.strptime(_from_date, "%Y-%m-%d")
             to_date = datetime.datetime.strptime(_to_date, "%Y-%m-%d")
             if from_date and to_date:
+                # Add another month to include the last month chosen
+                to_date = to_date + relativedelta.relativedelta(months=1)
                 qs = qs.filter(date__range=(from_date, to_date))
         # group by specified fields and order by year
         qs = qs.values(*group_by).order_by("year")
