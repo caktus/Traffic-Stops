@@ -501,6 +501,8 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
   const closeRangePicker = () => {
     setShowDateRagePicker(false);
     setRangeValue(getRangeValues);
+    setStartDate(new Date());
+    setEndDate(new Date());
   };
 
   const closeModalAndCleanup = () => {
