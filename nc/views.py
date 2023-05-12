@@ -104,7 +104,9 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
             to_date = datetime.datetime.strptime(_to_date, "%Y-%m-%d")
             if from_date and to_date:
                 # Add another month to include the last month chosen
-                to_date = to_date + relativedelta.relativedelta(months=1)
+                to_date = (to_date + relativedelta.relativedelta(months=1)) - datetime.timedelta(
+                    days=1
+                )
                 qs = qs.filter(date__range=(from_date, to_date))
         # group by specified fields and order by year
         qs = qs.values(*group_by).order_by("year")
