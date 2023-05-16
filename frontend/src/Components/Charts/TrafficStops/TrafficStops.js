@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import TrafficStopsStyled from './TrafficStops.styled';
+import TrafficStopsStyled, {
+  GroupedStopsContainer,
+  LineWrapper,
+  StopGroupsContainer,
+} from './TrafficStops.styled';
 import * as S from '../ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
 
@@ -344,22 +348,15 @@ function TrafficStops(props) {
           handleViewData={handleViewCountData}
         />
         <P>Shows the number of traffics stops broken down by purpose and race / ethnicity.</P>
-        <div
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            width: '100%',
-            position: 'relative',
-          }}
-        >
-          <div style={{ maxWidth: '100%', height: '500px', flex: 1 }}>
+        <LineWrapper>
+          <StopGroupsContainer>
             <LineChart
               data={stopPurposeGroupsData}
               title="Stop Purposes By Group"
               maintainAspectRatio={false}
             />
-          </div>
-        </div>
+          </StopGroupsContainer>
+        </LineWrapper>
       </S.ChartSection>
       <S.ChartSection>
         <ChartHeader
@@ -367,16 +364,8 @@ function TrafficStops(props) {
           handleViewData={handleViewCountData}
         />
         <P>Shows the number of traffics stops broken down by purpose and race / ethnicity.</P>
-        <div
-          style={{
-            display: 'flex',
-            direction: 'row',
-            flexWrap: 'wrap',
-            width: '100%',
-            position: 'relative',
-          }}
-        >
-          <div style={{ maxWidth: '100%', height: '500px', flex: 1 }}>
+        <LineWrapper>
+          <GroupedStopsContainer>
             <LineChart
               data={stopsGroupedByPurposeData.safety}
               title="Safety Violation"
@@ -384,8 +373,8 @@ function TrafficStops(props) {
               displayLegend={false}
               yAxisMax={stopsGroupedByPurposeData.max_step_size}
             />
-          </div>
-          <div style={{ maxWidth: '100%', height: '500px', flex: 1 }}>
+          </GroupedStopsContainer>
+          <GroupedStopsContainer>
             <LineChart
               data={stopsGroupedByPurposeData.regulatory}
               title="Regulatory Equipment"
@@ -393,8 +382,8 @@ function TrafficStops(props) {
               displayLegend={false}
               yAxisMax={stopsGroupedByPurposeData.max_step_size}
             />
-          </div>
-          <div style={{ maxWidth: '100%', height: '500px', flex: 1 }}>
+          </GroupedStopsContainer>
+          <GroupedStopsContainer>
             <LineChart
               data={stopsGroupedByPurposeData.investigatory}
               title="Investigatory"
@@ -402,8 +391,8 @@ function TrafficStops(props) {
               displayLegend={false}
               yAxisMax={stopsGroupedByPurposeData.max_step_size}
             />
-          </div>
-        </div>
+          </GroupedStopsContainer>
+        </LineWrapper>
       </S.ChartSection>
     </TrafficStopsStyled>
   );
