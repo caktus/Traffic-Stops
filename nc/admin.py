@@ -53,7 +53,15 @@ class InlineResourceFile(admin.StackedInline):
 
 
 class ResourceAdmin(admin.ModelAdmin):
-    fields = ("agencies", "title", "description", "publication_date", "image", "view_more_link")
+    fields = (
+        "agencies",
+        "title",
+        "description",
+        "publication_date",
+        "created_date",
+        "image",
+        "view_more_link",
+    )
     list_display = (
         "title",
         "created_date",
@@ -61,6 +69,7 @@ class ResourceAdmin(admin.ModelAdmin):
     )
     filter_horizontal = ("agencies",)
     inlines = [InlineResourceFile]
+    readonly_fields = ("created_date",)
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)

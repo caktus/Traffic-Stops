@@ -72,8 +72,15 @@ export const filterDataBySearchType = (data, searchTypeFilter) => {
   return data.filter((d) => d.search_type === searchTypeFilter);
 };
 
-export const getQuantityForYear = (data, year, ethnicGroup) =>
-  data.find((d) => d.year === year)[ethnicGroup];
+export const getQuantityForYear = (data, year, ethnicGroup) => {
+  if (data.length > 0) {
+    const statForYear = data.find((d) => d.year === year);
+    if (statForYear) {
+      return statForYear[ethnicGroup];
+    }
+  }
+  return 0;
+};
 
 /**
  * Given an Array of objects with shape { year, asian, black, etc. }, reduce to percentages of total by race.
