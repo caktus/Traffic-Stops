@@ -84,6 +84,12 @@ function TrafficStops(props) {
   const [renderTableModal, { openModal }] = useTableModal();
 
   const [stopPurposeGroupsData, setStopPurposeGroups] = useState({ labels: [], datasets: [] });
+  const [stopsGroupedByPurposeData, setStopsGroupedByPurpose] = useState({
+    safety: { labels: [], datasets: [] },
+    regulatory: { labels: [], datasets: [] },
+    investigatory: { labels: [], datasets: [] },
+    max_step_size: null,
+  });
 
   // Build Stop Purpose Groups
   useEffect(() => {
@@ -91,6 +97,16 @@ function TrafficStops(props) {
       .get(`/api/agency/${agencyId}/stop-purpose-groups/`)
       .then((res) => {
         setStopPurposeGroups(res.data);
+      })
+      .catch((err) => console.log(err));
+  }, []);
+
+  // Build Stops Grouped by Purpose
+  useEffect(() => {
+    axios
+      .get(`/api/agency/${agencyId}/stops-grouped-by-purpose/`)
+      .then((res) => {
+        setStopsGroupedByPurpose(res.data);
       })
       .catch((err) => console.log(err));
   }, []);
@@ -328,7 +344,66 @@ function TrafficStops(props) {
           handleViewData={handleViewCountData}
         />
         <P>Shows the number of traffics stops broken down by purpose and race / ethnicity.</P>
-        <LineChart data={stopPurposeGroupsData} title="Stop Purposes By Group" />
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            width: '100%',
+            position: 'relative',
+          }}
+        >
+          <div style={{ maxWidth: '100%', height: '500px', flex: 1 }}>
+            <LineChart
+              data={stopPurposeGroupsData}
+              title="Stop Purposes By Group"
+              maintainAspectRatio={false}
+            />
+          </div>
+        </div>
+      </S.ChartSection>
+      <S.ChartSection>
+        <ChartHeader
+          chartTitle="Traffic Stops grouped by stop purpose"
+          handleViewData={handleViewCountData}
+        />
+        <P>Shows the number of traffics stops broken down by purpose and race / ethnicity.</P>
+        <div
+          style={{
+            display: 'flex',
+            direction: 'row',
+            flexWrap: 'wrap',
+            width: '100%',
+            position: 'relative',
+          }}
+        >
+          <div style={{ maxWidth: '100%', height: '500px', flex: 1 }}>
+            <LineChart
+              data={stopsGroupedByPurposeData.safety}
+              title="Safety Violation"
+              maintainAspectRatio={false}
+              displayLegend={false}
+              yAxisMax={stopsGroupedByPurposeData.max_step_size}
+            />
+          </div>
+          <div style={{ maxWidth: '100%', height: '500px', flex: 1 }}>
+            <LineChart
+              data={stopsGroupedByPurposeData.regulatory}
+              title="Regulatory Equipment"
+              maintainAspectRatio={false}
+              displayLegend={false}
+              yAxisMax={stopsGroupedByPurposeData.max_step_size}
+            />
+          </div>
+          <div style={{ maxWidth: '100%', height: '500px', flex: 1 }}>
+            <LineChart
+              data={stopsGroupedByPurposeData.investigatory}
+              title="Investigatory"
+              maintainAspectRatio={false}
+              displayLegend={false}
+              yAxisMax={stopsGroupedByPurposeData.max_step_size}
+            />
+          </div>
+        </div>
       </S.ChartSection>
     </TrafficStopsStyled>
   );

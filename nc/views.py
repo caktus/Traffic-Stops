@@ -1,5 +1,8 @@
 import datetime
 
+from functools import reduce
+from operator import concat
+
 import pandas as pd
 
 from dateutil import relativedelta
@@ -399,4 +402,92 @@ class AgencyStopPurposeGroupView(APIView):
                 },
             ],
         }
+        return Response(data=data, status=200)
+
+
+class AgencyStopGroupByPurposeView(APIView):
+    def group_by_purpose(self, df, purpose):
+        white_mask = df[purpose]["driver_race_comb"] == "White"
+        black_mask = df[purpose]["driver_race_comb"] == "Black"
+        hispanic_mask = df[purpose]["driver_race_comb"] == "Hispanic"
+        asian_mask = df[purpose]["driver_race_comb"] == "Asian"
+        native_american_mask = df[purpose]["driver_race_comb"] == "Native American"
+        other_mask = df[purpose]["driver_race_comb"] == "Other"
+        return {
+            "labels": df.year.unique(),
+            "datasets": [
+                {
+                    "label": "White",
+                    "data": df[purpose][white_mask]["count"].tolist(),
+                    "borderColor": "#02bcbb",
+                    "backgroundColor": "#80d9d8",
+                },
+                {
+                    "label": "Black",
+                    "data": df[purpose][black_mask]["count"].tolist(),
+                    "borderColor": "#8879fc",
+                    "backgroundColor": "#beb4fa",
+                },
+                {
+                    "label": "Hispanic",
+                    "data": df[purpose][hispanic_mask]["count"].tolist(),
+                    "borderColor": "#9c0f2e",
+                    "backgroundColor": "#ca8794",
+                },
+                {
+                    "label": "Asian",
+                    "data": df[purpose][asian_mask]["count"].tolist(),
+                    "borderColor": "#ffe066",
+                    "backgroundColor": "#ffeeb2",
+                },
+                {
+                    "label": "Native American",
+                    "data": df[purpose][native_american_mask]["count"].tolist(),
+                    "borderColor": "#0c3a66",
+                    "backgroundColor": "#8598ac",
+                },
+                {
+                    "label": "Other",
+                    "data": df[purpose][other_mask]["count"].tolist(),
+                    "borderColor": "#9e7b9b",
+                    "backgroundColor": "#cab6c7",
+                },
+            ],
+        }
+
+    def get(self, request, agency_id):
+        qs = (
+            StopSummary.objects.filter(agency_id=agency_id)
+            .annotate(year=ExtractYear("date"))
+            .values("year", "driver_race_comb", "stop_purpose_group")
+            .annotate(count=Sum("count"))
+            .order_by("year")
+        )
+        df = pd.DataFrame(qs)
+        safety_violation_mask = df["stop_purpose_group"] == StopPurposeGroup.SAFETY_VIOLATION
+        regulatory_mask = df["stop_purpose_group"] == StopPurposeGroup.REGULATORY_EQUIPMENT
+        investigatory_mask = df["stop_purpose_group"] == StopPurposeGroup.INVESTIGATORY
+
+        safety_data = self.group_by_purpose(df, safety_violation_mask)
+        regulatory_data = self.group_by_purpose(df, regulatory_mask)
+        investigatory_data = self.group_by_purpose(df, investigatory_mask)
+
+        # Get the max value to keep the graphs consistent when
+        # next to each other by setting the max y value
+        max_step_size = max(
+            reduce(
+                concat,
+                [d["data"] for d in safety_data["datasets"]]
+                + [d["data"] for d in regulatory_data["datasets"]]
+                + [d["data"] for d in investigatory_data["datasets"]],
+            )
+        )
+
+        data = {
+            "safety": safety_data,
+            "regulatory": regulatory_data,
+            "investigatory": investigatory_data,
+            "max_step_size": round(max_step_size, -3),  # Round to nearest 1000
+        }
+
         return Response(data=data, status=200)

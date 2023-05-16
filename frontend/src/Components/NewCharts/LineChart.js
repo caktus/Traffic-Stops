@@ -1,15 +1,24 @@
 import React from 'react';
 import { Line } from 'react-chartjs-2';
 
-export default function LineChart({ data, title }) {
+export default function LineChart({
+  data,
+  title,
+  maintainAspectRatio = true,
+  displayTitle = true,
+  displayLegend = true,
+  yAxisMax = null,
+}) {
   const options = {
     responsive: true,
+    maintainAspectRatio,
     hover: {
       mode: 'nearest',
       intersect: false,
     },
     plugins: {
       legend: {
+        display: displayLegend,
         position: 'top',
       },
       tooltip: {
@@ -17,8 +26,13 @@ export default function LineChart({ data, title }) {
         intersect: false,
       },
       title: {
-        display: true,
+        display: displayTitle,
         text: title,
+      },
+    },
+    scales: {
+      y: {
+        max: yAxisMax,
       },
     },
   };
