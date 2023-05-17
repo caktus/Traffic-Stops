@@ -333,7 +333,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
   const mapContrbandHitrate = (ds) => {
     const data = tableChartState.data[ds];
     const { contraband } = data;
-    const mappedData = yearRange.map((year) => {
+    const mappedData = tableChartState.yearRange.map((year) => {
       const hits = contraband.find((d) => d.year === year) || 0;
       const comparedData = { year };
       if (!hits) {
@@ -501,6 +501,8 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
   const closeRangePicker = () => {
     setShowDateRagePicker(false);
     setRangeValue(getRangeValues);
+    setStartDate(new Date());
+    setEndDate(new Date());
   };
 
   const closeModalAndCleanup = () => {
