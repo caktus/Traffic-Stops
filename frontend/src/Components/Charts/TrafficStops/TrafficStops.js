@@ -6,6 +6,7 @@ import TrafficStopsStyled, {
 } from './TrafficStops.styled';
 import * as S from '../ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
+import cloneDeep from 'lodash.clonedeep';
 
 // Util
 import {
@@ -76,6 +77,9 @@ function TrafficStops(props) {
     () => STATIC_LEGEND_KEYS.map((k) => ({ ...k }))
   );
   const [countEthnicGroups, setCountEthnicGroups] = useState(() =>
+    STATIC_LEGEND_KEYS.map((k) => ({ ...k }))
+  );
+  const [stopPurposeEthnicGroups, setStopPurposeEthnicGroups] = useState(() =>
     STATIC_LEGEND_KEYS.map((k) => ({ ...k }))
   );
 
@@ -230,6 +234,31 @@ function TrafficStops(props) {
     setCountEthnicGroups(updatedGroups);
   };
 
+  // Handle stops grouped by purpose legend interactions
+  const handleStopPurposeKeySelected = (ethnicGroup) => {
+    const groupIndex = stopPurposeEthnicGroups.indexOf(
+      stopPurposeEthnicGroups.find((g) => g.value === ethnicGroup.value)
+    );
+    const updatedGroups = [...stopPurposeEthnicGroups];
+    updatedGroups[groupIndex].selected = !updatedGroups[groupIndex].selected;
+    setStopPurposeEthnicGroups(updatedGroups);
+
+    const newStopPurposeState = cloneDeep(stopsGroupedByPurposeData);
+    newStopPurposeState.safety.datasets.forEach((s) => {
+      // eslint-disable-next-line no-param-reassign
+      s.hidden = !updatedGroups.find((g) => g.label === s.label).selected;
+    });
+    newStopPurposeState.regulatory.datasets.forEach((r) => {
+      // eslint-disable-next-line no-param-reassign
+      r.hidden = !updatedGroups.find((g) => g.label === r.label).selected;
+    });
+    newStopPurposeState.investigatory.datasets.forEach((i) => {
+      // eslint-disable-next-line no-param-reassign
+      i.hidden = !updatedGroups.find((g) => g.label === i.label).selected;
+    });
+    setStopsGroupedByPurpose(newStopPurposeState);
+  };
+
   const handleViewPercentageData = () => {
     setPurpose(PURPOSE_DEFAULT);
     openModal(STOPS, STOPS_TABLE_COLUMNS);
@@ -358,6 +387,13 @@ function TrafficStops(props) {
       <S.ChartSection>
         <ChartHeader chartTitle="Traffic Stops grouped by stop purpose" />
         <P>Shows the number of traffics stops broken down by purpose and race / ethnicity.</P>
+        <Legend
+          heading="Show on graph:"
+          keys={stopPurposeEthnicGroups}
+          onKeySelect={handleStopPurposeKeySelected}
+          showNonHispanic
+          row
+        />
         <LineWrapper>
           <GroupedStopsContainer>
             <LineChart
