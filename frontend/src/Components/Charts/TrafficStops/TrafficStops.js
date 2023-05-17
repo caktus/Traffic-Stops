@@ -372,7 +372,7 @@ function TrafficStops(props) {
         </S.ChartSubsection>
       </S.ChartSection>
       <S.ChartSection>
-        <ChartHeader chartTitle="Traffic Stop Purposes By Group" />
+        <ChartHeader chartTitle="Traffic Stops By Stop Purpose" />
         <P>Shows the number of traffics stops broken down by purpose and race / ethnicity.</P>
         <LineWrapper>
           <StopGroupsContainer>
@@ -385,7 +385,7 @@ function TrafficStops(props) {
         </LineWrapper>
       </S.ChartSection>
       <S.ChartSection>
-        <ChartHeader chartTitle="Traffic Stops grouped by stop purpose" />
+        <ChartHeader chartTitle="Traffic Stops By Stop Purpose and Race Count" />
         <P>Shows the number of traffics stops broken down by purpose and race / ethnicity.</P>
         <Legend
           heading="Show on graph:"
