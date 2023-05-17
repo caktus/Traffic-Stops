@@ -103,7 +103,9 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
             to_date = datetime.datetime.strptime(_to_date, "%Y-%m-%d")
             if from_date and to_date:
                 # Add another month to include the last month chosen
-                to_date = to_date + relativedelta.relativedelta(months=1)
+                to_date = (to_date + relativedelta.relativedelta(months=1)) - datetime.timedelta(
+                    days=1
+                )
                 date_range = Q(date__range=(from_date, to_date))
         return date_precision, date_range
 
