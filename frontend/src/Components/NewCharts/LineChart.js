@@ -8,6 +8,7 @@ export default function LineChart({
   displayTitle = true,
   displayLegend = true,
   yAxisMax = null,
+  yAxisShowLabels = true,
 }) {
   const options = {
     responsive: true,
@@ -33,6 +34,9 @@ export default function LineChart({
     scales: {
       y: {
         max: yAxisMax,
+        ticks: {
+          display: yAxisShowLabels,
+        },
       },
     },
   };

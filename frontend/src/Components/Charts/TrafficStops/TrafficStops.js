@@ -375,6 +375,7 @@ function TrafficStops(props) {
               maintainAspectRatio={false}
               displayLegend={false}
               yAxisMax={stopsGroupedByPurposeData.max_step_size}
+              yAxisShowLabels={false}
             />
           </GroupedStopsContainer>
           <GroupedStopsContainer>
@@ -384,6 +385,7 @@ function TrafficStops(props) {
               maintainAspectRatio={false}
               displayLegend={false}
               yAxisMax={stopsGroupedByPurposeData.max_step_size}
+              yAxisShowLabels={false}
             />
           </GroupedStopsContainer>
         </LineWrapper>
