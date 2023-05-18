@@ -12,10 +12,19 @@ admin.autodiscover()
 urlpatterns = [  # noqa
     re_path(r"^", include(("nc.urls", "nc"), namespace="nc"), name="home"),
     re_path(r"^admin/", admin.site.urls),
-    # React SPA:
-    path(r"", index, name="index"),
-    re_path(r"^(?:.*)/?$", index, name="index-others"),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# React SPA must come last
+urlpatterns.extend(
+    [
+        path(r"", index, name="index"),
+        re_path(r"^(?:.*)/?$", index, name="index-others"),
+    ]
+)
+
 
 if settings.DEBUG:  # pragma: no cover
     import debug_toolbar

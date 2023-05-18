@@ -11,10 +11,12 @@ import { ICONS } from '../../../img/icons/Icon';
 
 // Children
 import TablePagination from './TablePagination';
+import displayMissingPhrase from '../../../util/displayMissingData';
 
 function Table({
   columns,
   data = [],
+  datasetName,
   initialTableState,
   paginated,
   sortable,
@@ -89,7 +91,7 @@ function Table({
                 <S.TR>
                   <S.TD>{row.original.year}</S.TD>
                   {row.original.purpose && <S.TD>{row.original.purpose}</S.TD>}
-                  <S.TDBold>No data recorded</S.TDBold>
+                  <S.TDBold>{displayMissingPhrase(datasetName)}</S.TDBold>
                   {/* eslint-disable-next-line no-unused-vars */}
                   {fillerCells.map((_) => (
                     <S.TD />

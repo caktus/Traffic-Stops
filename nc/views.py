@@ -1,7 +1,12 @@
+import datetime
+
+from dateutil import relativedelta
 from django.conf import settings
 from django.core.mail import send_mail
 from django.db.models import Case, Count, F, Q, Sum, Value, When
 from django.db.models.functions import ExtractYear
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import never_cache
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -63,7 +68,7 @@ SEARCH_TYPE_CHOICES = dict(SEARCH_TYPE_CHOICES_TUPLES)
 
 
 class QueryKeyConstructor(DefaultObjectKeyConstructor):
-    params_query = bits.QueryParamsKeyBit(["officer"])
+    params_query = bits.QueryParamsKeyBit(["officer", "from", "to"])
 
 
 query_cache_key_func = QueryKeyConstructor()
@@ -90,6 +95,19 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
             qs = qs.filter(officer_id=officer)
         if filter_:
             qs = qs.filter(filter_)
+
+        # Only filter is from and to values are found and are valid
+        _from_date = self.request.query_params.get("from", None)
+        _to_date = self.request.query_params.get("to", None)
+        if _from_date and _to_date:
+            from_date = datetime.datetime.strptime(_from_date, "%Y-%m-%d")
+            to_date = datetime.datetime.strptime(_to_date, "%Y-%m-%d")
+            if from_date and to_date:
+                # Add another month to include the last month chosen
+                to_date = (to_date + relativedelta.relativedelta(months=1)) - datetime.timedelta(
+                    days=1
+                )
+                qs = qs.filter(date__range=(from_date, to_date))
         # group by specified fields and order by year
         qs = qs.values(*group_by).order_by("year")
         qs = qs.annotate(count=Sum("count"))
@@ -284,17 +302,24 @@ class StateFactsViewSet(viewsets.ReadOnlyModelViewSet):
 
 class ResourcesViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.ResourcesSerializer
-    queryset = Resource.objects.all()
 
     def get_serializer_class(self):
         return serializers.ResourcesSerializer(context={"request": self.request})
 
+    def get_queryset(self):
+        return Resource.objects.prefetch_related("resourcefile_set").all()
+
+    @method_decorator(never_cache)
     def list(self, request, *args, **kwargs):
-        return Response({"results": self.serializer_class(
-            Resource.objects.all(),
-            many=True,
-            context={"request": self.request},
-        ).data})
+        return Response(
+            {
+                "results": self.serializer_class(
+                    self.get_queryset(),
+                    many=True,
+                    context={"request": self.request},
+                ).data
+            }
+        )
 
 
 class ContactView(APIView):

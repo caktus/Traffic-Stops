@@ -22,10 +22,7 @@ sphinx-autobuild
 rstcheck
 
 # AWS tools
-#awscli and boto3 are pinned to keep the correct botocore version
-awscli==1.19.35
-boto
-boto3==1.17.35
+awscli==1.27.109
 
 django-debug-toolbar
 

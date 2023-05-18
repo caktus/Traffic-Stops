@@ -54,7 +54,7 @@ ORDER BY CASE WHEN contype='f' THEN 0 ELSE 1 END,contype,nspname,relname,conname
 """  # noqa
 
 SELECT_DROP_INDEXES_SQL = """
-SELECT 'DROP INDEX "'||nspname||'"."'||relname||'" RESTRICT;'
+SELECT 'DROP INDEX IF EXISTS "'||nspname||'"."'||relname||'" RESTRICT;'
 FROM pg_index
 INNER JOIN pg_class ON indexrelid=pg_class.oid
 INNER JOIN pg_namespace ON pg_namespace.oid=pg_class.relnamespace

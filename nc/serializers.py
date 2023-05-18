@@ -101,6 +101,8 @@ class StateFactsSerializer(serializers.ModelSerializer):
 class ResourcesSerializer(serializers.ModelSerializer):
     image_url = serializers.SerializerMethodField()
     agencies_list = serializers.SerializerMethodField()
+    resource_files = serializers.SerializerMethodField()
+    view_more_link = serializers.SerializerMethodField()
 
     class Meta:
         model = stops.Resource
@@ -111,6 +113,8 @@ class ResourcesSerializer(serializers.ModelSerializer):
             "description",
             "view_more_link",
             "image_url",
+            "publication_date",
+            "resource_files",
         )
 
     def get_image_url(self, obj):
@@ -119,7 +123,31 @@ class ResourcesSerializer(serializers.ModelSerializer):
         return resource_url
 
     def get_agencies_list(self, obj):
-        return [ag.name for ag in obj.agencies.all()]
+        return [{"name": ag.name, "id": ag.id} for ag in obj.agencies.all()]
+
+    def get_view_more_link(self, obj):
+        if obj.view_more_link:
+            return obj.view_more_link
+        first_resource = obj.resourcefile_set.first()
+        if first_resource:
+            return self.context["request"].build_absolute_uri(first_resource.file.url)
+        return None
+
+    def get_resource_files(self, obj):
+        resources = list(obj.resourcefile_set.order_by("id"))
+        if not obj.view_more_link and len(resources) > 0:
+            # If the view more button is a resource link instead of
+            # a plain url link, drop the first resource
+            resources = resources[1:]
+
+        request = self.context.get("request")
+        return [
+            {
+                "url": request.build_absolute_uri(rf.file.url),
+                "name": rf.name,
+            }
+            for rf in resources
+        ]
 
 
 class ContactFormSerializer(serializers.Serializer):
