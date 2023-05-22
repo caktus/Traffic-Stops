@@ -32,6 +32,7 @@ k8s_container_resources:
     memory: 256Mi
     cpu: 50m
 k8s_migrations_enabled: true
+k8s_migrations_timeout: 300  # 5 minutes
 k8s_migration_command:
   - bash
   - migrate_all_dbs.sh
