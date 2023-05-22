@@ -51,9 +51,11 @@ cloudformation_stack:
     DatabaseUser: "{{ app_name }}_admin"
     DatabasePassword: "{{ admin_database_password }}"
     DatabaseName: "{{ app_name }}"
-    DomainName: "{{ app_name }}.caktus-built.com"
+    DomainName: nccopwatch.org
     DomainNameAlternates: ""
-    AssetsUseCloudFront: "false"
+    AssetsCloudFrontDomain: files.nccopwatch.org
+    AssetsCloudFrontCertArn: arn:aws:acm:us-east-1:606178775542:certificate/379950bb-4b29-4308-8418-122674fe1076
+    AssetsUseCloudFront: "true"
   tags:
     Environment: "{{ app_name }}"
 

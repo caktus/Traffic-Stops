@@ -94,7 +94,9 @@ function AboutPage() {
             datasets are incomplete or remain unreported. Where data sets are incomplete or missing
             from the website it is because they have not been reported to the NC SBI. NC CopWatch
             does not have access to, nor does it publish, the names of officers, drivers, or
-            passengers involved in traffic stops.
+            passengers involved in traffic stops. The census data on NC CopWatch is taken directly
+            from the US Census Bureau’s “ACS 5-Year Estimates Detailed Tables” for the most recent
+            year available.
           </S.AboutPageParagraph>
           <S.AboutPageParagraph>
             NC CopWatch is a project of{' '}

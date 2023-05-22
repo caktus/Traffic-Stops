@@ -11,14 +11,13 @@ import { useHistory, useParams } from 'react-router-dom';
 import useOfficerId from '../../Hooks/useOfficerId';
 
 // Util
-import { calculatePercentage, RACES } from '../Charts/chartUtils';
-import toTitleCase from '../../util/toTitleCase';
 
 import { ICONS } from '../../img/icons/Icon';
 import { AGENCY_LIST_SLUG } from '../../Routes/slugs';
 import BackButton from '../Elements/BackButton';
 import Button from '../Elements/Button';
 import * as ChartHeaderStyles from '../Charts/ChartSections/ChartHeader.styled';
+import CensusData from './CensusData';
 
 function AgencyHeader({
   agencyHeaderOpen,
@@ -41,7 +40,7 @@ function AgencyHeader({
       return `last reported stop from officer`;
     }
     if (agencyId) {
-      return `last reported stop from department`;
+      return `last reported stop`;
     }
     return '';
   };
@@ -88,29 +87,10 @@ function AgencyHeader({
                 </S.ReportedDate>
               </P>
             </S.EntityDetails>
-            <S.CensusDemographics>
-              <S.CensusTitle>CENSUS DEMOGRAPHICS</S.CensusTitle>
-              <S.CensusRow>
-                {Object.keys(agencyDetails.census_profile).length > 0 ? (
-                  RACES.map((race) => {
-                    const profile = agencyDetails.census_profile;
-                    return (
-                      <S.CensusDatum key={race}>
-                        <S.CensusRace color={COLORS[0]} size={SIZES[0]}>
-                          {toTitleCase(race)}
-                          {race !== 'hispanic' && '*'}
-                        </S.CensusRace>
-                        <S.Datum size={SIZES[0]}>
-                          {calculatePercentage(profile[race], profile.total)}%
-                        </S.Datum>
-                      </S.CensusDatum>
-                    );
-                  })
-                ) : (
-                  <S.NoCensus>There is no census data for {agencyDetails.name}</S.NoCensus>
-                )}
-              </S.CensusRow>
-            </S.CensusDemographics>
+            <CensusData
+              agencyDetails={agencyDetails}
+              showCompareDepartments={showCompareDepartments}
+            />
           </S.SubHeaderContentRow>
           {!showCloseButton && (
             <S.ShowDepartmentsButton>

@@ -3,6 +3,7 @@ FROM node:16-bullseye-slim as static_files
 WORKDIR /code
 ENV PATH /code/node_modules/.bin:$PATH
 COPY frontend/package.json frontend/package-lock.json /code/
+RUN npm install -g npm@latest
 RUN npm install --silent
 COPY frontend/ /code/
 RUN npm run build

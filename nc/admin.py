@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from nc.models import Agency, Resource, StopSummary
+from nc.models import Agency, Resource, ResourceFile, StopSummary
 
 
 class AgencyAdmin(admin.ModelAdmin):
@@ -44,11 +44,33 @@ class StopSummaryAdmin(admin.ModelAdmin):
         return obj.agency.name
 
 
+class InlineResourceFile(admin.StackedInline):
+    model = ResourceFile
+    fields = (
+        "name",
+        "file",
+    )
+    extra = 0
+
+
 class ResourceAdmin(admin.ModelAdmin):
+    fields = (
+        "agencies",
+        "title",
+        "description",
+        "publication_date",
+        "created_date",
+        "image",
+        "view_more_link",
+    )
     list_display = (
         "title",
         "created_date",
+        "publication_date",
     )
+    filter_horizontal = ("agencies",)
+    inlines = [InlineResourceFile]
+    readonly_fields = ("created_date",)
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)

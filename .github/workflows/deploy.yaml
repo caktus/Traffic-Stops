@@ -14,7 +14,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Set env vars (production)
@@ -22,7 +22,7 @@ jobs:
         run: |
           echo "ENV=production" >> $GITHUB_ENV
           echo "ENV_URL=https://nccopwatch.org/" >> $GITHUB_ENV
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
           python-version: '3.9'
           cache: 'pip'

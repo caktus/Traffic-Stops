@@ -169,6 +169,7 @@ STOP_SUMMARY_VIEW_SQL = """
         ROW_NUMBER() OVER () AS id
         , "nc_stop"."agency_id"
         , DATE_PART('year', DATE_TRUNC('year', date AT TIME ZONE 'America/New_York'))::integer AS "year"
+        , "nc_stop"."date"
         , "nc_stop"."purpose" AS "stop_purpose"
         , "nc_stop"."engage_force"
         , "nc_search"."type" AS "search_type"
@@ -188,7 +189,7 @@ STOP_SUMMARY_VIEW_SQL = """
     LEFT OUTER JOIN "nc_contraband"
         ON ("nc_stop"."stop_id" = "nc_contraband"."stop_id")
     GROUP BY
-        2, 3, 4, 5, 6, 7, 8, 9, 10
+        2, 3, 4, 5, 6, 7, 8, 9, 10, 11
     ORDER BY "agency_id", "year" ASC;
 """  # noqa
 
@@ -202,6 +203,7 @@ class StopSummary(pg.ReadOnlyMaterializedView):
 
     id = models.PositiveIntegerField(primary_key=True)
     year = models.IntegerField()
+    date = models.DateTimeField(db_index=True)
     agency = models.ForeignKey("Agency", on_delete=models.DO_NOTHING)
     stop_purpose = models.PositiveSmallIntegerField(choices=PURPOSE_CHOICES)
     engage_force = models.BooleanField()
@@ -223,6 +225,7 @@ class StopSummary(pg.ReadOnlyMaterializedView):
 
 class Resource(models.Model):
     created_date = models.DateTimeField(auto_now_add=True, editable=False)
+    publication_date = models.DateField(null=True, blank=True, editable=True)
     RESOURCE_IMAGES = [
         ("copwatch-new-policy", "New Policy"),
         ("forward-justice-logo", "Forward Justice Logo"),
@@ -234,7 +237,19 @@ class Resource(models.Model):
     view_more_link = models.URLField(null=True, blank=True)
 
     class Meta:
-        ordering = ('-created_date',)
+        ordering = ("-created_date",)
 
     def __str__(self):
         return f"{self.title}"
+
+
+class ResourceFile(models.Model):
+    created_date = models.DateTimeField(auto_now_add=True, editable=False)
+    name = models.CharField(max_length=200, null=False, blank=False)
+    file = models.FileField(upload_to="resource/")
+    resource = models.ForeignKey(Resource, on_delete=models.CASCADE)
+
+    def __str__(self):
+        if self.file:
+            return f"{self.file.name} for {self.resource.title}"
+        return f"Resource file for {self.resource.title}"

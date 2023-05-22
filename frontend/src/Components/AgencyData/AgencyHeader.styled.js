@@ -18,7 +18,7 @@ export const AgencyHeader = styled.div`
   @media (${phoneOnly}) {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: start;
     justify-content: center;
   }
 `;
@@ -65,16 +65,6 @@ export const EntityDetails = styled.div`
   flex-direction: column;
 `;
 
-export const CensusDemographics = styled.div`
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-
-  @media (${phoneOnly}) {
-    display: none;
-  }
-`;
-
 export const AgencyTitle = styled(H2)`
   font-size: 18px;
 `;
@@ -83,54 +73,9 @@ export const ReportedDate = styled(P)`
   display: inline;
 `;
 
-export const CensusTitle = styled(H2)`
-  font-size: 18px;
-`;
-
-export const CensusRow = styled.ul`
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  list-style-type: none;
-  overflow-x: auto;
-  overflow-y: hidden;
-  @media (${smallerThanTabletLandscape}) {
-    height: 100px;
-  }
-`;
-
-export const CensusDatum = styled.li`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  &:not(:last-child) {
-    margin-right: 2em;
-  }
-  @media (${smallerThanDesktop}) {
-    flex-direction: row;
-  }
-`;
-
-export const CensusRace = styled(P)`
-  text-transform: uppercase;
-  font-size: 14px;
-  @media (${smallerThanDesktop}) {
-    margin-right: 1em;
-  }
-`;
-
-export const Datum = styled(P)`
-  font-size: 14px;
-`;
-
 export const Other = styled(P)`
   font-size: 14px;
 `;
-
-export const NoCensus = styled.p``;
 
 export const ShowDepartmentsButton = styled.div`
   display: block;

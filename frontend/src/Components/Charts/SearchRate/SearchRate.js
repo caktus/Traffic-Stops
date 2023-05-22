@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import SearchRateStyled from './SearchRate.styled';
+import SearchRateStyled, { Tooltip } from './SearchRate.styled';
 import * as S from '../ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
+import { usePopper } from 'react-popper';
 
 // Router
 import { useHistory } from 'react-router-dom';
@@ -32,6 +33,7 @@ import Legend from '../ChartSections/Legend/Legend';
 import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
 import GroupedBar from '../ChartPrimitives/GroupedBar';
 import { VictoryLabel } from 'victory';
+import { tooltipLanguage } from '../../../util/tooltipLanguage';
 
 function SearchRate(props) {
   const { agencyId, showCompare } = props;
@@ -51,6 +53,32 @@ function SearchRate(props) {
 
   const renderMetaTags = useMetaTags();
   const [renderTableModal, { openModal }] = useTableModal();
+
+  const [referenceElement, setReferenceElement] = useState(null);
+  const [tooltipText, setTooltipText] = useState('');
+  const [popperElement, setPopperElement] = useState(null);
+  const { styles, attributes } = usePopper(referenceElement, popperElement, {
+    placement: 'top',
+    modifiers: [
+      {
+        name: 'offset',
+        options: {
+          offset: [0, 10],
+        },
+      },
+    ],
+  });
+
+  const showTooltip = (e) => {
+    setReferenceElement(e.currentTarget);
+    setTooltipText(tooltipLanguage(e.target.parentElement.id));
+    popperElement.setAttribute('data-show', true);
+  };
+
+  const hideTooltip = () => {
+    setTooltipText('');
+    popperElement.removeAttribute('data-show');
+  };
 
   /* BUILD DATA */
   useEffect(() => {
@@ -170,24 +198,55 @@ function SearchRate(props) {
                 </P>
               </S.NoBaseSearches>
             ) : (
-              <GroupedBar
-                data={chartData}
-                loading={chartState.loading[LIKELIHOOD_OF_SEARCH]}
-                horizontal
-                iAxisProps={{
-                  tickLabelComponent: <VictoryLabel x={100} dx={-50} style={{ fontSize: 6 }} />,
-                  tickFormat: (t) => (t.split ? t.split(' ') : t),
-                }}
-                dAxisProps={{
-                  tickFormat: (t) => `${t}%`,
-                }}
-                chartProps={{
-                  height: 500,
-                  width: 400,
-                }}
-                barProps={{ barWidth: 10, yAxisLabel: (val) => `${val}%` }}
-                toolTipFontSize={7}
-              />
+              <>
+                <Tooltip
+                  ref={setPopperElement}
+                  style={{
+                    ...styles.popper,
+                    maxWidth: '500px',
+                    zIndex: 1000,
+                    display: tooltipText !== '' ? 'block' : 'none',
+                  }}
+                  {...attributes.popper}
+                >
+                  {tooltipText}
+                </Tooltip>
+                <GroupedBar
+                  data={chartData}
+                  loading={chartState.loading[LIKELIHOOD_OF_SEARCH]}
+                  horizontal
+                  iAxisProps={{
+                    tickLabelComponent: (
+                      <VictoryLabel
+                        x={100}
+                        dx={-50}
+                        style={{
+                          fontSize: 6,
+                          cursor: 'default',
+                          textDecorationLine: 'underline',
+                          textDecorationStyle: 'dotted',
+                          textUnderlineOffset: '5px',
+                        }}
+                        id={(t) => (Array.isArray(t.text) ? t.text.join('') : null)}
+                        events={{
+                          onMouseEnter: (evt) => showTooltip(evt),
+                          onMouseLeave: () => hideTooltip(),
+                        }}
+                      />
+                    ),
+                    tickFormat: (t) => (t.split ? t.split(' ') : t),
+                  }}
+                  dAxisProps={{
+                    tickFormat: (t) => `${t}%`,
+                  }}
+                  chartProps={{
+                    height: 500,
+                    width: 400,
+                  }}
+                  barProps={{ barWidth: 10, yAxisLabel: (val) => `${val}%` }}
+                  toolTipFontSize={7}
+                />
+              </>
             )}
           </S.LineWrapper>
           <S.LegendBelow>

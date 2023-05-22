@@ -38,6 +38,15 @@ def ansible_playbook(c, name, extra="", verbosity=1):
         c.run(f"ansible-playbook {name} {extra} -{'v'*verbosity}")
 
 
+@invoke.task
+def deploy_html_notebooks(c, dir_name):
+    """Upload html exports of Jupyter Notebooks to S3"""
+    c.run(
+        "aws s3 sync --acl public-read --exclude '*' --include '*.html' "
+        f"nc/notebooks/{dir_name}/ s3://nccopwatch-share/{dir_name}/"
+    )
+
+
 ns = invoke.Collection()
 ns.add_collection(kubesae.image)
 ns.add_collection(kubesae.aws)
@@ -50,6 +59,7 @@ ns.add_task(staging)
 ns.add_task(production)
 ns.add_task(pod_stats)
 ns.add_task(ansible_playbook, "playbook")
+ns.add_task(deploy_html_notebooks)
 
 ns.configure(
     {
