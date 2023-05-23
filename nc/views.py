@@ -68,7 +68,7 @@ SEARCH_TYPE_CHOICES = dict(SEARCH_TYPE_CHOICES_TUPLES)
 
 
 class QueryKeyConstructor(DefaultObjectKeyConstructor):
-    params_query = bits.QueryParamsKeyBit(["officer"])
+    params_query = bits.QueryParamsKeyBit(["officer", "from", "to"])
 
 
 query_cache_key_func = QueryKeyConstructor()

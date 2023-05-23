@@ -1,4 +1,3 @@
-from django.conf import settings
 from rest_framework import serializers
 
 from nc import models as stops
@@ -103,6 +102,7 @@ class ResourcesSerializer(serializers.ModelSerializer):
     image_url = serializers.SerializerMethodField()
     agencies_list = serializers.SerializerMethodField()
     resource_files = serializers.SerializerMethodField()
+    view_more_link = serializers.SerializerMethodField()
 
     class Meta:
         model = stops.Resource
@@ -125,17 +125,28 @@ class ResourcesSerializer(serializers.ModelSerializer):
     def get_agencies_list(self, obj):
         return [{"name": ag.name, "id": ag.id} for ag in obj.agencies.all()]
 
+    def get_view_more_link(self, obj):
+        if obj.view_more_link:
+            return obj.view_more_link
+        first_resource = obj.resourcefile_set.first()
+        if first_resource:
+            return self.context["request"].build_absolute_uri(first_resource.file.url)
+        return None
+
     def get_resource_files(self, obj):
+        resources = list(obj.resourcefile_set.order_by("id"))
+        if not obj.view_more_link and len(resources) > 0:
+            # If the view more button is a resource link instead of
+            # a plain url link, drop the first resource
+            resources = resources[1:]
+
         request = self.context.get("request")
-        resource_location = f"{request.scheme}://{request.get_host()}"
         return [
             {
-                # For local dev, prepend local server location,
-                # otherwise use file url in staging/prod
-                "url": f"{resource_location}{rf.file.url}" if settings.DEBUG else rf.file.url,
+                "url": request.build_absolute_uri(rf.file.url),
                 "name": rf.name,
             }
-            for rf in obj.resourcefile_set.all()
+            for rf in resources
         ]
 
 

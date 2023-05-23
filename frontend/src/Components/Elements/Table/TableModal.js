@@ -333,7 +333,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
   const mapContrbandHitrate = (ds) => {
     const data = tableChartState.data[ds];
     const { contraband } = data;
-    const mappedData = yearRange.map((year) => {
+    const mappedData = tableChartState.yearRange.map((year) => {
       const hits = contraband.find((d) => d.year === year) || 0;
       const comparedData = { year };
       if (!hits) {
@@ -501,6 +501,8 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
   const closeRangePicker = () => {
     setShowDateRangePicker(false);
     setRangeValue(getRangeValues);
+    setStartDate(new Date());
+    setEndDate(new Date());
   };
 
   const closeModalAndCleanup = () => {
@@ -519,13 +521,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     let [start, end] = dates;
 
     setStartDate(start);
-
-    // Don't allow same month/year selected
-    if (end && start.getDay() === end.getDay()) {
-      end = new Date(end.setMonth(end.getMonth() + 1));
-    } else {
-      setEndDate(end);
-    }
+    setEndDate(end);
 
     if (start && end) {
       // Update range value on when valid start/end dates are selected
