@@ -378,27 +378,29 @@ class AgencyStopPurposeGroupView(APIView):
             .order_by("year")
         )
         df = pd.DataFrame(qs)
-        safety_violation_mask = df["stop_purpose_group"] == StopPurposeGroup.SAFETY_VIOLATION
-        regulatory_mask = df["stop_purpose_group"] == StopPurposeGroup.REGULATORY_EQUIPMENT
-        investigatory_mask = df["stop_purpose_group"] == StopPurposeGroup.INVESTIGATORY
+        unique_years = df.year.unique()
+        pivot_df = df.pivot(index="year", columns="stop_purpose_group", values="count").fillna(
+            value=0
+        )
+        df = pd.DataFrame(pivot_df)
         data = {
-            "labels": df.year.unique(),
+            "labels": unique_years,
             "datasets": [
                 {
                     "label": StopPurposeGroup.SAFETY_VIOLATION,
-                    "data": df[safety_violation_mask]["count"].tolist(),
+                    "data": list(df[StopPurposeGroup.SAFETY_VIOLATION].values),
                     "borderColor": "#7F428A",
                     "backgroundColor": "#CFA9D6",
                 },
                 {
                     "label": StopPurposeGroup.REGULATORY_EQUIPMENT,
-                    "data": df[regulatory_mask]["count"].tolist(),
+                    "data": list(df[StopPurposeGroup.REGULATORY_EQUIPMENT].values),
                     "borderColor": "#b36800",
                     "backgroundColor": "#ffa500",
                 },
                 {
                     "label": StopPurposeGroup.INVESTIGATORY,
-                    "data": df[investigatory_mask]["count"].tolist(),
+                    "data": list(df[StopPurposeGroup.INVESTIGATORY].values),
                     "borderColor": "#1B4D3E",
                     "backgroundColor": "#ACE1AF",
                 },
@@ -408,49 +410,43 @@ class AgencyStopPurposeGroupView(APIView):
 
 
 class AgencyStopGroupByPurposeView(APIView):
-    def group_by_purpose(self, df, purpose):
-        white_mask = df[purpose]["driver_race_comb"] == "White"
-        black_mask = df[purpose]["driver_race_comb"] == "Black"
-        hispanic_mask = df[purpose]["driver_race_comb"] == "Hispanic"
-        asian_mask = df[purpose]["driver_race_comb"] == "Asian"
-        native_american_mask = df[purpose]["driver_race_comb"] == "Native American"
-        other_mask = df[purpose]["driver_race_comb"] == "Other"
+    def group_by_purpose(self, df, purpose, years):
         return {
-            "labels": df.year.unique(),
+            "labels": years,
             "datasets": [
                 {
                     "label": "White",
-                    "data": df[purpose][white_mask]["count"].tolist(),
+                    "data": list(df[purpose]["White"].values),
                     "borderColor": "#02bcbb",
                     "backgroundColor": "#80d9d8",
                 },
                 {
                     "label": "Black",
-                    "data": df[purpose][black_mask]["count"].tolist(),
+                    "data": list(df[purpose]["Black"].values),
                     "borderColor": "#8879fc",
                     "backgroundColor": "#beb4fa",
                 },
                 {
                     "label": "Hispanic",
-                    "data": df[purpose][hispanic_mask]["count"].tolist(),
+                    "data": list(df[purpose]["Hispanic"].values),
                     "borderColor": "#9c0f2e",
                     "backgroundColor": "#ca8794",
                 },
                 {
                     "label": "Asian",
-                    "data": df[purpose][asian_mask]["count"].tolist(),
+                    "data": list(df[purpose]["Asian"].values),
                     "borderColor": "#ffe066",
                     "backgroundColor": "#ffeeb2",
                 },
                 {
                     "label": "Native American",
-                    "data": df[purpose][native_american_mask]["count"].tolist(),
+                    "data": list(df[purpose]["Native American"].values),
                     "borderColor": "#0c3a66",
                     "backgroundColor": "#8598ac",
                 },
                 {
                     "label": "Other",
-                    "data": df[purpose][other_mask]["count"].tolist(),
+                    "data": list(df[purpose]["Other"].values),
                     "borderColor": "#9e7b9b",
                     "backgroundColor": "#cab6c7",
                 },
@@ -466,13 +462,21 @@ class AgencyStopGroupByPurposeView(APIView):
             .order_by("year")
         )
         df = pd.DataFrame(qs)
-        safety_violation_mask = df["stop_purpose_group"] == StopPurposeGroup.SAFETY_VIOLATION
-        regulatory_mask = df["stop_purpose_group"] == StopPurposeGroup.REGULATORY_EQUIPMENT
-        investigatory_mask = df["stop_purpose_group"] == StopPurposeGroup.INVESTIGATORY
+        unique_years = df.year.unique()
+        pivot_table = pd.pivot_table(
+            df, index="year", columns=["stop_purpose_group", "driver_race_comb"], values="count"
+        ).fillna(value=0)
+        pivot_df = pd.DataFrame(pivot_table)
 
-        safety_data = self.group_by_purpose(df, safety_violation_mask)
-        regulatory_data = self.group_by_purpose(df, regulatory_mask)
-        investigatory_data = self.group_by_purpose(df, investigatory_mask)
+        safety_data = self.group_by_purpose(
+            pivot_df, StopPurposeGroup.SAFETY_VIOLATION, unique_years
+        )
+        regulatory_data = self.group_by_purpose(
+            pivot_df, StopPurposeGroup.REGULATORY_EQUIPMENT, unique_years
+        )
+        investigatory_data = self.group_by_purpose(
+            pivot_df, StopPurposeGroup.INVESTIGATORY, unique_years
+        )
 
         # Get the max value to keep the graphs consistent when
         # next to each other by setting the max y value
