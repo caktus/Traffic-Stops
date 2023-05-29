@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useTheme } from 'styled-components';
 import { AnimatePresence } from 'framer-motion';
 import * as S from './AgencyHeader.styled';
 import { P, SIZES, WEIGHTS, COLORS } from '../../styles/StyledComponents/Typography';
-import { usePopper } from 'react-popper';
 
 // Routing
 import { useHistory, useParams } from 'react-router-dom';
@@ -12,14 +11,13 @@ import { useHistory, useParams } from 'react-router-dom';
 import useOfficerId from '../../Hooks/useOfficerId';
 
 // Util
-import { calculatePercentage, RACES } from '../Charts/chartUtils';
-import toTitleCase from '../../util/toTitleCase';
 
 import { ICONS } from '../../img/icons/Icon';
-import { ABOUT_SLUG, AGENCY_LIST_SLUG } from '../../Routes/slugs';
+import { AGENCY_LIST_SLUG } from '../../Routes/slugs';
 import BackButton from '../Elements/BackButton';
 import Button from '../Elements/Button';
 import * as ChartHeaderStyles from '../Charts/ChartSections/ChartHeader.styled';
+import CensusData from './CensusData';
 
 function AgencyHeader({
   agencyHeaderOpen,
@@ -42,31 +40,9 @@ function AgencyHeader({
       return `last reported stop from officer`;
     }
     if (agencyId) {
-      return `last reported stop from department`;
+      return `last reported stop`;
     }
     return '';
-  };
-
-  const [referenceElement, setReferenceElement] = useState(null);
-  const [popperElement, setPopperElement] = useState(null);
-  const { styles, attributes } = usePopper(referenceElement, popperElement, {
-    placement: 'top',
-    modifiers: [
-      {
-        name: 'offset',
-        options: {
-          offset: [showCompareDepartments ? 0 : -300, 10],
-        },
-      },
-    ],
-  });
-
-  const showTooltip = () => {
-    popperElement.setAttribute('data-show', true);
-  };
-
-  const hideTooltip = () => {
-    popperElement.removeAttribute('data-show');
   };
 
   return (
@@ -111,39 +87,10 @@ function AgencyHeader({
                 </S.ReportedDate>
               </P>
             </S.EntityDetails>
-            <S.Tooltip ref={setPopperElement} style={styles.popper} {...attributes.popper}>
-              Sourced from U.S. Census Bureau. See About page for more info.
-            </S.Tooltip>
-            <S.CensusDemographics>
-              <S.CensusTitle
-                onMouseEnter={showTooltip}
-                onMouseLeave={hideTooltip}
-                ref={setReferenceElement}
-                onClick={() => history.push(ABOUT_SLUG)}
-              >
-                CENSUS DEMOGRAPHICS
-              </S.CensusTitle>
-              <S.CensusRow>
-                {Object.keys(agencyDetails.census_profile).length > 0 ? (
-                  RACES.map((race) => {
-                    const profile = agencyDetails.census_profile;
-                    return (
-                      <S.CensusDatum key={race}>
-                        <S.CensusRace color={COLORS[0]} size={SIZES[0]}>
-                          {toTitleCase(race)}
-                          {race !== 'hispanic' && '*'}
-                        </S.CensusRace>
-                        <S.Datum size={SIZES[0]}>
-                          {calculatePercentage(profile[race], profile.total)}%
-                        </S.Datum>
-                      </S.CensusDatum>
-                    );
-                  })
-                ) : (
-                  <S.NoCensus>There is no census data for {agencyDetails.name}</S.NoCensus>
-                )}
-              </S.CensusRow>
-            </S.CensusDemographics>
+            <CensusData
+              agencyDetails={agencyDetails}
+              showCompareDepartments={showCompareDepartments}
+            />
           </S.SubHeaderContentRow>
           {!showCloseButton && (
             <S.ShowDepartmentsButton>
