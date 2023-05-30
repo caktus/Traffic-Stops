@@ -43,6 +43,7 @@ import toTitleCase from '../../../util/toTitleCase';
 import useOfficerId from '../../../Hooks/useOfficerId';
 import LineChart from '../../NewCharts/LineChart';
 import axios from '../../../Services/Axios';
+import NewModal from '../../NewCharts/NewModal';
 
 function TrafficStops(props) {
   const { agencyId } = props;
@@ -97,6 +98,12 @@ function TrafficStops(props) {
     regulatory: { labels: [], datasets: [] },
     investigatory: { labels: [], datasets: [] },
     max_step_size: null,
+  });
+
+  const [stopPurposeModalData, setStopPurposeModalData] = useState({
+    isOpen: false,
+    tableData: [],
+    csvData: [],
   });
 
   // Build Stop Purpose Groups
@@ -268,6 +275,28 @@ function TrafficStops(props) {
     openModal(STOPS_BY_REASON, BY_REASON_TABLE_COLUMNS);
   };
 
+  const showStopPurposeModal = () => {
+    const tableData = [];
+    stopPurposeGroupsData.labels.forEach((e, i) => {
+      const safety = stopPurposeGroupsData.datasets[0].data[i];
+      const regulatory = stopPurposeGroupsData.datasets[1].data[i];
+      const investigatory = stopPurposeGroupsData.datasets[2].data[i];
+      tableData.unshift({
+        year: e,
+        safety,
+        regulatory,
+        investigatory,
+        total: [safety, regulatory, investigatory].reduce((a, b) => a + b, 0),
+      });
+    });
+    const newState = {
+      isOpen: true,
+      tableData,
+      csvData: tableData,
+    };
+    setStopPurposeModalData(newState);
+  };
+
   const getChartDetailedBreakdown = () => {
     const selectedGroups = percentageEthnicGroups.filter((k) => k.selected).map((k) => k.label);
     if (selectedGroups.length < percentageEthnicGroups.length) {
@@ -372,8 +401,21 @@ function TrafficStops(props) {
         </S.ChartSubsection>
       </S.ChartSection>
       <S.ChartSection>
-        <ChartHeader chartTitle="Traffic Stops By Stop Purpose" />
+        <ChartHeader
+          chartTitle="Traffic Stops By Stop Purpose"
+          handleViewData={showStopPurposeModal}
+        />
         <P>Shows the number of traffics stops broken down by purpose and race / ethnicity.</P>
+        <NewModal
+          tableHeader="Traffic Stops By Stop Purpose"
+          tableSubheader="Shows the number of traffics stops broken down by purpose and race / ethnicity."
+          tableData={stopPurposeModalData.tableData}
+          csvData={stopPurposeModalData.csvData}
+          columns={STOP_PURPOSE_TABLE_COLUMNS}
+          tableDownloadName="Traffic Stops By Stop Purpose"
+          isOpen={stopPurposeModalData.isOpen}
+          closeModal={() => setStopPurposeModalData((state) => ({ ...state, isOpen: false }))}
+        />
         <LineWrapper>
           <StopGroupsContainer>
             <LineChart
@@ -499,6 +541,29 @@ const BY_REASON_TABLE_COLUMNS = [
   {
     Header: 'Other*',
     accessor: 'other',
+  },
+  {
+    Header: 'Total',
+    accessor: 'total',
+  },
+];
+
+const STOP_PURPOSE_TABLE_COLUMNS = [
+  {
+    Header: 'Year',
+    accessor: 'year',
+  },
+  {
+    Header: 'Safety Violation',
+    accessor: 'safety',
+  },
+  {
+    Header: 'Regulatory and Equipment',
+    accessor: 'regulatory',
+  },
+  {
+    Header: 'Investigatory',
+    accessor: 'investigatory',
   },
   {
     Header: 'Total',
