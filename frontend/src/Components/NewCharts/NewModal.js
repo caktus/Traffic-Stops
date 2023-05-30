@@ -9,10 +9,12 @@ import Button from '../Elements/Button';
 import TableSkeleton from '../Elements/Skeletons/TableSkeleton';
 import Table from '../Elements/Table/Table';
 import { CSVLink } from 'react-csv';
+import useOfficerId from '../../Hooks/useOfficerId';
 
 export default function NewModal({
   tableHeader,
   tableSubheader,
+  agencyName,
   tableData,
   csvData,
   columns,
@@ -23,6 +25,7 @@ export default function NewModal({
   const theme = useTheme();
   const portalTarget = usePortal('modal-root');
   const [tableLoading, setLoading] = useState(false);
+  const officerId = useOfficerId();
 
   // Close modal on "esc" press
   useEffect(() => {
@@ -37,6 +40,11 @@ export default function NewModal({
     return () => document.removeEventListener('keyup', _handleKeyUp);
   }, [closeModal]);
 
+  const _getEntityReference = () => {
+    if (officerId) return `for Officer ${officerId} of the ${agencyName}`;
+    return `for ${agencyName}`;
+  };
+
   return ReactDOM.createPortal(
     isOpen && (
       <>
@@ -45,6 +53,7 @@ export default function NewModal({
           <S.Header>
             <S.Heading>
               <H2>{tableHeader}</H2>
+              <P> {_getEntityReference()}</P>
             </S.Heading>
             <S.CloseButton
               onClick={closeModal}

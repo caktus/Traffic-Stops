@@ -490,6 +490,7 @@ class AgencyStopGroupByPurposeView(APIView):
         )
 
         data = {
+            "labels": unique_years,
             "safety": safety_data,
             "regulatory": regulatory_data,
             "investigatory": investigatory_data,

@@ -23,7 +23,7 @@ import {
 } from '../chartUtils';
 
 // State
-import useDataset, { STOPS_BY_REASON, STOPS } from '../../../Hooks/useDataset';
+import useDataset, { STOPS_BY_REASON, STOPS, AGENCY_DETAILS } from '../../../Hooks/useDataset';
 
 // Elements
 import { P } from '../../../styles/StyledComponents/Typography';
@@ -94,6 +94,7 @@ function TrafficStops(props) {
 
   const [stopPurposeGroupsData, setStopPurposeGroups] = useState({ labels: [], datasets: [] });
   const [stopsGroupedByPurposeData, setStopsGroupedByPurpose] = useState({
+    labels: [],
     safety: { labels: [], datasets: [] },
     regulatory: { labels: [], datasets: [] },
     investigatory: { labels: [], datasets: [] },
@@ -101,6 +102,12 @@ function TrafficStops(props) {
   });
 
   const [stopPurposeModalData, setStopPurposeModalData] = useState({
+    isOpen: false,
+    tableData: [],
+    csvData: [],
+  });
+
+  const [groupedStopPurposeModalData, setGroupedStopPurposeModalData] = useState({
     isOpen: false,
     tableData: [],
     csvData: [],
@@ -297,6 +304,30 @@ function TrafficStops(props) {
     setStopPurposeModalData(newState);
   };
 
+  const showGroupedStopPurposeModal = () => {
+    const tableData = [];
+    stopsGroupedByPurposeData.labels.forEach((e, y) => {
+      const races = ['white', 'black', 'hispanic', 'asian', 'na', 'other'];
+      const stopPurposes = ['safety', 'regulatory', 'investigatory'];
+      const row = {
+        year: e,
+      };
+      stopPurposes.forEach((sp) => {
+        races.forEach((r, j) => {
+          // The data is indexed by the stop purpose group, then the index of the race then the index of the year.
+          row[`${sp}_${r}`] = stopsGroupedByPurposeData[sp].datasets[j]['data'][y];
+        });
+      });
+      tableData.unshift(row);
+    });
+    const newState = {
+      isOpen: true,
+      tableData,
+      csvData: tableData,
+    };
+    setGroupedStopPurposeModalData(newState);
+  };
+
   const getChartDetailedBreakdown = () => {
     const selectedGroups = percentageEthnicGroups.filter((k) => k.selected).map((k) => k.label);
     if (selectedGroups.length < percentageEthnicGroups.length) {
@@ -409,6 +440,7 @@ function TrafficStops(props) {
         <NewModal
           tableHeader="Traffic Stops By Stop Purpose"
           tableSubheader="Shows the number of traffics stops broken down by purpose and race / ethnicity."
+          agencyName={stopsChartState.data[AGENCY_DETAILS].name}
           tableData={stopPurposeModalData.tableData}
           csvData={stopPurposeModalData.csvData}
           columns={STOP_PURPOSE_TABLE_COLUMNS}
@@ -427,7 +459,10 @@ function TrafficStops(props) {
         </LineWrapper>
       </S.ChartSection>
       <S.ChartSection>
-        <ChartHeader chartTitle="Traffic Stops By Stop Purpose and Race Count" />
+        <ChartHeader
+          chartTitle="Traffic Stops By Stop Purpose and Race Count"
+          handleViewData={showGroupedStopPurposeModal}
+        />
         <P>Shows the number of traffics stops broken down by purpose and race / ethnicity.</P>
         <Legend
           heading="Show on graph:"
@@ -435,6 +470,23 @@ function TrafficStops(props) {
           onKeySelect={handleStopPurposeKeySelected}
           showNonHispanic
           row
+        />
+        <NewModal
+          tableHeader="Traffic Stops By Stop Purpose and Race Count"
+          tableSubheader={`Shows the number of traffics stops broken down by purpose and race / ethnicity.
+          SV - Safety Violation
+          R  - Regulatory and Equipment
+          I  - Investigatory
+          `}
+          agencyName={stopsChartState.data[AGENCY_DETAILS].name}
+          tableData={groupedStopPurposeModalData.tableData}
+          csvData={groupedStopPurposeModalData.csvData}
+          columns={GROUPED_STOP_PURPOSE_TABLE_COLUMNS}
+          tableDownloadName="Traffic Stops By Stop Purpose and Race Count"
+          isOpen={groupedStopPurposeModalData.isOpen}
+          closeModal={() =>
+            setGroupedStopPurposeModalData((state) => ({ ...state, isOpen: false }))
+          }
         />
         <LineWrapper>
           <GroupedStopsContainer>
@@ -568,5 +620,84 @@ const STOP_PURPOSE_TABLE_COLUMNS = [
   {
     Header: 'Total',
     accessor: 'total',
+  },
+];
+
+const GROUPED_STOP_PURPOSE_TABLE_COLUMNS = [
+  {
+    Header: 'Year',
+    accessor: 'year',
+  },
+  {
+    Header: 'SV - White',
+    accessor: 'safety_white',
+  },
+  {
+    Header: 'SV - Black',
+    accessor: 'safety_black',
+  },
+  {
+    Header: 'SV - Hispanic',
+    accessor: 'safety_hispanic',
+  },
+  {
+    Header: 'SV - Asian',
+    accessor: 'safety_asian',
+  },
+  {
+    Header: 'SV - NA',
+    accessor: 'safety_na',
+  },
+  {
+    Header: 'SV - Other',
+    accessor: 'safety_other',
+  },
+  {
+    Header: 'R - White',
+    accessor: 'regulatory_white',
+  },
+  {
+    Header: 'R - Black',
+    accessor: 'regulatory_black',
+  },
+  {
+    Header: 'R - Hispanic',
+    accessor: 'regulatory_hispanic',
+  },
+  {
+    Header: 'R - Asian',
+    accessor: 'regulatory_asian',
+  },
+  {
+    Header: 'R - NA',
+    accessor: 'regulatory_na',
+  },
+  {
+    Header: 'R - Other',
+    accessor: 'regulatory_other',
+  },
+  {
+    Header: 'I - White',
+    accessor: 'investigatory_white',
+  },
+  {
+    Header: 'I - Black',
+    accessor: 'investigatory_black',
+  },
+  {
+    Header: 'I - Hispanic',
+    accessor: 'investigatory_hispanic',
+  },
+  {
+    Header: 'I - Asian',
+    accessor: 'investigatory_asian',
+  },
+  {
+    Header: 'I - NA',
+    accessor: 'investigatory_na',
+  },
+  {
+    Header: 'I - Other',
+    accessor: 'investigatory_other',
   },
 ];
