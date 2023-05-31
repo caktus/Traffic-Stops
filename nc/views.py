@@ -399,8 +399,8 @@ class AgencyStopPurposeGroupView(APIView):
                     "backgroundColor": "#ffa500",
                 },
                 {
-                    "label": StopPurposeGroup.INVESTIGATORY,
-                    "data": list(df[StopPurposeGroup.INVESTIGATORY].values),
+                    "label": StopPurposeGroup.OTHER,
+                    "data": list(df[StopPurposeGroup.OTHER].values),
                     "borderColor": "#1B4D3E",
                     "backgroundColor": "#ACE1AF",
                 },
@@ -474,9 +474,7 @@ class AgencyStopGroupByPurposeView(APIView):
         regulatory_data = self.group_by_purpose(
             pivot_df, StopPurposeGroup.REGULATORY_EQUIPMENT, unique_years
         )
-        investigatory_data = self.group_by_purpose(
-            pivot_df, StopPurposeGroup.INVESTIGATORY, unique_years
-        )
+        other_data = self.group_by_purpose(pivot_df, StopPurposeGroup.OTHER, unique_years)
 
         # Get the max value to keep the graphs consistent when
         # next to each other by setting the max y value
@@ -485,7 +483,7 @@ class AgencyStopGroupByPurposeView(APIView):
                 concat,
                 [d["data"] for d in safety_data["datasets"]]
                 + [d["data"] for d in regulatory_data["datasets"]]
-                + [d["data"] for d in investigatory_data["datasets"]],
+                + [d["data"] for d in other_data["datasets"]],
             )
         )
 
@@ -493,8 +491,8 @@ class AgencyStopGroupByPurposeView(APIView):
             "labels": unique_years,
             "safety": safety_data,
             "regulatory": regulatory_data,
-            "investigatory": investigatory_data,
-            "max_step_size": round(max_step_size, -3),  # Round to nearest 1000
+            "other": other_data,
+            "max_step_size": round(max_step_size, -3) + 1000,  # Round to nearest 100
         }
 
         return Response(data=data, status=200)

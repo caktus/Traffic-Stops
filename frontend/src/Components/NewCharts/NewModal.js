@@ -21,10 +21,11 @@ export default function NewModal({
   tableDownloadName,
   isOpen,
   closeModal,
+  children,
 }) {
   const theme = useTheme();
   const portalTarget = usePortal('modal-root');
-  const [tableLoading, setLoading] = useState(false);
+  const [tableLoading] = useState(false);
   const officerId = useOfficerId();
 
   // Close modal on "esc" press
@@ -66,6 +67,8 @@ export default function NewModal({
           <S.Heading>
             <P>{tableSubheader}</P>
           </S.Heading>
+
+          {children}
 
           <S.TableWrapper>
             {tableLoading ? (

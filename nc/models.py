@@ -22,7 +22,7 @@ class StopPurposeGroup(models.TextChoices):
 
     SAFETY_VIOLATION = "Safety Violation"
     REGULATORY_EQUIPMENT = "Regulatory and Equipment"
-    INVESTIGATORY = "Investigatory"
+    OTHER = "Other"
 
     @classmethod
     def safety_violation_purposes(cls):
@@ -39,12 +39,12 @@ class StopPurposeGroup(models.TextChoices):
             StopPurpose.VEHICLE_EQUIPMENT_VIOLATION.value,
             StopPurpose.VEHICLE_REGULATORY_VIOLATION.value,
             StopPurpose.OTHER_MOTOR_VEHICLE_VIOLATION.value,
+            StopPurpose.SEAT_BELT_VIOLATION.value,
         ]
 
     @classmethod
-    def investigatory_purposes(cls):
+    def other_purposes(cls):
         return [
-            StopPurpose.SEAT_BELT_VIOLATION.value,
             StopPurpose.INVESTIGATION.value,
             StopPurpose.CHECKPOINT.value,
         ]
@@ -231,7 +231,7 @@ STOP_SUMMARY_VIEW_SQL = f"""
         , DATE_TRUNC('month', date AT TIME ZONE 'America/New_York')::date AS "date"
         , "nc_stop"."purpose" AS "stop_purpose"
         , (CASE WHEN nc_stop.purpose IN ({",".join(map(str, StopPurposeGroup.safety_violation_purposes()))}) THEN 'Safety Violation'
-                WHEN nc_stop.purpose IN ({",".join(map(str, StopPurposeGroup.investigatory_purposes()))}) THEN 'Investigatory'
+                WHEN nc_stop.purpose IN ({",".join(map(str, StopPurposeGroup.other_purposes()))}) THEN 'Other'
                 WHEN nc_stop.purpose IN ({",".join(map(str, StopPurposeGroup.regulatory_purposes()))}) THEN 'Regulatory and Equipment'
                 ELSE 'Other'
            END) as stop_purpose_group
