@@ -41,6 +41,9 @@ import ChartHeader from '../ChartSections/ChartHeader';
 import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
 import toTitleCase from '../../../util/toTitleCase';
 import useOfficerId from '../../../Hooks/useOfficerId';
+import MonthRangePicker from '../../Elements/MonthRangePicker';
+import mapDatasetKeyToEndpoint from '../../../Services/endpoints';
+import range from 'lodash.range';
 import LineChart from '../../NewCharts/LineChart';
 import axios from '../../../Services/Axios';
 import NewModal from '../../NewCharts/NewModal';
@@ -53,6 +56,11 @@ function TrafficStops(props) {
 
   const [stopsChartState] = useDataset(agencyId, STOPS);
   const [reasonChartState] = useDataset(agencyId, STOPS_BY_REASON);
+
+  const [pickerActive, setPickerActive] = useState(null);
+  const [pickerXAxis, setPickerXAxis] = useState(null);
+  const [forcePickerRerender, setForcePickerRerender] = useState(false);
+  const [reasonChartYearSet, setReasonChartYearSet] = useState(reasonChartState.yearSet);
 
   const [year, setYear] = useState(YEARS_DEFAULT);
 
@@ -139,7 +147,7 @@ function TrafficStops(props) {
   // Build data for Stops by Percentage line chart
   useEffect(() => {
     const data = stopsChartState.data[STOPS];
-    if (data) {
+    if (data && pickerActive === null) {
       const filteredGroups = percentageEthnicGroups.filter((g) => g.selected).map((g) => g.value);
       const derivedData = buildStackedBarData(data, filteredGroups, theme);
       setByPercentageLineData(derivedData);
@@ -173,7 +181,7 @@ function TrafficStops(props) {
 
   // Build data for Stops By Count line chart ("All")
   useEffect(() => {
-    const data = stopsChartState.data[STOPS];
+    const data = reasonChartState.data[STOPS];
     if (data && purpose === PURPOSE_DEFAULT) {
       const derivedData = countEthnicGroups
         .filter((g) => g.selected)
@@ -185,14 +193,15 @@ function TrafficStops(props) {
           };
           rGroup.data = data.map((d) => ({
             displayName: toTitleCase(race),
-            x: d.year,
+            // eslint-disable-next-line no-nested-ternary
+            x: pickerActive !== null ? (pickerXAxis === 'Month' ? d.date : d.year) : d.year,
             y: d[race],
           }));
           return rGroup;
         });
       setByCountLineData(derivedData);
     }
-  }, [stopsChartState.data[STOPS], purpose, countEthnicGroups]);
+  }, [reasonChartState.data[STOPS], purpose, countEthnicGroups, pickerActive]);
 
   // Build data for Stops By Count line chart (single purpose)
   useEffect(() => {
@@ -208,14 +217,15 @@ function TrafficStops(props) {
             color: theme.colors.ethnicGroup[race],
             data: purposeData.map((d) => ({
               displayName: toTitleCase(race),
-              x: d.year,
+              // eslint-disable-next-line no-nested-ternary
+              x: pickerActive !== null ? (pickerXAxis === 'Month' ? d.date : d.year) : d.year,
               y: d[race],
             })),
           };
         });
       setByCountLineData(derivedData);
     }
-  }, [reasonChartState.data[STOPS_BY_REASON], purpose, countEthnicGroups]);
+  }, [reasonChartState.data[STOPS_BY_REASON], purpose, countEthnicGroups, pickerActive]);
 
   /* INTERACTIONS */
   // Handle year dropdown state
@@ -225,8 +235,19 @@ function TrafficStops(props) {
   };
 
   // Handle stop purpose dropdown state
-  const handleStopPurposeSelect = (p) => {
+  const handleStopPurposeSelect = async (p) => {
     if (p === purpose) return;
+    if (p === PURPOSE_DEFAULT) {
+      setPickerActive(null);
+      // Reset the chart data
+      const getEndpoint = mapDatasetKeyToEndpoint(STOPS);
+      const { data } = await axios.get(getEndpoint(agencyId));
+      reasonChartState.data[STOPS] = data;
+      setReasonChartYearSet(range(2002, new Date().getFullYear() + 1, 2));
+      setForcePickerRerender(false);
+    } else if (pickerActive !== null) {
+      setForcePickerRerender(true);
+    }
     setPurpose(p);
   };
 
@@ -360,6 +381,43 @@ function TrafficStops(props) {
     return '';
   };
 
+  const updateStopsByCount = (val) => {
+    setReasonChartYearSet(val.yearRange);
+    if (purpose !== PURPOSE_DEFAULT) {
+      reasonChartState.data[STOPS_BY_REASON] = val.data;
+    } else {
+      reasonChartState.data[STOPS] = val.data;
+    }
+    setPickerXAxis(val.xAxis);
+    setPickerActive((oldVal) => (oldVal === null ? true : !oldVal));
+  };
+
+  const lineAxisFormat = (t) => {
+    if (pickerActive !== null) {
+      if (pickerXAxis === 'Month') {
+        if (typeof t === 'string') {
+          // Month label is YYYY-MM
+          const month = new Date(t).getMonth() + 1;
+          let datasetLength;
+          if (purpose !== PURPOSE_DEFAULT) {
+            datasetLength = reasonChartState.data[STOPS_BY_REASON]?.stops.length;
+          } else {
+            datasetLength = reasonChartState.data[STOPS].length;
+          }
+          if (datasetLength > 10 && datasetLength <= 15) {
+            return month % 2 === 0 ? t : null;
+          }
+          if (datasetLength > 15) {
+            return month % 3 === 0 ? t : null;
+          }
+        }
+
+        return t;
+      }
+    }
+    return t % 2 === 0 ? t : null;
+  };
+
   return (
     <TrafficStopsStyled>
       {/* Traffic Stops by Percentage */}
@@ -420,11 +478,12 @@ function TrafficStops(props) {
             <Line
               data={byCountLineData}
               loading={reasonChartState.loading[STOPS_BY_REASON]}
-              iTickFormat={(t) => (t % 2 === 0 ? t : null)}
-              iTickValues={reasonChartState.yearSet}
+              iTickFormat={lineAxisFormat}
+              iTickValues={reasonChartYearSet}
               dAxisProps={{
                 tickFormat: (t) => `${t}`,
               }}
+              xAxisLabel={pickerActive !== null ? pickerXAxis : 'Year'}
             />
           </S.LineWrapper>
           <S.LegendBeside>
@@ -433,6 +492,14 @@ function TrafficStops(props) {
               value={purpose}
               onChange={handleStopPurposeSelect}
               options={[PURPOSE_DEFAULT].concat(stopTypes)}
+            />
+            <MonthRangePicker
+              agencyId={agencyId}
+              dataSet={purpose !== PURPOSE_DEFAULT ? STOPS_BY_REASON : STOPS}
+              deactivatePicker={pickerActive === null}
+              forcePickerRerender={forcePickerRerender}
+              onChange={updateStopsByCount}
+              onClosePicker={() => setPickerActive(null)}
             />
             <S.Spacing>
               <Legend
