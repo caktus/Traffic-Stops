@@ -70,7 +70,6 @@ export const P = styled.p`
   line-height: ${(props) => (props.size === SIZES[0] ? '28px' : '32px')};
   color: ${(props) =>
     props.color === COLORS[1] ? props.theme.colors.text : props.theme.colors.textLight};
-  white-space: pre-line;
 `;
 
 P.propTypes = {
