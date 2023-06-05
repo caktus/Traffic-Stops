@@ -1,5 +1,4 @@
 export default function displayDefinition(st) {
-  console.log(st);
   return {
     All: '',
     Consent:
