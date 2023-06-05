@@ -13,9 +13,9 @@ class StopPurpose(models.IntegerChoices):
     VEHICLE_EQUIPMENT_VIOLATION = 5, "Vehicle Equipment Violation"  # Regulatory and Equipment
     VEHICLE_REGULATORY_VIOLATION = 6, "Vehicle Regulatory Violation"  # Regulatory and Equipment
     OTHER_MOTOR_VEHICLE_VIOLATION = 9, "Other Motor Vehicle Violation"  # Regulatory and Equipment
-    SEAT_BELT_VIOLATION = 7, "Seat Belt Violation"  # Investigatory
-    INVESTIGATION = 8, "Investigation"  # Investigatory
-    CHECKPOINT = 10, "Checkpoint"  # Investigatory
+    SEAT_BELT_VIOLATION = 7, "Seat Belt Violation"  # Regulatory and Equipment
+    INVESTIGATION = 8, "Investigation"  # Other
+    CHECKPOINT = 10, "Checkpoint"  # Other
 
 
 class StopPurposeGroup(models.TextChoices):
