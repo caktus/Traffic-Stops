@@ -4,6 +4,52 @@ from django_pgviews import view as pg
 
 from tsdata.models import CensusProfile
 
+
+class StopPurpose(models.IntegerChoices):
+    SPEED_LIMIT_VIOLATION = 1, "Speed Limit Violation"  # Safety Violation
+    STOP_LIGHT_SIGN_VIOLATION = 2, "Stop Light/Sign Violation"  # Safety Violation
+    DRIVING_WHILE_IMPAIRED = 3, "Driving While Impaired"  # Safety Violation
+    SAFE_MOVEMENT_VIOLATION = 4, "Safe Movement Violation"  # Safety Violation
+    VEHICLE_EQUIPMENT_VIOLATION = 5, "Vehicle Equipment Violation"  # Regulatory and Equipment
+    VEHICLE_REGULATORY_VIOLATION = 6, "Vehicle Regulatory Violation"  # Regulatory and Equipment
+    OTHER_MOTOR_VEHICLE_VIOLATION = 9, "Other Motor Vehicle Violation"  # Regulatory and Equipment
+    SEAT_BELT_VIOLATION = 7, "Seat Belt Violation"  # Regulatory and Equipment
+    INVESTIGATION = 8, "Investigation"  # Other
+    CHECKPOINT = 10, "Checkpoint"  # Other
+
+
+class StopPurposeGroup(models.TextChoices):
+
+    SAFETY_VIOLATION = "Safety Violation"
+    REGULATORY_EQUIPMENT = "Regulatory and Equipment"
+    OTHER = "Other"
+
+    @classmethod
+    def safety_violation_purposes(cls):
+        return [
+            StopPurpose.SPEED_LIMIT_VIOLATION.value,
+            StopPurpose.STOP_LIGHT_SIGN_VIOLATION.value,
+            StopPurpose.DRIVING_WHILE_IMPAIRED.value,
+            StopPurpose.SAFE_MOVEMENT_VIOLATION.value,
+        ]
+
+    @classmethod
+    def regulatory_purposes(cls):
+        return [
+            StopPurpose.VEHICLE_EQUIPMENT_VIOLATION.value,
+            StopPurpose.VEHICLE_REGULATORY_VIOLATION.value,
+            StopPurpose.OTHER_MOTOR_VEHICLE_VIOLATION.value,
+            StopPurpose.SEAT_BELT_VIOLATION.value,
+        ]
+
+    @classmethod
+    def other_purposes(cls):
+        return [
+            StopPurpose.INVESTIGATION.value,
+            StopPurpose.CHECKPOINT.value,
+        ]
+
+
 PURPOSE_CHOICES = (
     (1, "Speed Limit Violation"),
     (2, "Stop Light/Sign Violation"),
@@ -33,6 +79,20 @@ GENDER_CHOICES = (("M", "Male"), ("F", "Female"))
 
 
 ETHNICITY_CHOICES = (("H", "Hispanic"), ("N", "Non-Hispanic"))
+
+
+class DriverRace(models.TextChoices):
+    ASIAN = "A", "Asian"
+    BLACK = "B", "Black"
+    HISPANIC = "H", "Hispanic"
+    NATIVE_AMERICAN = "I", "Native American"
+    OTHER = "U", "Other"
+    WHITE = "W", "White"
+
+
+class DriverEthnicity(models.TextChoices):
+    HISPANIC = "H", "Hispanic"
+    NON_HISPANIC = "N", "Non-Hispanic"
 
 
 RACE_CHOICES = (
@@ -164,12 +224,17 @@ class Agency(CachingMixin, models.Model):
             return dict()
 
 
-STOP_SUMMARY_VIEW_SQL = """
+STOP_SUMMARY_VIEW_SQL = f"""
     SELECT
         ROW_NUMBER() OVER () AS id
         , "nc_stop"."agency_id"
         , DATE_TRUNC('month', date AT TIME ZONE 'America/New_York')::date AS "date"
         , "nc_stop"."purpose" AS "stop_purpose"
+        , (CASE WHEN nc_stop.purpose IN ({",".join(map(str, StopPurposeGroup.safety_violation_purposes()))}) THEN 'Safety Violation'
+                WHEN nc_stop.purpose IN ({",".join(map(str, StopPurposeGroup.other_purposes()))}) THEN 'Other'
+                WHEN nc_stop.purpose IN ({",".join(map(str, StopPurposeGroup.regulatory_purposes()))}) THEN 'Regulatory and Equipment'
+                ELSE 'Other'
+           END) as stop_purpose_group
         , "nc_stop"."engage_force"
         , "nc_search"."type" AS "search_type"
         , (CASE
@@ -179,6 +244,13 @@ STOP_SUMMARY_VIEW_SQL = """
         , "nc_stop"."officer_id"
         , "nc_person"."race" AS "driver_race"
         , "nc_person"."ethnicity" AS "driver_ethnicity"
+        , (CASE WHEN nc_person.ethnicity = 'H' THEN 'Hispanic'
+                WHEN nc_person.ethnicity = 'N' AND nc_person.race = 'A' THEN 'Asian'
+                WHEN nc_person.ethnicity = 'N' AND nc_person.race = 'B' THEN 'Black'
+                WHEN nc_person.ethnicity = 'N' AND nc_person.race = 'I' THEN 'Native American'
+                WHEN nc_person.ethnicity = 'N' AND nc_person.race = 'U' THEN 'Other'
+                WHEN nc_person.ethnicity = 'N' AND nc_person.race = 'W' THEN 'White'
+           END) as driver_race_comb
         , COUNT("nc_stop"."date")::integer AS "count"
     FROM "nc_stop"
     INNER JOIN "nc_person"
@@ -188,7 +260,7 @@ STOP_SUMMARY_VIEW_SQL = """
     LEFT OUTER JOIN "nc_contraband"
         ON ("nc_stop"."stop_id" = "nc_contraband"."stop_id")
     GROUP BY
-        2, 3, 4, 5, 6, 7, 8, 9, 10
+        2, 3, 4, 5, 6, 7, 8, 9, 10, 11
     ORDER BY "agency_id", "date" ASC;
 """  # noqa
 
@@ -203,13 +275,15 @@ class StopSummary(pg.ReadOnlyMaterializedView):
     id = models.PositiveIntegerField(primary_key=True)
     date = models.DateField()
     agency = models.ForeignKey("Agency", on_delete=models.DO_NOTHING)
-    stop_purpose = models.PositiveSmallIntegerField(choices=PURPOSE_CHOICES)
+    stop_purpose = models.PositiveSmallIntegerField(choices=StopPurpose.choices)
+    stop_purpose_group = models.CharField(choices=StopPurposeGroup.choices, max_length=32)
     engage_force = models.BooleanField()
     search_type = models.PositiveSmallIntegerField(choices=SEARCH_TYPE_CHOICES)
     contraband_found = models.BooleanField()
     officer_id = models.CharField(max_length=15)
     driver_race = models.CharField(max_length=2, choices=RACE_CHOICES)
     driver_ethnicity = models.CharField(max_length=2, choices=ETHNICITY_CHOICES)
+    driver_race_comb = models.CharField(max_length=2, choices=DriverRace.choices)
     count = models.IntegerField()
 
     class Meta:
