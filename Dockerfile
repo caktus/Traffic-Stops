@@ -124,6 +124,7 @@ RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/
     docker-compose-plugin \
     git-core \
     gnupg2 \
+    jq \
     libpcre3 \
     libpq-dev \
     mime-support \
