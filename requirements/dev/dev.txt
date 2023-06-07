@@ -30,7 +30,7 @@ babel==2.8.0
     # via sphinx
 backcall==0.1.0
     # via ipython
-boto3==1.26.109
+boto3==1.26.87
     # via
     #   -c requirements/dev/../base/base.txt
     #   invoke-kubesae
@@ -120,7 +120,7 @@ kubernetes==12.0.0
     # via
     #   -r requirements/dev/dev.in
     #   openshift
-kubernetes-validate==1.18.0
+kubernetes-validate==1.25.2
     # via -r requirements/dev/dev.in
 livereload==2.6.2
     # via sphinx-autobuild

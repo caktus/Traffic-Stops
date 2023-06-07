@@ -12,7 +12,7 @@ billiard==3.6.3.0
     # via celery
 boto==2.49.0
     # via -r requirements/base/base.in
-boto3==1.26.109
+boto3==1.26.87
     # via -r requirements/base/base.in
 botocore==1.29.109
     # via
