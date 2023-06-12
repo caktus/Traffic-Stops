@@ -27,6 +27,8 @@ import { P } from '../../../styles/StyledComponents/Typography';
 import Bar from '../ChartPrimitives/Bar';
 import ChartHeader from '../ChartSections/ChartHeader';
 import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
+import HorizontalBarChart from '../../NewCharts/HorizontalBarChart';
+import axios from '../../../Services/Axios';
 
 function SearchRate(props) {
   const { agencyId, showCompare } = props;
@@ -35,67 +37,10 @@ function SearchRate(props) {
   const [chartState] = useDataset(agencyId, CONTRABAND_HIT_RATE);
 
   const [year, setYear] = useState(YEARS_DEFAULT);
-  const [contrabandType, setContrabandType] = useState(CONTRABAND_DEFAULT);
-
-  const [contrabandData, setContrabandData] = useState();
 
   const renderMetaTags = useMetaTags();
   const [renderTableModal, { openModal }] = useTableModal();
-
-  /* CALCULATE AND BUILD CHART DATA */
-  // Build data for Contraband Hit Rate
-  useEffect(() => {
-    const data = chartState.data[CONTRABAND_HIT_RATE];
-    if (data) {
-      const { contraband, searches, contraband_types: contrabandTypes } = data;
-      if (year && year !== YEARS_DEFAULT) {
-        // If an agency has no data for selected year
-        if (contraband.filter((c) => c.year === year).length === 0) {
-          setContrabandData(
-            RACES.map((ethnicGroup) => ({
-              displayName: toTitleCase(ethnicGroup),
-              color: `${theme.colors.ethnicGroup[ethnicGroup]}90`,
-              x: toTitleCase(ethnicGroup),
-              y: 0,
-            }))
-          );
-          return;
-        }
-      }
-      const mappedData = [];
-      const contrabandDataList =
-        contrabandType !== CONTRABAND_DEFAULT
-          ? contrabandTypes.filter((c) => c.contraband_type === contrabandType)
-          : contraband;
-      RACES.forEach((ethnicGroup) => {
-        const groupBar = {};
-        const displayName = toTitleCase(ethnicGroup);
-        groupBar.displayName = displayName;
-        groupBar.color = `${theme.colors.ethnicGroup[ethnicGroup]}90`;
-        groupBar.x = displayName;
-        if (year === YEARS_DEFAULT) {
-          const groupContraband = reduceYearsToTotal(contrabandDataList, ethnicGroup)[ethnicGroup];
-          const groupSearches = reduceYearsToTotal(searches, ethnicGroup)[ethnicGroup];
-          groupBar.y = calculatePercentage(groupContraband, groupSearches);
-        } else {
-          const yearInt = parseInt(year, 10);
-          const groupContrabandForYear = getQuantityForYear(
-            contrabandDataList,
-            yearInt,
-            ethnicGroup
-          );
-          const groupSearchesForYear = getQuantityForYear(searches, yearInt, ethnicGroup);
-          groupBar.y = calculatePercentage(groupContrabandForYear, groupSearchesForYear);
-        }
-        mappedData.push(groupBar);
-      });
-      if (mappedData) {
-        setContrabandData(mappedData.reverse());
-      } else {
-        setContrabandData([]);
-      }
-    }
-  }, [chartState.data[CONTRABAND_HIT_RATE], year, contrabandType]);
+  const [contrabandData, setContrabandData] = useState({ labels: [], datasets: [] });
 
   /* INTERACTIONS */
   // Handle year dropdown state
@@ -107,11 +52,34 @@ function SearchRate(props) {
   const handleViewData = () => {
     openModal(CONTRABAND_HIT_RATE, TABLE_COLUMNS);
   };
-
-  const handleContrabandTypeSelect = (c) => {
-    if (c === contrabandType) return;
-    setContrabandType(c);
-  };
+  // Build New Contraband Data
+  useEffect(() => {
+    let url = `/api/agency/${agencyId}/contraband/`;
+    if (year && year !== 'All') {
+      url = `${url}?year=${year}`;
+    }
+    axios
+      .get(url)
+      .then((res) => {
+        const colors = ['#80d9d8', '#beb4fa', '#ca8794', '#ffeeb2', '#8598ac', '#cab6c7'];
+        const data = {
+          labels: ['White', 'Black', 'Hispanic', 'Asian', 'Native American', 'Other'],
+          datasets: [
+            {
+              axis: 'y',
+              label: 'All',
+              data: res.data,
+              fill: false,
+              backgroundColor: colors,
+              borderColor: colors,
+              borderWidth: 1,
+            },
+          ],
+        };
+        setContrabandData(data);
+      })
+      .catch((err) => console.log(err));
+  }, [year]);
 
   return (
     <ContrabandStyled>
@@ -125,37 +93,12 @@ function SearchRate(props) {
           </P>
         </S.ChartDescription>
         <S.ChartSubsection showCompare={showCompare}>
-          <S.LineSection>
-            <S.LineWrapper>
-              <Bar
-                data={contrabandData}
-                chartProps={{
-                  domainPadding: { x: 20 },
-                }}
-                yAxisProps={{
-                  tickValues: [0, 20, 40, 60, 80, 100],
-                  tickFormat: (t) => `${t}%`,
-                }}
-                xAxisProps={{
-                  tickFormat: (t) => {
-                    if (t === 'Native American') {
-                      return 'Native \n American';
-                    }
-                    return t;
-                  },
-                }}
-                barProps={{
-                  horizontal: true,
-                  style: {
-                    data: { fill: ({ datum }) => datum.color },
-                    labels: { fontSize: 8 },
-                  },
-                  labels: ({ datum }) => `${datum.y}%`,
-                  barWidth: 20,
-                }}
-              />
-            </S.LineWrapper>
-          </S.LineSection>
+          <HorizontalBarChart
+            title=""
+            data={contrabandData}
+            displayLegend={false}
+            tooltipLabelCallback={(ctx) => `${ctx.raw.toFixed(1)}%`}
+          />
           <S.LegendSection>
             <DataSubsetPicker
               label="Year"
@@ -163,12 +106,6 @@ function SearchRate(props) {
               onChange={handleYearSelect}
               options={[YEARS_DEFAULT].concat(chartState.yearRange)}
               dropUp={!!showCompare}
-            />
-            <DataSubsetPicker
-              label="Contraband Type"
-              value={contrabandType}
-              onChange={handleContrabandTypeSelect}
-              options={[CONTRABAND_DEFAULT].concat(CONTRABAND_TYPES)}
             />
           </S.LegendSection>
         </S.ChartSubsection>

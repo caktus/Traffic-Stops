@@ -498,3 +498,30 @@ class AgencyStopGroupByPurposeView(APIView):
         }
 
         return Response(data=data, status=200)
+
+
+class AgencyContrabandView(APIView):
+    def create_df(self, _filter, year=None):
+        qs = StopSummary.objects.filter(_filter).annotate(year=ExtractYear("date"))
+        if year:
+            qs = qs.filter(year=year)
+        qs = qs.values("year", "driver_race_comb").annotate(count=Sum("count")).order_by("year")
+        df = pd.DataFrame(qs)
+        pivot_df = df.pivot(index="year", columns="driver_race_comb", values="count").fillna(
+            value=0
+        )
+        return pd.DataFrame(pivot_df).mean()
+
+    def get(self, request, agency_id):
+        year = request.GET.get("year", None)
+        searches_df = self.create_df(Q(agency_id=agency_id, search_type__isnull=False), year)
+        contraband_df = self.create_df(Q(agency_id=agency_id, contraband_found=True), year)
+        data = []
+        columns = ["White", "Black", "Hispanic", "Asian", "Native American", "Other"]
+        for c in columns:
+            if c in contraband_df and c in searches_df:
+                data.append((contraband_df[c] / searches_df[c]) * 100)
+            else:
+                data.append(0)
+
+        return Response(data=data, status=200)
