@@ -525,3 +525,48 @@ class AgencyContrabandView(APIView):
                 data.append(0)
 
         return Response(data=data, status=200)
+
+
+class AgencyContrabandStopPurposeView(APIView):
+    def create_df(self, _filter, year=None):
+        qs = StopSummary.objects.filter(_filter).annotate(year=ExtractYear("date"))
+        if year:
+            qs = qs.filter(year=year)
+        qs = (
+            qs.values("year", "driver_race_comb", "stop_purpose_group")
+            .annotate(count=Sum("count"))
+            .order_by("year")
+        )
+        df = pd.DataFrame(qs)
+        pivot_df = df.pivot(
+            index="year", columns=["stop_purpose_group", "driver_race_comb"], values="count"
+        ).fillna(value=0)
+        return pd.DataFrame(pivot_df)
+
+    def get(self, request, agency_id):
+        year = request.GET.get("year", None)
+        searches_df = self.create_df(Q(agency_id=agency_id, search_type__isnull=False), year)
+        contraband_df = self.create_df(Q(agency_id=agency_id, contraband_found=True), year)
+        data = []
+        stop_purpose_types = [
+            StopPurposeGroup.SAFETY_VIOLATION,
+            StopPurposeGroup.REGULATORY_EQUIPMENT,
+            StopPurposeGroup.OTHER,
+        ]
+        columns = ["White", "Black", "Hispanic", "Asian", "Native American", "Other"]
+
+        for stop_purpose in stop_purpose_types:
+            searches_mean = searches_df[stop_purpose].mean()
+            contraband_mean = contraband_df[stop_purpose].mean()
+            group = {
+                "stop_purpose": " ".join([name.title() for name in stop_purpose.name.split("_")]),
+                "data": [],
+            }
+            for c in columns:
+                if c in contraband_mean and c in searches_mean:
+                    group["data"].append((contraband_mean[c] / searches_mean[c]) * 100)
+                else:
+                    group["data"].append(0)
+            data.append(group)
+
+        return Response(data=data, status=200)

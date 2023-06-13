@@ -24,7 +24,6 @@ import useDataset, { CONTRABAND_HIT_RATE } from '../../../Hooks/useDataset';
 
 // Children
 import { P } from '../../../styles/StyledComponents/Typography';
-import Bar from '../ChartPrimitives/Bar';
 import ChartHeader from '../ChartSections/ChartHeader';
 import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
 import HorizontalBarChart from '../../NewCharts/HorizontalBarChart';
@@ -41,6 +40,10 @@ function SearchRate(props) {
   const renderMetaTags = useMetaTags();
   const [renderTableModal, { openModal }] = useTableModal();
   const [contrabandData, setContrabandData] = useState({ labels: [], datasets: [] });
+  const [contrabandStopPurposeData, setContrabandStopPurposeData] = useState({
+    labels: [],
+    datasets: [],
+  });
 
   /* INTERACTIONS */
   // Handle year dropdown state
@@ -81,6 +84,37 @@ function SearchRate(props) {
       .catch((err) => console.log(err));
   }, [year]);
 
+  useEffect(() => {
+    let url = `/api/agency/${agencyId}/contraband-stop-purpose/`;
+    if (year && year !== 'All') {
+      url = `${url}?year=${year}`;
+    }
+    axios
+      .get(url)
+      .then((res) => {
+        const colors = {
+          'Safety Violation': '#CFA9D6',
+          'Regulatory Equipment': '#ffa500',
+          Other: '#ACE1AF',
+        };
+        const stopPurposeDataSets = res.data.map((ds, _) => ({
+          axis: 'y',
+          label: ds.stop_purpose,
+          data: ds.data,
+          fill: false,
+          backgroundColor: colors[ds.stop_purpose],
+          borderColor: colors,
+          borderWidth: 1,
+        }));
+        const data = {
+          labels: ['White', 'Black', 'Hispanic', 'Asian', 'Native American', 'Other'],
+          datasets: stopPurposeDataSets,
+        };
+        setContrabandStopPurposeData(data);
+      })
+      .catch((err) => console.log(err));
+  }, [year]);
+
   return (
     <ContrabandStyled>
       {renderMetaTags()}
@@ -97,6 +131,33 @@ function SearchRate(props) {
             title=""
             data={contrabandData}
             displayLegend={false}
+            tooltipLabelCallback={(ctx) => `${ctx.raw.toFixed(1)}%`}
+          />
+          <S.LegendSection>
+            <DataSubsetPicker
+              label="Year"
+              value={year}
+              onChange={handleYearSelect}
+              options={[YEARS_DEFAULT].concat(chartState.yearRange)}
+              dropUp={!!showCompare}
+            />
+          </S.LegendSection>
+        </S.ChartSubsection>
+      </S.ChartSection>
+      <S.ChartSection>
+        <ChartHeader
+          chartTitle='Contraband "Hit Rate" By Stop Purpose'
+          handleViewData={handleViewData}
+        />
+        <S.ChartDescription>
+          <P>
+            Shows what percentage of searches discovered contraband for a given race / ethnic group
+          </P>
+        </S.ChartDescription>
+        <S.ChartSubsection showCompare={showCompare}>
+          <HorizontalBarChart
+            title=""
+            data={contrabandStopPurposeData}
             tooltipLabelCallback={(ctx) => `${ctx.raw.toFixed(1)}%`}
           />
           <S.LegendSection>

@@ -21,6 +21,7 @@ export default function HorizontalBarChart({
       tooltip: {
         callbacks: {
           label(context) {
+            console.log(context);
             return tooltipLabelCallback(context);
           },
         },
