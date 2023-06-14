@@ -5,10 +5,22 @@ export default function HorizontalBarChart({
   title,
   displayLegend = true,
   tooltipLabelCallback,
+  xStacked = false,
+  yStacked = false
 }) {
   const options = {
     responsive: true,
+    maintainAspectRatio: true,
     indexAxis: 'y',
+    scales: {
+      x: {
+          stacked: xStacked,
+      },
+      y: {
+        max: 200,
+        stacked: yStacked,
+      },
+    },
     plugins: {
       legend: {
         display: displayLegend,
@@ -21,15 +33,12 @@ export default function HorizontalBarChart({
       tooltip: {
         callbacks: {
           label(context) {
-            console.log(context);
             return tooltipLabelCallback(context);
           },
         },
       },
     },
   };
-
-  console.log(data);
 
   return <Bar options={options} data={data} />;
 }
