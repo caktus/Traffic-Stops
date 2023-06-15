@@ -25,38 +25,25 @@
         release_name: aws-cloudwatch-metrics
         release_namespace: "{{ k8s_aws_cloudwatch_metrics_namespace }}"
         release_values:
-          clusterName: trafficstops-stack-cluster
+          clusterName: "{{ k8s_aws_cluster_name }}"
         wait: yes
     - name: Create alarms
       tags: cloudwatch
       amazon.aws.cloudwatch_metric_alarm:
         state: present
-        region: us-east-2
+        region: "{{ aws_region }}"
         name: "{{ item.name }}"
         description: "{{ item.description }}"
         metric: "{{ item.metric }}"
         namespace: "ContainerInsights"
         dimensions:
-          ClusterName: trafficstops-stack-cluster
+          ClusterName: "{{ k8s_aws_cluster_name }}"
         statistic: Average
         comparison: "{{ item.comparison }}"
         threshold: "{{ item.threshold }}"
         period: "{{ item.period }}"
         evaluation_periods: "{{ item.evaluation_periods }}"
         alarm_actions:
-          - arn:aws:sns:us-east-2:606178775542:ForwardJustice_Errors_CloudWatch_Alarms_Topic
+          - "{{ k8s_aws_sns_name }}"
       loop:
-        - name: node-cpu-high
-          description: This will alarm when a instance's CPU usage average is greater than 50% for 15 minutes.
-          metric: node_cpu_utilization
-          comparison: GreaterThanOrEqualToThreshold
-          threshold: 50
-          period: 300
-          evaluation_periods: 3
-        - name: node-count-low
-          description: This will alarm when a cluster's node count drops below 2 for 15 minutes.
-          metric: cluster_node_count
-          comparison: LessThanThreshold
-          threshold: 2
-          period: 300
-          evaluation_periods: 3
+        "{{ k8s_aws_cloudwatch_metrics_alarms }}"

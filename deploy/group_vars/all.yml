@@ -60,7 +60,7 @@ cloudformation_stack:
     Environment: "{{ app_name }}"
 
 # Install Descheduler to attempt to spread out pods again after node failures
-k8s_install_descheduler: yes
+# k8s_install_descheduler: yes
 # You must set the k8s_descheduler_chart_version to match the Kubernetes
 # node version (0.23.x -> K8s 1.23.x); see:
 # https://github.com/kubernetes-sigs/descheduler#compatibility-matrix
@@ -96,7 +96,23 @@ k8s_iam_users: [copelco]
 # - https://artifacthub.io/packages/helm/aws/aws-cloudwatch-metrics
 k8s_aws_cloudwatch_metrics_chart_version: "0.0.9"
 k8s_aws_cloudwatch_metrics_namespace: amazon-cloudwatch
-
+k8s_aws_cluster_name: trafficstops-stack-cluster
+k8s_aws_sns_name: arn:aws:sns:us-east-2:606178775542:ForwardJustice_Errors_CloudWatch_Alarms_Topic
+k8s_aws_cloudwatch_metrics_alarms:
+  - name: node-cpu-high
+    description: This will alarm when a instance's CPU usage average is greater than 50% for 15 minutes.
+    metric: node_cpu_utilization
+    comparison: GreaterThanOrEqualToThreshold
+    threshold: 50
+    period: 300
+    evaluation_periods: 3
+  - name: node-count-low
+    description: This will alarm when a cluster's node count drops below 2 for 15 minutes.
+    metric: cluster_node_count
+    comparison: LessThanThreshold
+    threshold: 2
+    period: 300
+    evaluation_periods: 3
 # Pin ingress-nginx and cert-manager to current versions so future upgrades of this
 # role will not upgrade these charts without your intervention:
 # https://github.com/kubernetes/ingress-nginx/releases
