@@ -91,6 +91,12 @@ k8s_ci_vault_password_arn: arn:aws:secretsmanager:us-east-2:606178775542:secret:
 k8s_letsencrypt_email: admin@caktusgroup.com
 k8s_iam_users: [copelco]
 
+# aws-cloudwatch-metrics:
+# - https://github.com/aws/eks-charts/tree/master/stable/aws-cloudwatch-metrics
+# - https://artifacthub.io/packages/helm/aws/aws-cloudwatch-metrics
+k8s_aws_cloudwatch_metrics_chart_version: "0.0.9"
+k8s_aws_cloudwatch_metrics_namespace: amazon-cloudwatch
+
 # Pin ingress-nginx and cert-manager to current versions so future upgrades of this
 # role will not upgrade these charts without your intervention:
 # https://github.com/kubernetes/ingress-nginx/releases
