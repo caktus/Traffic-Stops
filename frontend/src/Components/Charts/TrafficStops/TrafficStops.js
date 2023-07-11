@@ -47,6 +47,7 @@ import range from 'lodash.range';
 import LineChart from '../../NewCharts/LineChart';
 import axios from '../../../Services/Axios';
 import NewModal from '../../NewCharts/NewModal';
+import displayDefinition from 'util/displayDefinition';
 
 function TrafficStops(props) {
   const { agencyId } = props;
@@ -493,6 +494,7 @@ function TrafficStops(props) {
               onChange={handleStopPurposeSelect}
               options={[PURPOSE_DEFAULT].concat(stopTypes)}
             />
+            <p style={{ marginTop: '10px' }}>{displayDefinition(purpose)}</p>
             <MonthRangePicker
               agencyId={agencyId}
               dataSet={purpose !== PURPOSE_DEFAULT ? STOPS_BY_REASON : STOPS}
@@ -585,7 +587,7 @@ function TrafficStops(props) {
           <GroupedStopsContainer>
             <LineChart
               data={stopsGroupedByPurposeData.regulatory}
-              title="Regulatory Equipment"
+              title="Regulatory/Equipment"
               maintainAspectRatio={false}
               displayLegend={false}
               yAxisMax={stopsGroupedByPurposeData.max_step_size}
@@ -683,6 +685,17 @@ const BY_REASON_TABLE_COLUMNS = [
     accessor: 'total',
   },
 ];
+
+// SPEED_LIMIT_VIOLATION = 1  # Safety Violation
+// STOP_LIGHT_SIGN_VIOLATION = 2  # Safety Violation
+// DRIVING_WHILE_IMPAIRED = 3  # Safety Violation
+// SAFE_MOVEMENT_VIOLATION = 4  # Safety Violation
+// VEHICLE_EQUIPMENT_VIOLATION = 5  # Regulatory and Equipment
+// VEHICLE_REGULATORY_VIOLATION = 6  # Regulatory and Equipment
+// OTHER_MOTOR_VEHICLE_VIOLATION = 9  # Regulatory and Equipment
+// SEAT_BELT_VIOLATION = 7  # Investigatory
+// INVESTIGATION = 8  # Investigatory
+// CHECKPOINT = 10  # Investigatory 
 
 const STOP_PURPOSE_TABLE_COLUMNS = [
   {
