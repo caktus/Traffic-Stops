@@ -495,9 +495,9 @@ function TrafficStops(props) {
               options={[PURPOSE_DEFAULT].concat(stopTypes)}
             />
 
-            {purpose !== PURPOSE_DEFAULT ? (
+            {purpose !== PURPOSE_DEFAULT && (
               <p style={{ marginTop: '10px' }}>{displayDefinition(purpose)}</p>
-            ) : null}
+            )}
 
             <MonthRangePicker
               agencyId={agencyId}
