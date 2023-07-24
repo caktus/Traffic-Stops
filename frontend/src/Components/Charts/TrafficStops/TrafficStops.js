@@ -7,6 +7,9 @@ import TrafficStopsStyled, {
 import * as S from '../ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
 import cloneDeep from 'lodash.clonedeep';
+import { usePopper } from 'react-popper';
+import { TooltipStyled } from '../../Elements/Tooltip/Tooltip.styled';
+import { tooltipLanguage } from '../../../util/tooltipLanguage';
 
 // Util
 import {
@@ -62,6 +65,31 @@ function TrafficStops(props) {
   const [pickerXAxis, setPickerXAxis] = useState(null);
   const [forcePickerRerender, setForcePickerRerender] = useState(false);
   const [reasonChartYearSet, setReasonChartYearSet] = useState(reasonChartState.yearSet);
+  const [referenceElement, setReferenceElement] = useState(null);
+  const [tooltipText, setTooltipText] = useState('');
+  const [popperElement, setPopperElement] = useState(null);
+  const { styles, attributes } = usePopper(referenceElement, popperElement, {
+    placement: 'top',
+    modifiers: [
+      {
+        name: 'offset',
+        options: {
+          offset: [0, 10],
+        },
+      },
+    ],
+  });
+
+  const showTooltip = (e) => {
+    setReferenceElement(e.currentTarget);
+    setTooltipText(tooltipLanguage(e.target.parentElement.id));
+    popperElement.setAttribute('data-show', true);
+  };
+
+  const hideTooltip = () => {
+    setTooltipText('');
+    popperElement.removeAttribute('data-show');
+  };
 
   const [year, setYear] = useState(YEARS_DEFAULT);
 
@@ -533,10 +561,31 @@ function TrafficStops(props) {
         />
         <LineWrapper>
           <StopGroupsContainer>
+            <TooltipStyled
+              ref={setPopperElement}
+              id="TooltipStyled"
+              style={{
+                ...styles.popper,
+                maxWidth: '500px',
+                zIndex: 1000,
+                display: tooltipText !== '' ? 'block' : 'none',
+              }}
+              {...attributes.popper}
+            >
+              {tooltipText}
+            </TooltipStyled>
             <LineChart
               data={stopPurposeGroupsData}
               title="Stop Purposes By Group"
               maintainAspectRatio={false}
+              options={{
+                plugins: {
+                  legend: {
+                    onHover: (e) => showTooltip(e),
+                    onLeave: () => hideTooltip(),
+                  },
+                },
+              }}
             />
           </StopGroupsContainer>
         </LineWrapper>
