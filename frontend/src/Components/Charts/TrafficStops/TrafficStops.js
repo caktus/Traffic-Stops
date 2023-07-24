@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import TrafficStopsStyled from './TrafficStops.styled';
+import TrafficStopsStyled, {
+  GroupedStopsContainer,
+  LineWrapper,
+  StopGroupsContainer,
+} from './TrafficStops.styled';
 import * as S from '../ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
+import cloneDeep from 'lodash.clonedeep';
 
 // Util
 import {
@@ -18,7 +23,7 @@ import {
 } from '../chartUtils';
 
 // State
-import useDataset, { STOPS_BY_REASON, STOPS } from '../../../Hooks/useDataset';
+import useDataset, { STOPS_BY_REASON, STOPS, AGENCY_DETAILS } from '../../../Hooks/useDataset';
 
 // Elements
 import { P } from '../../../styles/StyledComponents/Typography';
@@ -36,6 +41,13 @@ import ChartHeader from '../ChartSections/ChartHeader';
 import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
 import toTitleCase from '../../../util/toTitleCase';
 import useOfficerId from '../../../Hooks/useOfficerId';
+import MonthRangePicker from '../../Elements/MonthRangePicker';
+import mapDatasetKeyToEndpoint from '../../../Services/endpoints';
+import range from 'lodash.range';
+import LineChart from '../../NewCharts/LineChart';
+import axios from '../../../Services/Axios';
+import NewModal from '../../NewCharts/NewModal';
+import displayDefinition from '../../../util/displayDefinition';
 
 function TrafficStops(props) {
   const { agencyId } = props;
@@ -45,6 +57,11 @@ function TrafficStops(props) {
 
   const [stopsChartState] = useDataset(agencyId, STOPS);
   const [reasonChartState] = useDataset(agencyId, STOPS_BY_REASON);
+
+  const [pickerActive, setPickerActive] = useState(null);
+  const [pickerXAxis, setPickerXAxis] = useState(null);
+  const [forcePickerRerender, setForcePickerRerender] = useState(false);
+  const [reasonChartYearSet, setReasonChartYearSet] = useState(reasonChartState.yearSet);
 
   const [year, setYear] = useState(YEARS_DEFAULT);
 
@@ -72,6 +89,9 @@ function TrafficStops(props) {
   const [countEthnicGroups, setCountEthnicGroups] = useState(() =>
     STATIC_LEGEND_KEYS.map((k) => ({ ...k }))
   );
+  const [stopPurposeEthnicGroups, setStopPurposeEthnicGroups] = useState(() =>
+    STATIC_LEGEND_KEYS.map((k) => ({ ...k }))
+  );
 
   const [byPercentageLineData, setByPercentageLineData] = useState([]);
   const [byPercentagePieData, setByPercentagePieData] = useState([]);
@@ -81,11 +101,54 @@ function TrafficStops(props) {
   const renderMetaTags = useMetaTags();
   const [renderTableModal, { openModal }] = useTableModal();
 
+  const [stopPurposeGroupsData, setStopPurposeGroups] = useState({ labels: [], datasets: [] });
+  const [stopsGroupedByPurposeData, setStopsGroupedByPurpose] = useState({
+    labels: [],
+    safety: { labels: [], datasets: [] },
+    regulatory: { labels: [], datasets: [] },
+    other: { labels: [], datasets: [] },
+    max_step_size: null,
+  });
+
+  const [stopPurposeModalData, setStopPurposeModalData] = useState({
+    isOpen: false,
+    tableData: [],
+    csvData: [],
+  });
+
+  const [groupedStopPurposeModalData, setGroupedStopPurposeModalData] = useState({
+    isOpen: false,
+    tableData: [],
+    csvData: [],
+    selectedPurpose: 'Safety Violation',
+    purposeTypes: ['Safety Violation', 'Regulatory and Equipment', 'Other'],
+  });
+
+  // Build Stop Purpose Groups
+  useEffect(() => {
+    axios
+      .get(`/api/agency/${agencyId}/stop-purpose-groups/`)
+      .then((res) => {
+        setStopPurposeGroups(res.data);
+      })
+      .catch((err) => console.log(err));
+  }, []);
+
+  // Build Stops Grouped by Purpose
+  useEffect(() => {
+    axios
+      .get(`/api/agency/${agencyId}/stops-grouped-by-purpose/`)
+      .then((res) => {
+        setStopsGroupedByPurpose(res.data);
+      })
+      .catch((err) => console.log(err));
+  }, []);
+
   /* CALCULATE AND BUILD CHART DATA */
   // Build data for Stops by Percentage line chart
   useEffect(() => {
     const data = stopsChartState.data[STOPS];
-    if (data) {
+    if (data && pickerActive === null) {
       const filteredGroups = percentageEthnicGroups.filter((g) => g.selected).map((g) => g.value);
       const derivedData = buildStackedBarData(data, filteredGroups, theme);
       setByPercentageLineData(derivedData);
@@ -119,7 +182,7 @@ function TrafficStops(props) {
 
   // Build data for Stops By Count line chart ("All")
   useEffect(() => {
-    const data = stopsChartState.data[STOPS];
+    const data = reasonChartState.data[STOPS];
     if (data && purpose === PURPOSE_DEFAULT) {
       const derivedData = countEthnicGroups
         .filter((g) => g.selected)
@@ -131,14 +194,15 @@ function TrafficStops(props) {
           };
           rGroup.data = data.map((d) => ({
             displayName: toTitleCase(race),
-            x: d.year,
+            // eslint-disable-next-line no-nested-ternary
+            x: pickerActive !== null ? (pickerXAxis === 'Month' ? d.date : d.year) : d.year,
             y: d[race],
           }));
           return rGroup;
         });
       setByCountLineData(derivedData);
     }
-  }, [stopsChartState.data[STOPS], purpose, countEthnicGroups]);
+  }, [reasonChartState.data[STOPS], purpose, countEthnicGroups, pickerActive]);
 
   // Build data for Stops By Count line chart (single purpose)
   useEffect(() => {
@@ -154,14 +218,15 @@ function TrafficStops(props) {
             color: theme.colors.ethnicGroup[race],
             data: purposeData.map((d) => ({
               displayName: toTitleCase(race),
-              x: d.year,
+              // eslint-disable-next-line no-nested-ternary
+              x: pickerActive !== null ? (pickerXAxis === 'Month' ? d.date : d.year) : d.year,
               y: d[race],
             })),
           };
         });
       setByCountLineData(derivedData);
     }
-  }, [reasonChartState.data[STOPS_BY_REASON], purpose, countEthnicGroups]);
+  }, [reasonChartState.data[STOPS_BY_REASON], purpose, countEthnicGroups, pickerActive]);
 
   /* INTERACTIONS */
   // Handle year dropdown state
@@ -171,8 +236,19 @@ function TrafficStops(props) {
   };
 
   // Handle stop purpose dropdown state
-  const handleStopPurposeSelect = (p) => {
+  const handleStopPurposeSelect = async (p) => {
     if (p === purpose) return;
+    if (p === PURPOSE_DEFAULT) {
+      setPickerActive(null);
+      // Reset the chart data
+      const getEndpoint = mapDatasetKeyToEndpoint(STOPS);
+      const { data } = await axios.get(getEndpoint(agencyId));
+      reasonChartState.data[STOPS] = data;
+      setReasonChartYearSet(range(2002, new Date().getFullYear() + 1, 2));
+      setForcePickerRerender(false);
+    } else if (pickerActive !== null) {
+      setForcePickerRerender(true);
+    }
     setPurpose(p);
   };
 
@@ -196,6 +272,31 @@ function TrafficStops(props) {
     setCountEthnicGroups(updatedGroups);
   };
 
+  // Handle stops grouped by purpose legend interactions
+  const handleStopPurposeKeySelected = (ethnicGroup) => {
+    const groupIndex = stopPurposeEthnicGroups.indexOf(
+      stopPurposeEthnicGroups.find((g) => g.value === ethnicGroup.value)
+    );
+    const updatedGroups = [...stopPurposeEthnicGroups];
+    updatedGroups[groupIndex].selected = !updatedGroups[groupIndex].selected;
+    setStopPurposeEthnicGroups(updatedGroups);
+
+    const newStopPurposeState = cloneDeep(stopsGroupedByPurposeData);
+    newStopPurposeState.safety.datasets.forEach((s) => {
+      // eslint-disable-next-line no-param-reassign
+      s.hidden = !updatedGroups.find((g) => g.label === s.label).selected;
+    });
+    newStopPurposeState.regulatory.datasets.forEach((r) => {
+      // eslint-disable-next-line no-param-reassign
+      r.hidden = !updatedGroups.find((g) => g.label === r.label).selected;
+    });
+    newStopPurposeState.other.datasets.forEach((i) => {
+      // eslint-disable-next-line no-param-reassign
+      i.hidden = !updatedGroups.find((g) => g.label === i.label).selected;
+    });
+    setStopsGroupedByPurpose(newStopPurposeState);
+  };
+
   const handleViewPercentageData = () => {
     setPurpose(PURPOSE_DEFAULT);
     openModal(STOPS, STOPS_TABLE_COLUMNS);
@@ -203,6 +304,64 @@ function TrafficStops(props) {
 
   const handleViewCountData = () => {
     openModal(STOPS_BY_REASON, BY_REASON_TABLE_COLUMNS);
+  };
+
+  const showStopPurposeModal = () => {
+    const tableData = [];
+    stopPurposeGroupsData.labels.forEach((e, i) => {
+      const safety = stopPurposeGroupsData.datasets[0].data[i];
+      const regulatory = stopPurposeGroupsData.datasets[1].data[i];
+      const other = stopPurposeGroupsData.datasets[2].data[i];
+      tableData.unshift({
+        year: e,
+        safety,
+        regulatory,
+        other,
+        total: [safety, regulatory, other].reduce((a, b) => a + b, 0),
+      });
+    });
+    const newState = {
+      isOpen: true,
+      tableData,
+      csvData: tableData,
+    };
+    setStopPurposeModalData(newState);
+  };
+
+  const showGroupedStopPurposeModal = (stopPurpose = 'Safety Violation') => {
+    const stopPurposeKey = {
+      'Safety Violation': 'safety',
+      'Regulatory and Equipment': 'regulatory',
+      Other: 'other',
+    };
+    const tableData = [];
+    let stopPurposeSelected = 'Safety Violation';
+    if (typeof stopPurpose === 'string') {
+      stopPurposeSelected = stopPurpose;
+    }
+    stopsGroupedByPurposeData.labels.forEach((e, y) => {
+      const races = ['white', 'black', 'hispanic', 'asian', 'native_american', 'other'];
+      const row = {
+        year: e,
+      };
+      const total = [];
+      races.forEach((r, j) => {
+        // The data is indexed by the stop purpose group, then the index of the race then the index of the year.
+        row[r] =
+          stopsGroupedByPurposeData[stopPurposeKey[stopPurposeSelected]].datasets[j]['data'][y];
+        total.unshift(row[r]);
+      });
+      row['total'] = total.reduce((a, b) => a + b, 0);
+      tableData.unshift(row);
+    });
+    const newState = {
+      ...groupedStopPurposeModalData,
+      isOpen: true,
+      tableData,
+      csvData: tableData,
+      selectedPurpose: stopPurposeSelected,
+    };
+    setGroupedStopPurposeModalData(newState);
   };
 
   const getChartDetailedBreakdown = () => {
@@ -221,6 +380,43 @@ function TrafficStops(props) {
       return 'department';
     }
     return '';
+  };
+
+  const updateStopsByCount = (val) => {
+    setReasonChartYearSet(val.yearRange);
+    if (purpose !== PURPOSE_DEFAULT) {
+      reasonChartState.data[STOPS_BY_REASON] = val.data;
+    } else {
+      reasonChartState.data[STOPS] = val.data;
+    }
+    setPickerXAxis(val.xAxis);
+    setPickerActive((oldVal) => (oldVal === null ? true : !oldVal));
+  };
+
+  const lineAxisFormat = (t) => {
+    if (pickerActive !== null) {
+      if (pickerXAxis === 'Month') {
+        if (typeof t === 'string') {
+          // Month label is YYYY-MM
+          const month = new Date(t).getMonth() + 1;
+          let datasetLength;
+          if (purpose !== PURPOSE_DEFAULT) {
+            datasetLength = reasonChartState.data[STOPS_BY_REASON]?.stops.length;
+          } else {
+            datasetLength = reasonChartState.data[STOPS].length;
+          }
+          if (datasetLength > 10 && datasetLength <= 15) {
+            return month % 2 === 0 ? t : null;
+          }
+          if (datasetLength > 15) {
+            return month % 3 === 0 ? t : null;
+          }
+        }
+
+        return t;
+      }
+    }
+    return t % 2 === 0 ? t : null;
   };
 
   return (
@@ -283,11 +479,12 @@ function TrafficStops(props) {
             <Line
               data={byCountLineData}
               loading={reasonChartState.loading[STOPS_BY_REASON]}
-              iTickFormat={(t) => (t % 2 === 0 ? t : null)}
-              iTickValues={reasonChartState.yearSet}
+              iTickFormat={lineAxisFormat}
+              iTickValues={reasonChartYearSet}
               dAxisProps={{
                 tickFormat: (t) => `${t}`,
               }}
+              xAxisLabel={pickerActive !== null ? pickerXAxis : 'Year'}
             />
           </S.LineWrapper>
           <S.LegendBeside>
@@ -296,6 +493,19 @@ function TrafficStops(props) {
               value={purpose}
               onChange={handleStopPurposeSelect}
               options={[PURPOSE_DEFAULT].concat(stopTypes)}
+            />
+
+            {purpose !== PURPOSE_DEFAULT && (
+              <p style={{ marginTop: '10px' }}>{displayDefinition(purpose)}</p>
+            )}
+
+            <MonthRangePicker
+              agencyId={agencyId}
+              dataSet={purpose !== PURPOSE_DEFAULT ? STOPS_BY_REASON : STOPS}
+              deactivatePicker={pickerActive === null}
+              forcePickerRerender={forcePickerRerender}
+              onChange={updateStopsByCount}
+              onClosePicker={() => setPickerActive(null)}
             />
             <S.Spacing>
               <Legend
@@ -307,6 +517,98 @@ function TrafficStops(props) {
             </S.Spacing>
           </S.LegendBeside>
         </S.ChartSubsection>
+      </S.ChartSection>
+      <S.ChartSection>
+        <ChartHeader
+          chartTitle="Traffic Stops By Stop Purpose"
+          handleViewData={showStopPurposeModal}
+        />
+        <P>Shows the number of traffics stops broken down by purpose and race / ethnicity.</P>
+        <NewModal
+          tableHeader="Traffic Stops By Stop Purpose"
+          tableSubheader="Shows the number of traffics stops broken down by purpose and race / ethnicity."
+          agencyName={stopsChartState.data[AGENCY_DETAILS].name}
+          tableData={stopPurposeModalData.tableData}
+          csvData={stopPurposeModalData.csvData}
+          columns={STOP_PURPOSE_TABLE_COLUMNS}
+          tableDownloadName="Traffic Stops By Stop Purpose"
+          isOpen={stopPurposeModalData.isOpen}
+          closeModal={() => setStopPurposeModalData((state) => ({ ...state, isOpen: false }))}
+        />
+        <LineWrapper>
+          <StopGroupsContainer>
+            <LineChart
+              data={stopPurposeGroupsData}
+              title="Stop Purposes By Group"
+              maintainAspectRatio={false}
+            />
+          </StopGroupsContainer>
+        </LineWrapper>
+      </S.ChartSection>
+      <S.ChartSection>
+        <ChartHeader
+          chartTitle="Traffic Stops By Stop Purpose and Race Count"
+          handleViewData={showGroupedStopPurposeModal}
+        />
+        <P>Shows the number of traffics stops broken down by purpose and race / ethnicity.</P>
+        <Legend
+          heading="Show on graph:"
+          keys={stopPurposeEthnicGroups}
+          onKeySelect={handleStopPurposeKeySelected}
+          showNonHispanic
+          row
+        />
+        <NewModal
+          tableHeader="Traffic Stops By Stop Purpose and Race Count"
+          tableSubheader="Shows the number of traffics stops broken down by purpose and race / ethnicity"
+          agencyName={stopsChartState.data[AGENCY_DETAILS].name}
+          tableData={groupedStopPurposeModalData.tableData}
+          csvData={groupedStopPurposeModalData.csvData}
+          columns={GROUPED_STOP_PURPOSE_TABLE_COLUMNS}
+          tableDownloadName={`Traffic Stops By Stop Purpose and Race Count - ${groupedStopPurposeModalData.selectedPurpose}`}
+          isOpen={groupedStopPurposeModalData.isOpen}
+          closeModal={() =>
+            setGroupedStopPurposeModalData((state) => ({ ...state, isOpen: false }))
+          }
+        >
+          <DataSubsetPicker
+            label="Stop Purpose"
+            value={groupedStopPurposeModalData.selectedPurpose}
+            onChange={showGroupedStopPurposeModal}
+            options={groupedStopPurposeModalData.purposeTypes}
+          />
+        </NewModal>
+        <LineWrapper>
+          <GroupedStopsContainer>
+            <LineChart
+              data={stopsGroupedByPurposeData.safety}
+              title="Safety Violation"
+              maintainAspectRatio={false}
+              displayLegend={false}
+              yAxisMax={stopsGroupedByPurposeData.max_step_size}
+            />
+          </GroupedStopsContainer>
+          <GroupedStopsContainer>
+            <LineChart
+              data={stopsGroupedByPurposeData.regulatory}
+              title="Regulatory/Equipment"
+              maintainAspectRatio={false}
+              displayLegend={false}
+              yAxisMax={stopsGroupedByPurposeData.max_step_size}
+              yAxisShowLabels={false}
+            />
+          </GroupedStopsContainer>
+          <GroupedStopsContainer>
+            <LineChart
+              data={stopsGroupedByPurposeData.other}
+              title="Other"
+              maintainAspectRatio={false}
+              displayLegend={false}
+              yAxisMax={stopsGroupedByPurposeData.max_step_size}
+              yAxisShowLabels={false}
+            />
+          </GroupedStopsContainer>
+        </LineWrapper>
       </S.ChartSection>
     </TrafficStopsStyled>
   );
@@ -380,6 +682,64 @@ const BY_REASON_TABLE_COLUMNS = [
   },
   {
     Header: 'Other*',
+    accessor: 'other',
+  },
+  {
+    Header: 'Total',
+    accessor: 'total',
+  },
+];
+
+const STOP_PURPOSE_TABLE_COLUMNS = [
+  {
+    Header: 'Year',
+    accessor: 'year',
+  },
+  {
+    Header: 'Safety Violation',
+    accessor: 'safety',
+  },
+  {
+    Header: 'Regulatory and Equipment',
+    accessor: 'regulatory',
+  },
+  {
+    Header: 'Other',
+    accessor: 'other',
+  },
+  {
+    Header: 'Total',
+    accessor: 'total',
+  },
+];
+
+const GROUPED_STOP_PURPOSE_TABLE_COLUMNS = [
+  {
+    Header: 'Year',
+    accessor: 'year',
+  },
+  {
+    Header: 'White',
+    accessor: 'white',
+  },
+  {
+    Header: 'Black',
+    accessor: 'black',
+  },
+  {
+    Header: 'Hispanic',
+    accessor: 'hispanic',
+  },
+  {
+    Header: 'Asian',
+    accessor: 'asian',
+  },
+  {
+    Header: 'Native American',
+    accessor: 'native_american',
+  },
+  {
+    Header: 'Other',
     accessor: 'other',
   },
   {

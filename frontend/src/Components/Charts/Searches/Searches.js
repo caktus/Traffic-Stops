@@ -30,6 +30,7 @@ import Legend from '../ChartSections/Legend/Legend';
 import ChartHeader from '../ChartSections/ChartHeader';
 import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
 import useOfficerId from '../../../Hooks/useOfficerId';
+import displayDefinition from '../../../util/displayDefinition';
 
 function Searches(props) {
   const { agencyId } = props;
@@ -230,6 +231,7 @@ function Searches(props) {
               onChange={handleStopPurposeSelect}
               options={[SEARCH_TYPE_DEFAULT].concat(SEARCH_TYPES)}
             />
+            <p style={{ marginTop: '10px' }}>{displayDefinition(searchType)}</p>
             <S.Spacing>
               <Legend
                 heading="Show on graph:"

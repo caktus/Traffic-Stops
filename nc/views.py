@@ -1,5 +1,10 @@
 import datetime
 
+from functools import reduce
+from operator import concat
+
+import pandas as pd
+
 from dateutil import relativedelta
 from django.conf import settings
 from django.core.mail import send_mail
@@ -19,7 +24,7 @@ from rest_framework_extensions.key_constructor.constructors import DefaultObject
 from nc import serializers
 from nc.filters import DriverStopsFilter
 from nc.models import SEARCH_TYPE_CHOICES as SEARCH_TYPE_CHOICES_TUPLES
-from nc.models import Agency, Contraband, Person, Resource, StopSummary
+from nc.models import Agency, Contraband, Person, Resource, StopPurposeGroup, StopSummary
 from nc.pagination import NoCountPagination
 from nc.serializers import ContactFormSerializer
 from tsdata.models import StateFacts
@@ -87,6 +92,25 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
             qs = qs.filter(agency=agency)
         return qs
 
+    def get_date_range(self):
+        # Only filter is from and to values are found and are valid
+        date_precision = "year"
+        date_range = Q()
+        _from_date = self.request.query_params.get("from", None)
+        _to_date = self.request.query_params.get("to", None)
+        if _from_date and _to_date:
+            from_date = datetime.datetime.strptime(_from_date, "%Y-%m-%d")
+            to_date = datetime.datetime.strptime(_to_date, "%Y-%m-%d")
+            if from_date and to_date:
+                delta = relativedelta.relativedelta(to_date, from_date)
+                if delta.years < 3:
+                    date_precision = "month"
+                    to_date = (
+                        to_date + relativedelta.relativedelta(months=1)
+                    ) - datetime.timedelta(days=1)
+                date_range = Q(date__range=(from_date, to_date))
+        return date_precision, date_range
+
     def query(self, results, group_by, filter_=None):
         qs = self.get_stopsummary_qs(agency=self.get_object())
         # filter down by officer if supplied
@@ -96,36 +120,40 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
         if filter_:
             qs = qs.filter(filter_)
 
-        # Only filter is from and to values are found and are valid
-        _from_date = self.request.query_params.get("from", None)
-        _to_date = self.request.query_params.get("to", None)
-        if _from_date and _to_date:
-            from_date = datetime.datetime.strptime(_from_date, "%Y-%m-%d")
-            to_date = datetime.datetime.strptime(_to_date, "%Y-%m-%d")
-            if from_date and to_date:
-                # Add another month to include the last month chosen
-                to_date = (to_date + relativedelta.relativedelta(months=1)) - datetime.timedelta(
-                    days=1
-                )
-                qs = qs.filter(date__range=(from_date, to_date))
-        # group by specified fields and order by year
-        qs = qs.values(*group_by).order_by("year")
-        qs = qs.annotate(count=Sum("count"))
+        group_by_tuple = group_by
+        date_precision, date_range = self.get_date_range()
+        qs = qs.filter(date_range)
+        if date_precision == "year":
+            qs = qs.annotate(year=ExtractYear("date"))
+        elif date_precision == "month":
+            results.group_by = ("date",)
+            gp_list = list(group_by_tuple)
+            gp_list.remove("year")
+            gp_list.append("date")
+            group_by_tuple = tuple(gp_list)
+
+        qs = qs.values(*group_by_tuple)
+        order_by = "date" if date_precision == "month" else "year"
+        qs = qs.annotate(count=Sum("count")).order_by(order_by)
         for stop in qs:
             data = {}
-            if "year" in group_by:
+            if "year" in group_by_tuple:
                 data["year"] = stop["year"]
-            if "stop_purpose" in group_by:
+
+            if "date" in group_by_tuple and date_precision == "month":
+                data["date"] = stop["date"].strftime("%b %Y")
+
+            if "stop_purpose" in group_by_tuple:
                 purpose = PURPOSE_CHOICES.get(stop["stop_purpose"], stop["stop_purpose"])
                 data["purpose"] = purpose
 
-            if "search_type" in group_by:
+            if "search_type" in group_by_tuple:
                 data["search_type"] = SEARCH_TYPE_CHOICES.get(
                     stop["search_type"],
                     stop["search_type"],
                 )
 
-            if "driver_race" in group_by:
+            if "driver_race" in group_by_tuple:
                 # The 'Hispanic' ethnicity option is now being aggreggated into its
                 # own race category, and its count excluded from the other counts.
                 if stop["driver_ethnicity"] == "H":
@@ -340,3 +368,139 @@ class ContactView(APIView):
             return Response(status=204)
         else:
             return Response(data=serializer.errors, status=400)
+
+
+class AgencyStopPurposeGroupView(APIView):
+    def get(self, request, agency_id):
+        qs = (
+            StopSummary.objects.filter(agency_id=agency_id)
+            .annotate(year=ExtractYear("date"))
+            .values("year", "stop_purpose_group")
+            .annotate(count=Sum("count"))
+            .order_by("year")
+        )
+        df = pd.DataFrame(qs)
+        unique_years = df.year.unique()
+        pivot_df = df.pivot(index="year", columns="stop_purpose_group", values="count").fillna(
+            value=0
+        )
+        df = pd.DataFrame(pivot_df)
+        data = {
+            "labels": unique_years,
+            "datasets": [
+                {
+                    "label": StopPurposeGroup.SAFETY_VIOLATION,
+                    "data": list(df[StopPurposeGroup.SAFETY_VIOLATION].values),
+                    "borderColor": "#7F428A",
+                    "backgroundColor": "#CFA9D6",
+                },
+                {
+                    "label": StopPurposeGroup.REGULATORY_EQUIPMENT,
+                    "data": list(df[StopPurposeGroup.REGULATORY_EQUIPMENT].values),
+                    "borderColor": "#b36800",
+                    "backgroundColor": "#ffa500",
+                },
+                {
+                    "label": StopPurposeGroup.OTHER,
+                    "data": list(df[StopPurposeGroup.OTHER].values),
+                    "borderColor": "#1B4D3E",
+                    "backgroundColor": "#ACE1AF",
+                },
+            ],
+        }
+        return Response(data=data, status=200)
+
+
+class AgencyStopGroupByPurposeView(APIView):
+    def group_by_purpose(self, df, purpose, years):
+        def get_values(col: str) -> list[int]:
+            if col in df[purpose]:
+                return list(df[purpose][col].values)
+            else:
+                return [0] * len(years)
+
+        return {
+            "labels": years,
+            "datasets": [
+                {
+                    "label": "White",
+                    "data": get_values("White"),
+                    "borderColor": "#02bcbb",
+                    "backgroundColor": "#80d9d8",
+                },
+                {
+                    "label": "Black",
+                    "data": get_values("Black"),
+                    "borderColor": "#8879fc",
+                    "backgroundColor": "#beb4fa",
+                },
+                {
+                    "label": "Hispanic",
+                    "data": get_values("Hispanic"),
+                    "borderColor": "#9c0f2e",
+                    "backgroundColor": "#ca8794",
+                },
+                {
+                    "label": "Asian",
+                    "data": get_values("Asian"),
+                    "borderColor": "#ffe066",
+                    "backgroundColor": "#ffeeb2",
+                },
+                {
+                    "label": "Native American",
+                    "data": get_values("Native American"),
+                    "borderColor": "#0c3a66",
+                    "backgroundColor": "#8598ac",
+                },
+                {
+                    "label": "Other",
+                    "data": get_values("Other"),
+                    "borderColor": "#9e7b9b",
+                    "backgroundColor": "#cab6c7",
+                },
+            ],
+        }
+
+    def get(self, request, agency_id):
+        qs = (
+            StopSummary.objects.filter(agency_id=agency_id)
+            .annotate(year=ExtractYear("date"))
+            .values("year", "driver_race_comb", "stop_purpose_group")
+            .annotate(count=Sum("count"))
+            .order_by("year")
+        )
+        df = pd.DataFrame(qs)
+        unique_years = df.year.unique()
+        pivot_table = pd.pivot_table(
+            df, index="year", columns=["stop_purpose_group", "driver_race_comb"], values="count"
+        ).fillna(value=0)
+        pivot_df = pd.DataFrame(pivot_table)
+
+        safety_data = self.group_by_purpose(
+            pivot_df, StopPurposeGroup.SAFETY_VIOLATION, unique_years
+        )
+        regulatory_data = self.group_by_purpose(
+            pivot_df, StopPurposeGroup.REGULATORY_EQUIPMENT, unique_years
+        )
+        other_data = self.group_by_purpose(pivot_df, StopPurposeGroup.OTHER, unique_years)
+
+        # Get the max value to keep the graphs consistent when
+        # next to each other by setting the max y value
+        max_step_size = max(
+            reduce(
+                concat,
+                [d["data"] for d in safety_data["datasets"]]
+                + [d["data"] for d in regulatory_data["datasets"]]
+                + [d["data"] for d in other_data["datasets"]],
+            )
+        )
+
+        data = {
+            "labels": unique_years,
+            "safety": safety_data,
+            "regulatory": regulatory_data,
+            "other": other_data,
+            "max_step_size": round(max_step_size, -3) + 1000,  # Round to nearest 100
+        }
+
+        return Response(data=data, status=200)

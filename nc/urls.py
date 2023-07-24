@@ -15,4 +15,12 @@ router.register(r"resources", views.ResourcesViewSet, basename="resources")
 urlpatterns = [  # noqa
     re_path(r"^api/", include(router.urls)),
     path("api/about/contact/", csrf_exempt(views.ContactView.as_view()), name="contact-form"),
+    path(
+        "api/agency/<int:agency_id>/stop-purpose-groups/",
+        views.AgencyStopPurposeGroupView.as_view(),
+    ),
+    path(
+        "api/agency/<int:agency_id>/stops-grouped-by-purpose/",
+        views.AgencyStopGroupByPurposeView.as_view(),
+    ),
 ]
