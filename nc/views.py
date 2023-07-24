@@ -413,42 +413,48 @@ class AgencyStopPurposeGroupView(APIView):
 
 class AgencyStopGroupByPurposeView(APIView):
     def group_by_purpose(self, df, purpose, years):
+        def get_values(col: str) -> list[int]:
+            if col in df[purpose]:
+                return list(df[purpose][col].values)
+            else:
+                return [0] * len(years)
+
         return {
             "labels": years,
             "datasets": [
                 {
                     "label": "White",
-                    "data": list(df[purpose]["White"].values),
+                    "data": get_values("White"),
                     "borderColor": "#02bcbb",
                     "backgroundColor": "#80d9d8",
                 },
                 {
                     "label": "Black",
-                    "data": list(df[purpose]["Black"].values),
+                    "data": get_values("Black"),
                     "borderColor": "#8879fc",
                     "backgroundColor": "#beb4fa",
                 },
                 {
                     "label": "Hispanic",
-                    "data": list(df[purpose]["Hispanic"].values),
+                    "data": get_values("Hispanic"),
                     "borderColor": "#9c0f2e",
                     "backgroundColor": "#ca8794",
                 },
                 {
                     "label": "Asian",
-                    "data": list(df[purpose]["Asian"].values),
+                    "data": get_values("Asian"),
                     "borderColor": "#ffe066",
                     "backgroundColor": "#ffeeb2",
                 },
                 {
                     "label": "Native American",
-                    "data": list(df[purpose]["Native American"].values),
+                    "data": get_values("Native American"),
                     "borderColor": "#0c3a66",
                     "backgroundColor": "#8598ac",
                 },
                 {
                     "label": "Other",
-                    "data": list(df[purpose]["Other"].values),
+                    "data": get_values("Other"),
                     "borderColor": "#9e7b9b",
                     "backgroundColor": "#cab6c7",
                 },
