@@ -494,7 +494,11 @@ function TrafficStops(props) {
               onChange={handleStopPurposeSelect}
               options={[PURPOSE_DEFAULT].concat(stopTypes)}
             />
-            <p style={{ marginTop: '10px' }}>{displayDefinition(purpose)}</p>
+
+            {purpose !== PURPOSE_DEFAULT && (
+              <p style={{ marginTop: '10px' }}>{displayDefinition(purpose)}</p>
+            )}
+
             <MonthRangePicker
               agencyId={agencyId}
               dataSet={purpose !== PURPOSE_DEFAULT ? STOPS_BY_REASON : STOPS}
