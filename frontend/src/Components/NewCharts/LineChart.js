@@ -1,6 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import { tooltipLanguage } from '../../util/tooltipLanguage';
+import { usePopper } from 'react-popper';
+import styled from 'styled-components';
+
+export const Tooltip = styled.div`
+  background: #333;
+  color: white;
+  font-weight: bold;
+  padding: 4px 8px;
+  font-size: 13px;
+  border-radius: 4px;
+  visibility: hidden;
+
+  &[data-show='true'] {
+    visibility: visible;
+  }
+`;
 
 export default function LineChart({
   data,
@@ -10,10 +26,8 @@ export default function LineChart({
   displayLegend = true,
   yAxisMax = null,
   yAxisShowLabels = true,
+  displayStopPurposeTooltips = false,
 }) {
-  let hovering = false;
-  const styledtooltip = document.getElementById('TooltipStyled');
-  const tooltips = tooltipLanguage;
   const options = {
     responsive: true,
     maintainAspectRatio,
@@ -25,18 +39,15 @@ export default function LineChart({
       legend: {
         display: displayLegend,
         position: 'top',
-        onHover: function (event, legendItem) {
-          if (hovering) {
-            return;
+        onHover(event, legendItem) {
+          if (displayStopPurposeTooltips) {
+            setTooltipText(tooltipLanguage(legendItem.text));
+            showTooltip();
           }
-          hovering = true;
-          styledtooltip.innerHTML = tooltips[legendItem.datasetIndex];
-          styledtooltip.style.left = event.x + 'px';
-          styledtooltip.style.top = event.y + 'px';
         },
-        onLeave: function () {
-          hovering = false;
-          styledtooltip.innerHTML = '';
+        onLeave() {
+          setTooltipText('');
+          hideTooltip();
         },
       },
       tooltip: {
@@ -58,5 +69,40 @@ export default function LineChart({
     },
   };
 
-  return <Line options={options} data={data} />;
+  const [referenceElement, setReferenceElement] = useState(null);
+  const [tooltipText, setTooltipText] = useState('');
+  const [popperElement, setPopperElement] = useState(null);
+  const { styles, attributes } = usePopper(referenceElement, popperElement, {
+    placement: 'top',
+    modifiers: [
+      {
+        name: 'offset',
+        options: {
+          offset: [0, -10],
+        },
+      },
+    ],
+  });
+
+  const showTooltip = () => {
+    popperElement.setAttribute('data-show', true);
+  };
+
+  const hideTooltip = () => {
+    popperElement.removeAttribute('data-show');
+  };
+
+  return (
+    <>
+      <div ref={setReferenceElement} />
+      <Tooltip
+        ref={setPopperElement}
+        style={{ ...styles.popper, width: '300px' }}
+        {...attributes.popper}
+      >
+        {tooltipText}
+      </Tooltip>
+      <Line options={options} data={data} />;
+    </>
+  );
 }
