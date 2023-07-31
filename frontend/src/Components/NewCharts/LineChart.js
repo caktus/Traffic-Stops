@@ -102,7 +102,7 @@ export default function LineChart({
       >
         {tooltipText}
       </Tooltip>
-      <Line options={options} data={data} />;
+      <Line options={options} data={data} />
     </>
   );
 }
