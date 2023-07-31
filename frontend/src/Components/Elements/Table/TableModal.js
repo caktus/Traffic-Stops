@@ -49,6 +49,7 @@ import * as ChartHeaderStyles from '../../Charts/ChartSections/ChartHeader.style
 import range from 'lodash.range';
 import displayMissingPhrase from '../../../util/displayMissingData';
 import DatePicker from 'react-datepicker';
+import { getRangeValues } from '../../../util/range';
 
 const mapDatasetToChartName = {
   STOPS: 'Traffic Stops By Percentage',
@@ -69,21 +70,6 @@ const mapDataSetToEnum = {
   CONTRABAND_HIT_RATE,
   LIKELIHOOD_OF_SEARCH,
 };
-
-function getRangeValues() {
-  const today = new Date();
-
-  return {
-    from: {
-      year: 2000,
-      month: 1,
-    },
-    to: {
-      year: today.getFullYear(),
-      month: today.getMonth() + 1,
-    },
-  };
-}
 
 function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
   const { agencyId } = useParams();
