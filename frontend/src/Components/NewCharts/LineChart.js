@@ -40,7 +40,6 @@ export default function LineChart({
         display: displayLegend,
         position: 'top',
         onHover(event, legendItem) {
-          event.native.target.style.cursor = 'pointer';
           if (displayStopPurposeTooltips) {
             setTooltipText(tooltipLanguage(legendItem.text));
             showTooltip();
