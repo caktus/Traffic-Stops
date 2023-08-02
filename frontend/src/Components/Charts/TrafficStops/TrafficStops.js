@@ -161,6 +161,8 @@ function TrafficStops(props) {
     selectedPurpose: 'Safety Violation',
     purposeTypes: ['Safety Violation', 'Regulatory and Equipment', 'Other'],
   });
+  const [yearForGroupedPieCharts, setYearForGroupedPieCharts] = useState('All');
+  const [checked, setChecked] = useState(false);
 
   // Build Stop Purpose Groups
   useEffect(() => {
@@ -187,36 +189,11 @@ function TrafficStops(props) {
       .get(`/api/agency/${agencyId}/stops-grouped-by-purpose/`)
       .then((res) => {
         setStopsGroupedByPurpose(res.data);
-
-        setStopsGroupedByPurposePieData({
-          safety: {
-            labels: groupedPieChartLabels,
-            datasets: [
-              {
-                data: buildPercentages(res.data, 'safety'),
-                ...groupedPieChartConfig,
-              },
-            ],
-          },
-          regulatory: {
-            labels: groupedPieChartLabels,
-            datasets: [
-              {
-                data: buildPercentages(res.data, 'regulatory'),
-                ...groupedPieChartConfig,
-              },
-            ],
-          },
-          other: {
-            labels: groupedPieChartLabels,
-            datasets: [
-              {
-                data: buildPercentages(res.data, 'other'),
-                ...groupedPieChartConfig,
-              },
-            ],
-          },
-        });
+        updateStoppedPurposePieChart(
+          buildPercentages(res.data, 'safety'),
+          buildPercentages(res.data, 'regulatory'),
+          buildPercentages(res.data, 'other')
+        );
       })
       .catch((err) => console.log(err));
   }, []);
@@ -496,9 +473,60 @@ function TrafficStops(props) {
     return t % 2 === 0 ? t : null;
   };
 
-  const [checked, setChecked] = useState(false);
   const handleChange = (nextChecked) => {
     setChecked(nextChecked);
+  };
+
+  const buildPercentagesForYear = (data, ds, idx = null) => {
+    const dsTotal = data[ds].datasets.map((s) => s.data[idx]).reduce((a, b) => a + b, 0);
+    return data[ds].datasets.map((s) => ((s.data[idx] / dsTotal) * 100).toFixed(2));
+  };
+
+  const handleYearSelectForGroupedPieCharts = (selectedYear, idx) => {
+    setYearForGroupedPieCharts(selectedYear);
+    updateStoppedPurposePieChart(
+      selectedYear === YEARS_DEFAULT
+        ? buildPercentages(stopsGroupedByPurposeData, 'safety')
+        : buildPercentagesForYear(stopsGroupedByPurposeData, 'safety', idx),
+      selectedYear === YEARS_DEFAULT
+        ? buildPercentages(stopsGroupedByPurposeData, 'regulatory')
+        : buildPercentagesForYear(stopsGroupedByPurposeData, 'regulatory', idx),
+      selectedYear === YEARS_DEFAULT
+        ? buildPercentages(stopsGroupedByPurposeData, 'other')
+        : buildPercentagesForYear(stopsGroupedByPurposeData, 'other', idx)
+    );
+  };
+
+  const updateStoppedPurposePieChart = (safety, regulatory, other) => {
+    setStopsGroupedByPurposePieData({
+      safety: {
+        labels: groupedPieChartLabels,
+        datasets: [
+          {
+            data: safety,
+            ...groupedPieChartConfig,
+          },
+        ],
+      },
+      regulatory: {
+        labels: groupedPieChartLabels,
+        datasets: [
+          {
+            data: regulatory,
+            ...groupedPieChartConfig,
+          },
+        ],
+      },
+      other: {
+        labels: groupedPieChartLabels,
+        datasets: [
+          {
+            data: other,
+            ...groupedPieChartConfig,
+          },
+        ],
+      },
+    });
   };
 
   return (
@@ -704,6 +732,14 @@ function TrafficStops(props) {
             />
           </GroupedStopsContainer>
         </LineWrapper>
+        {checked && (
+          <DataSubsetPicker
+            label="Year"
+            value={yearForGroupedPieCharts}
+            onChange={handleYearSelectForGroupedPieCharts}
+            options={[YEARS_DEFAULT].concat(stopsGroupedByPurposeData.labels)}
+          />
+        )}
         <PieWrapper visible={checked === true}>
           <GroupedStopsContainer>
             <PieChart

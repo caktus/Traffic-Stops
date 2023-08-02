@@ -9,9 +9,9 @@ export default function Dropdown({ value, onChange, options, dropUp, dropDown })
   const containerRef = React.useRef();
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleSelect = (selection) => {
+  const handleSelect = (selection, idx) => {
     setIsOpen(false);
-    onChange(selection);
+    onChange(selection, idx);
   };
 
   // Close dropdown when anything else is clicked.
@@ -39,8 +39,8 @@ export default function Dropdown({ value, onChange, options, dropUp, dropDown })
         dropDown={dropDown}
       >
         <S.DropdownList>
-          {options?.map((option) => (
-            <S.ListItem key={option} onClick={() => handleSelect(option)}>
+          {options?.map((option, i) => (
+            <S.ListItem key={option} onClick={() => handleSelect(option, i)}>
               {option}
             </S.ListItem>
           ))}
