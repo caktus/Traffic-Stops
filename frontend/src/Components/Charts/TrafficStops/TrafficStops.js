@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import TrafficStopsStyled, {
   GroupedStopsContainer,
   LineWrapper,
@@ -35,7 +35,6 @@ import useTableModal from '../../../Hooks/useTableModal';
 // Children
 import Line from '../ChartPrimitives/Line';
 import StackedBar from '../ChartPrimitives/StackedBar';
-import Pie from '../ChartPrimitives/Pie';
 import Legend from '../ChartSections/Legend/Legend';
 import ChartHeader from '../ChartSections/ChartHeader';
 import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
@@ -48,6 +47,9 @@ import LineChart from '../../NewCharts/LineChart';
 import axios from '../../../Services/Axios';
 import NewModal from '../../NewCharts/NewModal';
 import displayDefinition from '../../../util/displayDefinition';
+import PieChart from '../../NewCharts/PieChart';
+import ChartModal from '../../NewCharts/ChartModal';
+import Button from '../../Elements/Button';
 
 function TrafficStops(props) {
   const { agencyId } = props;
@@ -94,7 +96,21 @@ function TrafficStops(props) {
   );
 
   const [byPercentageLineData, setByPercentageLineData] = useState([]);
-  const [byPercentagePieData, setByPercentagePieData] = useState([]);
+  const pieChartLabels = ['White', 'Black', 'Hispanic', 'Asian', 'Native American', 'Other'];
+  const pieChartConfig = {
+    backgroundColor: ['#80d9d8', '#beb4fa', '#ca8794', '#ffeeb2', '#8598ac', '#cab6c7'],
+    borderColor: ['#02bcbb', '#8879fc', '#9c0f2e', '#ffe066', '#0c3a66', '#9e7b9b'],
+    borderWidth: 1,
+  };
+  const [byPercentagePieData, setByPercentagePieData] = useState({
+    labels: pieChartLabels,
+    datasets: [
+      {
+        data: [],
+        ...pieChartConfig,
+      },
+    ],
+  });
 
   const [byCountLineData, setByCountLineData] = useState([]);
 
@@ -123,6 +139,9 @@ function TrafficStops(props) {
     selectedPurpose: 'Safety Violation',
     purposeTypes: ['Safety Violation', 'Regulatory and Equipment', 'Other'],
   });
+
+  const [showZoomedPieChart, setShowZoomedPieChart] = useState(false);
+  const zoomedPieCharRef = useRef(null);
 
   // Build Stop Purpose Groups
   useEffect(() => {
@@ -159,24 +178,25 @@ function TrafficStops(props) {
   useEffect(() => {
     const data = stopsChartState.data[STOPS];
     if (data) {
+      let chartData = [];
       if (!year || year === 'All') {
-        setByPercentagePieData(reduceFullDataset(data, RACES, theme));
+        chartData = reduceFullDataset(data, RACES, theme).map((ds) => ds.y);
       } else {
         const yearData = data.find((d) => d.year === year);
-        if (!yearData) {
-          setByPercentagePieData([]);
-        } else {
+        if (yearData) {
           const total = calculateYearTotal(yearData);
-          setByPercentagePieData(
-            RACES.map((race) => ({
-              x: toTitleCase(race),
-              y: calculatePercentage(yearData[race], total),
-              color: theme.colors.ethnicGroup[race],
-              fontColor: theme.colors.fontColorsByEthnicGroup[race],
-            }))
-          );
+          chartData = RACES.map((race) => calculatePercentage(yearData[race], total));
         }
       }
+      setByPercentagePieData({
+        labels: pieChartLabels,
+        datasets: [
+          {
+            data: chartData,
+            ...pieChartConfig,
+          },
+        ],
+      });
     }
   }, [stopsChartState.data[STOPS], year]);
 
@@ -457,10 +477,38 @@ function TrafficStops(props) {
               />
             </S.LegendBeside>
           </S.LineSection>
+          <ChartModal
+            tableHeader="Traffic Stops By Percentage"
+            tableSubheader={`Shows the race/ethnic composition of drivers stopped by this ${subjectObserving()} over time.`}
+            agencyName={stopsChartState.data[AGENCY_DETAILS].name}
+            isOpen={showZoomedPieChart}
+            closeModal={() => setShowZoomedPieChart(false)}
+            chartToPrintRef={zoomedPieCharRef}
+          >
+            <S.PieSection zoomed>
+              <S.PieWrapper zoomed>
+                <PieChart
+                  data={byPercentagePieData}
+                  displayTitle
+                  displayLegend
+                  displayOutlabels
+                  maintainAspectRatio
+                  chartRef={zoomedPieCharRef}
+                />
+              </S.PieWrapper>
+            </S.PieSection>
+          </ChartModal>
+
           <S.PieSection>
             <S.PieWrapper>
-              <Pie data={byPercentagePieData} loading={stopsChartState.loading[STOPS]} />
+              <PieChart
+                data={byPercentagePieData}
+                displayTitle
+                displayLegend={false}
+                maintainAspectRatio
+              />
             </S.PieWrapper>
+            <Button onClick={() => setShowZoomedPieChart(true)}>Enlarge</Button>
             <DataSubsetPicker
               label="Year"
               value={year}

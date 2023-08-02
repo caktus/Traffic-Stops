@@ -43,6 +43,7 @@ import * as S from './HomePage/HomePage.styled';
 
 // New Charts
 import {
+  ArcElement,
   CategoryScale,
   Chart as ChartJS,
   Legend,
@@ -53,7 +54,16 @@ import {
   Tooltip,
 } from 'chart.js';
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+ChartJS.register(
+  ArcElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 function App() {
   const [showCompare, setShowCompare] = React.useState(false);
