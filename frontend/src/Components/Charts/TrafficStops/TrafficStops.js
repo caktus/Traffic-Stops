@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import TrafficStopsStyled, {
   GroupedStopsContainer,
   LineWrapper,
-  PieGroupedStopsContainer,
   PieWrapper,
   StopGroupsContainer,
 } from './TrafficStops.styled';
@@ -120,12 +119,10 @@ function TrafficStops(props) {
   };
   const groupedPieChartLabels = ['White', 'Black', 'Hispanic', 'Asian', 'Native American', 'Other'];
   const [stopsGroupedByPurposePieData, setStopsGroupedByPurposePieData] = useState({
-    labels: groupedPieChartLabels,
     safety: {
       labels: groupedPieChartLabels,
       datasets: [
         {
-          label: '% of stops',
           data: [],
           ...groupedPieChartConfig,
         },
@@ -135,7 +132,6 @@ function TrafficStops(props) {
       labels: groupedPieChartLabels,
       datasets: [
         {
-          label: '% of stops',
           data: [],
           ...groupedPieChartConfig,
         },
@@ -145,7 +141,6 @@ function TrafficStops(props) {
       labels: groupedPieChartLabels,
       datasets: [
         {
-          label: '% of stops',
           data: [],
           ...groupedPieChartConfig,
         },
@@ -194,12 +189,10 @@ function TrafficStops(props) {
         setStopsGroupedByPurpose(res.data);
 
         setStopsGroupedByPurposePieData({
-          labels: groupedPieChartLabels,
           safety: {
             labels: groupedPieChartLabels,
             datasets: [
               {
-                label: '% of stops',
                 data: buildPercentages(res.data, 'safety'),
                 ...groupedPieChartConfig,
               },
@@ -209,7 +202,6 @@ function TrafficStops(props) {
             labels: groupedPieChartLabels,
             datasets: [
               {
-                label: '% of stops',
                 data: buildPercentages(res.data, 'regulatory'),
                 ...groupedPieChartConfig,
               },
@@ -219,7 +211,6 @@ function TrafficStops(props) {
             labels: groupedPieChartLabels,
             datasets: [
               {
-                label: '% of stops',
                 data: buildPercentages(res.data, 'other'),
                 ...groupedPieChartConfig,
               },

@@ -23,6 +23,11 @@ export default function PieChart({
       tooltip: {
         mode: 'nearest',
         intersect: false,
+        callbacks: {
+          label(context) {
+            return `${context.parsed}%`;
+          },
+        },
       },
       title: {
         display: displayTitle,
