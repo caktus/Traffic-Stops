@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import TrafficStopsStyled, {
   GroupedStopsContainer,
   LineWrapper,
+  PieGroupedStopsContainer,
+  PieWrapper,
   StopGroupsContainer,
 } from './TrafficStops.styled';
 import * as S from '../ChartSections/ChartsCommon.styled';
@@ -48,6 +50,8 @@ import LineChart from '../../NewCharts/LineChart';
 import axios from '../../../Services/Axios';
 import NewModal from '../../NewCharts/NewModal';
 import displayDefinition from '../../../util/displayDefinition';
+import PieChart from '../../NewCharts/PieChart';
+import Switch from 'react-switch';
 
 function TrafficStops(props) {
   const { agencyId } = props;
@@ -109,6 +113,45 @@ function TrafficStops(props) {
     other: { labels: [], datasets: [] },
     max_step_size: null,
   });
+  const groupedPieChartConfig = {
+    backgroundColor: ['#80d9d8', '#beb4fa', '#ca8794', '#ffeeb2', '#8598ac', '#cab6c7'],
+    borderColor: ['#02bcbb', '#8879fc', '#9c0f2e', '#ffe066', '#0c3a66', '#9e7b9b'],
+    borderWidth: 1,
+  };
+  const groupedPieChartLabels = ['White', 'Black', 'Hispanic', 'Asian', 'Native American', 'Other'];
+  const [stopsGroupedByPurposePieData, setStopsGroupedByPurposePieData] = useState({
+    labels: groupedPieChartLabels,
+    safety: {
+      labels: groupedPieChartLabels,
+      datasets: [
+        {
+          label: '% of stops',
+          data: [],
+          ...groupedPieChartConfig,
+        },
+      ],
+    },
+    regulatory: {
+      labels: groupedPieChartLabels,
+      datasets: [
+        {
+          label: '% of stops',
+          data: [],
+          ...groupedPieChartConfig,
+        },
+      ],
+    },
+    other: {
+      labels: groupedPieChartLabels,
+      datasets: [
+        {
+          label: '% of stops',
+          data: [],
+          ...groupedPieChartConfig,
+        },
+      ],
+    },
+  });
 
   const [stopPurposeModalData, setStopPurposeModalData] = useState({
     isOpen: false,
@@ -134,12 +177,55 @@ function TrafficStops(props) {
       .catch((err) => console.log(err));
   }, []);
 
+  const buildPercentages = (data, ds) => {
+    const dsTotal = data[ds].datasets
+      .map((s) => s.data.reduce((a, b) => a + b, 0))
+      .reduce((a, b) => a + b, 0);
+    return data[ds].datasets.map((s) =>
+      ((s.data.reduce((a, b) => a + b, 0) / dsTotal) * 100).toFixed(2)
+    );
+  };
+
   // Build Stops Grouped by Purpose
   useEffect(() => {
     axios
       .get(`/api/agency/${agencyId}/stops-grouped-by-purpose/`)
       .then((res) => {
         setStopsGroupedByPurpose(res.data);
+
+        setStopsGroupedByPurposePieData({
+          labels: groupedPieChartLabels,
+          safety: {
+            labels: groupedPieChartLabels,
+            datasets: [
+              {
+                label: '% of stops',
+                data: buildPercentages(res.data, 'safety'),
+                ...groupedPieChartConfig,
+              },
+            ],
+          },
+          regulatory: {
+            labels: groupedPieChartLabels,
+            datasets: [
+              {
+                label: '% of stops',
+                data: buildPercentages(res.data, 'regulatory'),
+                ...groupedPieChartConfig,
+              },
+            ],
+          },
+          other: {
+            labels: groupedPieChartLabels,
+            datasets: [
+              {
+                label: '% of stops',
+                data: buildPercentages(res.data, 'other'),
+                ...groupedPieChartConfig,
+              },
+            ],
+          },
+        });
       })
       .catch((err) => console.log(err));
   }, []);
@@ -419,6 +505,11 @@ function TrafficStops(props) {
     return t % 2 === 0 ? t : null;
   };
 
+  const [checked, setChecked] = useState(false);
+  const handleChange = (nextChecked) => {
+    setChecked(nextChecked);
+  };
+
   return (
     <TrafficStopsStyled>
       {/* Traffic Stops by Percentage */}
@@ -535,7 +626,7 @@ function TrafficStops(props) {
           isOpen={stopPurposeModalData.isOpen}
           closeModal={() => setStopPurposeModalData((state) => ({ ...state, isOpen: false }))}
         />
-        <LineWrapper>
+        <LineWrapper visible>
           <StopGroupsContainer>
             <LineChart
               data={stopPurposeGroupsData}
@@ -578,7 +669,19 @@ function TrafficStops(props) {
             options={groupedStopPurposeModalData.purposeTypes}
           />
         </NewModal>
-        <LineWrapper>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            gap: '10px',
+            marginTop: '10px',
+            marginBottom: '10px',
+          }}
+        >
+          <span>Switch to {checked ? 'line' : 'pie'} charts</span>
+          <Switch onChange={handleChange} checked={checked} className="react-switch" />
+        </div>
+        <LineWrapper visible={checked === false}>
           <GroupedStopsContainer>
             <LineChart
               data={stopsGroupedByPurposeData.safety}
@@ -609,6 +712,32 @@ function TrafficStops(props) {
             />
           </GroupedStopsContainer>
         </LineWrapper>
+        <PieWrapper visible={checked === true}>
+          <GroupedStopsContainer>
+            <PieChart
+              data={stopsGroupedByPurposePieData.safety}
+              title="Safety Violation"
+              maintainAspectRatio={false}
+              displayLegend={false}
+            />
+          </GroupedStopsContainer>
+          <GroupedStopsContainer>
+            <PieChart
+              data={stopsGroupedByPurposePieData.regulatory}
+              title="Regulatory/Equipment"
+              maintainAspectRatio={false}
+              displayLegend={false}
+            />
+          </GroupedStopsContainer>
+          <GroupedStopsContainer>
+            <PieChart
+              data={stopsGroupedByPurposePieData.other}
+              title="Other"
+              maintainAspectRatio={false}
+              displayLegend={false}
+            />
+          </GroupedStopsContainer>
+        </PieWrapper>
       </S.ChartSection>
     </TrafficStopsStyled>
   );
