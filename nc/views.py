@@ -126,7 +126,11 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
         if date_precision == "year":
             qs = qs.annotate(year=ExtractYear("date"))
         elif date_precision == "month":
-            results.group_by = ("date",)
+            results_group_by = list(results.group_by)
+            results_group_by.remove("year")
+            results_group_by.append("date")
+            results.group_by = tuple(results_group_by)
+
             gp_list = list(group_by_tuple)
             gp_list.remove("year")
             gp_list.append("date")
@@ -144,8 +148,7 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
                 data["date"] = stop["date"].strftime("%b %Y")
 
             if "stop_purpose" in group_by_tuple:
-                purpose = PURPOSE_CHOICES.get(stop["stop_purpose"], stop["stop_purpose"])
-                data["purpose"] = purpose
+                data["purpose"] = PURPOSE_CHOICES.get(stop["stop_purpose"], stop["stop_purpose"])
 
             if "search_type" in group_by_tuple:
                 data["search_type"] = SEARCH_TYPE_CHOICES.get(
@@ -208,7 +211,7 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(results.flatten())
 
     @action(detail=True, methods=["get"])
-    # @cache_response(key_func=query_cache_key_func)
+    @cache_response(key_func=query_cache_key_func)
     def searches_by_type(self, request, pk=None):
         results = GroupedData(by=("search_type", "year"), defaults=GROUP_DEFAULTS)
         q = Q(search_type__isnull=False)
