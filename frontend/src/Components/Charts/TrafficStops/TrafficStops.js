@@ -47,6 +47,7 @@ import range from 'lodash.range';
 import LineChart from '../../NewCharts/LineChart';
 import axios from '../../../Services/Axios';
 import NewModal from '../../NewCharts/NewModal';
+import displayDefinition from '../../../util/displayDefinition';
 
 function TrafficStops(props) {
   const { agencyId } = props;
@@ -493,6 +494,11 @@ function TrafficStops(props) {
               onChange={handleStopPurposeSelect}
               options={[PURPOSE_DEFAULT].concat(stopTypes)}
             />
+
+            {purpose !== PURPOSE_DEFAULT && (
+              <p style={{ marginTop: '10px' }}>{displayDefinition(purpose)}</p>
+            )}
+
             <MonthRangePicker
               agencyId={agencyId}
               dataSet={purpose !== PURPOSE_DEFAULT ? STOPS_BY_REASON : STOPS}
@@ -535,6 +541,7 @@ function TrafficStops(props) {
               data={stopPurposeGroupsData}
               title="Stop Purposes By Group"
               maintainAspectRatio={false}
+              displayStopPurposeTooltips
             />
           </StopGroupsContainer>
         </LineWrapper>
@@ -585,7 +592,7 @@ function TrafficStops(props) {
           <GroupedStopsContainer>
             <LineChart
               data={stopsGroupedByPurposeData.regulatory}
-              title="Regulatory Equipment"
+              title="Regulatory/Equipment"
               maintainAspectRatio={false}
               displayLegend={false}
               yAxisMax={stopsGroupedByPurposeData.max_step_size}

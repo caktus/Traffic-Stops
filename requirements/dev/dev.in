@@ -12,7 +12,7 @@ cffi==1.15.0
 Jinja2==3.0.3
 openshift==0.12
 kubernetes==12.0.0
-kubernetes-validate
+kubernetes-validate~=1.25.0
 
 troposphere
 
