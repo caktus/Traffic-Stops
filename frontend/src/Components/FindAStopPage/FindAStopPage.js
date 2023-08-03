@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as S from './FindAStopPage.styled';
+import Select from 'react-select';
 
 // Constants
 import * as chartFields from './stopSearchFields';
@@ -11,13 +12,13 @@ import { useHistory } from 'react-router-dom';
 import formatDate from '../../util/formatDate';
 
 // Children
-import { HelpText } from '../Elements/Inputs/Input.styled';
 import Input from '../Elements/Inputs/Input';
 import DatePicker from '../Elements/Inputs/DatePicker';
-import DepartmentSearch from '../Elements/DepartmentSearch';
 import Button from '../Elements/Button';
 import Checkbox from '../Elements/Inputs/Checkbox';
 import { H1 } from '../../styles/StyledComponents/Typography';
+import axios from '../../Services/Axios';
+import { getAgenciesURL } from '../../Services/endpoints';
 
 function FindAStopPage() {
   const history = useHistory();
@@ -25,7 +26,6 @@ function FindAStopPage() {
   const [errors, setErrors] = useState({});
 
   const [formFields, setFormFields] = useState({
-    agency: '',
     stop_date_after: null,
     stop_date_before: null,
     age: '',
@@ -33,12 +33,25 @@ function FindAStopPage() {
   });
 
   const [listFields, setListFields] = useState({
+    agency: [],
     gender: [],
     race: [],
     ethnicity: [],
     stop_purpose: [],
     stop_action: [],
   });
+
+  const [departmentsList, setDepartmentsList] = useState([]);
+
+  useEffect(() => {
+    async function fetchDepartments() {
+      const { data } = await axios.get(getAgenciesURL());
+      return data.map((d) => ({ value: d.id, label: d.name }));
+    }
+    fetchDepartments().then((data) => {
+      setDepartmentsList(data);
+    });
+  }, []);
 
   const setFormValue = (type, value) => {
     setFormFields({
@@ -58,6 +71,11 @@ function FindAStopPage() {
     setListFields({
       ...listFields,
       [type]: newListValues,
+    });
+  };
+  const setListValues = (type, values) => {
+    values.forEach((v) => {
+      setListValue(type, v);
     });
   };
 
@@ -92,7 +110,7 @@ function FindAStopPage() {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    if (!formFields.agency) {
+    if (!listFields.agency) {
       setErrors({ agency: ['This field is required'] });
     } else {
       // Search just appends the query params to the current url
@@ -113,13 +131,24 @@ function FindAStopPage() {
           <S.Legend>1. Choose the police or sheriffs department</S.Legend>
           <S.FormGroup>
             <S.SearchInputWrapper>
-              <DepartmentSearch
-                onChange={(value) => setFormValue('agency', value)}
-                label="Department"
+              <S.Label>Departments</S.Label>
+              <Select
+                isMulti
+                isSearchable
+                isClearable
                 required
-                errors={errors.agency}
+                name="department"
+                placeholder="Search for departments (ex: Durham Police Department)"
+                options={departmentsList}
+                onChange={(val) => {
+                  setListValues(
+                    'agency',
+                    val.map((v) => v.value)
+                  );
+                }}
+                className="basic-multi-select"
+                classNamePrefix="search-search-lastpass-disable"
               />
-              <HelpText>ex: Durham Police Department</HelpText>
             </S.SearchInputWrapper>
             <S.InputWrapper>
               <DatePicker

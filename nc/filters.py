@@ -5,7 +5,7 @@ from nc import models
 
 
 class DriverStopsFilter(filters.FilterSet):
-    agency = filters.ModelChoiceFilter(
+    agency = filters.ModelMultipleChoiceFilter(
         queryset=models.Agency.objects.no_cache().all(),
         label="Agency",
         method="filter_agency",
@@ -24,7 +24,7 @@ class DriverStopsFilter(filters.FilterSet):
     )
 
     def filter_agency(self, queryset, name, value):
-        return queryset.filter(stop__agency_id=value)
+        return queryset.filter(stop__agency__in=value)
 
     def filter_stop_date(self, queryset, name, value):
         start_date = value.start
