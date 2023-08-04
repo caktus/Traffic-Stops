@@ -35,4 +35,5 @@ export const GroupedStopsContainer = styled.div`
   @media (${smallerThanTabletLandscape}) {
     width: 100%;
   }
+  display: ${(props) => (props.visible ? 'block' : 'none')};
 `;

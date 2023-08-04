@@ -49,6 +49,7 @@ import * as ChartHeaderStyles from '../../Charts/ChartSections/ChartHeader.style
 import range from 'lodash.range';
 import displayMissingPhrase from '../../../util/displayMissingData';
 import DatePicker from 'react-datepicker';
+import { getRangeValues } from '../../../util/range';
 
 const mapDatasetToChartName = {
   STOPS: 'Traffic Stops By Percentage',
@@ -70,21 +71,6 @@ const mapDataSetToEnum = {
   LIKELIHOOD_OF_SEARCH,
 };
 
-function getRangeValues() {
-  const today = new Date();
-
-  return {
-    from: {
-      year: 2000,
-      month: 1,
-    },
-    to: {
-      year: today.getFullYear(),
-      month: today.getMonth() + 1,
-    },
-  };
-}
-
 function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
   const { agencyId } = useParams();
   const theme = useTheme();
@@ -93,7 +79,8 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
   let [yearRange] = useYearSet();
   const [purpose, setPurpose] = useState(null);
   const [consolidateYears, setConsolidateYears] = useState(false);
-  const [rangeValue, setRangeValue] = useState(getRangeValues);
+  const [rangeValue, setRangeValue] = useState(getRangeValues(true));
+  const [dateInterval, setDateInterval] = useState('year');
   const [tableReloading, setReloading] = useState(false);
   const [showDateRangePicker, setShowDateRangePicker] = useState(false);
   const tableChartState = chartState;
@@ -142,8 +129,23 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       yearRange = range(rangeValue.from.year, rangeValue.to.year + 1, 1);
       try {
         const { data } = await axios.get(url);
+        let tableData = data;
+        if (yearRange.length <= 3) {
+          setDateInterval('month');
+          // Needs to show the monthly range dates in the 'year' column
+          tableData = tableData
+            .filter((d) => !d.hasOwnProperty('year'))
+            .map((d) => {
+              const row = d;
+              row['year'] = row['date'];
+              delete row['date'];
+              return row;
+            });
+        } else {
+          setDateInterval('year');
+        }
         tableChartState.yearRange = yearRange;
-        tableChartState.data[tableDS] = data;
+        tableChartState.data[tableDS] = tableData;
         setReloading(false);
       } catch (err) {
         setReloading(false);
@@ -233,7 +235,9 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
           mergedData = mergedData.filter((e) => e.purpose === purpose);
         }
       }
-      markMissingYears(mergedData);
+      if (dateInterval === 'year') {
+        markMissingYears(mergedData);
+      }
     }
 
     const raceTotals = {
@@ -242,12 +246,16 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       ...reduceFullDatasetOnlyTotals(mergedData, RACES),
       total: calculateYearTotal(reduceFullDatasetOnlyTotals(mergedData, RACES)),
     };
-    const sortedData = mergedData.sort((a, b) =>
-      // Sort data descending by year
-      // eslint-disable-next-line no-nested-ternary
-      a['year'] < b['year'] ? 1 : b['year'] < a['year'] ? -1 : 0
-    );
-    return [raceTotals, ...sortedData];
+
+    let tableData = mergedData;
+    if (dateInterval === 'year') {
+      tableData = mergedData.sort((a, b) =>
+        // Sort data descending by year
+        // eslint-disable-next-line no-nested-ternary
+        a['year'] < b['year'] ? 1 : b['year'] < a['year'] ? -1 : 0
+      );
+    }
+    return [raceTotals, ...tableData];
   };
 
   const mapLikelihoodOfSearch = (ds) => {
@@ -278,7 +286,9 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
           mergedData = mergedData.filter((e) => e.purpose === purpose);
         }
       }
-      markMissingYears(mergedData);
+      if (dateInterval === 'year') {
+        markMissingYears(mergedData);
+      }
     }
 
     const raceTotals = {
@@ -287,12 +297,15 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       ...reduceFullDatasetOnlyTotals(mergedData, RACES),
       total: calculateYearTotal(reduceFullDatasetOnlyTotals(mergedData, RACES)),
     };
-    const sortedData = mergedData.sort((a, b) =>
-      // Sort data descending by year
-      // eslint-disable-next-line no-nested-ternary
-      a['year'] < b['year'] ? 1 : b['year'] < a['year'] ? -1 : 0
-    );
-    return [raceTotals, ...sortedData];
+    let tableData = mergedData;
+    if (dateInterval === 'year') {
+      tableData = mergedData.sort((a, b) =>
+        // Sort data descending by year
+        // eslint-disable-next-line no-nested-ternary
+        a['year'] < b['year'] ? 1 : b['year'] < a['year'] ? -1 : 0
+      );
+    }
+    return [raceTotals, ...tableData];
   };
 
   const mapSearchesByReason = (ds) => {
@@ -316,18 +329,24 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     if (purpose) {
       mergedData = mergedData.filter((e) => e.purpose === purpose);
     }
-    markMissingYears(mergedData, false);
+    if (dateInterval === 'year') {
+      markMissingYears(mergedData, false);
+    }
+
     const raceTotals = {
       year: 'Totals',
       ...reduceFullDatasetOnlyTotals(mergedData, RACES),
       total: calculateYearTotal(reduceFullDatasetOnlyTotals(mergedData, RACES)),
     };
-    const sortedData = mergedData.sort((a, b) =>
-      // Sort data descending by year
-      // eslint-disable-next-line no-nested-ternary
-      a['year'] < b['year'] ? 1 : b['year'] < a['year'] ? -1 : 0
-    );
-    return [raceTotals, ...sortedData];
+    let tableData = mergedData;
+    if (dateInterval === 'year') {
+      tableData = mergedData.sort((a, b) =>
+        // Sort data descending by year
+        // eslint-disable-next-line no-nested-ternary
+        a['year'] < b['year'] ? 1 : b['year'] < a['year'] ? -1 : 0
+      );
+    }
+    return [raceTotals, ...tableData];
   };
 
   const mapContrbandHitrate = (ds) => {
@@ -350,12 +369,15 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       ...reduceFullDatasetOnlyTotals(mappedData, RACES),
       total: calculateYearTotal(reduceFullDatasetOnlyTotals(mappedData, RACES)),
     };
-    const sortedData = mappedData.sort((a, b) =>
-      // Sort data descending by year
-      // eslint-disable-next-line no-nested-ternary
-      a['year'] < b['year'] ? 1 : b['year'] < a['year'] ? -1 : 0
-    );
-    return [raceTotals, ...sortedData];
+    let tableData = mappedData;
+    if (dateInterval === 'year') {
+      tableData = mappedData.sort((a, b) =>
+        // Sort data descending by year
+        // eslint-disable-next-line no-nested-ternary
+        a['year'] < b['year'] ? 1 : b['year'] < a['year'] ? -1 : 0
+      );
+    }
+    return [raceTotals, ...tableData];
   };
 
   const mapSearchByType = (ds) => {
@@ -370,19 +392,24 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     } else {
       mappedData = data;
     }
-    markMissingYears(mappedData, false, true);
+    if (dateInterval === 'year') {
+      markMissingYears(mappedData, false, true);
+    }
     const raceTotals = {
       year: 'Totals',
       search_type: '',
       ...reduceFullDatasetOnlyTotals(mappedData, RACES),
       total: calculateYearTotal(reduceFullDatasetOnlyTotals(mappedData, RACES)),
     };
-    const sortedData = mappedData.sort((a, b) =>
-      // Sort data descending by year
-      // eslint-disable-next-line no-nested-ternary
-      a['year'] < b['year'] ? 1 : b['year'] < a['year'] ? -1 : 0
-    );
-    return [raceTotals, ...sortedData];
+    let tableData = mappedData;
+    if (dateInterval === 'year') {
+      tableData = mappedData.sort((a, b) =>
+        // Sort data descending by year
+        // eslint-disable-next-line no-nested-ternary
+        a['year'] < b['year'] ? 1 : b['year'] < a['year'] ? -1 : 0
+      );
+    }
+    return [raceTotals, ...tableData];
   };
 
   const _buildTableData = (ds) => {
@@ -401,18 +428,26 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       const chartData = tableChartState.data[ds];
       // eslint-disable-next-line no-param-reassign,no-return-assign
       chartData.forEach((chartDatum) => (chartDatum['total'] = calculateYearTotal(chartDatum)));
-      markMissingYears(chartData, false);
+
+      if (dateInterval === 'year') {
+        markMissingYears(chartData, false);
+      }
+
       const raceTotals = {
         year: 'Totals',
         ...reduceFullDatasetOnlyTotals(chartData, RACES),
         total: calculateYearTotal(reduceFullDatasetOnlyTotals(chartData, RACES)),
       };
-      const sortedData = chartData.sort((a, b) =>
-        // Sort data descending by year
-        // eslint-disable-next-line no-nested-ternary
-        a['year'] < b['year'] ? 1 : b['year'] < a['year'] ? -1 : 0
-      );
-      data = [raceTotals, ...sortedData];
+
+      let tableData = chartData;
+      if (dateInterval === 'year') {
+        tableData = chartData.sort((a, b) =>
+          // Sort data descending by year
+          // eslint-disable-next-line no-nested-ternary
+          a['year'] < b['year'] ? 1 : b['year'] < a['year'] ? -1 : 0
+        );
+      }
+      data = [raceTotals, ...tableData];
     }
     return data;
   };
@@ -500,7 +535,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
 
   const closeRangePicker = () => {
     setShowDateRangePicker(false);
-    setRangeValue(getRangeValues);
+    setRangeValue(getRangeValues(true));
     setStartDate(new Date());
     setEndDate(new Date());
   };

@@ -51,6 +51,7 @@ import NewModal from '../../NewCharts/NewModal';
 import displayDefinition from '../../../util/displayDefinition';
 import PieChart from '../../NewCharts/PieChart';
 import Switch from 'react-switch';
+import Checkbox from '../../Elements/Inputs/Checkbox';
 
 function TrafficStops(props) {
   const { agencyId } = props;
@@ -147,6 +148,24 @@ function TrafficStops(props) {
       ],
     },
   });
+
+  const [visibleStopsGroupedByPurpose, setVisibleStopsGroupedByPurpose] = useState([
+    {
+      key: 'safety',
+      visible: true,
+      order: 1,
+    },
+    {
+      key: 'regulatory',
+      visible: true,
+      order: 2,
+    },
+    {
+      key: 'other',
+      visible: false,
+      order: 3,
+    },
+  ]);
 
   const [stopPurposeModalData, setStopPurposeModalData] = useState({
     isOpen: false,
@@ -529,6 +548,19 @@ function TrafficStops(props) {
     });
   };
 
+  const toggleGroupedPurposeGraphs = (key) => {
+    const toggleState = visibleStopsGroupedByPurpose;
+    const toggleGraph = toggleState.find((v) => v.key === key);
+    const otherGraphs = toggleState.filter((v) => v.key !== key);
+
+    setVisibleStopsGroupedByPurpose(
+      [...otherGraphs, { key, visible: !toggleGraph.visible, order: toggleGraph.order }].sort(
+        // eslint-disable-next-line no-nested-ternary
+        (a, b) => (a.order < b.order ? (a.order === b.order ? 0 : -1) : 1)
+      )
+    );
+  };
+
   return (
     <TrafficStopsStyled>
       {/* Traffic Stops by Percentage */}
@@ -701,8 +733,20 @@ function TrafficStops(props) {
           <span>Switch to {checked ? 'line' : 'pie'} charts</span>
           <Switch onChange={handleChange} checked={checked} className="react-switch" />
         </div>
+        <div style={{ display: 'flex', gap: '10px', flexDirection: 'row' }}>
+          {visibleStopsGroupedByPurpose.map((vg, i) => (
+            <Checkbox
+              label={`Toggle ${vg.key}`}
+              value={vg.key}
+              key={i}
+              checked={vg.visible}
+              onChange={toggleGroupedPurposeGraphs}
+            />
+          ))}
+        </div>
+
         <LineWrapper visible={checked === false}>
-          <GroupedStopsContainer>
+          <GroupedStopsContainer visible={visibleStopsGroupedByPurpose[0].visible}>
             <LineChart
               data={stopsGroupedByPurposeData.safety}
               title="Safety Violation"
@@ -711,24 +755,26 @@ function TrafficStops(props) {
               yAxisMax={stopsGroupedByPurposeData.max_step_size}
             />
           </GroupedStopsContainer>
-          <GroupedStopsContainer>
+          <GroupedStopsContainer visible={visibleStopsGroupedByPurpose[1].visible}>
             <LineChart
               data={stopsGroupedByPurposeData.regulatory}
               title="Regulatory/Equipment"
               maintainAspectRatio={false}
               displayLegend={false}
               yAxisMax={stopsGroupedByPurposeData.max_step_size}
-              yAxisShowLabels={false}
+              yAxisShowLabels={!visibleStopsGroupedByPurpose[0].visible}
             />
           </GroupedStopsContainer>
-          <GroupedStopsContainer>
+          <GroupedStopsContainer visible={visibleStopsGroupedByPurpose[2].visible}>
             <LineChart
               data={stopsGroupedByPurposeData.other}
               title="Other"
               maintainAspectRatio={false}
               displayLegend={false}
               yAxisMax={stopsGroupedByPurposeData.max_step_size}
-              yAxisShowLabels={false}
+              yAxisShowLabels={
+                !visibleStopsGroupedByPurpose[0].visible && !visibleStopsGroupedByPurpose[1].visible
+              }
             />
           </GroupedStopsContainer>
         </LineWrapper>
@@ -741,7 +787,7 @@ function TrafficStops(props) {
           />
         )}
         <PieWrapper visible={checked === true}>
-          <GroupedStopsContainer>
+          <GroupedStopsContainer visible={visibleStopsGroupedByPurpose[0].visible}>
             <PieChart
               data={stopsGroupedByPurposePieData.safety}
               title="Safety Violation"
@@ -749,7 +795,7 @@ function TrafficStops(props) {
               displayLegend={false}
             />
           </GroupedStopsContainer>
-          <GroupedStopsContainer>
+          <GroupedStopsContainer visible={visibleStopsGroupedByPurpose[1].visible}>
             <PieChart
               data={stopsGroupedByPurposePieData.regulatory}
               title="Regulatory/Equipment"
@@ -757,7 +803,7 @@ function TrafficStops(props) {
               displayLegend={false}
             />
           </GroupedStopsContainer>
-          <GroupedStopsContainer>
+          <GroupedStopsContainer visible={visibleStopsGroupedByPurpose[2].visible}>
             <PieChart
               data={stopsGroupedByPurposePieData.other}
               title="Other"
