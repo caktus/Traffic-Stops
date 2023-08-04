@@ -647,7 +647,7 @@ function TrafficStops(props) {
             </S.PieSection>
           </ChartModal>
 
-          <S.PieSection>
+          <S.PieSection alignItems="start">
             <S.PieWrapper>
               <PieChart
                 data={byPercentagePieData}
@@ -656,13 +656,21 @@ function TrafficStops(props) {
                 maintainAspectRatio
               />
             </S.PieWrapper>
-            <Button onClick={() => setShowZoomedPieChart(true)}>Enlarge</Button>
-            <DataSubsetPicker
-              label="Year"
-              value={year}
-              onChange={handleYearSelect}
-              options={[YEARS_DEFAULT].concat(stopsChartState.yearRange)}
-            />
+            <S.PieActionsWrapper>
+              <DataSubsetPicker
+                label="Year"
+                value={year}
+                onChange={handleYearSelect}
+                options={[YEARS_DEFAULT].concat(stopsChartState.yearRange)}
+              />
+              <div
+                style={{
+                  marginTop: '1em',
+                }}
+              >
+                <Button onClick={() => setShowZoomedPieChart(true)}>View more</Button>
+              </div>
+            </S.PieActionsWrapper>
           </S.PieSection>
         </S.ChartSubsection>
       </S.ChartSection>
@@ -773,6 +781,22 @@ function TrafficStops(props) {
           <span>Switch to {checked ? 'line' : 'pie'} charts</span>
           <Switch onChange={handleChange} checked={checked} className="react-switch" />
         </SwitchContainer>
+        <div style={{ marginTop: '1em' }}>
+          <P weight={WEIGHTS[1]}>Toggle graphs:</P>
+          <div style={{ display: 'flex', gap: '10px', flexDirection: 'row', flexWrap: 'wrap' }}>
+            {visibleStopsGroupedByPurpose.map((vg, i) => (
+              <Checkbox
+                height={25}
+                width={25}
+                label={vg.title}
+                value={vg.key}
+                key={i}
+                checked={vg.visible}
+                onChange={toggleGroupedPurposeGraphs}
+              />
+            ))}
+          </div>
+        </div>
         <LineWrapper visible={checked === false}>
           <GroupedStopsContainer visible={visibleStopsGroupedByPurpose[0].visible}>
             <LineChart
@@ -848,23 +872,6 @@ function TrafficStops(props) {
           showNonHispanic
           row
         />
-
-        <div style={{ marginTop: '2em' }}>
-          <P weight={WEIGHTS[1]}>Toggle graphs:</P>
-          <div style={{ display: 'flex', gap: '10px', flexDirection: 'row', flexWrap: 'wrap' }}>
-            {visibleStopsGroupedByPurpose.map((vg, i) => (
-              <Checkbox
-                height={25}
-                width={25}
-                label={vg.title}
-                value={vg.key}
-                key={i}
-                checked={vg.visible}
-                onChange={toggleGroupedPurposeGraphs}
-              />
-            ))}
-          </div>
-        </div>
       </S.ChartSection>
     </TrafficStopsStyled>
   );

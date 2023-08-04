@@ -64,7 +64,7 @@ export const Spacing = styled.div`
 export const PieSection = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: ${(props) => (props.alignItems ? props.alignItems : 'center')};
   width: ${(props) => (props.zoomed ? '90%' : '33%')};
   margin: 0 auto;
   height: auto;
@@ -90,6 +90,11 @@ export const PieWrapper = styled.div`
   @media (${smallerThanTabletLandscape}) {
     flex-direction: column;
   }
+`;
+
+export const PieActionsWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
 `;
 
 export const SectionWrapper = styled.div`
