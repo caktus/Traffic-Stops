@@ -48,6 +48,7 @@ import LineChart from '../../NewCharts/LineChart';
 import axios from '../../../Services/Axios';
 import NewModal from '../../NewCharts/NewModal';
 import displayDefinition from '../../../util/displayDefinition';
+import Checkbox from '../../Elements/Inputs/Checkbox';
 
 function TrafficStops(props) {
   const { agencyId } = props;
@@ -109,6 +110,23 @@ function TrafficStops(props) {
     other: { labels: [], datasets: [] },
     max_step_size: null,
   });
+  const [visibleStopsGroupedByPurpose, setVisibleStopsGroupedByPurpose] = useState([
+    {
+      key: 'safety',
+      visible: true,
+      order: 1,
+    },
+    {
+      key: 'regulatory',
+      visible: true,
+      order: 2,
+    },
+    {
+      key: 'other',
+      visible: false,
+      order: 3,
+    },
+  ]);
 
   const [stopPurposeModalData, setStopPurposeModalData] = useState({
     isOpen: false,
@@ -419,6 +437,19 @@ function TrafficStops(props) {
     return t % 2 === 0 ? t : null;
   };
 
+  const toggleGroupedPurposeGraphs = (key) => {
+    const toggleState = visibleStopsGroupedByPurpose;
+    const toggleGraph = toggleState.find((v) => v.key === key);
+    const otherGraphs = toggleState.filter((v) => v.key !== key);
+
+    setVisibleStopsGroupedByPurpose(
+      [...otherGraphs, { key, visible: !toggleGraph.visible, order: toggleGraph.order }].sort(
+        // eslint-disable-next-line no-nested-ternary
+        (a, b) => (a.order < b.order ? (a.order === b.order ? 0 : -1) : 1)
+      )
+    );
+  };
+
   return (
     <TrafficStopsStyled>
       {/* Traffic Stops by Percentage */}
@@ -579,8 +610,19 @@ function TrafficStops(props) {
             options={groupedStopPurposeModalData.purposeTypes}
           />
         </NewModal>
+        <div style={{ display: 'flex', gap: '10px', flexDirection: 'row' }}>
+          {visibleStopsGroupedByPurpose.map((vg, i) => (
+            <Checkbox
+              label={`Toggle ${vg.key}`}
+              value={vg.key}
+              key={i}
+              checked={vg.visible}
+              onChange={toggleGroupedPurposeGraphs}
+            />
+          ))}
+        </div>
         <LineWrapper>
-          <GroupedStopsContainer>
+          <GroupedStopsContainer visible={visibleStopsGroupedByPurpose[0].visible}>
             <LineChart
               data={stopsGroupedByPurposeData.safety}
               title="Safety Violation"
@@ -589,24 +631,26 @@ function TrafficStops(props) {
               yAxisMax={stopsGroupedByPurposeData.max_step_size}
             />
           </GroupedStopsContainer>
-          <GroupedStopsContainer>
+          <GroupedStopsContainer visible={visibleStopsGroupedByPurpose[1].visible}>
             <LineChart
               data={stopsGroupedByPurposeData.regulatory}
               title="Regulatory/Equipment"
               maintainAspectRatio={false}
               displayLegend={false}
               yAxisMax={stopsGroupedByPurposeData.max_step_size}
-              yAxisShowLabels={false}
+              yAxisShowLabels={!visibleStopsGroupedByPurpose[0].visible}
             />
           </GroupedStopsContainer>
-          <GroupedStopsContainer>
+          <GroupedStopsContainer visible={visibleStopsGroupedByPurpose[2].visible}>
             <LineChart
               data={stopsGroupedByPurposeData.other}
               title="Other"
               maintainAspectRatio={false}
               displayLegend={false}
               yAxisMax={stopsGroupedByPurposeData.max_step_size}
-              yAxisShowLabels={false}
+              yAxisShowLabels={
+                !visibleStopsGroupedByPurpose[0].visible && !visibleStopsGroupedByPurpose[1].visible
+              }
             />
           </GroupedStopsContainer>
         </LineWrapper>
