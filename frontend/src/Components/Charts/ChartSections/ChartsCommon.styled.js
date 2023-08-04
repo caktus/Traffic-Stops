@@ -64,8 +64,10 @@ export const Spacing = styled.div`
 export const PieSection = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
-  width: 33%;
+  align-items: ${(props) => (props.alignItems ? props.alignItems : 'center')};
+  width: ${(props) => (props.zoomed ? '90%' : '33%')};
+  margin: 0 auto;
+  height: auto;
 
   @media (${smallerThanDesktop}) {
     flex-direction: row;
@@ -81,10 +83,18 @@ export const PieWrapper = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: center;
+  width: ${(props) => (props.zoomed ? '100%' : 'auto')};
+  height: ${(props) => (props.zoomed ? '100%' : 'auto')};
 
   @media (${smallerThanTabletLandscape}) {
     flex-direction: column;
   }
+`;
+
+export const PieActionsWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
 `;
 
 export const SectionWrapper = styled.div`
