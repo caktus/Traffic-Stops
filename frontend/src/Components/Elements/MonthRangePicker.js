@@ -16,21 +16,8 @@ import {
 import { useTheme } from 'styled-components';
 import range from 'lodash.range';
 import DatePicker from 'react-datepicker';
+import { getRangeValues } from '../../util/range';
 
-function getRangeValues() {
-  const today = new Date();
-
-  return {
-    from: {
-      year: 2001,
-      month: 1,
-    },
-    to: {
-      year: today.getFullYear(),
-      month: today.getMonth() + 1,
-    },
-  };
-}
 const mapDataSetToEnum = {
   STOPS,
   SEARCHES,
@@ -84,12 +71,21 @@ export default function MonthRangePicker({
     }
   }, [forcePickerRerender]);
 
+  const showDatePicker = () => {
+    const rangeValues = getRangeValues();
+    setStartDate(new Date().setFullYear(rangeValues.from.year, 1));
+    setShowDateRangePicker(true);
+  };
+
   const closeRangePicker = async () => {
     setShowDateRangePicker(false);
-    setMinDate(null);
-    setStartDate(startYear);
+
+    const rangeValues = getRangeValues(true);
+    setStartDate(new Date().setFullYear(rangeValues.from.year, 1));
     setEndDate(new Date());
-    await updateDatePicker(getRangeValues());
+    setMinDate(null);
+
+    await updateDatePicker(rangeValues);
     onClosePicker();
   };
 
@@ -154,7 +150,7 @@ export default function MonthRangePicker({
   return (
     <div style={{ marginTop: '20px' }}>
       {!showDateRangePicker && (
-        <Button variant="positive" marginTop={10} onClick={() => setShowDateRangePicker(true)}>
+        <Button variant="positive" marginTop={10} onClick={showDatePicker}>
           Filter by date range
         </Button>
       )}

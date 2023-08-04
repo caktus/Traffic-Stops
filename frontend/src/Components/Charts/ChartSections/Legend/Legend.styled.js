@@ -51,7 +51,6 @@ export const KeyLabel = styled.p`
 `;
 
 export const Addendum = styled.p`
-  margin-top: 1em;
   font-style: italic;
   color: ${(props) => props.theme.colors.textLight};
   font-size: 16px;
