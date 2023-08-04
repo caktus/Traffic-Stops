@@ -5,8 +5,9 @@ import Icon, { ICONS } from './Icon';
 function CheckboxIcon({ checked, fill, ...props }) {
   return (
     <Icon
-      height="18px"
-      width="18px"
+      height={`${props.height || 18}px`}
+      width={`${props.width || 18}px`}
+      marginRight={`${props.marginRight || 0}px`}
       icon={`${checked ? ICONS.checkboxFilled : ICONS.checkboxEmpty}`}
       // fill={checked ? fill : props.theme.colors.grey}
       fill={fill}

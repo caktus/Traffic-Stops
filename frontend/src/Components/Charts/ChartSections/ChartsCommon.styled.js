@@ -3,6 +3,7 @@ import { smallerThanDesktop, smallerThanTabletLandscape } from '../../../styles/
 import { H2 } from '../../../styles/StyledComponents/Typography';
 
 export const ChartSection = styled.div`
+  margin-top: ${(props) => (props.marginTop ? props.marginTop : '3')}em;
   margin-bottom: 2em;
 `;
 

@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import TrafficStopsStyled, {
   GroupedStopsContainer,
   LineWrapper,
+  PieWrapper,
   StopGroupsContainer,
+  SwitchContainer,
 } from './TrafficStops.styled';
 import * as S from '../ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
@@ -26,7 +28,7 @@ import {
 import useDataset, { STOPS_BY_REASON, STOPS, AGENCY_DETAILS } from '../../../Hooks/useDataset';
 
 // Elements
-import { P } from '../../../styles/StyledComponents/Typography';
+import { P, WEIGHTS } from '../../../styles/StyledComponents/Typography';
 
 // Hooks
 import useMetaTags from '../../../Hooks/useMetaTags';
@@ -48,6 +50,8 @@ import LineChart from '../../NewCharts/LineChart';
 import axios from '../../../Services/Axios';
 import NewModal from '../../NewCharts/NewModal';
 import displayDefinition from '../../../util/displayDefinition';
+import PieChart from '../../NewCharts/PieChart';
+import Switch from 'react-switch';
 import Checkbox from '../../Elements/Inputs/Checkbox';
 
 function TrafficStops(props) {
@@ -110,19 +114,58 @@ function TrafficStops(props) {
     other: { labels: [], datasets: [] },
     max_step_size: null,
   });
+  const groupedPieChartConfig = {
+    backgroundColor: ['#80d9d8', '#beb4fa', '#ca8794', '#ffeeb2', '#8598ac', '#cab6c7'],
+    borderColor: ['#02bcbb', '#8879fc', '#9c0f2e', '#ffe066', '#0c3a66', '#9e7b9b'],
+    borderWidth: 1,
+  };
+  const groupedPieChartLabels = ['White', 'Black', 'Hispanic', 'Asian', 'Native American', 'Other'];
+  const [stopsGroupedByPurposePieData, setStopsGroupedByPurposePieData] = useState({
+    safety: {
+      labels: groupedPieChartLabels,
+      datasets: [
+        {
+          data: [],
+          ...groupedPieChartConfig,
+        },
+      ],
+    },
+    regulatory: {
+      labels: groupedPieChartLabels,
+      datasets: [
+        {
+          data: [],
+          ...groupedPieChartConfig,
+        },
+      ],
+    },
+    other: {
+      labels: groupedPieChartLabels,
+      datasets: [
+        {
+          data: [],
+          ...groupedPieChartConfig,
+        },
+      ],
+    },
+  });
+
   const [visibleStopsGroupedByPurpose, setVisibleStopsGroupedByPurpose] = useState([
     {
       key: 'safety',
+      title: 'Safety Violation',
       visible: true,
       order: 1,
     },
     {
       key: 'regulatory',
+      title: 'Regulatory/Equipment',
       visible: true,
       order: 2,
     },
     {
       key: 'other',
+      title: 'Other',
       visible: false,
       order: 3,
     },
@@ -141,6 +184,8 @@ function TrafficStops(props) {
     selectedPurpose: 'Safety Violation',
     purposeTypes: ['Safety Violation', 'Regulatory and Equipment', 'Other'],
   });
+  const [yearForGroupedPieCharts, setYearForGroupedPieCharts] = useState('All');
+  const [checked, setChecked] = useState(false);
 
   // Build Stop Purpose Groups
   useEffect(() => {
@@ -152,12 +197,26 @@ function TrafficStops(props) {
       .catch((err) => console.log(err));
   }, []);
 
+  const buildPercentages = (data, ds) => {
+    const dsTotal = data[ds].datasets
+      .map((s) => s.data.reduce((a, b) => a + b, 0))
+      .reduce((a, b) => a + b, 0);
+    return data[ds].datasets.map((s) =>
+      ((s.data.reduce((a, b) => a + b, 0) / dsTotal) * 100).toFixed(2)
+    );
+  };
+
   // Build Stops Grouped by Purpose
   useEffect(() => {
     axios
       .get(`/api/agency/${agencyId}/stops-grouped-by-purpose/`)
       .then((res) => {
         setStopsGroupedByPurpose(res.data);
+        updateStoppedPurposePieChart(
+          buildPercentages(res.data, 'safety'),
+          buildPercentages(res.data, 'regulatory'),
+          buildPercentages(res.data, 'other')
+        );
       })
       .catch((err) => console.log(err));
   }, []);
@@ -437,13 +496,72 @@ function TrafficStops(props) {
     return t % 2 === 0 ? t : null;
   };
 
+  const handleChange = (nextChecked) => {
+    setChecked(nextChecked);
+  };
+
+  const buildPercentagesForYear = (data, ds, idx = null) => {
+    const dsTotal = data[ds].datasets.map((s) => s.data[idx]).reduce((a, b) => a + b, 0);
+    return data[ds].datasets.map((s) => ((s.data[idx] / dsTotal) * 100).toFixed(2));
+  };
+
+  const handleYearSelectForGroupedPieCharts = (selectedYear, idx) => {
+    setYearForGroupedPieCharts(selectedYear);
+    updateStoppedPurposePieChart(
+      selectedYear === YEARS_DEFAULT
+        ? buildPercentages(stopsGroupedByPurposeData, 'safety')
+        : buildPercentagesForYear(stopsGroupedByPurposeData, 'safety', idx),
+      selectedYear === YEARS_DEFAULT
+        ? buildPercentages(stopsGroupedByPurposeData, 'regulatory')
+        : buildPercentagesForYear(stopsGroupedByPurposeData, 'regulatory', idx),
+      selectedYear === YEARS_DEFAULT
+        ? buildPercentages(stopsGroupedByPurposeData, 'other')
+        : buildPercentagesForYear(stopsGroupedByPurposeData, 'other', idx)
+    );
+  };
+
+  const updateStoppedPurposePieChart = (safety, regulatory, other) => {
+    setStopsGroupedByPurposePieData({
+      safety: {
+        labels: groupedPieChartLabels,
+        datasets: [
+          {
+            data: safety,
+            ...groupedPieChartConfig,
+          },
+        ],
+      },
+      regulatory: {
+        labels: groupedPieChartLabels,
+        datasets: [
+          {
+            data: regulatory,
+            ...groupedPieChartConfig,
+          },
+        ],
+      },
+      other: {
+        labels: groupedPieChartLabels,
+        datasets: [
+          {
+            data: other,
+            ...groupedPieChartConfig,
+          },
+        ],
+      },
+    });
+  };
+
   const toggleGroupedPurposeGraphs = (key) => {
     const toggleState = visibleStopsGroupedByPurpose;
     const toggleGraph = toggleState.find((v) => v.key === key);
     const otherGraphs = toggleState.filter((v) => v.key !== key);
 
     setVisibleStopsGroupedByPurpose(
-      [...otherGraphs, { key, visible: !toggleGraph.visible, order: toggleGraph.order }].sort(
+      [
+        ...otherGraphs,
+        { key, visible: !toggleGraph.visible, title: toggleGraph.title, order: toggleGraph.order },
+      ].sort(
         // eslint-disable-next-line no-nested-ternary
         (a, b) => (a.order < b.order ? (a.order === b.order ? 0 : -1) : 1)
       )
@@ -549,7 +667,7 @@ function TrafficStops(props) {
           </S.LegendBeside>
         </S.ChartSubsection>
       </S.ChartSection>
-      <S.ChartSection>
+      <S.ChartSection marginTop={5}>
         <ChartHeader
           chartTitle="Traffic Stops By Stop Purpose"
           handleViewData={showStopPurposeModal}
@@ -566,7 +684,7 @@ function TrafficStops(props) {
           isOpen={stopPurposeModalData.isOpen}
           closeModal={() => setStopPurposeModalData((state) => ({ ...state, isOpen: false }))}
         />
-        <LineWrapper>
+        <LineWrapper visible>
           <StopGroupsContainer>
             <LineChart
               data={stopPurposeGroupsData}
@@ -577,19 +695,13 @@ function TrafficStops(props) {
           </StopGroupsContainer>
         </LineWrapper>
       </S.ChartSection>
-      <S.ChartSection>
+      <S.ChartSection marginTop={5}>
         <ChartHeader
           chartTitle="Traffic Stops By Stop Purpose and Race Count"
           handleViewData={showGroupedStopPurposeModal}
         />
         <P>Shows the number of traffics stops broken down by purpose and race / ethnicity.</P>
-        <Legend
-          heading="Show on graph:"
-          keys={stopPurposeEthnicGroups}
-          onKeySelect={handleStopPurposeKeySelected}
-          showNonHispanic
-          row
-        />
+
         <NewModal
           tableHeader="Traffic Stops By Stop Purpose and Race Count"
           tableSubheader="Shows the number of traffics stops broken down by purpose and race / ethnicity"
@@ -610,18 +722,11 @@ function TrafficStops(props) {
             options={groupedStopPurposeModalData.purposeTypes}
           />
         </NewModal>
-        <div style={{ display: 'flex', gap: '10px', flexDirection: 'row' }}>
-          {visibleStopsGroupedByPurpose.map((vg, i) => (
-            <Checkbox
-              label={`Toggle ${vg.key}`}
-              value={vg.key}
-              key={i}
-              checked={vg.visible}
-              onChange={toggleGroupedPurposeGraphs}
-            />
-          ))}
-        </div>
-        <LineWrapper>
+        <SwitchContainer>
+          <span>Switch to {checked ? 'line' : 'pie'} charts</span>
+          <Switch onChange={handleChange} checked={checked} className="react-switch" />
+        </SwitchContainer>
+        <LineWrapper visible={checked === false}>
           <GroupedStopsContainer visible={visibleStopsGroupedByPurpose[0].visible}>
             <LineChart
               data={stopsGroupedByPurposeData.safety}
@@ -654,6 +759,65 @@ function TrafficStops(props) {
             />
           </GroupedStopsContainer>
         </LineWrapper>
+        {checked && (
+          <DataSubsetPicker
+            label="Year"
+            value={yearForGroupedPieCharts}
+            onChange={handleYearSelectForGroupedPieCharts}
+            options={[YEARS_DEFAULT].concat(stopsGroupedByPurposeData.labels)}
+          />
+        )}
+        <PieWrapper visible={checked === true}>
+          <GroupedStopsContainer visible={visibleStopsGroupedByPurpose[0].visible}>
+            <PieChart
+              data={stopsGroupedByPurposePieData.safety}
+              title="Safety Violation"
+              maintainAspectRatio={false}
+              displayLegend={false}
+            />
+          </GroupedStopsContainer>
+          <GroupedStopsContainer visible={visibleStopsGroupedByPurpose[1].visible}>
+            <PieChart
+              data={stopsGroupedByPurposePieData.regulatory}
+              title="Regulatory/Equipment"
+              maintainAspectRatio={false}
+              displayLegend={false}
+            />
+          </GroupedStopsContainer>
+          <GroupedStopsContainer visible={visibleStopsGroupedByPurpose[2].visible}>
+            <PieChart
+              data={stopsGroupedByPurposePieData.other}
+              title="Other"
+              maintainAspectRatio={false}
+              displayLegend={false}
+            />
+          </GroupedStopsContainer>
+        </PieWrapper>
+
+        <Legend
+          heading="Show on graph:"
+          keys={stopPurposeEthnicGroups}
+          onKeySelect={handleStopPurposeKeySelected}
+          showNonHispanic
+          row
+        />
+
+        <div style={{ marginTop: '2em' }}>
+          <P weight={WEIGHTS[1]}>Toggle graphs:</P>
+          <div style={{ display: 'flex', gap: '10px', flexDirection: 'row', flexWrap: 'wrap' }}>
+            {visibleStopsGroupedByPurpose.map((vg, i) => (
+              <Checkbox
+                height={25}
+                width={25}
+                label={vg.title}
+                value={vg.key}
+                key={i}
+                checked={vg.visible}
+                onChange={toggleGroupedPurposeGraphs}
+              />
+            ))}
+          </div>
+        </div>
       </S.ChartSection>
     </TrafficStopsStyled>
   );
