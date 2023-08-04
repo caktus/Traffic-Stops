@@ -22,6 +22,7 @@ export const PieWrapper = styled.div`
   flex-direction: row;
   flex-wrap: wrap;
   gap: 10px;
+  justify-content: space-evenly;
 `;
 
 export const StopGroupsContainer = styled.div`
@@ -36,4 +37,13 @@ export const GroupedStopsContainer = styled.div`
     width: 100%;
   }
   display: ${(props) => (props.visible ? 'block' : 'none')};
+`;
+
+export const SwitchContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  align-items: center;
 `;

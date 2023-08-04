@@ -4,6 +4,7 @@ import TrafficStopsStyled, {
   LineWrapper,
   PieWrapper,
   StopGroupsContainer,
+  SwitchContainer,
 } from './TrafficStops.styled';
 import * as S from '../ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
@@ -721,19 +722,10 @@ function TrafficStops(props) {
             options={groupedStopPurposeModalData.purposeTypes}
           />
         </NewModal>
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            gap: '10px',
-            marginTop: '10px',
-            marginBottom: '10px',
-            alignItems: 'center',
-          }}
-        >
+        <SwitchContainer>
           <span>Switch to {checked ? 'line' : 'pie'} charts</span>
           <Switch onChange={handleChange} checked={checked} className="react-switch" />
-        </div>
+        </SwitchContainer>
         <LineWrapper visible={checked === false}>
           <GroupedStopsContainer visible={visibleStopsGroupedByPurpose[0].visible}>
             <LineChart
@@ -812,7 +804,7 @@ function TrafficStops(props) {
 
         <div style={{ marginTop: '2em' }}>
           <P weight={WEIGHTS[1]}>Toggle graphs:</P>
-          <div style={{ display: 'flex', gap: '10px', flexDirection: 'row' }}>
+          <div style={{ display: 'flex', gap: '10px', flexDirection: 'row', flexWrap: 'wrap' }}>
             {visibleStopsGroupedByPurpose.map((vg, i) => (
               <Checkbox
                 height={25}
