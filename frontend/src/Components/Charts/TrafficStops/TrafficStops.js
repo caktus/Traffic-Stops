@@ -27,7 +27,7 @@ import {
 import useDataset, { STOPS_BY_REASON, STOPS, AGENCY_DETAILS } from '../../../Hooks/useDataset';
 
 // Elements
-import { P } from '../../../styles/StyledComponents/Typography';
+import { P, WEIGHTS } from '../../../styles/StyledComponents/Typography';
 
 // Hooks
 import useMetaTags from '../../../Hooks/useMetaTags';
@@ -152,16 +152,19 @@ function TrafficStops(props) {
   const [visibleStopsGroupedByPurpose, setVisibleStopsGroupedByPurpose] = useState([
     {
       key: 'safety',
+      title: 'Safety Violation',
       visible: true,
       order: 1,
     },
     {
       key: 'regulatory',
+      title: 'Regulatory/Equipment',
       visible: true,
       order: 2,
     },
     {
       key: 'other',
+      title: 'Other',
       visible: false,
       order: 3,
     },
@@ -554,7 +557,10 @@ function TrafficStops(props) {
     const otherGraphs = toggleState.filter((v) => v.key !== key);
 
     setVisibleStopsGroupedByPurpose(
-      [...otherGraphs, { key, visible: !toggleGraph.visible, order: toggleGraph.order }].sort(
+      [
+        ...otherGraphs,
+        { key, visible: !toggleGraph.visible, title: toggleGraph.title, order: toggleGraph.order },
+      ].sort(
         // eslint-disable-next-line no-nested-ternary
         (a, b) => (a.order < b.order ? (a.order === b.order ? 0 : -1) : 1)
       )
@@ -660,7 +666,7 @@ function TrafficStops(props) {
           </S.LegendBeside>
         </S.ChartSubsection>
       </S.ChartSection>
-      <S.ChartSection>
+      <S.ChartSection marginTop={5}>
         <ChartHeader
           chartTitle="Traffic Stops By Stop Purpose"
           handleViewData={showStopPurposeModal}
@@ -688,19 +694,13 @@ function TrafficStops(props) {
           </StopGroupsContainer>
         </LineWrapper>
       </S.ChartSection>
-      <S.ChartSection>
+      <S.ChartSection marginTop={5}>
         <ChartHeader
           chartTitle="Traffic Stops By Stop Purpose and Race Count"
           handleViewData={showGroupedStopPurposeModal}
         />
         <P>Shows the number of traffics stops broken down by purpose and race / ethnicity.</P>
-        <Legend
-          heading="Show on graph:"
-          keys={stopPurposeEthnicGroups}
-          onKeySelect={handleStopPurposeKeySelected}
-          showNonHispanic
-          row
-        />
+
         <NewModal
           tableHeader="Traffic Stops By Stop Purpose and Race Count"
           tableSubheader="Shows the number of traffics stops broken down by purpose and race / ethnicity"
@@ -728,23 +728,12 @@ function TrafficStops(props) {
             gap: '10px',
             marginTop: '10px',
             marginBottom: '10px',
+            alignItems: 'center',
           }}
         >
           <span>Switch to {checked ? 'line' : 'pie'} charts</span>
           <Switch onChange={handleChange} checked={checked} className="react-switch" />
         </div>
-        <div style={{ display: 'flex', gap: '10px', flexDirection: 'row' }}>
-          {visibleStopsGroupedByPurpose.map((vg, i) => (
-            <Checkbox
-              label={`Toggle ${vg.key}`}
-              value={vg.key}
-              key={i}
-              checked={vg.visible}
-              onChange={toggleGroupedPurposeGraphs}
-            />
-          ))}
-        </div>
-
         <LineWrapper visible={checked === false}>
           <GroupedStopsContainer visible={visibleStopsGroupedByPurpose[0].visible}>
             <LineChart
@@ -812,6 +801,31 @@ function TrafficStops(props) {
             />
           </GroupedStopsContainer>
         </PieWrapper>
+
+        <Legend
+          heading="Show on graph:"
+          keys={stopPurposeEthnicGroups}
+          onKeySelect={handleStopPurposeKeySelected}
+          showNonHispanic
+          row
+        />
+
+        <div style={{ marginTop: '2em' }}>
+          <P weight={WEIGHTS[1]}>Toggle graphs:</P>
+          <div style={{ display: 'flex', gap: '10px', flexDirection: 'row' }}>
+            {visibleStopsGroupedByPurpose.map((vg, i) => (
+              <Checkbox
+                height={25}
+                width={25}
+                label={vg.title}
+                value={vg.key}
+                key={i}
+                checked={vg.visible}
+                onChange={toggleGroupedPurposeGraphs}
+              />
+            ))}
+          </div>
+        </div>
       </S.ChartSection>
     </TrafficStopsStyled>
   );
