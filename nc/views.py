@@ -416,7 +416,7 @@ class AgencyStopPurposeGroupView(APIView):
 
 class AgencyStopGroupByPurposeView(APIView):
     def group_by_purpose(self, df, purpose, years):
-        def get_values(col: str) -> list[int]:
+        def get_values(col):
             if col in df[purpose]:
                 return list(df[purpose][col].values)
             else:
