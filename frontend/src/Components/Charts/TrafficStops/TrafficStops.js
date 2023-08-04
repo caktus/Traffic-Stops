@@ -587,6 +587,20 @@ function TrafficStops(props) {
     );
   };
 
+  const pieChartTitle = (download = false) => {
+    let subject = stopsChartState.data[AGENCY_DETAILS].name;
+    if (subjectObserving() === 'officer') {
+      subject = `Officer ${officerId}`;
+    }
+    let title = `Traffic Stops By Percentage for ${subject} ${
+      year === YEARS_DEFAULT ? `since ${stopsChartState.yearRange[0]}` : `during ${year}`
+    }`;
+    if (download) {
+      title = `${title.split(' ').join('_').toLowerCase()}.png`;
+    }
+    return title;
+  };
+
   return (
     <TrafficStopsStyled>
       {/* Traffic Stops by Percentage */}
@@ -632,11 +646,13 @@ function TrafficStops(props) {
             isOpen={showZoomedPieChart}
             closeModal={() => setShowZoomedPieChart(false)}
             chartToPrintRef={zoomedPieCharRef}
+            fileName={pieChartTitle(true)}
           >
             <S.PieSection zoomed>
               <S.PieWrapper zoomed>
                 <PieChart
                   data={byPercentagePieData}
+                  title={pieChartTitle()}
                   displayTitle
                   displayLegend
                   displayOutlabels
