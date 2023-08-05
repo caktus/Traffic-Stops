@@ -115,6 +115,16 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     return () => document.removeEventListener('keyup', _handleKeyUp);
   }, [closeModal]);
 
+  const cleanMonthlyData = (data) =>
+    data
+      .filter((d) => !d.hasOwnProperty('year'))
+      .map((d) => {
+        const row = d;
+        row['year'] = row['date'];
+        delete row['date'];
+        return row;
+      });
+
   useEffect(() => {
     let tableDS = mapDataSetToEnum[dataSet];
     if (Array.isArray(dataSet)) {
@@ -133,14 +143,14 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
         if (yearRange.length <= 3) {
           setDateInterval('month');
           // Needs to show the monthly range dates in the 'year' column
-          tableData = tableData
-            .filter((d) => !d.hasOwnProperty('year'))
-            .map((d) => {
-              const row = d;
-              row['year'] = row['date'];
-              delete row['date'];
-              return row;
-            });
+          if (tableDS === STOPS_BY_REASON || tableDS === LIKELIHOOD_OF_SEARCH) {
+            tableData.stops = cleanMonthlyData(tableData.stops);
+            tableData.searches = cleanMonthlyData(tableData.searches);
+          } else if (tableDS === CONTRABAND_HIT_RATE) {
+            tableData.contraband = cleanMonthlyData(tableData.contraband);
+          } else {
+            tableData = cleanMonthlyData(tableData);
+          }
         } else {
           setDateInterval('year');
         }
@@ -352,7 +362,9 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
   const mapContrbandHitrate = (ds) => {
     const data = tableChartState.data[ds];
     const { contraband } = data;
-    const mappedData = tableChartState.yearRange.map((year) => {
+    const yearRangeMap =
+      dateInterval === 'month' ? contraband.map((c) => c.year) : tableChartState.yearRange;
+    const mappedData = yearRangeMap.map((year) => {
       const hits = contraband.find((d) => d.year === year) || 0;
       const comparedData = { year };
       if (!hits) {
