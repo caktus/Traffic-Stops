@@ -191,12 +191,12 @@ function UseOfForce(props) {
               options={[YEARS_DEFAULT].concat(chartState.yearRange)}
               dropUp
             />
-            <MonthRangePicker
-              agencyId={agencyId}
-              dataSet={USE_OF_FORCE}
-              onChange={updateUseOfForce}
-              onClosePicker={() => setPickerActive(null)}
-            />
+            {/* <MonthRangePicker */}
+            {/*  agencyId={agencyId} */}
+            {/*  dataSet={USE_OF_FORCE} */}
+            {/*  onChange={updateUseOfForce} */}
+            {/*  onClosePicker={() => setPickerActive(null)} */}
+            {/* /> */}
           </S.PieSection>
         </S.ChartSubsection>
       </S.ChartSection>
