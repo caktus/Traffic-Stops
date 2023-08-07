@@ -29,7 +29,6 @@ import toTitleCase from '../../../util/toTitleCase';
 import useOfficerId from '../../../Hooks/useOfficerId';
 import GroupedBar from '../ChartPrimitives/GroupedBar';
 import Pie from '../ChartPrimitives/Pie';
-import MonthRangePicker from '../../Elements/MonthRangePicker';
 
 function UseOfForce(props) {
   const { agencyId, showCompare } = props;
@@ -39,8 +38,8 @@ function UseOfForce(props) {
   const [chartState] = useDataset(agencyId, USE_OF_FORCE);
 
   const [year, setYear] = useState(YEARS_DEFAULT);
-  const [pickerActive, setPickerActive] = useState(null);
-  const [pickerXAxis, setPickerXAxis] = useState(null);
+  const [pickerActive] = useState(null);
+  const [pickerXAxis] = useState(null);
 
   const [ethnicGroupKeys, setEthnicGroupKeys] = useState(() =>
     STATIC_LEGEND_KEYS.map((k) => ({ ...k }))
@@ -129,14 +128,6 @@ function UseOfForce(props) {
     openModal(USE_OF_FORCE, TABLE_COLUMNS);
   };
 
-  const updateUseOfForce = (val) => {
-    chartState.yearSet = val.yearRange;
-    chartState.data[USE_OF_FORCE] = val.data;
-
-    setPickerXAxis(val.xAxis);
-    setPickerActive((oldVal) => !oldVal);
-  };
-
   const lineAxisFormat = (t) => {
     if (pickerActive) {
       return t;
@@ -191,12 +182,6 @@ function UseOfForce(props) {
               options={[YEARS_DEFAULT].concat(chartState.yearRange)}
               dropUp
             />
-            {/* <MonthRangePicker */}
-            {/*  agencyId={agencyId} */}
-            {/*  dataSet={USE_OF_FORCE} */}
-            {/*  onChange={updateUseOfForce} */}
-            {/*  onClosePicker={() => setPickerActive(null)} */}
-            {/* /> */}
           </S.PieSection>
         </S.ChartSubsection>
       </S.ChartSection>
