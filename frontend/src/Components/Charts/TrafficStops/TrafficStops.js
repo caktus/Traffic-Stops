@@ -214,6 +214,9 @@ function TrafficStops(props) {
     if (trafficStopsByCountPurpose !== 0) {
       params.push({ param: 'purpose', val: trafficStopsByCountPurpose });
     }
+    if (officerId !== null) {
+      params.push({ param: 'officer', val: officerId });
+    }
 
     const urlParams = params.map((p) => `${p.param}=${p.val}`).join('&');
     const url = `/api/agency/${agencyId}/stops-by-count/?${urlParams}`;
@@ -228,8 +231,12 @@ function TrafficStops(props) {
 
   // Build Stop Purpose Groups
   useEffect(() => {
+    let url = `/api/agency/${agencyId}/stop-purpose-groups/`;
+    if (officerId !== null) {
+      url = `${url}?officer=${officerId}`;
+    }
     axios
-      .get(`/api/agency/${agencyId}/stop-purpose-groups/`)
+      .get(url)
       .then((res) => {
         setStopPurposeGroups(res.data);
       })
@@ -247,8 +254,12 @@ function TrafficStops(props) {
 
   // Build Stops Grouped by Purpose
   useEffect(() => {
+    let url = `/api/agency/${agencyId}/stops-grouped-by-purpose/`;
+    if (officerId !== null) {
+      url = `${url}?officer=${officerId}`;
+    }
     axios
-      .get(`/api/agency/${agencyId}/stops-grouped-by-purpose/`)
+      .get(url)
       .then((res) => {
         setStopsGroupedByPurpose(res.data);
         updateStoppedPurposePieChart(

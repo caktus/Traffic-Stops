@@ -374,23 +374,12 @@ class ContactView(APIView):
             return Response(data=serializer.errors, status=400)
 
 
-# def get_values(df, years, col, purpose=None):
-#     if purpose:
-#         if col in df[purpose]:
-#             return list(df[purpose][col].values)
-#     elif purpose == "All":
-#         pass
-#
-#     return [0] * len(years)
-
-
 class AgencyTrafficStopsByCountView(APIView):
     def build_response(self, df, x_range, purpose=None):
         def get_values(race):
-            if purpose:
-                if race in df[purpose]:
-                    return list(df[purpose][race].values)
-            elif purpose is None:
+            if purpose and purpose in df and race in df[purpose]:
+                return list(df[purpose][race].values)
+            elif purpose is None and race in df:
                 return list(df[race].values)
 
             return [0] * len(x_range)
@@ -441,6 +430,10 @@ class AgencyTrafficStopsByCountView(APIView):
         date_precision, date_range = get_date_range(request)
         qs = StopSummary.objects.filter(agency_id=agency_id).filter(date_range)
 
+        officer = request.query_params.get("officer", None)
+        if officer:
+            qs = qs.filter(officer_id=officer)
+
         if date_precision == "year":
             qs = qs.annotate(year=ExtractYear("date"))
         else:
@@ -465,9 +458,14 @@ class AgencyTrafficStopsByCountView(APIView):
 
 class AgencyStopPurposeGroupView(APIView):
     def get(self, request, agency_id):
+        qs = StopSummary.objects.filter(agency_id=agency_id)
+
+        officer = request.query_params.get("officer", None)
+        if officer:
+            qs = qs.filter(officer_id=officer)
+
         qs = (
-            StopSummary.objects.filter(agency_id=agency_id)
-            .annotate(year=ExtractYear("date"))
+            qs.annotate(year=ExtractYear("date"))
             .values("year", "stop_purpose_group")
             .annotate(count=Sum("count"))
             .order_by("year")
@@ -507,10 +505,9 @@ class AgencyStopPurposeGroupView(APIView):
 class AgencyStopGroupByPurposeView(APIView):
     def group_by_purpose(self, df, purpose, years):
         def get_values(col):
-            if col in df[purpose]:
+            if purpose in df and col in df[purpose]:
                 return list(df[purpose][col].values)
-            else:
-                return [0] * len(years)
+            return [0] * len(years)
 
         return {
             "labels": years,
@@ -555,9 +552,12 @@ class AgencyStopGroupByPurposeView(APIView):
         }
 
     def get(self, request, agency_id):
+        qs = StopSummary.objects.filter(agency_id=agency_id)
+        officer = request.query_params.get("officer", None)
+        if officer:
+            qs = qs.filter(officer_id=officer)
         qs = (
-            StopSummary.objects.filter(agency_id=agency_id)
-            .annotate(year=ExtractYear("date"))
+            qs.annotate(year=ExtractYear("date"))
             .values("year", "driver_race_comb", "stop_purpose_group")
             .annotate(count=Sum("count"))
             .order_by("year")
