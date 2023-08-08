@@ -15,6 +15,7 @@ export default function ChartModal({
   isOpen,
   closeModal,
   chartToPrintRef,
+  fileName = 'chart.png',
   children,
 }) {
   const theme = useTheme();
@@ -41,7 +42,7 @@ export default function ChartModal({
 
   const downloadChart = useCallback(() => {
     const link = document.createElement('a');
-    link.download = 'chart.png';
+    link.download = fileName;
     link.href = chartToPrintRef.current.toBase64Image();
     link.click();
   });
