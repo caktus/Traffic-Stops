@@ -428,7 +428,7 @@ class AgencyTrafficStopsByCountView(APIView):
 
     def get(self, request, agency_id):
         date_precision, date_range = get_date_range(request)
-        # print(date_precision)
+
         qs = StopSummary.objects.all()
         agency_id = int(agency_id)
         if agency_id != -1:
