@@ -428,7 +428,12 @@ class AgencyTrafficStopsByCountView(APIView):
 
     def get(self, request, agency_id):
         date_precision, date_range = get_date_range(request)
-        qs = StopSummary.objects.filter(agency_id=agency_id).filter(date_range)
+        # print(date_precision)
+        qs = StopSummary.objects.all()
+        agency_id = int(agency_id)
+        if agency_id != -1:
+            qs = qs.filter(agency_id=agency_id)
+        qs = qs.filter(date_range)
 
         officer = request.query_params.get("officer", None)
         if officer:
@@ -458,7 +463,10 @@ class AgencyTrafficStopsByCountView(APIView):
 
 class AgencyStopPurposeGroupView(APIView):
     def get(self, request, agency_id):
-        qs = StopSummary.objects.filter(agency_id=agency_id)
+        qs = StopSummary.objects.all()
+        agency_id = int(agency_id)
+        if agency_id != -1:
+            qs = qs.filter(agency_id=agency_id)
 
         officer = request.query_params.get("officer", None)
         if officer:
@@ -552,7 +560,10 @@ class AgencyStopGroupByPurposeView(APIView):
         }
 
     def get(self, request, agency_id):
-        qs = StopSummary.objects.filter(agency_id=agency_id)
+        qs = StopSummary.objects.all()
+        agency_id = int(agency_id)
+        if agency_id != -1:
+            qs = qs.filter(agency_id=agency_id)
         officer = request.query_params.get("officer", None)
         if officer:
             qs = qs.filter(officer_id=officer)

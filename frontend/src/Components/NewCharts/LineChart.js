@@ -62,6 +62,7 @@ export default function LineChart({
     },
     scales: {
       y: {
+        min: 0,
         max: yAxisMax,
         ticks: {
           display: yAxisShowLabels,
