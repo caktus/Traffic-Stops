@@ -79,6 +79,26 @@ class QueryKeyConstructor(DefaultObjectKeyConstructor):
 query_cache_key_func = QueryKeyConstructor()
 
 
+def get_date_range(request):
+    # Only filter is from and to values are found and are valid
+    date_precision = "year"
+    date_range = Q()
+    _from_date = request.query_params.get("from", None)
+    _to_date = request.query_params.get("to", None)
+    if _from_date and _to_date:
+        from_date = datetime.datetime.strptime(_from_date, "%Y-%m-%d")
+        to_date = datetime.datetime.strptime(_to_date, "%Y-%m-%d")
+        if from_date and to_date:
+            delta = relativedelta.relativedelta(to_date, from_date)
+            if delta.years < 3:
+                date_precision = "month"
+                to_date = (to_date + relativedelta.relativedelta(months=1)) - datetime.timedelta(
+                    days=1
+                )
+            date_range = Q(date__range=(from_date, to_date))
+    return date_precision, date_range
+
+
 class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Agency.objects.all()
     serializer_class = serializers.AgencySerializer
@@ -92,25 +112,6 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
             qs = qs.filter(agency=agency)
         return qs
 
-    def get_date_range(self):
-        # Only filter is from and to values are found and are valid
-        date_precision = "year"
-        date_range = Q()
-        _from_date = self.request.query_params.get("from", None)
-        _to_date = self.request.query_params.get("to", None)
-        if _from_date and _to_date:
-            from_date = datetime.datetime.strptime(_from_date, "%Y-%m-%d")
-            to_date = datetime.datetime.strptime(_to_date, "%Y-%m-%d")
-            if from_date and to_date:
-                delta = relativedelta.relativedelta(to_date, from_date)
-                if delta.years < 3:
-                    date_precision = "month"
-                    to_date = (
-                        to_date + relativedelta.relativedelta(months=1)
-                    ) - datetime.timedelta(days=1)
-                date_range = Q(date__range=(from_date, to_date))
-        return date_precision, date_range
-
     def query(self, results, group_by, filter_=None):
         qs = self.get_stopsummary_qs(agency=self.get_object())
         # filter down by officer if supplied
@@ -121,7 +122,7 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
             qs = qs.filter(filter_)
 
         group_by_tuple = group_by
-        date_precision, date_range = self.get_date_range()
+        date_precision, date_range = get_date_range(self.request)
         qs = qs.filter(date_range)
         if date_precision == "year":
             qs = qs.annotate(year=ExtractYear("date"))
@@ -373,11 +374,98 @@ class ContactView(APIView):
             return Response(data=serializer.errors, status=400)
 
 
+class AgencyTrafficStopsByCountView(APIView):
+    def build_response(self, df, x_range, purpose=None):
+        def get_values(race):
+            if purpose and purpose in df and race in df[purpose]:
+                return list(df[purpose][race].values)
+            elif purpose is None and race in df:
+                return list(df[race].values)
+
+            return [0] * len(x_range)
+
+        return {
+            "labels": x_range,
+            "datasets": [
+                {
+                    "label": "White",
+                    "data": get_values("White"),
+                    "borderColor": "#02bcbb",
+                    "backgroundColor": "#80d9d8",
+                },
+                {
+                    "label": "Black",
+                    "data": get_values("Black"),
+                    "borderColor": "#8879fc",
+                    "backgroundColor": "#beb4fa",
+                },
+                {
+                    "label": "Hispanic",
+                    "data": get_values("Hispanic"),
+                    "borderColor": "#9c0f2e",
+                    "backgroundColor": "#ca8794",
+                },
+                {
+                    "label": "Asian",
+                    "data": get_values("Asian"),
+                    "borderColor": "#ffe066",
+                    "backgroundColor": "#ffeeb2",
+                },
+                {
+                    "label": "Native American",
+                    "data": get_values("Native American"),
+                    "borderColor": "#0c3a66",
+                    "backgroundColor": "#8598ac",
+                },
+                {
+                    "label": "Other",
+                    "data": get_values("Other"),
+                    "borderColor": "#9e7b9b",
+                    "backgroundColor": "#cab6c7",
+                },
+            ],
+        }
+
+    def get(self, request, agency_id):
+        date_precision, date_range = get_date_range(request)
+        qs = StopSummary.objects.filter(agency_id=agency_id).filter(date_range)
+
+        officer = request.query_params.get("officer", None)
+        if officer:
+            qs = qs.filter(officer_id=officer)
+
+        if date_precision == "year":
+            qs = qs.annotate(year=ExtractYear("date"))
+        else:
+            date_precision = "date"
+
+        qs_df_cols = ["driver_race_comb"]
+        stop_purpose = int(request.query_params.get("purpose", 0))
+        if stop_purpose != 0:
+            qs_df_cols.insert(0, "stop_purpose")
+        qs_values = [date_precision] + qs_df_cols
+
+        qs = qs.values(*qs_values).annotate(count=Sum("count")).order_by(date_precision)
+        df = pd.DataFrame(qs)
+        unique_x_range = df[date_precision].unique()
+        pivot_df = df.pivot(index=date_precision, columns=qs_df_cols, values="count").fillna(
+            value=0
+        )
+        df = pd.DataFrame(pivot_df)
+        data = self.build_response(df, unique_x_range, stop_purpose if stop_purpose != 0 else None)
+        return Response(data=data, status=200)
+
+
 class AgencyStopPurposeGroupView(APIView):
     def get(self, request, agency_id):
+        qs = StopSummary.objects.filter(agency_id=agency_id)
+
+        officer = request.query_params.get("officer", None)
+        if officer:
+            qs = qs.filter(officer_id=officer)
+
         qs = (
-            StopSummary.objects.filter(agency_id=agency_id)
-            .annotate(year=ExtractYear("date"))
+            qs.annotate(year=ExtractYear("date"))
             .values("year", "stop_purpose_group")
             .annotate(count=Sum("count"))
             .order_by("year")
@@ -417,10 +505,9 @@ class AgencyStopPurposeGroupView(APIView):
 class AgencyStopGroupByPurposeView(APIView):
     def group_by_purpose(self, df, purpose, years):
         def get_values(col):
-            if col in df[purpose]:
+            if purpose in df and col in df[purpose]:
                 return list(df[purpose][col].values)
-            else:
-                return [0] * len(years)
+            return [0] * len(years)
 
         return {
             "labels": years,
@@ -465,9 +552,12 @@ class AgencyStopGroupByPurposeView(APIView):
         }
 
     def get(self, request, agency_id):
+        qs = StopSummary.objects.filter(agency_id=agency_id)
+        officer = request.query_params.get("officer", None)
+        if officer:
+            qs = qs.filter(officer_id=officer)
         qs = (
-            StopSummary.objects.filter(agency_id=agency_id)
-            .annotate(year=ExtractYear("date"))
+            qs.annotate(year=ExtractYear("date"))
             .values("year", "driver_race_comb", "stop_purpose_group")
             .annotate(count=Sum("count"))
             .order_by("year")

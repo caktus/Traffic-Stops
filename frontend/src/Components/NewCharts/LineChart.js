@@ -27,6 +27,7 @@ export default function LineChart({
   yAxisMax = null,
   yAxisShowLabels = true,
   displayStopPurposeTooltips = false,
+  showLegendOnBottom = true,
 }) {
   const options = {
     responsive: true,
@@ -38,7 +39,7 @@ export default function LineChart({
     plugins: {
       legend: {
         display: displayLegend,
-        position: 'top',
+        position: showLegendOnBottom ? 'bottom' : 'top',
         onHover(event, legendItem) {
           if (displayStopPurposeTooltips) {
             setTooltipText(tooltipLanguage(legendItem.text));

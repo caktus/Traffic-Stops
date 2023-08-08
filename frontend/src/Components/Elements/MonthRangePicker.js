@@ -2,31 +2,10 @@ import Button from './Button';
 import * as ChartHeaderStyles from '../Charts/ChartSections/ChartHeader.styled';
 import { ICONS } from '../../img/icons/Icon';
 import React, { forwardRef, useEffect, useState } from 'react';
-import mapDatasetKeyToEndpoint from '../../Services/endpoints';
-import axios from '../../Services/Axios';
-import {
-  CONTRABAND_HIT_RATE,
-  LIKELIHOOD_OF_SEARCH,
-  SEARCHES,
-  SEARCHES_BY_TYPE,
-  STOPS,
-  STOPS_BY_REASON,
-  USE_OF_FORCE,
-} from '../../Hooks/useDataset';
+
 import { useTheme } from 'styled-components';
-import range from 'lodash.range';
 import DatePicker from 'react-datepicker';
 import { getRangeValues } from '../../util/range';
-
-const mapDataSetToEnum = {
-  STOPS,
-  SEARCHES,
-  STOPS_BY_REASON,
-  SEARCHES_BY_TYPE,
-  USE_OF_FORCE,
-  CONTRABAND_HIT_RATE,
-  LIKELIHOOD_OF_SEARCH,
-};
 
 const MonthPickerButton = forwardRef(({ value, onClick }, ref) => (
   <Button onClick={onClick} ref={ref}>
@@ -34,14 +13,7 @@ const MonthPickerButton = forwardRef(({ value, onClick }, ref) => (
   </Button>
 ));
 
-export default function MonthRangePicker({
-  agencyId,
-  dataSet,
-  deactivatePicker,
-  forcePickerRerender,
-  onChange,
-  onClosePicker,
-}) {
+export default function MonthRangePicker({ deactivatePicker, onChange, onClosePicker }) {
   const theme = useTheme();
   const startYear = new Date().setFullYear(2000, 1, 1);
   const [showDateRangePicker, setShowDateRangePicker] = useState(false);
@@ -58,19 +30,6 @@ export default function MonthRangePicker({
     }
   }, [deactivatePicker]);
 
-  useEffect(() => {
-    const rerenderData = async () => {
-      const rangeVal = {
-        from: { month: startDate.getMonth() + 1, year: startDate.getFullYear() },
-        to: { month: endDate.getMonth() + 1, year: endDate.getFullYear() },
-      };
-      await updateDatePicker(rangeVal);
-    };
-    if (forcePickerRerender) {
-      rerenderData().catch((err) => console.log(err));
-    }
-  }, [forcePickerRerender]);
-
   const showDatePicker = () => {
     const rangeValues = getRangeValues();
     setStartDate(new Date().setFullYear(rangeValues.from.year, 1));
@@ -85,39 +44,8 @@ export default function MonthRangePicker({
     setEndDate(new Date());
     setMinDate(null);
 
-    await updateDatePicker(rangeValues);
+    onChange(null);
     onClosePicker();
-  };
-
-  const updateDatePicker = async (rangeVal) => {
-    let tableDS = mapDataSetToEnum[dataSet];
-    if (Array.isArray(dataSet)) {
-      tableDS = mapDataSetToEnum[dataSet[1]];
-    }
-    const getEndpoint = mapDatasetKeyToEndpoint(tableDS);
-    const _from = `${rangeVal.from.year}-${rangeVal.from.month.toString().padStart(2, 0)}-01`;
-    const _to = `${rangeVal.to.year}-${rangeVal.to.month.toString().padStart(2, 0)}-01`;
-    const url = `${getEndpoint(agencyId)}?from=${_from}&to=${_to}`;
-
-    const fromDate = new Date(_from);
-    fromDate.setDate(fromDate.getDate() + 1); // To prevent getting last month's date in new year
-    fromDate.toLocaleString('en-US', { timeZone: 'America/New_York' });
-    const toDate = new Date(_to);
-    toDate.setDate(toDate.getDate() + 1); // To prevent getting last month's date in new year
-    toDate.toLocaleString('en-US', { timeZone: 'America/New_York' });
-
-    const diffYears = toDate.getFullYear() - fromDate.getFullYear();
-    let xAxis = 'Year';
-    const yearRange = range(rangeVal.from.year, rangeVal.to.year + 1, 1);
-    if (diffYears < 3) {
-      xAxis = 'Month';
-    }
-    try {
-      const { data } = await axios.get(url);
-      onChange({ data, xAxis, yearRange });
-    } catch (err) {
-      console.log(err);
-    }
   };
 
   const onDateRangeChange = async (dates) => {
@@ -143,7 +71,7 @@ export default function MonthRangePicker({
         from: { month: start.getMonth() + 1, year: start.getFullYear() },
         to: { month: end.getMonth() + 1, year: end.getFullYear() },
       };
-      await updateDatePicker(rangeVal);
+      onChange(rangeVal);
     }
   };
 
