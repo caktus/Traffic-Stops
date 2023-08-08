@@ -15,7 +15,6 @@ import {
   reduceFullDataset,
   calculatePercentage,
   calculateYearTotal,
-  filterSinglePurpose,
   buildStackedBarData,
   STATIC_LEGEND_KEYS,
   YEARS_DEFAULT,
@@ -35,16 +34,12 @@ import useMetaTags from '../../../Hooks/useMetaTags';
 import useTableModal from '../../../Hooks/useTableModal';
 
 // Children
-import Line from '../ChartPrimitives/Line';
 import StackedBar from '../ChartPrimitives/StackedBar';
 import Legend from '../ChartSections/Legend/Legend';
 import ChartHeader from '../ChartSections/ChartHeader';
 import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
-import toTitleCase from '../../../util/toTitleCase';
 import useOfficerId from '../../../Hooks/useOfficerId';
 import MonthRangePicker from '../../Elements/MonthRangePicker';
-import mapDatasetKeyToEndpoint from '../../../Services/endpoints';
-import range from 'lodash.range';
 import LineChart from '../../NewCharts/LineChart';
 import axios from '../../../Services/Axios';
 import NewModal from '../../NewCharts/NewModal';
@@ -62,12 +57,8 @@ function TrafficStops(props) {
   const officerId = useOfficerId();
 
   const [stopsChartState] = useDataset(agencyId, STOPS);
-  const [reasonChartState] = useDataset(agencyId, STOPS_BY_REASON);
 
   const [pickerActive, setPickerActive] = useState(null);
-  const [pickerXAxis, setPickerXAxis] = useState(null);
-  const [forcePickerRerender, setForcePickerRerender] = useState(false);
-  const [reasonChartYearSet, setReasonChartYearSet] = useState(reasonChartState.yearSet);
 
   const [year, setYear] = useState(YEARS_DEFAULT);
 
@@ -92,9 +83,6 @@ function TrafficStops(props) {
     */
     () => STATIC_LEGEND_KEYS.map((k) => ({ ...k }))
   );
-  const [countEthnicGroups, setCountEthnicGroups] = useState(() =>
-    STATIC_LEGEND_KEYS.map((k) => ({ ...k }))
-  );
   const [stopPurposeEthnicGroups, setStopPurposeEthnicGroups] = useState(() =>
     STATIC_LEGEND_KEYS.map((k) => ({ ...k }))
   );
@@ -115,8 +103,6 @@ function TrafficStops(props) {
       },
     ],
   });
-
-  const [byCountLineData, setByCountLineData] = useState([]);
 
   const renderMetaTags = useMetaTags();
   const [renderTableModal, { openModal }] = useTableModal();
@@ -205,10 +191,52 @@ function TrafficStops(props) {
   const [showZoomedPieChart, setShowZoomedPieChart] = useState(false);
   const zoomedPieCharRef = useRef(null);
 
+  const [trafficStopsByCountRange, setTrafficStopsByCountRange] = useState(null);
+  const [trafficStopsByCountPurpose, setTrafficStopsByCountPurpose] = useState(0);
+  const [trafficStopsByCount, setTrafficStopsByCount] = useState({
+    labels: [],
+    datasets: [],
+  });
+
+  // Build Stops By Count
+  useEffect(() => {
+    const params = [];
+    if (trafficStopsByCountRange !== null) {
+      const _from = `${trafficStopsByCountRange.from.year}-${trafficStopsByCountRange.from.month
+        .toString()
+        .padStart(2, 0)}-01`;
+      const _to = `${trafficStopsByCountRange.to.year}-${trafficStopsByCountRange.to.month
+        .toString()
+        .padStart(2, 0)}-01`;
+      params.push({ param: 'from', val: _from });
+      params.push({ param: 'to', val: _to });
+    }
+    if (trafficStopsByCountPurpose !== 0) {
+      params.push({ param: 'purpose', val: trafficStopsByCountPurpose });
+    }
+    if (officerId !== null) {
+      params.push({ param: 'officer', val: officerId });
+    }
+
+    const urlParams = params.map((p) => `${p.param}=${p.val}`).join('&');
+    const url = `/api/agency/${agencyId}/stops-by-count/?${urlParams}`;
+
+    axios
+      .get(url)
+      .then((res) => {
+        setTrafficStopsByCount(res.data);
+      })
+      .catch((err) => console.log(err));
+  }, [trafficStopsByCountPurpose, trafficStopsByCountRange]);
+
   // Build Stop Purpose Groups
   useEffect(() => {
+    let url = `/api/agency/${agencyId}/stop-purpose-groups/`;
+    if (officerId !== null) {
+      url = `${url}?officer=${officerId}`;
+    }
     axios
-      .get(`/api/agency/${agencyId}/stop-purpose-groups/`)
+      .get(url)
       .then((res) => {
         setStopPurposeGroups(res.data);
       })
@@ -226,8 +254,12 @@ function TrafficStops(props) {
 
   // Build Stops Grouped by Purpose
   useEffect(() => {
+    let url = `/api/agency/${agencyId}/stops-grouped-by-purpose/`;
+    if (officerId !== null) {
+      url = `${url}?officer=${officerId}`;
+    }
     axios
-      .get(`/api/agency/${agencyId}/stops-grouped-by-purpose/`)
+      .get(url)
       .then((res) => {
         setStopsGroupedByPurpose(res.data);
         updateStoppedPurposePieChart(
@@ -276,54 +308,6 @@ function TrafficStops(props) {
     }
   }, [stopsChartState.data[STOPS], year]);
 
-  // Build data for Stops By Count line chart ("All")
-  useEffect(() => {
-    const data = reasonChartState.data[STOPS];
-    if (data && purpose === PURPOSE_DEFAULT) {
-      const derivedData = countEthnicGroups
-        .filter((g) => g.selected)
-        .map((r) => {
-          const race = r.value;
-          const rGroup = {
-            id: race,
-            color: theme.colors.ethnicGroup[race],
-          };
-          rGroup.data = data.map((d) => ({
-            displayName: toTitleCase(race),
-            // eslint-disable-next-line no-nested-ternary
-            x: pickerActive !== null ? (pickerXAxis === 'Month' ? d.date : d.year) : d.year,
-            y: d[race],
-          }));
-          return rGroup;
-        });
-      setByCountLineData(derivedData);
-    }
-  }, [reasonChartState.data[STOPS], purpose, countEthnicGroups, pickerActive]);
-
-  // Build data for Stops By Count line chart (single purpose)
-  useEffect(() => {
-    const data = reasonChartState.data[STOPS_BY_REASON]?.stops;
-    if (data && purpose !== PURPOSE_DEFAULT) {
-      const purposeData = filterSinglePurpose(data, purpose);
-      const derivedData = countEthnicGroups
-        .filter((g) => g.selected)
-        .map((r) => {
-          const race = r.value;
-          return {
-            id: race,
-            color: theme.colors.ethnicGroup[race],
-            data: purposeData.map((d) => ({
-              displayName: toTitleCase(race),
-              // eslint-disable-next-line no-nested-ternary
-              x: pickerActive !== null ? (pickerXAxis === 'Month' ? d.date : d.year) : d.year,
-              y: d[race],
-            })),
-          };
-        });
-      setByCountLineData(derivedData);
-    }
-  }, [reasonChartState.data[STOPS_BY_REASON], purpose, countEthnicGroups, pickerActive]);
-
   /* INTERACTIONS */
   // Handle year dropdown state
   const handleYearSelect = (y) => {
@@ -332,20 +316,10 @@ function TrafficStops(props) {
   };
 
   // Handle stop purpose dropdown state
-  const handleStopPurposeSelect = async (p) => {
+  const handleStopPurposeSelect = (p, i) => {
     if (p === purpose) return;
-    if (p === PURPOSE_DEFAULT) {
-      setPickerActive(null);
-      // Reset the chart data
-      const getEndpoint = mapDatasetKeyToEndpoint(STOPS);
-      const { data } = await axios.get(getEndpoint(agencyId));
-      reasonChartState.data[STOPS] = data;
-      setReasonChartYearSet(range(2002, new Date().getFullYear() + 1, 2));
-      setForcePickerRerender(false);
-    } else if (pickerActive !== null) {
-      setForcePickerRerender(true);
-    }
     setPurpose(p);
+    setTrafficStopsByCountPurpose(i);
   };
 
   // Handle stops by percentage legend interactions
@@ -356,16 +330,6 @@ function TrafficStops(props) {
     const updatedGroups = [...percentageEthnicGroups];
     updatedGroups[groupIndex].selected = !updatedGroups[groupIndex].selected;
     setPercentageEthnicGroups(updatedGroups);
-  };
-
-  // Handle stops by count legend interactions
-  const handleCountKeySelected = (ethnicGroup) => {
-    const groupIndex = countEthnicGroups.indexOf(
-      countEthnicGroups.find((g) => g.value === ethnicGroup.value)
-    );
-    const updatedGroups = [...countEthnicGroups];
-    updatedGroups[groupIndex].selected = !updatedGroups[groupIndex].selected;
-    setCountEthnicGroups(updatedGroups);
   };
 
   // Handle stops grouped by purpose legend interactions
@@ -479,40 +443,11 @@ function TrafficStops(props) {
   };
 
   const updateStopsByCount = (val) => {
-    setReasonChartYearSet(val.yearRange);
-    if (purpose !== PURPOSE_DEFAULT) {
-      reasonChartState.data[STOPS_BY_REASON] = val.data;
-    } else {
-      reasonChartState.data[STOPS] = val.data;
-    }
-    setPickerXAxis(val.xAxis);
-    setPickerActive((oldVal) => (oldVal === null ? true : !oldVal));
+    setTrafficStopsByCountRange(val);
   };
-
-  const lineAxisFormat = (t) => {
-    if (pickerActive !== null) {
-      if (pickerXAxis === 'Month') {
-        if (typeof t === 'string') {
-          // Month label is YYYY-MM
-          const month = new Date(t).getMonth() + 1;
-          let datasetLength;
-          if (purpose !== PURPOSE_DEFAULT) {
-            datasetLength = reasonChartState.data[STOPS_BY_REASON]?.stops.length;
-          } else {
-            datasetLength = reasonChartState.data[STOPS].length;
-          }
-          if (datasetLength > 10 && datasetLength <= 15) {
-            return month % 2 === 0 ? t : null;
-          }
-          if (datasetLength > 15) {
-            return month % 3 === 0 ? t : null;
-          }
-        }
-
-        return t;
-      }
-    }
-    return t % 2 === 0 ? t : null;
+  const closeStopsByCountRange = () => {
+    setPickerActive(null);
+    setTrafficStopsByCountRange(null);
   };
 
   const handleChange = (nextChecked) => {
@@ -695,18 +630,15 @@ function TrafficStops(props) {
         <ChartHeader chartTitle="Traffic Stops By Count" handleViewData={handleViewCountData} />
         <P>Shows the number of traffics stops broken down by purpose and race / ethnicity.</P>
         <S.ChartSubsection showCompare={props.showCompare}>
-          <S.LineWrapper>
-            <Line
-              data={byCountLineData}
-              loading={reasonChartState.loading[STOPS_BY_REASON]}
-              iTickFormat={lineAxisFormat}
-              iTickValues={reasonChartYearSet}
-              dAxisProps={{
-                tickFormat: (t) => `${t}`,
-              }}
-              xAxisLabel={pickerActive !== null ? pickerXAxis : 'Year'}
-            />
-          </S.LineWrapper>
+          <LineWrapper visible>
+            <StopGroupsContainer>
+              <LineChart
+                data={trafficStopsByCount}
+                title="Traffic Stops By Count"
+                maintainAspectRatio={false}
+              />
+            </StopGroupsContainer>
+          </LineWrapper>
           <S.LegendBeside>
             <DataSubsetPicker
               label="Stop Purpose"
@@ -720,21 +652,10 @@ function TrafficStops(props) {
             )}
 
             <MonthRangePicker
-              agencyId={agencyId}
-              dataSet={purpose !== PURPOSE_DEFAULT ? STOPS_BY_REASON : STOPS}
               deactivatePicker={pickerActive === null}
-              forcePickerRerender={forcePickerRerender}
               onChange={updateStopsByCount}
-              onClosePicker={() => setPickerActive(null)}
+              onClosePicker={closeStopsByCountRange}
             />
-            <S.Spacing>
-              <Legend
-                heading="Show on graph:"
-                keys={countEthnicGroups}
-                onKeySelect={handleCountKeySelected}
-                showNonHispanic
-              />
-            </S.Spacing>
           </S.LegendBeside>
         </S.ChartSubsection>
       </S.ChartSection>

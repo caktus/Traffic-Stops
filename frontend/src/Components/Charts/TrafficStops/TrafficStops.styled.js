@@ -8,7 +8,7 @@ export const LineWrapper = styled.div`
   display: ${(props) => (props.visible ? 'flex' : 'none')};
   flex-direction: row;
   flex-wrap: no-wrap;
-  width: 85%%;
+  width: 85%;
   margin: 0 auto;
   justify-content: space-evenly;
 
