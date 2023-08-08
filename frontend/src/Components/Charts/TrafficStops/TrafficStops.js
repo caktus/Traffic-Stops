@@ -58,6 +58,9 @@ function TrafficStops(props) {
 
   const [stopsChartState] = useDataset(agencyId, STOPS);
 
+  // TODO: Remove this when moving table modal data to new modal component
+  useDataset(agencyId, STOPS_BY_REASON);
+
   const [pickerActive, setPickerActive] = useState(null);
 
   const [year, setYear] = useState(YEARS_DEFAULT);
@@ -803,11 +806,12 @@ function TrafficStops(props) {
         </PieWrapper>
 
         <Legend
-          heading="Show on graph:"
+          heading={!checked ? 'Show on graph:' : 'Legend:'}
           keys={stopPurposeEthnicGroups}
           onKeySelect={handleStopPurposeKeySelected}
           showNonHispanic
           row
+          isStatic={checked}
         />
       </S.ChartSection>
     </TrafficStopsStyled>

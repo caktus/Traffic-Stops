@@ -130,8 +130,8 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     if (Array.isArray(dataSet)) {
       tableDS = mapDataSetToEnum[dataSet[1]];
     }
-    setReloading(true);
     const _fetchData = async () => {
+      setReloading(true);
       const getEndpoint = mapDatasetKeyToEndpoint(tableDS);
       const _from = `${rangeValue.from.year}-${rangeValue.from.month.toString().padStart(2, 0)}-01`;
       const _to = `${rangeValue.to.year}-${rangeValue.to.month.toString().padStart(2, 0)}-01`;
