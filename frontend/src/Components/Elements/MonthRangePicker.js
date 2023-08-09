@@ -13,36 +13,56 @@ const MonthPickerButton = forwardRef(({ value, onClick }, ref) => (
   </Button>
 ));
 
-export default function MonthRangePicker({ deactivatePicker, onChange, onClosePicker }) {
+export default function MonthRangePicker({
+  deactivatePicker,
+  onChange,
+  onClosePicker,
+  minY = null,
+  maxY = null,
+}) {
   const theme = useTheme();
-  const startYear = new Date().setFullYear(2000, 1, 1);
   const [showDateRangePicker, setShowDateRangePicker] = useState(false);
-  const [startDate, setStartDate] = useState(startYear);
+  const [startDate, setStartDate] = useState(new Date().setFullYear(2001, 1, 1));
   const [endDate, setEndDate] = useState(new Date());
   const [minDate, setMinDate] = useState(null);
+  const [minYear, setMinYear] = useState(null);
+  const [maxYear, setMaxYear] = useState(null);
 
   useEffect(() => {
     if (deactivatePicker) {
       setShowDateRangePicker(false);
-      setMinDate(null);
-      setStartDate(startYear);
-      setEndDate(new Date());
     }
   }, [deactivatePicker]);
 
+  useEffect(() => {
+    setMinDate(minY);
+    setStartDate(minY);
+    setEndDate(maxY);
+    setMinYear(minY);
+    setMaxYear(maxY);
+  }, [minY, maxY]);
+
   const showDatePicker = () => {
-    const rangeValues = getRangeValues();
-    setStartDate(new Date().setFullYear(rangeValues.from.year, 1));
+    if (!minYear && !maxYear) {
+      const rangeValues = getRangeValues();
+      setStartDate(new Date().setFullYear(rangeValues.from.year, 1));
+    }
     setShowDateRangePicker(true);
   };
 
   const closeRangePicker = async () => {
     setShowDateRangePicker(false);
 
-    const rangeValues = getRangeValues(true);
-    setStartDate(new Date().setFullYear(rangeValues.from.year, 1));
-    setEndDate(new Date());
-    setMinDate(null);
+    if (minYear && maxY) {
+      setMinDate(minY);
+      setStartDate(minY);
+      setEndDate(maxY);
+    } else {
+      const rangeValues = getRangeValues(true);
+      setStartDate(new Date().setFullYear(rangeValues.from.year, 1));
+      setEndDate(new Date());
+      setMinDate(null);
+    }
 
     onChange(null);
     onClosePicker();
@@ -86,12 +106,12 @@ export default function MonthRangePicker({ deactivatePicker, onChange, onClosePi
         <div style={{ display: 'flex', flexDirection: 'row', marginTop: '10' }}>
           <div style={{ width: '200px' }}>
             <DatePicker
-              selected={startDate}
+              selected={endDate}
               onChange={onDateRangeChange}
               startDate={startDate}
               endDate={endDate}
-              minDate={minDate}
-              maxDate={new Date()}
+              minDate={minYear}
+              maxDate={maxYear}
               dateFormat="MM/yyyy"
               showMonthYearPicker
               selectsRange

@@ -196,6 +196,10 @@ function TrafficStops(props) {
 
   const [trafficStopsByCountRange, setTrafficStopsByCountRange] = useState(null);
   const [trafficStopsByCountPurpose, setTrafficStopsByCountPurpose] = useState(0);
+  const [trafficStopsByCountMinMaxYears, setTrafficStopsByCountMinMaxYears] = useState([
+    null,
+    null,
+  ]);
   const [trafficStopsByCount, setTrafficStopsByCount] = useState({
     labels: [],
     datasets: [],
@@ -224,10 +228,21 @@ function TrafficStops(props) {
     const urlParams = params.map((p) => `${p.param}=${p.val}`).join('&');
     const url = `/api/agency/${agencyId}/stops-by-count/?${urlParams}`;
 
+    const createDateForRange = (yr) =>
+      Number.isInteger(yr) ? new Date(`${yr}-01-01`) : new Date(yr);
+
     axios
       .get(url)
       .then((res) => {
         setTrafficStopsByCount(res.data);
+
+        const years = res.data.labels;
+        if (trafficStopsByCountMinMaxYears[0] === null) {
+          setTrafficStopsByCountMinMaxYears([
+            createDateForRange(years[0]),
+            createDateForRange(years[years.length - 1]),
+          ]);
+        }
       })
       .catch((err) => console.log(err));
   }, [trafficStopsByCountPurpose, trafficStopsByCountRange]);
@@ -658,6 +673,8 @@ function TrafficStops(props) {
               deactivatePicker={pickerActive === null}
               onChange={updateStopsByCount}
               onClosePicker={closeStopsByCountRange}
+              minY={trafficStopsByCountMinMaxYears[0]}
+              maxY={trafficStopsByCountMinMaxYears[1]}
             />
           </S.LegendBeside>
         </S.ChartSubsection>

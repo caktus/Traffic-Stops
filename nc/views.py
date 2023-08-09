@@ -451,6 +451,8 @@ class AgencyTrafficStopsByCountView(APIView):
         qs_values = [date_precision] + qs_df_cols
 
         qs = qs.values(*qs_values).annotate(count=Sum("count")).order_by(date_precision)
+        if qs.count() == 0:
+            return Response(data=[], status=200)
         df = pd.DataFrame(qs)
         unique_x_range = df[date_precision].unique()
         pivot_df = df.pivot(index=date_precision, columns=qs_df_cols, values="count").fillna(
