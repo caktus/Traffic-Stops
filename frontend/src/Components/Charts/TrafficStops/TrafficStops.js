@@ -304,7 +304,7 @@ function TrafficStops(props) {
   useEffect(() => {
     const data = stopsChartState.data[STOPS];
     if (data) {
-      let chartData = [];
+      let chartData = [0, 0, 0, 0, 0, 0];
       if (!year || year === 'All') {
         chartData = reduceFullDataset(data, RACES, theme).map((ds) => ds.y);
       } else {
@@ -474,7 +474,7 @@ function TrafficStops(props) {
 
   const buildPercentagesForYear = (data, ds, idx = null) => {
     const dsTotal = data[ds].datasets.map((s) => s.data[idx]).reduce((a, b) => a + b, 0);
-    return data[ds].datasets.map((s) => ((s.data[idx] / dsTotal) * 100).toFixed(2));
+    return data[ds].datasets.map((s) => ((s.data[idx] / dsTotal) * 100 || 0).toFixed(2));
   };
 
   const handleYearSelectForGroupedPieCharts = (selectedYear, idx) => {
