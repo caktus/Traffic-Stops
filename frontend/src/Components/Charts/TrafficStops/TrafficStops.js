@@ -205,6 +205,9 @@ function TrafficStops(props) {
     datasets: [],
   });
 
+  const createDateForRange = (yr) =>
+    Number.isInteger(yr) ? new Date(`${yr}-01-01`) : new Date(yr);
+
   // Build Stops By Count
   useEffect(() => {
     const params = [];
@@ -228,9 +231,6 @@ function TrafficStops(props) {
     const urlParams = params.map((p) => `${p.param}=${p.val}`).join('&');
     const url = `/api/agency/${agencyId}/stops-by-count/?${urlParams}`;
 
-    const createDateForRange = (yr) =>
-      Number.isInteger(yr) ? new Date(`${yr}-01-01`) : new Date(yr);
-
     axios
       .get(url)
       .then((res) => {
@@ -240,7 +240,7 @@ function TrafficStops(props) {
         if (trafficStopsByCountMinMaxYears[0] === null) {
           setTrafficStopsByCountMinMaxYears([
             createDateForRange(years[0]),
-            createDateForRange(years[years.length - 1]),
+            createDateForRange(years[years.length - 1] + 1),
           ]);
         }
       })
@@ -479,16 +479,17 @@ function TrafficStops(props) {
 
   const handleYearSelectForGroupedPieCharts = (selectedYear, idx) => {
     setYearForGroupedPieCharts(selectedYear);
+    const idxForYear = idx - 1; // Dropdown has first index as 'all' which we need to skip
     updateStoppedPurposePieChart(
       selectedYear === YEARS_DEFAULT
         ? buildPercentages(stopsGroupedByPurposeData, 'safety')
-        : buildPercentagesForYear(stopsGroupedByPurposeData, 'safety', idx),
+        : buildPercentagesForYear(stopsGroupedByPurposeData, 'safety', idxForYear),
       selectedYear === YEARS_DEFAULT
         ? buildPercentages(stopsGroupedByPurposeData, 'regulatory')
-        : buildPercentagesForYear(stopsGroupedByPurposeData, 'regulatory', idx),
+        : buildPercentagesForYear(stopsGroupedByPurposeData, 'regulatory', idxForYear),
       selectedYear === YEARS_DEFAULT
         ? buildPercentages(stopsGroupedByPurposeData, 'other')
-        : buildPercentagesForYear(stopsGroupedByPurposeData, 'other', idx)
+        : buildPercentagesForYear(stopsGroupedByPurposeData, 'other', idxForYear)
     );
   };
 
