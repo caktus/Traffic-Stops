@@ -96,5 +96,12 @@ export default function PieChart({
     plugins.push(alwaysShowTooltip);
   }
 
-  return <Pie ref={chartRef} options={options} data={data} plugins={plugins} />;
+  const noData = data.datasets[0].data.every((v) => parseInt(v, 10) === 0);
+
+  return (
+    <>
+      {noData && <div style={{ textAlign: 'center' }}>No Data Found</div>}
+      <Pie ref={chartRef} options={options} data={data} plugins={plugins} />
+    </>
+  );
 }
