@@ -13,7 +13,7 @@ class StopSummaryAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "agency_name",
-        "year",
+        "date",
         "stop_purpose",
         "engage_force",
         "search_type",
@@ -28,7 +28,6 @@ class StopSummaryAdmin(admin.ModelAdmin):
         "engage_force",
         "search_type",
         "contraband_found",
-        "year",
         "agency",
     )
     list_select_related = ("agency",)

@@ -38,6 +38,8 @@ function UseOfForce(props) {
   const [chartState] = useDataset(agencyId, USE_OF_FORCE);
 
   const [year, setYear] = useState(YEARS_DEFAULT);
+  const [pickerActive] = useState(null);
+  const [pickerXAxis] = useState(null);
 
   const [ethnicGroupKeys, setEthnicGroupKeys] = useState(() =>
     STATIC_LEGEND_KEYS.map((k) => ({ ...k }))
@@ -72,7 +74,7 @@ function UseOfForce(props) {
             id: ethnicGroup,
             color: theme.colors.ethnicGroup[ethnicGroup],
             data: data.map((d) => ({
-              x: d.year,
+              x: pickerXAxis === 'Month' ? d.date : d.year,
               y: d[ethnicGroup],
               ethnicGroup: eg.label,
               color: theme.colors.ethnicGroup[ethnicGroup],
@@ -126,6 +128,13 @@ function UseOfForce(props) {
     openModal(USE_OF_FORCE, TABLE_COLUMNS);
   };
 
+  const lineAxisFormat = (t) => {
+    if (pickerActive) {
+      return t;
+    }
+    return t % 2 === 0 ? t : null;
+  };
+
   return (
     <UseOfForceStyled>
       {renderMetaTags()}
@@ -143,7 +152,7 @@ function UseOfForce(props) {
             <S.LineWrapper>
               <GroupedBar
                 data={useOfForceData}
-                iTickFormat={(t) => (t % 2 === 0 ? t : null)}
+                iTickFormat={lineAxisFormat}
                 iTickValues={chartState.yearSet}
                 loading={chartState.loading[USE_OF_FORCE]}
                 toolTipFontSize={16}

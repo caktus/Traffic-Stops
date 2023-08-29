@@ -5,6 +5,7 @@ export const TableWrapper = styled.div`
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
+  overflow-y: auto;
 `;
 
 export const Table = styled.table`
@@ -40,7 +41,6 @@ export const THInner = styled.div`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  max-width: 75px;
 `;
 
 export const OfficerIdIcon = styled(FJIcon)`

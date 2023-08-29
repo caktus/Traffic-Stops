@@ -18,7 +18,7 @@ export default Object.freeze({
     // aliased colors
     primary: '#272973',
     primaryDark: '#1565B3',
-    secondary: '#02BCBB',
+    secondary: '#29A3A1',
     background: '#ffffff',
     disabled: '#ACACAC',
     caution: '#F25F5C',
