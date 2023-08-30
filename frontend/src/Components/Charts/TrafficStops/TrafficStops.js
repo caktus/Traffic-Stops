@@ -704,6 +704,7 @@ function TrafficStops(props) {
               title="Stop Purposes By Group"
               maintainAspectRatio={false}
               displayStopPurposeTooltips
+              showLegendOnBottom={false}
             />
           </StopGroupsContainer>
         </LineWrapper>
