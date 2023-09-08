@@ -22,13 +22,14 @@ export const Tooltip = styled.div`
 export default function LineChart({
   data,
   title,
-  maintainAspectRatio = true,
+  maintainAspectRatio = false,
   displayTitle = true,
   displayLegend = true,
   yAxisMax = null,
   yAxisShowLabels = true,
   displayStopPurposeTooltips = false,
   showLegendOnBottom = true,
+  redraw = false,
 }) {
   const options = {
     responsive: true,
@@ -48,8 +49,10 @@ export default function LineChart({
           }
         },
         onLeave() {
-          setTooltipText('');
-          hideTooltip();
+          if (displayStopPurposeTooltips) {
+            setTooltipText('');
+            hideTooltip();
+          }
         },
       },
       tooltip: {
@@ -101,15 +104,19 @@ export default function LineChart({
 
   return (
     <>
-      <div ref={setReferenceElement} />
-      <Tooltip
-        ref={setPopperElement}
-        style={{ ...styles.popper, width: '300px' }}
-        {...attributes.popper}
-      >
-        {tooltipText}
-      </Tooltip>
-      <Line options={options} data={data} />
+      {displayStopPurposeTooltips && (
+        <>
+          <div ref={setReferenceElement} />
+          <Tooltip
+            ref={setPopperElement}
+            style={{ ...styles.popper, width: '300px' }}
+            {...attributes.popper}
+          >
+            {tooltipText}
+          </Tooltip>
+        </>
+      )}
+      <Line options={options} data={data} redraw={redraw} datasetIdKey={title} />
     </>
   );
 }
