@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import TrafficStopsStyled, {
   GroupedStopsContainer,
   LineWrapper,
+  PieStopsContainer,
   PieWrapper,
   StopGroupsContainer,
   SwitchContainer,
@@ -704,6 +705,7 @@ function TrafficStops(props) {
               title="Stop Purposes By Group"
               maintainAspectRatio={false}
               displayStopPurposeTooltips
+              showLegendOnBottom={false}
             />
           </StopGroupsContainer>
         </LineWrapper>
@@ -763,6 +765,7 @@ function TrafficStops(props) {
               maintainAspectRatio={false}
               displayLegend={false}
               yAxisMax={stopsGroupedByPurposeData.max_step_size}
+              redraw
             />
           </GroupedStopsContainer>
           <GroupedStopsContainer visible={visibleStopsGroupedByPurpose[1].visible}>
@@ -773,6 +776,7 @@ function TrafficStops(props) {
               displayLegend={false}
               yAxisMax={stopsGroupedByPurposeData.max_step_size}
               yAxisShowLabels={!visibleStopsGroupedByPurpose[0].visible}
+              redraw
             />
           </GroupedStopsContainer>
           <GroupedStopsContainer visible={visibleStopsGroupedByPurpose[2].visible}>
@@ -785,6 +789,7 @@ function TrafficStops(props) {
               yAxisShowLabels={
                 !visibleStopsGroupedByPurpose[0].visible && !visibleStopsGroupedByPurpose[1].visible
               }
+              redraw
             />
           </GroupedStopsContainer>
         </LineWrapper>
@@ -797,30 +802,30 @@ function TrafficStops(props) {
           />
         )}
         <PieWrapper visible={checked === true}>
-          <GroupedStopsContainer visible={visibleStopsGroupedByPurpose[0].visible}>
+          <PieStopsContainer visible={visibleStopsGroupedByPurpose[0].visible}>
             <PieChart
               data={stopsGroupedByPurposePieData.safety}
               title="Safety Violation"
               maintainAspectRatio={false}
               displayLegend={false}
             />
-          </GroupedStopsContainer>
-          <GroupedStopsContainer visible={visibleStopsGroupedByPurpose[1].visible}>
+          </PieStopsContainer>
+          <PieStopsContainer visible={visibleStopsGroupedByPurpose[1].visible}>
             <PieChart
               data={stopsGroupedByPurposePieData.regulatory}
               title="Regulatory/Equipment"
               maintainAspectRatio={false}
               displayLegend={false}
             />
-          </GroupedStopsContainer>
-          <GroupedStopsContainer visible={visibleStopsGroupedByPurpose[2].visible}>
+          </PieStopsContainer>
+          <PieStopsContainer visible={visibleStopsGroupedByPurpose[2].visible}>
             <PieChart
               data={stopsGroupedByPurposePieData.other}
               title="Other"
               maintainAspectRatio={false}
               displayLegend={false}
             />
-          </GroupedStopsContainer>
+          </PieStopsContainer>
         </PieWrapper>
 
         <Legend
