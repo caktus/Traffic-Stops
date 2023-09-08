@@ -31,6 +31,9 @@ export default function PieChart({
             return `${context.parsed}%`;
           },
         },
+        titleColor: '#000',
+        bodyColor: '#000',
+        backgroundColor: 'rgba(255, 255, 255, 1.0)',
       },
       title: {
         display: displayTitle,
