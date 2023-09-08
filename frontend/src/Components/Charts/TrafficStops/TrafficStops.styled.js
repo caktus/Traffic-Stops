@@ -31,7 +31,7 @@ export const StopGroupsContainer = styled.div`
 `;
 
 export const GroupedStopsContainer = styled.div`
-  width: 30%;
+  width: 80%;
   height: 500px;
   @media (${smallerThanTabletLandscape}) {
     width: 100%;
