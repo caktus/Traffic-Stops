@@ -20,9 +20,12 @@ export const LineWrapper = styled.div`
 export const PieWrapper = styled.div`
   display: ${(props) => (props.visible ? 'flex' : 'none')};
   flex-direction: row;
-  flex-wrap: wrap;
   gap: 10px;
   justify-content: space-evenly;
+
+  @media (${smallerThanTabletLandscape}) {
+    flex-direction: column;
+  }
 `;
 
 export const StopGroupsContainer = styled.div`
@@ -32,6 +35,15 @@ export const StopGroupsContainer = styled.div`
 
 export const GroupedStopsContainer = styled.div`
   width: 80%;
+  height: 500px;
+  @media (${smallerThanTabletLandscape}) {
+    width: 100%;
+  }
+  display: ${(props) => (props.visible ? 'block' : 'none')};
+`;
+
+export const PieStopsContainer = styled.div`
+  width: 33%;
   height: 500px;
   @media (${smallerThanTabletLandscape}) {
     width: 100%;
