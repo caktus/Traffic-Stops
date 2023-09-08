@@ -452,7 +452,7 @@ class AgencyTrafficStopsByCountView(APIView):
 
         qs = qs.values(*qs_values).annotate(count=Sum("count")).order_by(date_precision)
         if qs.count() == 0:
-            return Response(data=[], status=200)
+            return Response(data={"labels": [], "datasets": []}, status=200)
         df = pd.DataFrame(qs)
         unique_x_range = df[date_precision].unique()
         pivot_df = df.pivot(index=date_precision, columns=qs_df_cols, values="count").fillna(
@@ -464,6 +464,12 @@ class AgencyTrafficStopsByCountView(APIView):
 
 
 class AgencyStopPurposeGroupView(APIView):
+    def get_values(self, df, stop_purpose, years_len):
+        if stop_purpose and stop_purpose in df:
+            return list(df[stop_purpose].values)
+        else:
+            return [0] * years_len
+
     def get(self, request, agency_id):
         qs = StopSummary.objects.all()
         agency_id = int(agency_id)
@@ -480,30 +486,34 @@ class AgencyStopPurposeGroupView(APIView):
             .annotate(count=Sum("count"))
             .order_by("year")
         )
+        if qs.count() == 0:
+            return Response(data={"labels": [], "datasets": []}, status=200)
+
         df = pd.DataFrame(qs)
         unique_years = df.year.unique()
         pivot_df = df.pivot(index="year", columns="stop_purpose_group", values="count").fillna(
             value=0
         )
         df = pd.DataFrame(pivot_df)
+        years_len = len(unique_years)
         data = {
             "labels": unique_years,
             "datasets": [
                 {
                     "label": StopPurposeGroup.SAFETY_VIOLATION,
-                    "data": list(df[StopPurposeGroup.SAFETY_VIOLATION].values),
+                    "data": self.get_values(df, StopPurposeGroup.SAFETY_VIOLATION, years_len),
                     "borderColor": "#7F428A",
                     "backgroundColor": "#CFA9D6",
                 },
                 {
                     "label": StopPurposeGroup.REGULATORY_EQUIPMENT,
-                    "data": list(df[StopPurposeGroup.REGULATORY_EQUIPMENT].values),
+                    "data": self.get_values(df, StopPurposeGroup.REGULATORY_EQUIPMENT, years_len),
                     "borderColor": "#b36800",
                     "backgroundColor": "#ffa500",
                 },
                 {
                     "label": StopPurposeGroup.OTHER,
-                    "data": list(df[StopPurposeGroup.OTHER].values),
+                    "data": self.get_values(df, StopPurposeGroup.OTHER, years_len),
                     "borderColor": "#1B4D3E",
                     "backgroundColor": "#ACE1AF",
                 },
@@ -575,6 +585,8 @@ class AgencyStopGroupByPurposeView(APIView):
             .annotate(count=Sum("count"))
             .order_by("year")
         )
+        if qs.count() == 0:
+            return Response(data={"labels": [], "datasets": []}, status=200)
         df = pd.DataFrame(qs)
         unique_years = df.year.unique()
         pivot_table = pd.pivot_table(
