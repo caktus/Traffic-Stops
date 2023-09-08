@@ -57,11 +57,11 @@ export default function PieChart({
             }
             const text = `${chart.data.labels[index]}: ${chart.data.datasets[0].data[index]}%`;
             const textWidth = ctx.measureText(text).width;
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+            ctx.fillStyle = 'rgba(255, 255, 255, 1)';
             const height = y - 15 - offsetHeight;
             ctx.fillRect(x - (textWidth + 10) / 2, height, textWidth + 10, 20);
 
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+            ctx.fillStyle = 'rgba(255, 255, 255, 1)';
             ctx.beginPath();
             ctx.moveTo(x, y + 15 - offsetHeight);
             ctx.lineTo(x - 10, y - 5 - offsetHeight);
@@ -69,8 +69,8 @@ export default function PieChart({
             ctx.fill();
             ctx.restore();
 
-            ctx.font = '12px Arial';
-            ctx.fillStyle = 'white';
+            ctx.font = '14px Arial';
+            ctx.fillStyle = 'black';
             ctx.fillText(text, x - textWidth / 2, y - offsetHeight);
             ctx.restore();
           }
