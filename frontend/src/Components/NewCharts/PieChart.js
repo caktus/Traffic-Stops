@@ -1,5 +1,6 @@
 import React from 'react';
 import { Pie } from 'react-chartjs-2';
+import DataLoading from '../Charts/ChartPrimitives/DataLoading';
 
 export default function PieChart({
   data,
@@ -100,6 +101,10 @@ export default function PieChart({
   }
 
   const noData = data.datasets[0].data.every((v) => parseInt(v, 10) === 0);
+
+  if (!data.datasets.length) {
+    return <DataLoading />;
+  }
 
   return (
     <>

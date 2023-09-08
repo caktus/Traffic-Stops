@@ -3,6 +3,7 @@ import { Line } from 'react-chartjs-2';
 import { tooltipLanguage } from '../../util/tooltipLanguage';
 import { usePopper } from 'react-popper';
 import styled from 'styled-components';
+import DataLoading from '../Charts/ChartPrimitives/DataLoading';
 
 export const Tooltip = styled.div`
   background: #333;
@@ -93,6 +94,10 @@ export default function LineChart({
   const hideTooltip = () => {
     popperElement.removeAttribute('data-show');
   };
+
+  if (!data.datasets.length) {
+    return <DataLoading />;
+  }
 
   return (
     <>
