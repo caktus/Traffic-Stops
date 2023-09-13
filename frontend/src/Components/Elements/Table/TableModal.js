@@ -531,17 +531,17 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
   const subheadingForDataset = (ds) => {
     const message = 'The following data correspond to the number of times each race was';
     if (ds === CONTRABAND_HIT_RATE) {
-      return `${message} found with contraband during a stop totalled by year.`;
+      return `${message} found with contraband during a stop totaled by year.`;
     }
     if (ds === LIKELIHOOD_OF_SEARCH) {
       if (consolidateYears) {
-        return `${message} searched during a stop totalled by year.`;
+        return `${message} searched during a stop totaled by year.`;
       }
       return `${message} searched during a specific stop reason.`;
     }
     if (ds === STOPS_BY_REASON) {
       if (consolidateYears) {
-        return `${message} stopped totalled by year.`;
+        return `${message} stopped totaled by year.`;
       }
       return `${message} stopped for a specific reason.`;
     }
