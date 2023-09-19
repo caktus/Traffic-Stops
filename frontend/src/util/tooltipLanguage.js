@@ -25,7 +25,6 @@ export const tooltipLanguage = (stopCause) =>
     'Safety Violation':
       'The "Safety Violation" category is comprised of: Speed Limit Violations, Stop Light/Stop Sign Violations, Driving While Impaired, and Safe Movement Violations',
     'Regulatory and Equipment':
-      'The "Regulatory and Equipment" category is comprised of: Vehicle Equipment Violations, Vehicle Regulatory Violations, and Other Motor Vehicle Violations.',
-    Other:
-      'The "Other" Category is comprised of: Seat Belt Violations, Investigations, and Checkpoints.',
+      'The "Regulatory and Equipment" category is comprised of: Vehicle Equipment Violations, Vehicle Regulatory Violations, Other Motor Vehicle Violations and Seat Belt Violations.',
+    Other: 'The "Other" Category is comprised of: Investigations and Checkpoints.',
   }[stopCause]);
