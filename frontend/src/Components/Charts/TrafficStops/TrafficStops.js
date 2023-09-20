@@ -480,7 +480,8 @@ function TrafficStops(props) {
 
   const handleYearSelectForGroupedPieCharts = (selectedYear, idx) => {
     setYearForGroupedPieCharts(selectedYear);
-    const idxForYear = idx - 1; // Dropdown has first index as 'all' which we need to skip
+    // Get the reverse index of the year since it's now in descending order
+    const idxForYear = stopsGroupedByPurposeData.labels.length - idx;
     updateStoppedPurposePieChart(
       selectedYear === YEARS_DEFAULT
         ? buildPercentages(stopsGroupedByPurposeData, 'safety')
@@ -797,7 +798,7 @@ function TrafficStops(props) {
             label="Year"
             value={yearForGroupedPieCharts}
             onChange={handleYearSelectForGroupedPieCharts}
-            options={[YEARS_DEFAULT].concat(stopsGroupedByPurposeData.labels)}
+            options={[YEARS_DEFAULT].concat([...stopsGroupedByPurposeData.labels].reverse())}
           />
         )}
         <PieWrapper visible={checked === true}>
