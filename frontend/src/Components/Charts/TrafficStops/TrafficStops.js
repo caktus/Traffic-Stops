@@ -639,7 +639,7 @@ function TrafficStops(props) {
                   marginTop: '1em',
                 }}
               >
-                <Button onClick={() => setShowZoomedPieChart(true)}>View more</Button>
+                <Button onClick={() => setShowZoomedPieChart(true)}>Expand</Button>
               </div>
             </S.PieActionsWrapper>
           </S.PieSection>
