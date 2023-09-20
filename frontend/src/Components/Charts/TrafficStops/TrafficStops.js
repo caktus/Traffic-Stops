@@ -590,7 +590,6 @@ function TrafficStops(props) {
                 keys={percentageEthnicGroups}
                 onKeySelect={handlePercentageKeySelected}
                 showNonHispanic
-                row={!props.showCompare}
               />
             </S.LegendBeside>
           </S.LineSection>
@@ -833,7 +832,6 @@ function TrafficStops(props) {
           keys={stopPurposeEthnicGroups}
           onKeySelect={handleStopPurposeKeySelected}
           showNonHispanic
-          row
           isStatic={checked}
         />
       </S.ChartSection>

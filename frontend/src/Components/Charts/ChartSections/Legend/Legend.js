@@ -5,7 +5,7 @@ import * as S from './Legend.styled';
 import { ICONS } from '../../../../img/icons/Icon';
 import { WEIGHTS } from '../../../../styles/StyledComponents/Typography';
 
-function Legend({ keys, onKeySelect, isStatic, showNonHispanic, heading, row }) {
+function Legend({ keys, onKeySelect, isStatic, showNonHispanic, heading, row = 'row' }) {
   const theme = useTheme();
 
   return (

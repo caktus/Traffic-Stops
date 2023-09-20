@@ -21,7 +21,7 @@ export const LegendHeading = styled(P)`
 
 export const KeysList = styled.ul`
   display: flex;
-  flex-direction: ${(props) => (props.row ? 'row' : 'column')};
+  flex-direction: ${(props) => props.row || 'row'};
   list-style: none;
   padding: 0;
   margin: 0;
