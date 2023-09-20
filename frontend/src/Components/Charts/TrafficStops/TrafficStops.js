@@ -803,28 +803,34 @@ function TrafficStops(props) {
         )}
         <PieWrapper visible={checked === true}>
           <PieStopsContainer visible={visibleStopsGroupedByPurpose[0].visible}>
-            <PieChart
-              data={stopsGroupedByPurposePieData.safety}
-              title="Safety Violation"
-              maintainAspectRatio={false}
-              displayLegend={false}
-            />
+            <PieWrapper visible>
+              <PieChart
+                data={stopsGroupedByPurposePieData.safety}
+                title="Safety Violation"
+                maintainAspectRatio={false}
+                displayLegend={false}
+              />
+            </PieWrapper>
           </PieStopsContainer>
           <PieStopsContainer visible={visibleStopsGroupedByPurpose[1].visible}>
-            <PieChart
-              data={stopsGroupedByPurposePieData.regulatory}
-              title="Regulatory/Equipment"
-              maintainAspectRatio={false}
-              displayLegend={false}
-            />
+            <PieWrapper visible>
+              <PieChart
+                data={stopsGroupedByPurposePieData.regulatory}
+                title="Regulatory/Equipment"
+                maintainAspectRatio={false}
+                displayLegend={false}
+              />
+            </PieWrapper>
           </PieStopsContainer>
           <PieStopsContainer visible={visibleStopsGroupedByPurpose[2].visible}>
-            <PieChart
-              data={stopsGroupedByPurposePieData.other}
-              title="Other"
-              maintainAspectRatio={false}
-              displayLegend={false}
-            />
+            <PieWrapper visible>
+              <PieChart
+                data={stopsGroupedByPurposePieData.other}
+                title="Other"
+                maintainAspectRatio={false}
+                displayLegend={false}
+              />
+            </PieWrapper>
           </PieStopsContainer>
         </PieWrapper>
 
