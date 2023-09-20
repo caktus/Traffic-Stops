@@ -144,7 +144,7 @@ function UseOfForce(props) {
         <S.ChartDescription>
           <P>
             Shows the race/ethnic composition of drivers {subjectObserving()} reported using force
-            against
+            against.
           </P>
         </S.ChartDescription>
         <S.ChartSubsection showCompare={showCompare}>
