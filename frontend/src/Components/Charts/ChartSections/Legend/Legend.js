@@ -60,7 +60,7 @@ Legend.propTypes = {
   onKeySelect: PropTypes.func,
   showNonHispanic: PropTypes.bool,
   heading: PropTypes.string,
-  direction: PropTypes.bool,
+  direction: PropTypes.string,
 };
 
 Legend.defaultProps = {
