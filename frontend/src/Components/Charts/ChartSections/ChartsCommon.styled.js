@@ -84,8 +84,8 @@ export const PieWrapper = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  width: ${(props) => (props.zoomed ? '100%' : 'auto')};
-  height: ${(props) => (props.zoomed ? '100%' : 'auto')};
+  width: ${(props) => (props.zoomed ? '100%' : '400px')};
+  height: ${(props) => (props.zoomed ? '100%' : '400px')};
 
   @media (${smallerThanTabletLandscape}) {
     flex-direction: column;
