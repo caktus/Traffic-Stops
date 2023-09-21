@@ -256,6 +256,7 @@ function SearchRate(props) {
                 keys={ethnicGroupKeys}
                 onKeySelect={handleGroupKeySelected}
                 showNonHispanic
+                direction="column"
               />
               <DataSubsetPicker
                 label="Year"

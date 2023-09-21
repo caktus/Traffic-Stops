@@ -480,7 +480,8 @@ function TrafficStops(props) {
 
   const handleYearSelectForGroupedPieCharts = (selectedYear, idx) => {
     setYearForGroupedPieCharts(selectedYear);
-    const idxForYear = idx - 1; // Dropdown has first index as 'all' which we need to skip
+    // Get the reverse index of the year since it's now in descending order
+    const idxForYear = stopsGroupedByPurposeData.labels.length - idx;
     updateStoppedPurposePieChart(
       selectedYear === YEARS_DEFAULT
         ? buildPercentages(stopsGroupedByPurposeData, 'safety')
@@ -590,7 +591,6 @@ function TrafficStops(props) {
                 keys={percentageEthnicGroups}
                 onKeySelect={handlePercentageKeySelected}
                 showNonHispanic
-                row={!props.showCompare}
               />
             </S.LegendBeside>
           </S.LineSection>
@@ -639,7 +639,7 @@ function TrafficStops(props) {
                   marginTop: '1em',
                 }}
               >
-                <Button onClick={() => setShowZoomedPieChart(true)}>View more</Button>
+                <Button onClick={() => setShowZoomedPieChart(true)}>Expand</Button>
               </div>
             </S.PieActionsWrapper>
           </S.PieSection>
@@ -798,33 +798,39 @@ function TrafficStops(props) {
             label="Year"
             value={yearForGroupedPieCharts}
             onChange={handleYearSelectForGroupedPieCharts}
-            options={[YEARS_DEFAULT].concat(stopsGroupedByPurposeData.labels)}
+            options={[YEARS_DEFAULT].concat([...stopsGroupedByPurposeData.labels].reverse())}
           />
         )}
         <PieWrapper visible={checked === true}>
           <PieStopsContainer visible={visibleStopsGroupedByPurpose[0].visible}>
-            <PieChart
-              data={stopsGroupedByPurposePieData.safety}
-              title="Safety Violation"
-              maintainAspectRatio={false}
-              displayLegend={false}
-            />
+            <PieWrapper visible>
+              <PieChart
+                data={stopsGroupedByPurposePieData.safety}
+                title="Safety Violation"
+                maintainAspectRatio={false}
+                displayLegend={false}
+              />
+            </PieWrapper>
           </PieStopsContainer>
           <PieStopsContainer visible={visibleStopsGroupedByPurpose[1].visible}>
-            <PieChart
-              data={stopsGroupedByPurposePieData.regulatory}
-              title="Regulatory/Equipment"
-              maintainAspectRatio={false}
-              displayLegend={false}
-            />
+            <PieWrapper visible>
+              <PieChart
+                data={stopsGroupedByPurposePieData.regulatory}
+                title="Regulatory/Equipment"
+                maintainAspectRatio={false}
+                displayLegend={false}
+              />
+            </PieWrapper>
           </PieStopsContainer>
           <PieStopsContainer visible={visibleStopsGroupedByPurpose[2].visible}>
-            <PieChart
-              data={stopsGroupedByPurposePieData.other}
-              title="Other"
-              maintainAspectRatio={false}
-              displayLegend={false}
-            />
+            <PieWrapper visible>
+              <PieChart
+                data={stopsGroupedByPurposePieData.other}
+                title="Other"
+                maintainAspectRatio={false}
+                displayLegend={false}
+              />
+            </PieWrapper>
           </PieStopsContainer>
         </PieWrapper>
 
@@ -833,7 +839,6 @@ function TrafficStops(props) {
           keys={stopPurposeEthnicGroups}
           onKeySelect={handleStopPurposeKeySelected}
           showNonHispanic
-          row
           isStatic={checked}
         />
       </S.ChartSection>

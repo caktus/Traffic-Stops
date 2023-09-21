@@ -214,7 +214,7 @@ function Overview(props) {
           <S.ChartTitle>Census Demographics</S.ChartTitle>
           <S.PieWrapper>
             <Pie loading={chartState.loading[AGENCY_DETAILS]} data={censusPieData} />
-            <Legend keys={STATIC_LEGEND_KEYS} isStatic showNonHispanic />
+            <Legend keys={STATIC_LEGEND_KEYS} isStatic showNonHispanic direction="column" />
           </S.PieWrapper>
           <S.Note>
             <strong>NOTE: </strong>
@@ -227,10 +227,10 @@ function Overview(props) {
           <S.ChartTitle>Traffic Stops</S.ChartTitle>
           <S.PieWrapper>
             <Pie loading={chartState.loading[STOPS]} data={trafficStopsData} />
-            <Legend keys={STATIC_LEGEND_KEYS} isStatic showNonHispanic />
+            <Legend keys={STATIC_LEGEND_KEYS} isStatic showNonHispanic direction="column" />
           </S.PieWrapper>
           <S.Note>
-            Shows the race/ethnic composition of drivers stopped by this {subjectObserving()}
+            Shows the race/ethnic composition of drivers stopped by this {subjectObserving()}.
           </S.Note>
           <S.Link onClick={() => buildUrl(slugs.TRAFFIC_STOPS_SLUG)}>
             View traffic stops over time
@@ -242,10 +242,10 @@ function Overview(props) {
           <S.ChartTitle>Searches</S.ChartTitle>
           <S.PieWrapper>
             <Pie loading={chartState.loading[SEARCHES]} data={searchesData} />
-            <Legend keys={STATIC_LEGEND_KEYS} isStatic showNonHispanic />
+            <Legend keys={STATIC_LEGEND_KEYS} isStatic showNonHispanic direction="column" />
           </S.PieWrapper>
           <S.Note>
-            Shows the race/ethnic composition of drivers searched by this {subjectObserving()}
+            Shows the race/ethnic composition of drivers searched by this {subjectObserving()}.
           </S.Note>
           <S.Link onClick={() => buildUrl(slugs.SEARCHES_SLUG)}>View searches over time</S.Link>
         </S.PieContainer>
@@ -253,11 +253,11 @@ function Overview(props) {
           <S.ChartTitle>Use of Force</S.ChartTitle>
           <S.PieWrapper>
             <Pie loading={chartState.loading[USE_OF_FORCE]} data={useOfForceData} />
-            <Legend keys={STATIC_LEGEND_KEYS} isStatic showNonHispanic />
+            <Legend keys={STATIC_LEGEND_KEYS} isStatic showNonHispanic direction="column" />
           </S.PieWrapper>
           <S.Note>
             Shows the race/ethnic composition of drivers whom {useOfForcePieChartCopy()} reported
-            using force against
+            using force against.
           </S.Note>
           <S.Link onClick={() => buildUrl(slugs.USE_OF_FORCE_SLUG)}>
             View use-of-force over time

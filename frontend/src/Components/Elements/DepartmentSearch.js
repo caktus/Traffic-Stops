@@ -55,7 +55,9 @@ function DepartmentSearch({
   async function _fetchAgencyList() {
     try {
       const { data } = await axios.get(getAgenciesURL());
-      dispatch({ type: FETCH_SUCCESS, dataSet: DATA_SET, payload: data });
+      // Removing NC Statewide link from list and instead have dedicated button above list
+      const agencies = data.filter((d) => d.id !== -1);
+      dispatch({ type: FETCH_SUCCESS, dataSet: DATA_SET, payload: agencies });
     } catch (error) {
       dispatch({ type: FETCH_FAILURE, dataSet: DATA_SET, payload: error.message });
     }
