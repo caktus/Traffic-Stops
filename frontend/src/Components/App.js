@@ -43,6 +43,7 @@ import * as S from './HomePage/HomePage.styled';
 
 // New Charts
 import {
+  ArcElement,
   BarElement,
   CategoryScale,
   Chart as ChartJS,
@@ -55,6 +56,7 @@ import {
 } from 'chart.js';
 
 ChartJS.register(
+  ArcElement,
   BarElement,
   CategoryScale,
   LinearScale,

@@ -168,7 +168,8 @@ function SearchRate(props) {
         <ChartHeader chartTitle='Contraband "Hit Rate"' handleViewData={handleViewData} />
         <S.ChartDescription>
           <P>
-            Shows what percentage of searches discovered contraband for a given race / ethnic group
+            Shows what percentage of searches discovered illegal items for a given race / ethnic
+            group.
           </P>
         </S.ChartDescription>
         <S.ChartSubsection showCompare={showCompare}>

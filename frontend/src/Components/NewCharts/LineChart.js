@@ -3,6 +3,7 @@ import { Line } from 'react-chartjs-2';
 import { tooltipLanguage } from '../../util/tooltipLanguage';
 import { usePopper } from 'react-popper';
 import styled from 'styled-components';
+import DataLoading from '../Charts/ChartPrimitives/DataLoading';
 
 export const Tooltip = styled.div`
   background: #333;
@@ -21,12 +22,14 @@ export const Tooltip = styled.div`
 export default function LineChart({
   data,
   title,
-  maintainAspectRatio = true,
+  maintainAspectRatio = false,
   displayTitle = true,
   displayLegend = true,
   yAxisMax = null,
   yAxisShowLabels = true,
   displayStopPurposeTooltips = false,
+  showLegendOnBottom = true,
+  redraw = false,
 }) {
   const options = {
     responsive: true,
@@ -38,7 +41,7 @@ export default function LineChart({
     plugins: {
       legend: {
         display: displayLegend,
-        position: 'top',
+        position: showLegendOnBottom ? 'bottom' : 'top',
         onHover(event, legendItem) {
           if (displayStopPurposeTooltips) {
             setTooltipText(tooltipLanguage(legendItem.text));
@@ -46,8 +49,10 @@ export default function LineChart({
           }
         },
         onLeave() {
-          setTooltipText('');
-          hideTooltip();
+          if (displayStopPurposeTooltips) {
+            setTooltipText('');
+            hideTooltip();
+          }
         },
       },
       tooltip: {
@@ -61,6 +66,7 @@ export default function LineChart({
     },
     scales: {
       y: {
+        min: 0,
         max: yAxisMax,
         ticks: {
           display: yAxisShowLabels,
@@ -92,17 +98,25 @@ export default function LineChart({
     popperElement.removeAttribute('data-show');
   };
 
+  if (!data.datasets.length) {
+    return <DataLoading />;
+  }
+
   return (
     <>
-      <div ref={setReferenceElement} />
-      <Tooltip
-        ref={setPopperElement}
-        style={{ ...styles.popper, width: '300px' }}
-        {...attributes.popper}
-      >
-        {tooltipText}
-      </Tooltip>
-      <Line options={options} data={data} />
+      {displayStopPurposeTooltips && (
+        <>
+          <div ref={setReferenceElement} />
+          <Tooltip
+            ref={setPopperElement}
+            style={{ ...styles.popper, width: '300px' }}
+            {...attributes.popper}
+          >
+            {tooltipText}
+          </Tooltip>
+        </>
+      )}
+      <Line options={options} data={data} redraw={redraw} datasetIdKey={title} />
     </>
   );
 }

@@ -5,13 +5,13 @@ import * as S from './Legend.styled';
 import { ICONS } from '../../../../img/icons/Icon';
 import { WEIGHTS } from '../../../../styles/StyledComponents/Typography';
 
-function Legend({ keys, onKeySelect, isStatic, showNonHispanic, heading, row }) {
+function Legend({ keys, onKeySelect, isStatic, showNonHispanic, heading, direction = 'row' }) {
   const theme = useTheme();
 
   return (
-    <S.Legend row={row}>
+    <S.Legend>
       {heading && <S.LegendHeading weight={WEIGHTS[1]}>{heading}</S.LegendHeading>}
-      <S.KeysList row={row}>
+      <S.KeysList direction={direction}>
         {keys?.map((key) => {
           const fill = key.selected ? theme.colors.ethnicGroup[key.value] : theme.colors.grey;
           const iconProps = {
@@ -60,13 +60,13 @@ Legend.propTypes = {
   onKeySelect: PropTypes.func,
   showNonHispanic: PropTypes.bool,
   heading: PropTypes.string,
-  row: PropTypes.bool,
+  direction: PropTypes.string,
 };
 
 Legend.defaultProps = {
   isStatic: false,
   showNonHispanic: false,
-  row: false,
+  direction: 'row',
 };
 
 export default Legend;

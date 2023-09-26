@@ -2,44 +2,10 @@ import Button from './Button';
 import * as ChartHeaderStyles from '../Charts/ChartSections/ChartHeader.styled';
 import { ICONS } from '../../img/icons/Icon';
 import React, { forwardRef, useEffect, useState } from 'react';
-import mapDatasetKeyToEndpoint from '../../Services/endpoints';
-import axios from '../../Services/Axios';
-import {
-  CONTRABAND_HIT_RATE,
-  LIKELIHOOD_OF_SEARCH,
-  SEARCHES,
-  SEARCHES_BY_TYPE,
-  STOPS,
-  STOPS_BY_REASON,
-  USE_OF_FORCE,
-} from '../../Hooks/useDataset';
+
 import { useTheme } from 'styled-components';
-import range from 'lodash.range';
 import DatePicker from 'react-datepicker';
-
-function getRangeValues() {
-  const today = new Date();
-
-  return {
-    from: {
-      year: 2001,
-      month: 1,
-    },
-    to: {
-      year: today.getFullYear(),
-      month: today.getMonth() + 1,
-    },
-  };
-}
-const mapDataSetToEnum = {
-  STOPS,
-  SEARCHES,
-  STOPS_BY_REASON,
-  SEARCHES_BY_TYPE,
-  USE_OF_FORCE,
-  CONTRABAND_HIT_RATE,
-  LIKELIHOOD_OF_SEARCH,
-};
+import { getRangeValues } from '../../util/range';
 
 const MonthPickerButton = forwardRef(({ value, onClick }, ref) => (
   <Button onClick={onClick} ref={ref}>
@@ -48,80 +14,58 @@ const MonthPickerButton = forwardRef(({ value, onClick }, ref) => (
 ));
 
 export default function MonthRangePicker({
-  agencyId,
-  dataSet,
   deactivatePicker,
-  forcePickerRerender,
   onChange,
   onClosePicker,
+  minY = null,
+  maxY = null,
 }) {
   const theme = useTheme();
-  const startYear = new Date().setFullYear(2000, 1, 1);
   const [showDateRangePicker, setShowDateRangePicker] = useState(false);
-  const [startDate, setStartDate] = useState(startYear);
+  const [startDate, setStartDate] = useState(new Date().setFullYear(2001, 1, 1));
   const [endDate, setEndDate] = useState(new Date());
   const [minDate, setMinDate] = useState(null);
+  const [minYear, setMinYear] = useState(null);
+  const [maxYear, setMaxYear] = useState(null);
 
   useEffect(() => {
     if (deactivatePicker) {
       setShowDateRangePicker(false);
-      setMinDate(null);
-      setStartDate(startYear);
-      setEndDate(new Date());
     }
   }, [deactivatePicker]);
 
   useEffect(() => {
-    const rerenderData = async () => {
-      const rangeVal = {
-        from: { month: startDate.getMonth() + 1, year: startDate.getFullYear() },
-        to: { month: endDate.getMonth() + 1, year: endDate.getFullYear() },
-      };
-      await updateDatePicker(rangeVal);
-    };
-    if (forcePickerRerender) {
-      rerenderData().catch((err) => console.log(err));
+    setMinDate(minY);
+    setStartDate(minY);
+    setEndDate(maxY);
+    setMinYear(minY);
+    setMaxYear(maxY);
+  }, [minY, maxY]);
+
+  const showDatePicker = () => {
+    if (!minYear && !maxYear) {
+      const rangeValues = getRangeValues();
+      setStartDate(new Date().setFullYear(rangeValues.from.year, 1));
     }
-  }, [forcePickerRerender]);
+    setShowDateRangePicker(true);
+  };
 
   const closeRangePicker = async () => {
     setShowDateRangePicker(false);
-    setMinDate(null);
-    setStartDate(startYear);
-    setEndDate(new Date());
-    await updateDatePicker(getRangeValues());
+
+    if (minYear && maxY) {
+      setMinDate(minY);
+      setStartDate(minY);
+      setEndDate(maxY);
+    } else {
+      const rangeValues = getRangeValues(true);
+      setStartDate(new Date().setFullYear(rangeValues.from.year, 1));
+      setEndDate(new Date());
+      setMinDate(null);
+    }
+
+    onChange(null);
     onClosePicker();
-  };
-
-  const updateDatePicker = async (rangeVal) => {
-    let tableDS = mapDataSetToEnum[dataSet];
-    if (Array.isArray(dataSet)) {
-      tableDS = mapDataSetToEnum[dataSet[1]];
-    }
-    const getEndpoint = mapDatasetKeyToEndpoint(tableDS);
-    const _from = `${rangeVal.from.year}-${rangeVal.from.month.toString().padStart(2, 0)}-01`;
-    const _to = `${rangeVal.to.year}-${rangeVal.to.month.toString().padStart(2, 0)}-01`;
-    const url = `${getEndpoint(agencyId)}?from=${_from}&to=${_to}`;
-
-    const fromDate = new Date(_from);
-    fromDate.setDate(fromDate.getDate() + 1); // To prevent getting last month's date in new year
-    fromDate.toLocaleString('en-US', { timeZone: 'America/New_York' });
-    const toDate = new Date(_to);
-    toDate.setDate(toDate.getDate() + 1); // To prevent getting last month's date in new year
-    toDate.toLocaleString('en-US', { timeZone: 'America/New_York' });
-
-    const diffYears = toDate.getFullYear() - fromDate.getFullYear();
-    let xAxis = 'Year';
-    const yearRange = range(rangeVal.from.year, rangeVal.to.year + 1, 1);
-    if (diffYears < 3) {
-      xAxis = 'Month';
-    }
-    try {
-      const { data } = await axios.get(url);
-      onChange({ data, xAxis, yearRange });
-    } catch (err) {
-      console.log(err);
-    }
   };
 
   const onDateRangeChange = async (dates) => {
@@ -147,14 +91,14 @@ export default function MonthRangePicker({
         from: { month: start.getMonth() + 1, year: start.getFullYear() },
         to: { month: end.getMonth() + 1, year: end.getFullYear() },
       };
-      await updateDatePicker(rangeVal);
+      onChange(rangeVal);
     }
   };
 
   return (
     <div style={{ marginTop: '20px' }}>
       {!showDateRangePicker && (
-        <Button variant="positive" marginTop={10} onClick={() => setShowDateRangePicker(true)}>
+        <Button variant="positive" marginTop={10} onClick={showDatePicker}>
           Filter by date range
         </Button>
       )}
@@ -162,12 +106,12 @@ export default function MonthRangePicker({
         <div style={{ display: 'flex', flexDirection: 'row', marginTop: '10' }}>
           <div style={{ width: '200px' }}>
             <DatePicker
-              selected={startDate}
+              selected={endDate}
               onChange={onDateRangeChange}
               startDate={startDate}
               endDate={endDate}
-              minDate={minDate}
-              maxDate={new Date()}
+              minDate={minYear}
+              maxDate={maxYear}
               dateFormat="MM/yyyy"
               showMonthYearPicker
               selectsRange
