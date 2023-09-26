@@ -43,6 +43,7 @@ function Contraband(props) {
     datasets: [],
   });
   const [contrabandStopPurposeModalData, setContrabandStopPurposeModalData] = useState({
+    modalData: {},
     isOpen: false,
     tableData: [],
     csvData: [],
@@ -160,7 +161,6 @@ function Contraband(props) {
           Money: '#dbc3df',
           Other: '#ffd4a0',
         };
-        console.log(res.data);
         const stopPurposeDataSets = res.data.map((sp, _) => ({
           labels: ['White', 'Black', 'Hispanic', 'Asian', 'Native American', 'Other'],
           datasets: sp.data.map((ds, _) => ({
@@ -169,11 +169,17 @@ function Contraband(props) {
             backgroundColor: colors[ds.contraband],
           })),
         }));
-        console.log(stopPurposeDataSets);
         setContrabandGroupedStopPurposeData(stopPurposeDataSets);
       })
       .catch((err) => console.log(err));
   }, [year]);
+
+  useEffect(() => {
+    const url = `/api/agency/${agencyId}/contraband-grouped-stop-purpose/modal/`;
+    axios.get(url).then((res) => {
+      setContrabandStopPurposeModalData({ ...contrabandStopPurposeModalData, modalData: res.data });
+    });
+  }, []);
 
   const showContrabandModal = () => {
     if (!chartState.data[CONTRABAND_HIT_RATE]) return;
@@ -212,17 +218,20 @@ function Contraband(props) {
     if (typeof stopPurpose === 'string') {
       stopPurposeSelected = stopPurpose;
     }
-    contrabandStopPurposeData.labels.forEach((e, i) => {
-      const safety = contrabandStopPurposeData.datasets[0].data[i];
-      const regulatory = contrabandStopPurposeData.datasets[1].data[i];
-      const other = contrabandStopPurposeData.datasets[2].data[i];
-      tableData.unshift({
+    const modalData = contrabandStopPurposeModalData.modalData[stopPurposeKey[stopPurposeSelected]];
+    modalData.labels.forEach((e, y) => {
+      const races = ['white', 'black', 'hispanic', 'asian', 'native_american', 'other'];
+      const row = {
         year: e,
-        safety,
-        regulatory,
-        other,
-        total: [safety, regulatory, other].reduce((a, b) => a + b, 0),
+      };
+      const total = [];
+      races.forEach((r, j) => {
+        // The data is indexed by the stop purpose group, then the index of the race then the index of the year.
+        row[r] = modalData.datasets[j]['data'][y];
+        total.unshift(row[r]);
       });
+      row['total'] = total.reduce((a, b) => a + b, 0);
+      tableData.unshift(row);
     });
     const newState = {
       ...contrabandStopPurposeModalData,

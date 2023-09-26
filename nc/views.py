@@ -704,6 +704,83 @@ class AgencyContrabandStopPurposeView(APIView):
         return Response(data=data, status=200)
 
 
+class AgencyContrabandStopGroupByPurposeView(APIView):
+    def group_by_purpose(self, df, purpose, years):
+        def get_values(col):
+            if purpose in df and col in df[purpose]:
+                return list(df[purpose][col].values)
+            return [0] * len(years)
+
+        return {
+            "labels": years,
+            "datasets": [
+                {
+                    "label": "White",
+                    "data": get_values("White"),
+                },
+                {
+                    "label": "Black",
+                    "data": get_values("Black"),
+                },
+                {
+                    "label": "Hispanic",
+                    "data": get_values("Hispanic"),
+                },
+                {
+                    "label": "Asian",
+                    "data": get_values("Asian"),
+                },
+                {
+                    "label": "Native American",
+                    "data": get_values("Native American"),
+                },
+                {
+                    "label": "Other",
+                    "data": get_values("Other"),
+                },
+            ],
+        }
+
+    def get(self, request, agency_id):
+        qs = StopSummary.objects.filter(contraband_found=True)
+        agency_id = int(agency_id)
+        if agency_id != -1:
+            qs = qs.filter(agency_id=agency_id)
+        officer = request.query_params.get("officer", None)
+        if officer:
+            qs = qs.filter(officer_id=officer)
+        qs = (
+            qs.annotate(year=ExtractYear("date"))
+            .values("year", "driver_race_comb", "stop_purpose_group")
+            .annotate(count=Sum("count"))
+            .order_by("year")
+        )
+        if qs.count() == 0:
+            return Response(data={"labels": [], "datasets": []}, status=200)
+        df = pd.DataFrame(qs)
+        unique_years = df.year.unique()
+        pivot_table = df.pivot(
+            index="year", columns=["stop_purpose_group", "driver_race_comb"], values="count"
+        ).fillna(value=0)
+        pivot_df = pd.DataFrame(pivot_table)
+
+        safety_data = self.group_by_purpose(
+            pivot_df, StopPurposeGroup.SAFETY_VIOLATION, unique_years
+        )
+        regulatory_data = self.group_by_purpose(
+            pivot_df, StopPurposeGroup.REGULATORY_EQUIPMENT, unique_years
+        )
+        other_data = self.group_by_purpose(pivot_df, StopPurposeGroup.OTHER, unique_years)
+        data = {
+            "labels": unique_years,
+            "safety": safety_data,
+            "regulatory": regulatory_data,
+            "other": other_data,
+        }
+
+        return Response(data=data, status=200)
+
+
 class AgencyContrabandGroupedStopPurposeView(APIView):
     def create_searches_df(self, _filter, year=None):
         qs = StopSummary.objects.filter(_filter).annotate(year=ExtractYear("date"))
