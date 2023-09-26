@@ -4,23 +4,14 @@ import * as S from '../ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
 
 // Util
-import toTitleCase from '../../../util/toTitleCase';
-import {
-  reduceYearsToTotal,
-  calculatePercentage,
-  getQuantityForYear,
-  CONTRABAND_TYPES,
-  CONTRABAND_DEFAULT,
-  RACES,
-  YEARS_DEFAULT,
-} from '../chartUtils';
+import { YEARS_DEFAULT } from '../chartUtils';
 
 // Hooks
 import useMetaTags from '../../../Hooks/useMetaTags';
 import useTableModal from '../../../Hooks/useTableModal';
 
 // State
-import useDataset, { CONTRABAND_HIT_RATE } from '../../../Hooks/useDataset';
+import useDataset, { AGENCY_DETAILS, CONTRABAND_HIT_RATE } from '../../../Hooks/useDataset';
 
 // Children
 import { P } from '../../../styles/StyledComponents/Typography';
@@ -28,8 +19,9 @@ import ChartHeader from '../ChartSections/ChartHeader';
 import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
 import HorizontalBarChart from '../../NewCharts/HorizontalBarChart';
 import axios from '../../../Services/Axios';
+import NewModal from '../../NewCharts/NewModal';
 
-function SearchRate(props) {
+function Contraband(props) {
   const { agencyId, showCompare } = props;
   const theme = useTheme();
 
@@ -40,6 +32,11 @@ function SearchRate(props) {
   const renderMetaTags = useMetaTags();
   const [renderTableModal, { openModal }] = useTableModal();
   const [contrabandData, setContrabandData] = useState({ labels: [], datasets: [] });
+  const [contrabandModalData, setContrabandModalData] = useState({
+    isOpen: false,
+    tableData: [],
+    csvData: [],
+  });
   const [contrabandYear, setContrabandYear] = useState(YEARS_DEFAULT);
   const [contrabandStopPurposeData, setContrabandStopPurposeData] = useState({
     labels: [],
@@ -79,7 +76,7 @@ function SearchRate(props) {
   };
 
   const handleViewData = () => {
-    openModal(CONTRABAND_HIT_RATE, TABLE_COLUMNS);
+    openModal(CONTRABAND_HIT_RATE, CONTRABAND_TABLE_COLUMNS);
   };
   // Build New Contraband Data
   useEffect(() => {
@@ -171,17 +168,54 @@ function SearchRate(props) {
       .catch((err) => console.log(err));
   }, [year]);
 
+  const showContrabandModal = () => {
+    if (!chartState.data[CONTRABAND_HIT_RATE]) return;
+    const tableData = [];
+    chartState.data[CONTRABAND_HIT_RATE].contraband.forEach((e, i) => {
+      const dataCounts = { ...e };
+      delete dataCounts.year;
+      // Need to assign explicitly otherwise the download data orders columns by alphabet.
+      tableData.unshift({
+        year: e.year,
+        white: e.white,
+        black: e.black,
+        native_american: e.native_american,
+        asian: e.asian,
+        other: e.other,
+        hispanic: e.hispanic,
+        total: Object.values(dataCounts).reduce((a, b) => a + b, 0),
+      });
+    });
+    const newState = {
+      isOpen: true,
+      tableData,
+      csvData: tableData,
+    };
+    setContrabandModalData(newState);
+  };
+
   return (
     <ContrabandStyled>
       {renderMetaTags()}
       {renderTableModal()}
       <S.ChartSection>
-        <ChartHeader chartTitle='Contraband "Hit Rate"' handleViewData={handleViewData} />
+        <ChartHeader chartTitle='Contraband "Hit Rate"' handleViewData={showContrabandModal} />
         <S.ChartDescription>
           <P>
             Shows what percentage of searches discovered illegal items for a given race / ethnic
             group.
           </P>
+          <NewModal
+            tableHeader='Contraband "Hit Rate"'
+            tableSubheader="Shows the number of traffics stops broken down by purpose and race / ethnicity."
+            agencyName={chartState.data[AGENCY_DETAILS].name}
+            tableData={contrabandModalData.tableData}
+            csvData={contrabandModalData.csvData}
+            columns={CONTRABAND_TABLE_COLUMNS}
+            tableDownloadName="Traffic Stops By Stop Purpose"
+            isOpen={contrabandModalData.isOpen}
+            closeModal={() => setContrabandModalData((state) => ({ ...state, isOpen: false }))}
+          />
         </S.ChartDescription>
         <S.ChartSubsection showCompare={showCompare}>
           <ChartWrapper>
@@ -288,9 +322,9 @@ function SearchRate(props) {
   );
 }
 
-export default SearchRate;
+export default Contraband;
 
-const TABLE_COLUMNS = [
+const CONTRABAND_TABLE_COLUMNS = [
   {
     Header: 'Year',
     accessor: 'year', // accessor is the "key" in the data
