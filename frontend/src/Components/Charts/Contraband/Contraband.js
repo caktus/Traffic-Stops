@@ -40,10 +40,12 @@ function SearchRate(props) {
   const renderMetaTags = useMetaTags();
   const [renderTableModal, { openModal }] = useTableModal();
   const [contrabandData, setContrabandData] = useState({ labels: [], datasets: [] });
+  const [contrabandYear, setContrabandYear] = useState(YEARS_DEFAULT);
   const [contrabandStopPurposeData, setContrabandStopPurposeData] = useState({
     labels: [],
     datasets: [],
   });
+  const [groupdContrabandYear, setGroupedContrabandYear] = useState(YEARS_DEFAULT);
   const [contrabandGroupedStopPurposeData, setContrabandGroupedStopPurposeData] = useState([
     {
       labels: [],
@@ -66,14 +68,24 @@ function SearchRate(props) {
     setYear(y);
   };
 
+  const handleContrabandYearSelect = (y) => {
+    if (y === contrabandYear) return;
+    setContrabandYear(y);
+  };
+
+  const handleGroupedContrabandYearSelect = (y) => {
+    if (y === groupdContrabandYear) return;
+    setGroupedContrabandYear(y);
+  };
+
   const handleViewData = () => {
     openModal(CONTRABAND_HIT_RATE, TABLE_COLUMNS);
   };
   // Build New Contraband Data
   useEffect(() => {
     let url = `/api/agency/${agencyId}/contraband/`;
-    if (year && year !== 'All') {
-      url = `${url}?year=${year}`;
+    if (contrabandYear && contrabandYear !== 'All') {
+      url = `${url}?year=${contrabandYear}`;
     }
     axios
       .get(url)
@@ -96,12 +108,12 @@ function SearchRate(props) {
         setContrabandData(data);
       })
       .catch((err) => console.log(err));
-  }, [year]);
+  }, [contrabandYear]);
 
   useEffect(() => {
     let url = `/api/agency/${agencyId}/contraband-stop-purpose/`;
-    if (year && year !== 'All') {
-      url = `${url}?year=${year}`;
+    if (groupdContrabandYear && groupdContrabandYear !== 'All') {
+      url = `${url}?year=${groupdContrabandYear}`;
     }
     axios
       .get(url)
@@ -127,7 +139,7 @@ function SearchRate(props) {
         setContrabandStopPurposeData(data);
       })
       .catch((err) => console.log(err));
-  }, [year]);
+  }, [groupdContrabandYear]);
 
   useEffect(() => {
     let url = `/api/agency/${agencyId}/contraband-grouped-stop-purpose/`;
@@ -183,8 +195,8 @@ function SearchRate(props) {
           <S.LegendSection>
             <DataSubsetPicker
               label="Year"
-              value={year}
-              onChange={handleYearSelect}
+              value={contrabandYear}
+              onChange={handleContrabandYearSelect}
               options={[YEARS_DEFAULT].concat(chartState.yearRange)}
               dropUp={!!showCompare}
             />
@@ -219,8 +231,8 @@ function SearchRate(props) {
           <S.LegendSection>
             <DataSubsetPicker
               label="Year"
-              value={year}
-              onChange={handleYearSelect}
+              value={groupdContrabandYear}
+              onChange={handleGroupedContrabandYearSelect}
               options={[YEARS_DEFAULT].concat(chartState.yearRange)}
               dropUp={!!showCompare}
             />

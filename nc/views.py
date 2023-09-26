@@ -630,6 +630,8 @@ class AgencyContrabandView(APIView):
         qs = StopSummary.objects.filter(_filter).annotate(year=ExtractYear("date"))
         if year:
             qs = qs.filter(year=year)
+        if qs.count() == 0:
+            return pd.DataFrame()
         qs = qs.values("year", "driver_race_comb").annotate(count=Sum("count")).order_by("year")
         df = pd.DataFrame(qs)
         pivot_df = df.pivot(index="year", columns="driver_race_comb", values="count").fillna(
@@ -657,6 +659,8 @@ class AgencyContrabandStopPurposeView(APIView):
         qs = StopSummary.objects.filter(_filter).annotate(year=ExtractYear("date"))
         if year:
             qs = qs.filter(year=year)
+        if qs.count() == 0:
+            return pd.DataFrame()
         qs = (
             qs.values("year", "driver_race_comb", "stop_purpose_group")
             .annotate(count=Sum("count"))
@@ -681,17 +685,20 @@ class AgencyContrabandStopPurposeView(APIView):
         columns = ["White", "Black", "Hispanic", "Asian", "Native American", "Other"]
 
         for stop_purpose in stop_purpose_types:
-            searches_mean = searches_df[stop_purpose].mean()
-            contraband_mean = contraband_df[stop_purpose].mean()
             group = {
                 "stop_purpose": " ".join([name.title() for name in stop_purpose.name.split("_")]),
                 "data": [],
             }
-            for c in columns:
-                if c in contraband_mean and c in searches_mean:
-                    group["data"].append((contraband_mean[c] / searches_mean[c]) * 100)
-                else:
-                    group["data"].append(0)
+            if stop_purpose in searches_df and stop_purpose in contraband_df:
+                searches_mean = searches_df[stop_purpose].mean()
+                contraband_mean = contraband_df[stop_purpose].mean()
+                for c in columns:
+                    if c in contraband_mean and c in searches_mean:
+                        group["data"].append((contraband_mean[c] / searches_mean[c]) * 100)
+                    else:
+                        group["data"].append(0)
+            else:
+                group["data"].append(0)
             data.append(group)
 
         return Response(data=data, status=200)

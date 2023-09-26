@@ -1,4 +1,6 @@
 import { Bar } from 'react-chartjs-2';
+import DataLoading from '../Charts/ChartPrimitives/DataLoading';
+import React from 'react';
 
 export default function HorizontalBarChart({
   data,
@@ -48,6 +50,10 @@ export default function HorizontalBarChart({
       },
     },
   };
+
+  if (!data.datasets.length) {
+    return <DataLoading />;
+  }
 
   return <Bar options={options} data={data} />;
 }
