@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import ContrabandStyled from './Contraband.styled';
+import ContrabandStyled, { ChartWrapper } from './Contraband.styled';
 import * as S from '../ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
 
@@ -172,12 +172,14 @@ function SearchRate(props) {
           </P>
         </S.ChartDescription>
         <S.ChartSubsection showCompare={showCompare}>
-          <HorizontalBarChart
-            title="Contraband Hit Rate"
-            data={contrabandData}
-            displayLegend={false}
-            tooltipLabelCallback={(ctx) => `${ctx.raw.toFixed(1)}%`}
-          />
+          <ChartWrapper>
+            <HorizontalBarChart
+              title="Contraband Hit Rate"
+              data={contrabandData}
+              displayLegend={false}
+              tooltipLabelCallback={(ctx) => `${ctx.raw.toFixed(1)}%`}
+            />
+          </ChartWrapper>
           <S.LegendSection>
             <DataSubsetPicker
               label="Year"
@@ -200,18 +202,20 @@ function SearchRate(props) {
           </P>
         </S.ChartDescription>
         <S.ChartSubsection showCompare={showCompare}>
-          <HorizontalBarChart
-            title="Contraband Hit Rate Grouped By Stop Purpose"
-            data={contrabandStopPurposeData}
-            tooltipTitleCallback={(ctx) => {
-              if (ctx.length) {
-                const context = ctx[0];
-                return context.dataset.label;
-              }
-              return '';
-            }}
-            tooltipLabelCallback={(ctx) => `${ctx.raw.toFixed(1)}%`}
-          />
+          <ChartWrapper>
+            <HorizontalBarChart
+              title="Contraband Hit Rate Grouped By Stop Purpose"
+              data={contrabandStopPurposeData}
+              tooltipTitleCallback={(ctx) => {
+                if (ctx.length) {
+                  const context = ctx[0];
+                  return context.dataset.label;
+                }
+                return '';
+              }}
+              tooltipLabelCallback={(ctx) => `${ctx.raw.toFixed(1)}%`}
+            />
+          </ChartWrapper>
           <S.LegendSection>
             <DataSubsetPicker
               label="Year"

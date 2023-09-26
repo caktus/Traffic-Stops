@@ -4,6 +4,7 @@ export default function HorizontalBarChart({
   data,
   title,
   displayLegend = true,
+  legendPosition = 'top',
   tooltipTitleCallback = null,
   tooltipLabelCallback,
   xStacked = false,
@@ -26,7 +27,7 @@ export default function HorizontalBarChart({
     plugins: {
       legend: {
         display: displayLegend,
-        position: 'right',
+        position: legendPosition,
       },
       title: {
         display: true,
