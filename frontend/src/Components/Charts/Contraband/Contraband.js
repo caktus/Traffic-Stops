@@ -45,20 +45,19 @@ function SearchRate(props) {
     datasets: [],
   });
   const [contrabandGroupedStopPurposeData, setContrabandGroupedStopPurposeData] = useState([
-      {
-        labels: [],
-        datasets: []
-      },
-      {
-        labels: [],
-        datasets: []
-      },
-      {
-        labels: [],
-        datasets: []
-      }
-    ]
-  );
+    {
+      labels: [],
+      datasets: [],
+    },
+    {
+      labels: [],
+      datasets: [],
+    },
+    {
+      labels: [],
+      datasets: [],
+    },
+  ]);
 
   /* INTERACTIONS */
   // Handle year dropdown state
@@ -118,7 +117,7 @@ function SearchRate(props) {
           data: ds.data,
           fill: false,
           backgroundColor: colors[ds.stop_purpose],
-          borderColor: colors,
+          borderColor: colors[ds.stop_purpose],
           borderWidth: 1,
         }));
         const data = {
@@ -145,7 +144,7 @@ function SearchRate(props) {
           Money: '#dbc3df',
           Other: '#ffd4a0',
         };
-        console.log(res.data)
+        console.log(res.data);
         const stopPurposeDataSets = res.data.map((sp, _) => ({
           labels: ['White', 'Black', 'Hispanic', 'Asian', 'Native American', 'Other'],
           datasets: sp.data.map((ds, _) => ({
@@ -154,7 +153,7 @@ function SearchRate(props) {
             backgroundColor: colors[ds.contraband],
           })),
         }));
-        console.log(stopPurposeDataSets)
+        console.log(stopPurposeDataSets);
         setContrabandGroupedStopPurposeData(stopPurposeDataSets);
       })
       .catch((err) => console.log(err));
@@ -174,7 +173,7 @@ function SearchRate(props) {
         </S.ChartDescription>
         <S.ChartSubsection showCompare={showCompare}>
           <HorizontalBarChart
-            title=""
+            title="Contraband Hit Rate"
             data={contrabandData}
             displayLegend={false}
             tooltipLabelCallback={(ctx) => `${ctx.raw.toFixed(1)}%`}
@@ -202,8 +201,15 @@ function SearchRate(props) {
         </S.ChartDescription>
         <S.ChartSubsection showCompare={showCompare}>
           <HorizontalBarChart
-            title=""
+            title="Contraband Hit Rate Grouped By Stop Purpose"
             data={contrabandStopPurposeData}
+            tooltipTitleCallback={(ctx) => {
+              if (ctx.length) {
+                const context = ctx[0];
+                return context.dataset.label;
+              }
+              return '';
+            }}
             tooltipLabelCallback={(ctx) => `${ctx.raw.toFixed(1)}%`}
           />
           <S.LegendSection>
@@ -228,38 +234,38 @@ function SearchRate(props) {
           </P>
         </S.ChartDescription>
         <S.LegendSection>
-            <DataSubsetPicker
-              label="Year"
-              value={year}
-              onChange={handleYearSelect}
-              options={[YEARS_DEFAULT].concat(chartState.yearRange)}
-              dropUp={!!showCompare}
-            />
+          <DataSubsetPicker
+            label="Year"
+            value={year}
+            onChange={handleYearSelect}
+            options={[YEARS_DEFAULT].concat(chartState.yearRange)}
+            dropUp={!!showCompare}
+          />
         </S.LegendSection>
         <S.ChartSubsection showCompare={showCompare}>
-          <div style={{display: 'flex', flexDirection: 'row', overflowX: 'scroll'}}>
+          <div style={{ display: 'flex', flexDirection: 'row', overflowX: 'scroll' }}>
             <HorizontalBarChart
               title=""
               data={contrabandGroupedStopPurposeData[0]}
               tooltipLabelCallback={(ctx) => `${ctx.raw.toFixed(1)}%`}
-              xStacked={true}
-              yStacked={true}
+              xStacked
+              yStacked
             />
             <HorizontalBarChart
               title=""
               data={contrabandGroupedStopPurposeData[1]}
               tooltipLabelCallback={(ctx) => `${ctx.raw.toFixed(1)}%`}
-              xStacked={true}
-              yStacked={true}
+              xStacked
+              yStacked
             />
             <HorizontalBarChart
               title=""
               data={contrabandGroupedStopPurposeData[2]}
               tooltipLabelCallback={(ctx) => `${ctx.raw.toFixed(1)}%`}
-              xStacked={true}
-              yStacked={true}
+              xStacked
+              yStacked
             />
-         </div>
+          </div>
         </S.ChartSubsection>
       </S.ChartSection>
     </ContrabandStyled>

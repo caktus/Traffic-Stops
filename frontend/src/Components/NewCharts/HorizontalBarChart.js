@@ -4,9 +4,10 @@ export default function HorizontalBarChart({
   data,
   title,
   displayLegend = true,
+  tooltipTitleCallback = null,
   tooltipLabelCallback,
   xStacked = false,
-  yStacked = false
+  yStacked = false,
 }) {
   const options = {
     responsive: true,
@@ -14,7 +15,8 @@ export default function HorizontalBarChart({
     indexAxis: 'y',
     scales: {
       x: {
-          stacked: xStacked,
+        stacked: xStacked,
+        max: 100,
       },
       y: {
         max: 200,
@@ -32,6 +34,12 @@ export default function HorizontalBarChart({
       },
       tooltip: {
         callbacks: {
+          title(context) {
+            if (tooltipTitleCallback) {
+              return tooltipTitleCallback(context);
+            }
+            return context.title;
+          },
           label(context) {
             return tooltipLabelCallback(context);
           },
