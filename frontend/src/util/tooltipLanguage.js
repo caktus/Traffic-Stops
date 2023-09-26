@@ -1,5 +1,7 @@
-export const tooltipLanguage = (stopCause) =>
-  ({
+export const tooltipLanguage = (stopCause) => {
+  const regEquip =
+    'The "Regulatory and Equipment" category is comprised of: Vehicle Equipment Violations, Vehicle Regulatory Violations, Other Motor Vehicle Violations and Seat Belt Violations.';
+  const definitions = {
     Average:
       'This section shows the likelihood that drivers of a particular race / ethnicity are searched compared to white drivers for all types of stops. ',
     Checkpoint:
@@ -24,7 +26,9 @@ export const tooltipLanguage = (stopCause) =>
       'A speed limit violation is when an individual is stopped for driving faster than the posted speed limit in a given area, and on a given road. Someone may be stopped for this kind of violation if an officer suspects them of driving over the posted speed limit, or too fast for the current road conditions.',
     'Safety Violation':
       'The "Safety Violation" category is comprised of: Speed Limit Violations, Stop Light/Stop Sign Violations, Driving While Impaired, and Safe Movement Violations',
-    'Regulatory and Equipment':
-      'The "Regulatory and Equipment" category is comprised of: Vehicle Equipment Violations, Vehicle Regulatory Violations, Other Motor Vehicle Violations and Seat Belt Violations.',
+    'Regulatory and Equipment': regEquip,
+    'Regulatory Equipment': regEquip,
     Other: 'The "Other" Category is comprised of: Investigations and Checkpoints.',
-  }[stopCause]);
+  };
+  return definitions[stopCause];
+};
