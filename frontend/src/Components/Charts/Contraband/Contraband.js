@@ -4,7 +4,7 @@ import * as S from '../ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
 
 // Util
-import { YEARS_DEFAULT } from '../chartUtils';
+import { STATIC_CONTRABAND_KEYS, STATIC_LEGEND_KEYS, YEARS_DEFAULT } from '../chartUtils';
 
 // Hooks
 import useMetaTags from '../../../Hooks/useMetaTags';
@@ -20,6 +20,8 @@ import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker
 import HorizontalBarChart from '../../NewCharts/HorizontalBarChart';
 import axios from '../../../Services/Axios';
 import NewModal from '../../NewCharts/NewModal';
+import Legend from '../ChartSections/Legend/Legend';
+import cloneDeep from 'lodash.clonedeep';
 
 function Contraband(props) {
   const { agencyId, showCompare } = props;
@@ -65,6 +67,9 @@ function Contraband(props) {
       datasets: [],
     },
   ]);
+  const [contrabandTypes, setContrabandTypes] = useState(() =>
+    STATIC_CONTRABAND_KEYS.map((k) => ({ ...k }))
+  );
 
   /* INTERACTIONS */
   // Handle year dropdown state
@@ -243,6 +248,38 @@ function Contraband(props) {
     setContrabandStopPurposeModalData(newState);
   };
 
+  const handleContrabandKeySelected = (type) => {
+    const groupIndex = contrabandTypes.indexOf(contrabandTypes.find((t) => t.value === type.value));
+    const updatedTypes = [...contrabandTypes];
+    updatedTypes[groupIndex].selected = !updatedTypes[groupIndex].selected;
+    setContrabandTypes(updatedTypes);
+
+    const newContrabandState = cloneDeep(contrabandGroupedStopPurposeData);
+    newContrabandState[0].datasets.forEach((s) => {
+      // eslint-disable-next-line no-param-reassign
+      s.hidden = !updatedTypes.find((t) => t.label === s.label).selected;
+    });
+    newContrabandState[1].datasets.forEach((r) => {
+      // eslint-disable-next-line no-param-reassign
+      r.hidden = !updatedTypes.find((t) => t.label === r.label).selected;
+    });
+    newContrabandState[2].datasets.forEach((i) => {
+      // eslint-disable-next-line no-param-reassign
+      i.hidden = !updatedTypes.find((t) => t.label === i.label).selected;
+    });
+    setContrabandGroupedStopPurposeData(newContrabandState);
+  };
+
+  const formatTooltipLabel = (ctx) => {
+    if (ctx.length) {
+      const context = ctx[0];
+      return context.dataset.label;
+    }
+    return '';
+  };
+
+  const formatTooltipValue = (ctx) => `${ctx.raw.toFixed(1)}%`;
+
   return (
     <ContrabandStyled>
       {renderMetaTags()}
@@ -272,7 +309,7 @@ function Contraband(props) {
               title="Contraband Hit Rate"
               data={contrabandData}
               displayLegend={false}
-              tooltipLabelCallback={(ctx) => `${ctx.raw.toFixed(1)}%`}
+              tooltipLabelCallback={formatTooltipValue}
             />
           </ChartWrapper>
           <S.LegendSection>
@@ -321,14 +358,8 @@ function Contraband(props) {
             <HorizontalBarChart
               title="Contraband Hit Rate Grouped By Stop Purpose"
               data={contrabandStopPurposeData}
-              tooltipTitleCallback={(ctx) => {
-                if (ctx.length) {
-                  const context = ctx[0];
-                  return context.dataset.label;
-                }
-                return '';
-              }}
-              tooltipLabelCallback={(ctx) => `${ctx.raw.toFixed(1)}%`}
+              tooltipTitleCallback={formatTooltipLabel}
+              tooltipLabelCallback={formatTooltipValue}
               displayStopPurposeTooltips
             />
           </ChartWrapper>
@@ -367,26 +398,38 @@ function Contraband(props) {
             <HorizontalBarChart
               title=""
               data={contrabandGroupedStopPurposeData[0]}
-              tooltipLabelCallback={(ctx) => `${ctx.raw.toFixed(1)}%`}
+              tooltipTitleCallback={formatTooltipLabel}
+              tooltipLabelCallback={formatTooltipValue}
+              displayLegend={false}
               xStacked
               yStacked
             />
             <HorizontalBarChart
               title=""
               data={contrabandGroupedStopPurposeData[1]}
-              tooltipLabelCallback={(ctx) => `${ctx.raw.toFixed(1)}%`}
+              tooltipTitleCallback={formatTooltipLabel}
+              tooltipLabelCallback={formatTooltipValue}
+              displayLegend={false}
               xStacked
               yStacked
             />
             <HorizontalBarChart
               title=""
               data={contrabandGroupedStopPurposeData[2]}
-              tooltipLabelCallback={(ctx) => `${ctx.raw.toFixed(1)}%`}
+              tooltipTitleCallback={formatTooltipLabel}
+              tooltipLabelCallback={formatTooltipValue}
+              displayLegend={false}
               xStacked
               yStacked
             />
           </div>
         </S.ChartSubsection>
+        <Legend
+          heading="Show on graph:"
+          keys={contrabandTypes}
+          onKeySelect={handleContrabandKeySelected}
+          showNonHispanic={false}
+        />
       </S.ChartSection>
     </ContrabandStyled>
   );
