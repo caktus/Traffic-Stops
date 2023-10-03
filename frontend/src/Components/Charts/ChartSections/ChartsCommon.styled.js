@@ -166,7 +166,7 @@ export const LegendSection = styled.div`
   margin-top: 2em;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: start;
   width: 100%;
   flex: 0;
 

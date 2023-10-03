@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import ContrabandStyled, { ChartWrapper } from './Contraband.styled';
+import ContrabandStyled, {
+  BarContainer,
+  ChartWrapper,
+  HorizontalBarWrapper,
+} from './Contraband.styled';
 import * as S from '../ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
 
@@ -14,7 +18,7 @@ import useTableModal from '../../../Hooks/useTableModal';
 import useDataset, { AGENCY_DETAILS, CONTRABAND_HIT_RATE } from '../../../Hooks/useDataset';
 
 // Children
-import { P } from '../../../styles/StyledComponents/Typography';
+import { P, WEIGHTS } from '../../../styles/StyledComponents/Typography';
 import ChartHeader from '../ChartSections/ChartHeader';
 import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
 import HorizontalBarChart from '../../NewCharts/HorizontalBarChart';
@@ -22,6 +26,7 @@ import axios from '../../../Services/Axios';
 import NewModal from '../../NewCharts/NewModal';
 import Legend from '../ChartSections/Legend/Legend';
 import cloneDeep from 'lodash.clonedeep';
+import Checkbox from '../../Elements/Inputs/Checkbox';
 
 function Contraband(props) {
   const { agencyId, showCompare } = props;
@@ -70,6 +75,27 @@ function Contraband(props) {
   const [contrabandTypes, setContrabandTypes] = useState(() =>
     STATIC_CONTRABAND_KEYS.map((k) => ({ ...k }))
   );
+
+  const [visibleContrabandTypes, setVisibleContrabandTypes] = useState([
+    {
+      key: 'safety',
+      title: 'Safety Violation',
+      visible: true,
+      order: 1,
+    },
+    {
+      key: 'regulatory',
+      title: 'Regulatory/Equipment',
+      visible: true,
+      order: 2,
+    },
+    {
+      key: 'other',
+      title: 'Other',
+      visible: false,
+      order: 3,
+    },
+  ]);
 
   /* INTERACTIONS */
   // Handle year dropdown state
@@ -280,6 +306,22 @@ function Contraband(props) {
 
   const formatTooltipValue = (ctx) => `${ctx.raw.toFixed(1)}%`;
 
+  const toggleGroupedPurposeGraphs = (key) => {
+    const toggleState = visibleContrabandTypes;
+    const toggleGraph = toggleState.find((v) => v.key === key);
+    const otherGraphs = toggleState.filter((v) => v.key !== key);
+
+    setVisibleContrabandTypes(
+      [
+        ...otherGraphs,
+        { key, visible: !toggleGraph.visible, title: toggleGraph.title, order: toggleGraph.order },
+      ].sort(
+        // eslint-disable-next-line no-nested-ternary
+        (a, b) => (a.order < b.order ? (a.order === b.order ? 0 : -1) : 1)
+      )
+    );
+  };
+
   return (
     <ContrabandStyled>
       {renderMetaTags()}
@@ -374,7 +416,7 @@ function Contraband(props) {
           </S.LegendSection>
         </S.ChartSubsection>
       </S.ChartSection>
-      <S.ChartSection>
+      <S.ChartSection marginTop={5}>
         <ChartHeader
           chartTitle='Contraband "Hit Rate" By Stop Purpose'
           handleViewData={handleViewData}
@@ -384,46 +426,74 @@ function Contraband(props) {
             Shows what percentage of searches discovered contraband for a given race / ethnic group
           </P>
         </S.ChartDescription>
-        <S.LegendSection>
-          <DataSubsetPicker
-            label="Year"
-            value={year}
-            onChange={handleYearSelect}
-            options={[YEARS_DEFAULT].concat(chartState.yearRange)}
-            dropUp={!!showCompare}
-          />
-        </S.LegendSection>
-        <S.ChartSubsection showCompare={showCompare}>
-          <div style={{ display: 'flex', flexDirection: 'row', overflowX: 'scroll' }}>
+        <div style={{ marginTop: '1em' }}>
+          <P weight={WEIGHTS[1]}>Toggle graphs:</P>
+          <div style={{ display: 'flex', gap: '10px', flexDirection: 'row', flexWrap: 'wrap' }}>
+            {visibleContrabandTypes.map((vg, i) => (
+              <Checkbox
+                height={25}
+                width={25}
+                label={vg.title}
+                value={vg.key}
+                key={i}
+                checked={vg.visible}
+                onChange={toggleGroupedPurposeGraphs}
+              />
+            ))}
+          </div>
+        </div>
+        <DataSubsetPicker
+          label="Year"
+          value={year}
+          onChange={handleYearSelect}
+          options={[YEARS_DEFAULT].concat(chartState.yearRange)}
+          dropUp={!!showCompare}
+        />
+        <HorizontalBarWrapper>
+          <BarContainer visible={visibleContrabandTypes[0].visible}>
             <HorizontalBarChart
               title=""
+              maintainAspectRatio={false}
               data={contrabandGroupedStopPurposeData[0]}
               tooltipTitleCallback={formatTooltipLabel}
               tooltipLabelCallback={formatTooltipValue}
               displayLegend={false}
               xStacked
               yStacked
+              redraw
             />
+          </BarContainer>
+          <BarContainer visible={visibleContrabandTypes[1].visible}>
             <HorizontalBarChart
               title=""
+              maintainAspectRatio={false}
               data={contrabandGroupedStopPurposeData[1]}
               tooltipTitleCallback={formatTooltipLabel}
               tooltipLabelCallback={formatTooltipValue}
               displayLegend={false}
+              yAxisShowLabels={!visibleContrabandTypes[0].visible}
               xStacked
               yStacked
+              redraw
             />
+          </BarContainer>
+          <BarContainer visible={visibleContrabandTypes[2].visible}>
             <HorizontalBarChart
               title=""
+              maintainAspectRatio={false}
               data={contrabandGroupedStopPurposeData[2]}
               tooltipTitleCallback={formatTooltipLabel}
               tooltipLabelCallback={formatTooltipValue}
               displayLegend={false}
+              yAxisShowLabels={
+                !visibleContrabandTypes[0].visible && !visibleContrabandTypes[1].visible
+              }
               xStacked
               yStacked
+              redraw
             />
-          </div>
-        </S.ChartSubsection>
+          </BarContainer>
+        </HorizontalBarWrapper>
         <Legend
           heading="Show on graph:"
           keys={contrabandTypes}
@@ -472,6 +542,7 @@ const CONTRABAND_TABLE_COLUMNS = [
   },
 ];
 
+// eslint-disable-next-line no-unused-vars
 const CONTRABAND_STOP_PURPOSE_TABLE_COLUMNS = [
   {
     Header: 'Year',

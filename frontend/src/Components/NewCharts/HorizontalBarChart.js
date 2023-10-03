@@ -22,17 +22,20 @@ export const Tooltip = styled.div`
 export default function HorizontalBarChart({
   data,
   title,
+  maintainAspectRatio = true,
   displayLegend = true,
   legendPosition = 'top',
   tooltipTitleCallback = null,
   tooltipLabelCallback,
   xStacked = false,
   yStacked = false,
+  yAxisShowLabels = true,
   displayStopPurposeTooltips = false,
+  redraw = false,
 }) {
   const options = {
     responsive: true,
-    maintainAspectRatio: true,
+    maintainAspectRatio,
     indexAxis: 'y',
     scales: {
       x: {
@@ -42,6 +45,9 @@ export default function HorizontalBarChart({
       y: {
         max: 200,
         stacked: yStacked,
+        ticks: {
+          display: yAxisShowLabels,
+        },
       },
     },
     plugins: {
@@ -122,7 +128,7 @@ export default function HorizontalBarChart({
           </Tooltip>
         </>
       )}
-      <Bar options={options} data={data} />
+      <Bar options={options} data={data} redraw={redraw} />
     </>
   );
 }
