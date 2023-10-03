@@ -1,0 +1,16 @@
+10.0
+14
+1       SQLCHAR             0       12      ""       1     ContrabandID                 ""
+2       SQLCHAR             0       12      ""       2     SearchID                     ""
+3       SQLCHAR             0       12      ""       3     PersonID                     ""
+4       SQLCHAR             0       12      ""       4     StopID                       ""
+5       SQLCHAR             0       41      ""       5     Ounces                       ""
+6       SQLCHAR             0       41      ""       6     Pounds                       ""
+7       SQLCHAR             0       41      ""       7     Pints                        ""
+8       SQLCHAR             0       41      ""       8     Gallons                      ""
+9       SQLCHAR             0       41      ""       9     Dosages                      ""
+10      SQLCHAR             0       41      ""       10    Grams                        ""
+11      SQLCHAR             0       41      ""       11    Kilos                        ""
+12      SQLCHAR             0       41      ""       12    Money                        ""
+13      SQLCHAR             0       41      ""       13    Weapons                      ""
+14      SQLCHAR             0       41      "\r\n"   14    DollarAmt                    ""
