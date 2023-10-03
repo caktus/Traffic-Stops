@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import TrafficStopsStyled, {
   GroupedStopsContainer,
   LineWrapper,
+  PieStopsContainer,
+  PieWrapper,
   StopGroupsContainer,
+  SwitchContainer,
 } from './TrafficStops.styled';
 import * as S from '../ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
@@ -13,7 +16,6 @@ import {
   reduceFullDataset,
   calculatePercentage,
   calculateYearTotal,
-  filterSinglePurpose,
   buildStackedBarData,
   STATIC_LEGEND_KEYS,
   YEARS_DEFAULT,
@@ -26,27 +28,28 @@ import {
 import useDataset, { STOPS_BY_REASON, STOPS, AGENCY_DETAILS } from '../../../Hooks/useDataset';
 
 // Elements
-import { P } from '../../../styles/StyledComponents/Typography';
+import { P, WEIGHTS } from '../../../styles/StyledComponents/Typography';
 
 // Hooks
 import useMetaTags from '../../../Hooks/useMetaTags';
 import useTableModal from '../../../Hooks/useTableModal';
 
 // Children
-import Line from '../ChartPrimitives/Line';
 import StackedBar from '../ChartPrimitives/StackedBar';
-import Pie from '../ChartPrimitives/Pie';
 import Legend from '../ChartSections/Legend/Legend';
 import ChartHeader from '../ChartSections/ChartHeader';
 import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
-import toTitleCase from '../../../util/toTitleCase';
 import useOfficerId from '../../../Hooks/useOfficerId';
 import MonthRangePicker from '../../Elements/MonthRangePicker';
-import mapDatasetKeyToEndpoint from '../../../Services/endpoints';
-import range from 'lodash.range';
 import LineChart from '../../NewCharts/LineChart';
 import axios from '../../../Services/Axios';
 import NewModal from '../../NewCharts/NewModal';
+import displayDefinition from '../../../util/displayDefinition';
+import PieChart from '../../NewCharts/PieChart';
+import ChartModal from '../../NewCharts/ChartModal';
+import Button from '../../Elements/Button';
+import Switch from 'react-switch';
+import Checkbox from '../../Elements/Inputs/Checkbox';
 
 function TrafficStops(props) {
   const { agencyId } = props;
@@ -55,12 +58,11 @@ function TrafficStops(props) {
   const officerId = useOfficerId();
 
   const [stopsChartState] = useDataset(agencyId, STOPS);
-  const [reasonChartState] = useDataset(agencyId, STOPS_BY_REASON);
+
+  // TODO: Remove this when moving table modal data to new modal component
+  useDataset(agencyId, STOPS_BY_REASON);
 
   const [pickerActive, setPickerActive] = useState(null);
-  const [pickerXAxis, setPickerXAxis] = useState(null);
-  const [forcePickerRerender, setForcePickerRerender] = useState(false);
-  const [reasonChartYearSet, setReasonChartYearSet] = useState(reasonChartState.yearSet);
 
   const [year, setYear] = useState(YEARS_DEFAULT);
 
@@ -85,17 +87,26 @@ function TrafficStops(props) {
     */
     () => STATIC_LEGEND_KEYS.map((k) => ({ ...k }))
   );
-  const [countEthnicGroups, setCountEthnicGroups] = useState(() =>
-    STATIC_LEGEND_KEYS.map((k) => ({ ...k }))
-  );
   const [stopPurposeEthnicGroups, setStopPurposeEthnicGroups] = useState(() =>
     STATIC_LEGEND_KEYS.map((k) => ({ ...k }))
   );
 
   const [byPercentageLineData, setByPercentageLineData] = useState([]);
-  const [byPercentagePieData, setByPercentagePieData] = useState([]);
-
-  const [byCountLineData, setByCountLineData] = useState([]);
+  const pieChartLabels = ['White', 'Black', 'Hispanic', 'Asian', 'Native American', 'Other'];
+  const pieChartConfig = {
+    backgroundColor: ['#80d9d8', '#beb4fa', '#ca8794', '#ffeeb2', '#8598ac', '#cab6c7'],
+    borderColor: ['#02bcbb', '#8879fc', '#9c0f2e', '#ffe066', '#0c3a66', '#9e7b9b'],
+    borderWidth: 1,
+  };
+  const [byPercentagePieData, setByPercentagePieData] = useState({
+    labels: pieChartLabels,
+    datasets: [
+      {
+        data: [],
+        ...pieChartConfig,
+      },
+    ],
+  });
 
   const renderMetaTags = useMetaTags();
   const [renderTableModal, { openModal }] = useTableModal();
@@ -108,6 +119,62 @@ function TrafficStops(props) {
     other: { labels: [], datasets: [] },
     max_step_size: null,
   });
+  const groupedPieChartConfig = {
+    backgroundColor: ['#80d9d8', '#beb4fa', '#ca8794', '#ffeeb2', '#8598ac', '#cab6c7'],
+    borderColor: ['#02bcbb', '#8879fc', '#9c0f2e', '#ffe066', '#0c3a66', '#9e7b9b'],
+    borderWidth: 1,
+  };
+  const groupedPieChartLabels = ['White', 'Black', 'Hispanic', 'Asian', 'Native American', 'Other'];
+  const [stopsGroupedByPurposePieData, setStopsGroupedByPurposePieData] = useState({
+    safety: {
+      labels: groupedPieChartLabels,
+      datasets: [
+        {
+          data: [],
+          ...groupedPieChartConfig,
+        },
+      ],
+    },
+    regulatory: {
+      labels: groupedPieChartLabels,
+      datasets: [
+        {
+          data: [],
+          ...groupedPieChartConfig,
+        },
+      ],
+    },
+    other: {
+      labels: groupedPieChartLabels,
+      datasets: [
+        {
+          data: [],
+          ...groupedPieChartConfig,
+        },
+      ],
+    },
+  });
+
+  const [visibleStopsGroupedByPurpose, setVisibleStopsGroupedByPurpose] = useState([
+    {
+      key: 'safety',
+      title: 'Safety Violation',
+      visible: true,
+      order: 1,
+    },
+    {
+      key: 'regulatory',
+      title: 'Regulatory/Equipment',
+      visible: true,
+      order: 2,
+    },
+    {
+      key: 'other',
+      title: 'Other',
+      visible: false,
+      order: 3,
+    },
+  ]);
 
   const [stopPurposeModalData, setStopPurposeModalData] = useState({
     isOpen: false,
@@ -122,23 +189,103 @@ function TrafficStops(props) {
     selectedPurpose: 'Safety Violation',
     purposeTypes: ['Safety Violation', 'Regulatory and Equipment', 'Other'],
   });
+  const [yearForGroupedPieCharts, setYearForGroupedPieCharts] = useState('All');
+  const [checked, setChecked] = useState(false);
+
+  const [showZoomedPieChart, setShowZoomedPieChart] = useState(false);
+  const zoomedPieCharRef = useRef(null);
+
+  const [trafficStopsByCountRange, setTrafficStopsByCountRange] = useState(null);
+  const [trafficStopsByCountPurpose, setTrafficStopsByCountPurpose] = useState(0);
+  const [trafficStopsByCountMinMaxYears, setTrafficStopsByCountMinMaxYears] = useState([
+    null,
+    null,
+  ]);
+  const [trafficStopsByCount, setTrafficStopsByCount] = useState({
+    labels: [],
+    datasets: [],
+  });
+
+  const createDateForRange = (yr) =>
+    Number.isInteger(yr) ? new Date(`${yr}-01-01`) : new Date(yr);
+
+  // Build Stops By Count
+  useEffect(() => {
+    const params = [];
+    if (trafficStopsByCountRange !== null) {
+      const _from = `${trafficStopsByCountRange.from.year}-${trafficStopsByCountRange.from.month
+        .toString()
+        .padStart(2, 0)}-01`;
+      const _to = `${trafficStopsByCountRange.to.year}-${trafficStopsByCountRange.to.month
+        .toString()
+        .padStart(2, 0)}-01`;
+      params.push({ param: 'from', val: _from });
+      params.push({ param: 'to', val: _to });
+    }
+    if (trafficStopsByCountPurpose !== 0) {
+      params.push({ param: 'purpose', val: trafficStopsByCountPurpose });
+    }
+    if (officerId !== null) {
+      params.push({ param: 'officer', val: officerId });
+    }
+
+    const urlParams = params.map((p) => `${p.param}=${p.val}`).join('&');
+    const url = `/api/agency/${agencyId}/stops-by-count/?${urlParams}`;
+
+    axios
+      .get(url)
+      .then((res) => {
+        setTrafficStopsByCount(res.data);
+
+        const years = res.data.labels;
+        if (trafficStopsByCountMinMaxYears[0] === null) {
+          setTrafficStopsByCountMinMaxYears([
+            createDateForRange(years[0]),
+            createDateForRange(years[years.length - 1] + 1),
+          ]);
+        }
+      })
+      .catch((err) => console.log(err));
+  }, [trafficStopsByCountPurpose, trafficStopsByCountRange]);
 
   // Build Stop Purpose Groups
   useEffect(() => {
+    let url = `/api/agency/${agencyId}/stop-purpose-groups/`;
+    if (officerId !== null) {
+      url = `${url}?officer=${officerId}`;
+    }
     axios
-      .get(`/api/agency/${agencyId}/stop-purpose-groups/`)
+      .get(url)
       .then((res) => {
         setStopPurposeGroups(res.data);
       })
       .catch((err) => console.log(err));
   }, []);
 
+  const buildPercentages = (data, ds) => {
+    const dsTotal = data[ds].datasets
+      .map((s) => s.data.reduce((a, b) => a + b, 0))
+      .reduce((a, b) => a + b, 0);
+    return data[ds].datasets.map((s) =>
+      ((s.data.reduce((a, b) => a + b, 0) / dsTotal) * 100).toFixed(2)
+    );
+  };
+
   // Build Stops Grouped by Purpose
   useEffect(() => {
+    let url = `/api/agency/${agencyId}/stops-grouped-by-purpose/`;
+    if (officerId !== null) {
+      url = `${url}?officer=${officerId}`;
+    }
     axios
-      .get(`/api/agency/${agencyId}/stops-grouped-by-purpose/`)
+      .get(url)
       .then((res) => {
         setStopsGroupedByPurpose(res.data);
+        updateStoppedPurposePieChart(
+          buildPercentages(res.data, 'safety'),
+          buildPercentages(res.data, 'regulatory'),
+          buildPercentages(res.data, 'other')
+        );
       })
       .catch((err) => console.log(err));
   }, []);
@@ -158,74 +305,27 @@ function TrafficStops(props) {
   useEffect(() => {
     const data = stopsChartState.data[STOPS];
     if (data) {
+      let chartData = [0, 0, 0, 0, 0, 0];
       if (!year || year === 'All') {
-        setByPercentagePieData(reduceFullDataset(data, RACES, theme));
+        chartData = reduceFullDataset(data, RACES, theme).map((ds) => ds.y);
       } else {
         const yearData = data.find((d) => d.year === year);
-        if (!yearData) {
-          setByPercentagePieData([]);
-        } else {
+        if (yearData) {
           const total = calculateYearTotal(yearData);
-          setByPercentagePieData(
-            RACES.map((race) => ({
-              x: toTitleCase(race),
-              y: calculatePercentage(yearData[race], total),
-              color: theme.colors.ethnicGroup[race],
-              fontColor: theme.colors.fontColorsByEthnicGroup[race],
-            }))
-          );
+          chartData = RACES.map((race) => calculatePercentage(yearData[race], total));
         }
       }
+      setByPercentagePieData({
+        labels: pieChartLabels,
+        datasets: [
+          {
+            data: chartData,
+            ...pieChartConfig,
+          },
+        ],
+      });
     }
   }, [stopsChartState.data[STOPS], year]);
-
-  // Build data for Stops By Count line chart ("All")
-  useEffect(() => {
-    const data = reasonChartState.data[STOPS];
-    if (data && purpose === PURPOSE_DEFAULT) {
-      const derivedData = countEthnicGroups
-        .filter((g) => g.selected)
-        .map((r) => {
-          const race = r.value;
-          const rGroup = {
-            id: race,
-            color: theme.colors.ethnicGroup[race],
-          };
-          rGroup.data = data.map((d) => ({
-            displayName: toTitleCase(race),
-            // eslint-disable-next-line no-nested-ternary
-            x: pickerActive !== null ? (pickerXAxis === 'Month' ? d.date : d.year) : d.year,
-            y: d[race],
-          }));
-          return rGroup;
-        });
-      setByCountLineData(derivedData);
-    }
-  }, [reasonChartState.data[STOPS], purpose, countEthnicGroups, pickerActive]);
-
-  // Build data for Stops By Count line chart (single purpose)
-  useEffect(() => {
-    const data = reasonChartState.data[STOPS_BY_REASON]?.stops;
-    if (data && purpose !== PURPOSE_DEFAULT) {
-      const purposeData = filterSinglePurpose(data, purpose);
-      const derivedData = countEthnicGroups
-        .filter((g) => g.selected)
-        .map((r) => {
-          const race = r.value;
-          return {
-            id: race,
-            color: theme.colors.ethnicGroup[race],
-            data: purposeData.map((d) => ({
-              displayName: toTitleCase(race),
-              // eslint-disable-next-line no-nested-ternary
-              x: pickerActive !== null ? (pickerXAxis === 'Month' ? d.date : d.year) : d.year,
-              y: d[race],
-            })),
-          };
-        });
-      setByCountLineData(derivedData);
-    }
-  }, [reasonChartState.data[STOPS_BY_REASON], purpose, countEthnicGroups, pickerActive]);
 
   /* INTERACTIONS */
   // Handle year dropdown state
@@ -235,20 +335,10 @@ function TrafficStops(props) {
   };
 
   // Handle stop purpose dropdown state
-  const handleStopPurposeSelect = async (p) => {
+  const handleStopPurposeSelect = (p, i) => {
     if (p === purpose) return;
-    if (p === PURPOSE_DEFAULT) {
-      setPickerActive(null);
-      // Reset the chart data
-      const getEndpoint = mapDatasetKeyToEndpoint(STOPS);
-      const { data } = await axios.get(getEndpoint(agencyId));
-      reasonChartState.data[STOPS] = data;
-      setReasonChartYearSet(range(2002, new Date().getFullYear() + 1, 2));
-      setForcePickerRerender(false);
-    } else if (pickerActive !== null) {
-      setForcePickerRerender(true);
-    }
     setPurpose(p);
+    setTrafficStopsByCountPurpose(i);
   };
 
   // Handle stops by percentage legend interactions
@@ -259,16 +349,6 @@ function TrafficStops(props) {
     const updatedGroups = [...percentageEthnicGroups];
     updatedGroups[groupIndex].selected = !updatedGroups[groupIndex].selected;
     setPercentageEthnicGroups(updatedGroups);
-  };
-
-  // Handle stops by count legend interactions
-  const handleCountKeySelected = (ethnicGroup) => {
-    const groupIndex = countEthnicGroups.indexOf(
-      countEthnicGroups.find((g) => g.value === ethnicGroup.value)
-    );
-    const updatedGroups = [...countEthnicGroups];
-    updatedGroups[groupIndex].selected = !updatedGroups[groupIndex].selected;
-    setCountEthnicGroups(updatedGroups);
   };
 
   // Handle stops grouped by purpose legend interactions
@@ -382,40 +462,99 @@ function TrafficStops(props) {
   };
 
   const updateStopsByCount = (val) => {
-    setReasonChartYearSet(val.yearRange);
-    if (purpose !== PURPOSE_DEFAULT) {
-      reasonChartState.data[STOPS_BY_REASON] = val.data;
-    } else {
-      reasonChartState.data[STOPS] = val.data;
-    }
-    setPickerXAxis(val.xAxis);
-    setPickerActive((oldVal) => (oldVal === null ? true : !oldVal));
+    setTrafficStopsByCountRange(val);
+  };
+  const closeStopsByCountRange = () => {
+    setPickerActive(null);
+    setTrafficStopsByCountRange(null);
   };
 
-  const lineAxisFormat = (t) => {
-    if (pickerActive !== null) {
-      if (pickerXAxis === 'Month') {
-        if (typeof t === 'string') {
-          // Month label is YYYY-MM
-          const month = new Date(t).getMonth() + 1;
-          let datasetLength;
-          if (purpose !== PURPOSE_DEFAULT) {
-            datasetLength = reasonChartState.data[STOPS_BY_REASON]?.stops.length;
-          } else {
-            datasetLength = reasonChartState.data[STOPS].length;
-          }
-          if (datasetLength > 10 && datasetLength <= 15) {
-            return month % 2 === 0 ? t : null;
-          }
-          if (datasetLength > 15) {
-            return month % 3 === 0 ? t : null;
-          }
-        }
+  const handleChange = (nextChecked) => {
+    setChecked(nextChecked);
+  };
 
-        return t;
-      }
+  const buildPercentagesForYear = (data, ds, idx = null) => {
+    const dsTotal = data[ds].datasets.map((s) => s.data[idx]).reduce((a, b) => a + b, 0);
+    return data[ds].datasets.map((s) => ((s.data[idx] / dsTotal) * 100 || 0).toFixed(2));
+  };
+
+  const handleYearSelectForGroupedPieCharts = (selectedYear, idx) => {
+    setYearForGroupedPieCharts(selectedYear);
+    // Get the reverse index of the year since it's now in descending order
+    const idxForYear = stopsGroupedByPurposeData.labels.length - idx;
+    updateStoppedPurposePieChart(
+      selectedYear === YEARS_DEFAULT
+        ? buildPercentages(stopsGroupedByPurposeData, 'safety')
+        : buildPercentagesForYear(stopsGroupedByPurposeData, 'safety', idxForYear),
+      selectedYear === YEARS_DEFAULT
+        ? buildPercentages(stopsGroupedByPurposeData, 'regulatory')
+        : buildPercentagesForYear(stopsGroupedByPurposeData, 'regulatory', idxForYear),
+      selectedYear === YEARS_DEFAULT
+        ? buildPercentages(stopsGroupedByPurposeData, 'other')
+        : buildPercentagesForYear(stopsGroupedByPurposeData, 'other', idxForYear)
+    );
+  };
+
+  const updateStoppedPurposePieChart = (safety, regulatory, other) => {
+    setStopsGroupedByPurposePieData({
+      safety: {
+        labels: groupedPieChartLabels,
+        datasets: [
+          {
+            data: safety,
+            ...groupedPieChartConfig,
+          },
+        ],
+      },
+      regulatory: {
+        labels: groupedPieChartLabels,
+        datasets: [
+          {
+            data: regulatory,
+            ...groupedPieChartConfig,
+          },
+        ],
+      },
+      other: {
+        labels: groupedPieChartLabels,
+        datasets: [
+          {
+            data: other,
+            ...groupedPieChartConfig,
+          },
+        ],
+      },
+    });
+  };
+
+  const toggleGroupedPurposeGraphs = (key) => {
+    const toggleState = visibleStopsGroupedByPurpose;
+    const toggleGraph = toggleState.find((v) => v.key === key);
+    const otherGraphs = toggleState.filter((v) => v.key !== key);
+
+    setVisibleStopsGroupedByPurpose(
+      [
+        ...otherGraphs,
+        { key, visible: !toggleGraph.visible, title: toggleGraph.title, order: toggleGraph.order },
+      ].sort(
+        // eslint-disable-next-line no-nested-ternary
+        (a, b) => (a.order < b.order ? (a.order === b.order ? 0 : -1) : 1)
+      )
+    );
+  };
+
+  const pieChartTitle = (download = false) => {
+    let subject = stopsChartState.data[AGENCY_DETAILS].name;
+    if (subjectObserving() === 'officer') {
+      subject = `Officer ${officerId}`;
     }
-    return t % 2 === 0 ? t : null;
+    let title = `Traffic Stops By Percentage for ${subject} ${
+      year === YEARS_DEFAULT ? `since ${stopsChartState.yearRange[0]}` : `during ${year}`
+    }`;
+    if (download) {
+      title = `${title.split(' ').join('_').toLowerCase()}.png`;
+    }
+    return title;
   };
 
   return (
@@ -452,20 +591,57 @@ function TrafficStops(props) {
                 keys={percentageEthnicGroups}
                 onKeySelect={handlePercentageKeySelected}
                 showNonHispanic
-                row={!props.showCompare}
               />
             </S.LegendBeside>
           </S.LineSection>
-          <S.PieSection>
+          <ChartModal
+            tableHeader="Traffic Stops By Percentage"
+            tableSubheader={`Shows the race/ethnic composition of drivers stopped by this ${subjectObserving()} over time.`}
+            agencyName={stopsChartState.data[AGENCY_DETAILS].name}
+            isOpen={showZoomedPieChart}
+            closeModal={() => setShowZoomedPieChart(false)}
+            chartToPrintRef={zoomedPieCharRef}
+            fileName={pieChartTitle(true)}
+          >
+            <S.PieSection zoomed>
+              <S.PieWrapper zoomed>
+                <PieChart
+                  data={byPercentagePieData}
+                  title={pieChartTitle()}
+                  displayTitle
+                  displayLegend
+                  displayOutlabels
+                  maintainAspectRatio
+                  chartRef={zoomedPieCharRef}
+                />
+              </S.PieWrapper>
+            </S.PieSection>
+          </ChartModal>
+
+          <S.PieSection alignItems="start">
             <S.PieWrapper>
-              <Pie data={byPercentagePieData} loading={stopsChartState.loading[STOPS]} />
+              <PieChart
+                data={byPercentagePieData}
+                displayTitle
+                displayLegend={false}
+                maintainAspectRatio
+              />
             </S.PieWrapper>
-            <DataSubsetPicker
-              label="Year"
-              value={year}
-              onChange={handleYearSelect}
-              options={[YEARS_DEFAULT].concat(stopsChartState.yearRange)}
-            />
+            <S.PieActionsWrapper>
+              <DataSubsetPicker
+                label="Year"
+                value={year}
+                onChange={handleYearSelect}
+                options={[YEARS_DEFAULT].concat(stopsChartState.yearRange)}
+              />
+              <div
+                style={{
+                  marginTop: '1em',
+                }}
+              >
+                <Button onClick={() => setShowZoomedPieChart(true)}>Expand</Button>
+              </div>
+            </S.PieActionsWrapper>
           </S.PieSection>
         </S.ChartSubsection>
       </S.ChartSection>
@@ -474,18 +650,15 @@ function TrafficStops(props) {
         <ChartHeader chartTitle="Traffic Stops By Count" handleViewData={handleViewCountData} />
         <P>Shows the number of traffics stops broken down by purpose and race / ethnicity.</P>
         <S.ChartSubsection showCompare={props.showCompare}>
-          <S.LineWrapper>
-            <Line
-              data={byCountLineData}
-              loading={reasonChartState.loading[STOPS_BY_REASON]}
-              iTickFormat={lineAxisFormat}
-              iTickValues={reasonChartYearSet}
-              dAxisProps={{
-                tickFormat: (t) => `${t}`,
-              }}
-              xAxisLabel={pickerActive !== null ? pickerXAxis : 'Year'}
-            />
-          </S.LineWrapper>
+          <LineWrapper visible>
+            <StopGroupsContainer>
+              <LineChart
+                data={trafficStopsByCount}
+                title="Traffic Stops By Count"
+                maintainAspectRatio={false}
+              />
+            </StopGroupsContainer>
+          </LineWrapper>
           <S.LegendBeside>
             <DataSubsetPicker
               label="Stop Purpose"
@@ -493,26 +666,22 @@ function TrafficStops(props) {
               onChange={handleStopPurposeSelect}
               options={[PURPOSE_DEFAULT].concat(stopTypes)}
             />
+
+            {purpose !== PURPOSE_DEFAULT && (
+              <p style={{ marginTop: '10px' }}>{displayDefinition(purpose)}</p>
+            )}
+
             <MonthRangePicker
-              agencyId={agencyId}
-              dataSet={purpose !== PURPOSE_DEFAULT ? STOPS_BY_REASON : STOPS}
               deactivatePicker={pickerActive === null}
-              forcePickerRerender={forcePickerRerender}
               onChange={updateStopsByCount}
-              onClosePicker={() => setPickerActive(null)}
+              onClosePicker={closeStopsByCountRange}
+              minY={trafficStopsByCountMinMaxYears[0]}
+              maxY={trafficStopsByCountMinMaxYears[1]}
             />
-            <S.Spacing>
-              <Legend
-                heading="Show on graph:"
-                keys={countEthnicGroups}
-                onKeySelect={handleCountKeySelected}
-                showNonHispanic
-              />
-            </S.Spacing>
           </S.LegendBeside>
         </S.ChartSubsection>
       </S.ChartSection>
-      <S.ChartSection>
+      <S.ChartSection marginTop={5}>
         <ChartHeader
           chartTitle="Traffic Stops By Stop Purpose"
           handleViewData={showStopPurposeModal}
@@ -529,29 +698,25 @@ function TrafficStops(props) {
           isOpen={stopPurposeModalData.isOpen}
           closeModal={() => setStopPurposeModalData((state) => ({ ...state, isOpen: false }))}
         />
-        <LineWrapper>
+        <LineWrapper visible>
           <StopGroupsContainer>
             <LineChart
               data={stopPurposeGroupsData}
               title="Stop Purposes By Group"
               maintainAspectRatio={false}
+              displayStopPurposeTooltips
+              showLegendOnBottom={false}
             />
           </StopGroupsContainer>
         </LineWrapper>
       </S.ChartSection>
-      <S.ChartSection>
+      <S.ChartSection marginTop={5}>
         <ChartHeader
           chartTitle="Traffic Stops By Stop Purpose and Race Count"
           handleViewData={showGroupedStopPurposeModal}
         />
         <P>Shows the number of traffics stops broken down by purpose and race / ethnicity.</P>
-        <Legend
-          heading="Show on graph:"
-          keys={stopPurposeEthnicGroups}
-          onKeySelect={handleStopPurposeKeySelected}
-          showNonHispanic
-          row
-        />
+
         <NewModal
           tableHeader="Traffic Stops By Stop Purpose and Race Count"
           tableSubheader="Shows the number of traffics stops broken down by purpose and race / ethnicity"
@@ -572,37 +737,110 @@ function TrafficStops(props) {
             options={groupedStopPurposeModalData.purposeTypes}
           />
         </NewModal>
-        <LineWrapper>
-          <GroupedStopsContainer>
+        <SwitchContainer>
+          <span>Switch to {checked ? 'line' : 'pie'} charts</span>
+          <Switch onChange={handleChange} checked={checked} className="react-switch" />
+        </SwitchContainer>
+        <div style={{ marginTop: '1em' }}>
+          <P weight={WEIGHTS[1]}>Toggle graphs:</P>
+          <div style={{ display: 'flex', gap: '10px', flexDirection: 'row', flexWrap: 'wrap' }}>
+            {visibleStopsGroupedByPurpose.map((vg, i) => (
+              <Checkbox
+                height={25}
+                width={25}
+                label={vg.title}
+                value={vg.key}
+                key={i}
+                checked={vg.visible}
+                onChange={toggleGroupedPurposeGraphs}
+              />
+            ))}
+          </div>
+        </div>
+        <LineWrapper visible={checked === false}>
+          <GroupedStopsContainer visible={visibleStopsGroupedByPurpose[0].visible}>
             <LineChart
               data={stopsGroupedByPurposeData.safety}
               title="Safety Violation"
               maintainAspectRatio={false}
               displayLegend={false}
               yAxisMax={stopsGroupedByPurposeData.max_step_size}
+              redraw
             />
           </GroupedStopsContainer>
-          <GroupedStopsContainer>
+          <GroupedStopsContainer visible={visibleStopsGroupedByPurpose[1].visible}>
             <LineChart
               data={stopsGroupedByPurposeData.regulatory}
-              title="Regulatory Equipment"
+              title="Regulatory/Equipment"
               maintainAspectRatio={false}
               displayLegend={false}
               yAxisMax={stopsGroupedByPurposeData.max_step_size}
-              yAxisShowLabels={false}
+              yAxisShowLabels={!visibleStopsGroupedByPurpose[0].visible}
+              redraw
             />
           </GroupedStopsContainer>
-          <GroupedStopsContainer>
+          <GroupedStopsContainer visible={visibleStopsGroupedByPurpose[2].visible}>
             <LineChart
               data={stopsGroupedByPurposeData.other}
               title="Other"
               maintainAspectRatio={false}
               displayLegend={false}
               yAxisMax={stopsGroupedByPurposeData.max_step_size}
-              yAxisShowLabels={false}
+              yAxisShowLabels={
+                !visibleStopsGroupedByPurpose[0].visible && !visibleStopsGroupedByPurpose[1].visible
+              }
+              redraw
             />
           </GroupedStopsContainer>
         </LineWrapper>
+        {checked && (
+          <DataSubsetPicker
+            label="Year"
+            value={yearForGroupedPieCharts}
+            onChange={handleYearSelectForGroupedPieCharts}
+            options={[YEARS_DEFAULT].concat([...stopsGroupedByPurposeData.labels].reverse())}
+          />
+        )}
+        <PieWrapper visible={checked === true}>
+          <PieStopsContainer visible={visibleStopsGroupedByPurpose[0].visible}>
+            <PieWrapper visible>
+              <PieChart
+                data={stopsGroupedByPurposePieData.safety}
+                title="Safety Violation"
+                maintainAspectRatio={false}
+                displayLegend={false}
+              />
+            </PieWrapper>
+          </PieStopsContainer>
+          <PieStopsContainer visible={visibleStopsGroupedByPurpose[1].visible}>
+            <PieWrapper visible>
+              <PieChart
+                data={stopsGroupedByPurposePieData.regulatory}
+                title="Regulatory/Equipment"
+                maintainAspectRatio={false}
+                displayLegend={false}
+              />
+            </PieWrapper>
+          </PieStopsContainer>
+          <PieStopsContainer visible={visibleStopsGroupedByPurpose[2].visible}>
+            <PieWrapper visible>
+              <PieChart
+                data={stopsGroupedByPurposePieData.other}
+                title="Other"
+                maintainAspectRatio={false}
+                displayLegend={false}
+              />
+            </PieWrapper>
+          </PieStopsContainer>
+        </PieWrapper>
+
+        <Legend
+          heading={!checked ? 'Show on graph:' : 'Legend:'}
+          keys={stopPurposeEthnicGroups}
+          onKeySelect={handleStopPurposeKeySelected}
+          showNonHispanic
+          isStatic={checked}
+        />
       </S.ChartSection>
     </TrafficStopsStyled>
   );

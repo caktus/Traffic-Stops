@@ -1,6 +1,11 @@
 import styled from 'styled-components';
-import { phoneOnly, smallerThanDesktop } from '../../styles/breakpoints';
+import {
+  phoneOnly,
+  smallerThanDesktop,
+  smallerThanTabletLandscape,
+} from '../../styles/breakpoints';
 import FullWidthPage from '../../styles/StyledComponents/FullWidthPage';
+import FJIcon from '../../img/icons/Icon';
 
 export const AgencyList = styled(FullWidthPage)``;
 
@@ -76,3 +81,24 @@ export const AutoSuggestForm = styled.form`
   flex-direction: row;
   align-items: center;
 `;
+
+export const ButtonWrapper = styled.div`
+  width: 360px;
+  margin: 2em 0;
+  @media (${smallerThanTabletLandscape}) {
+    width: 90%;
+    margin: 2em auto;
+  }
+`;
+
+export const ButtonInner = styled.span`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-left: auto;
+  width: 85%;
+  font-size: 22px;
+`;
+
+export const ButtonIcon = styled(FJIcon)``;

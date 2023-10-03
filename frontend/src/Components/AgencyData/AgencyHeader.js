@@ -50,7 +50,7 @@ function AgencyHeader({
       {agencyHeaderOpen && (
         <S.AgencyHeader>
           <S.SubHeaderNavRow>{!showCompareDepartments && <BackButton />}</S.SubHeaderNavRow>
-          <S.SubHeaderContentRow>
+          <S.SubHeaderContentRow flexDirection={showCompareDepartments ? 'column' : 'row'}>
             <S.EntityDetails>
               {officerId ? (
                 <>
@@ -93,7 +93,7 @@ function AgencyHeader({
             />
           </S.SubHeaderContentRow>
           {!showCloseButton && (
-            <S.ShowDepartmentsButton>
+            <S.AgencyHeaderButton>
               <Button
                 variant="positive"
                 border={`2px solid ${theme.colors.primary}`}
@@ -108,10 +108,10 @@ function AgencyHeader({
                 />
                 Compare Departments
               </Button>
-            </S.ShowDepartmentsButton>
+            </S.AgencyHeaderButton>
           )}
           {showCloseButton && (
-            <div style={{ display: 'block' }}>
+            <S.AgencyHeaderButton>
               <Button
                 variant="positive"
                 border={`2px solid ${theme.colors.primary}`}
@@ -126,7 +126,7 @@ function AgencyHeader({
                 />
                 Close
               </Button>
-            </div>
+            </S.AgencyHeaderButton>
           )}
         </S.AgencyHeader>
       )}

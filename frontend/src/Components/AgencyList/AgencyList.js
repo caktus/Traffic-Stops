@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import * as S from './AgencyList.styled';
 
 // Router
-import { Link, useRouteMatch } from 'react-router-dom';
+import { Link, useHistory, useRouteMatch } from 'react-router-dom';
 
 // AJAX
 import axios from '../../Services/Axios';
@@ -15,11 +15,18 @@ import { FETCH_START, FETCH_SUCCESS, FETCH_FAILURE } from '../../Context/root-re
 // Components
 import ListSkeleton from '../Elements/ListSkeleton';
 import { H1, P } from '../../styles/StyledComponents/Typography';
+import FjButton from '../Elements/Button';
+import * as ChartHeaderStyles from '../Charts/ChartSections/ChartHeader.styled';
+import { STATEWIDE_DATA } from '../../Routes/slugs';
+import { ICONS } from '../../img/icons/Icon';
+import { useTheme } from 'styled-components';
 
 const DATA_SET = 'AGENCIES_LIST';
 
 function AgencyList() {
   const match = useRouteMatch();
+  const theme = useTheme();
+  const history = useHistory();
 
   const [state, dispatch] = useRootContext();
   const [sortedAgencies, setSortedAgencies] = useState({});
@@ -27,7 +34,9 @@ function AgencyList() {
   async function _fetchAgencyList() {
     try {
       const { data } = await axios.get(getAgenciesURL());
-      dispatch({ type: FETCH_SUCCESS, dataSet: DATA_SET, payload: data });
+      // Removing NC Statewide link from list and instead have dedicated button above list
+      const agencies = data.filter((d) => d.id !== -1);
+      dispatch({ type: FETCH_SUCCESS, dataSet: DATA_SET, payload: agencies });
     } catch (error) {
       dispatch({ type: FETCH_FAILURE, dataSet: DATA_SET, payload: error.message });
     }
@@ -76,6 +85,22 @@ function AgencyList() {
               passengers involved in traffic stops.
             </P>
           </S.HeadingAndDescription>
+          <S.ButtonWrapper>
+            <FjButton
+              variant="positive"
+              border={`2px solid ${theme.colors.primary}`}
+              {...ChartHeaderStyles.ButtonInlines}
+              onClick={() => history.push(`${STATEWIDE_DATA}`)}
+            >
+              <ChartHeaderStyles.Icon
+                icon={ICONS.info}
+                height={25}
+                width={25}
+                fill={theme.colors.white}
+              />
+              View all statewide data
+            </FjButton>
+          </S.ButtonWrapper>
         </S.UpperContent>
         {state.loading[DATA_SET] && <ListSkeleton />}
         {state.data[DATA_SET] && (

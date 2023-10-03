@@ -21,7 +21,7 @@ export const LegendHeading = styled(P)`
 
 export const KeysList = styled.ul`
   display: flex;
-  flex-direction: ${(props) => (props.row ? 'row' : 'column')};
+  flex-direction: ${(props) => props.direction};
   list-style: none;
   padding: 0;
   margin: 0;
@@ -51,7 +51,6 @@ export const KeyLabel = styled.p`
 `;
 
 export const Addendum = styled.p`
-  margin-top: 1em;
   font-style: italic;
   color: ${(props) => props.theme.colors.textLight};
   font-size: 16px;

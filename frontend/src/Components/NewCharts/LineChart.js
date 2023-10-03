@@ -1,14 +1,35 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Line } from 'react-chartjs-2';
+import { tooltipLanguage } from '../../util/tooltipLanguage';
+import { usePopper } from 'react-popper';
+import styled from 'styled-components';
+import DataLoading from '../Charts/ChartPrimitives/DataLoading';
+
+export const Tooltip = styled.div`
+  background: #333;
+  color: white;
+  font-weight: bold;
+  padding: 4px 8px;
+  font-size: 13px;
+  border-radius: 4px;
+  visibility: hidden;
+
+  &[data-show='true'] {
+    visibility: visible;
+  }
+`;
 
 export default function LineChart({
   data,
   title,
-  maintainAspectRatio = true,
+  maintainAspectRatio = false,
   displayTitle = true,
   displayLegend = true,
   yAxisMax = null,
   yAxisShowLabels = true,
+  displayStopPurposeTooltips = false,
+  showLegendOnBottom = true,
+  redraw = false,
 }) {
   const options = {
     responsive: true,
@@ -20,7 +41,19 @@ export default function LineChart({
     plugins: {
       legend: {
         display: displayLegend,
-        position: 'top',
+        position: showLegendOnBottom ? 'bottom' : 'top',
+        onHover(event, legendItem) {
+          if (displayStopPurposeTooltips) {
+            setTooltipText(tooltipLanguage(legendItem.text));
+            showTooltip();
+          }
+        },
+        onLeave() {
+          if (displayStopPurposeTooltips) {
+            setTooltipText('');
+            hideTooltip();
+          }
+        },
       },
       tooltip: {
         mode: 'nearest',
@@ -33,6 +66,7 @@ export default function LineChart({
     },
     scales: {
       y: {
+        min: 0,
         max: yAxisMax,
         ticks: {
           display: yAxisShowLabels,
@@ -41,5 +75,48 @@ export default function LineChart({
     },
   };
 
-  return <Line options={options} data={data} />;
+  const [referenceElement, setReferenceElement] = useState(null);
+  const [tooltipText, setTooltipText] = useState('');
+  const [popperElement, setPopperElement] = useState(null);
+  const { styles, attributes } = usePopper(referenceElement, popperElement, {
+    placement: 'top',
+    modifiers: [
+      {
+        name: 'offset',
+        options: {
+          offset: [0, -10],
+        },
+      },
+    ],
+  });
+
+  const showTooltip = () => {
+    popperElement.setAttribute('data-show', true);
+  };
+
+  const hideTooltip = () => {
+    popperElement.removeAttribute('data-show');
+  };
+
+  if (!data.datasets.length) {
+    return <DataLoading />;
+  }
+
+  return (
+    <>
+      {displayStopPurposeTooltips && (
+        <>
+          <div ref={setReferenceElement} />
+          <Tooltip
+            ref={setPopperElement}
+            style={{ ...styles.popper, width: '300px' }}
+            {...attributes.popper}
+          >
+            {tooltipText}
+          </Tooltip>
+        </>
+      )}
+      <Line options={options} data={data} redraw={redraw} datasetIdKey={title} />
+    </>
+  );
 }
