@@ -452,7 +452,7 @@ function Contraband(props) {
         <HorizontalBarWrapper>
           <BarContainer visible={visibleContrabandTypes[0].visible}>
             <HorizontalBarChart
-              title=""
+              title="Safety Violation"
               maintainAspectRatio={false}
               data={contrabandGroupedStopPurposeData[0]}
               tooltipTitleCallback={formatTooltipLabel}
@@ -465,7 +465,7 @@ function Contraband(props) {
           </BarContainer>
           <BarContainer visible={visibleContrabandTypes[1].visible}>
             <HorizontalBarChart
-              title=""
+              title="Regulatory/Equipment"
               maintainAspectRatio={false}
               data={contrabandGroupedStopPurposeData[1]}
               tooltipTitleCallback={formatTooltipLabel}
@@ -479,7 +479,7 @@ function Contraband(props) {
           </BarContainer>
           <BarContainer visible={visibleContrabandTypes[2].visible}>
             <HorizontalBarChart
-              title=""
+              title="Other"
               maintainAspectRatio={false}
               data={contrabandGroupedStopPurposeData[2]}
               tooltipTitleCallback={formatTooltipLabel}
