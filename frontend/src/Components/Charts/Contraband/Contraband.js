@@ -8,7 +8,13 @@ import * as S from '../ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
 
 // Util
-import { STATIC_CONTRABAND_KEYS, STATIC_LEGEND_KEYS, YEARS_DEFAULT } from '../chartUtils';
+import {
+  CONTRABAND_DEFAULT,
+  CONTRABAND_TYPES,
+  STATIC_CONTRABAND_KEYS,
+  STATIC_LEGEND_KEYS,
+  YEARS_DEFAULT,
+} from '../chartUtils';
 
 // Hooks
 import useMetaTags from '../../../Hooks/useMetaTags';
@@ -27,6 +33,9 @@ import NewModal from '../../NewCharts/NewModal';
 import Legend from '../ChartSections/Legend/Legend';
 import cloneDeep from 'lodash.clonedeep';
 import Checkbox from '../../Elements/Inputs/Checkbox';
+import range from 'lodash.range';
+
+const STOP_PURPOSE_TYPES = ['Safety Violation', 'Regulatory and Equipment', 'Other'];
 
 function Contraband(props) {
   const { agencyId, showCompare } = props;
@@ -54,9 +63,17 @@ function Contraband(props) {
     isOpen: false,
     tableData: [],
     csvData: [],
-    selectedPurpose: 'Safety Violation',
-    purposeTypes: ['Safety Violation', 'Regulatory and Equipment', 'Other'],
+    selectedPurpose: STOP_PURPOSE_TYPES[0],
   });
+
+  const [groupedContrabandStopPurposeModalData, setGroupedContrabandStopPurposeModalData] =
+    useState({
+      modalData: {},
+      isOpen: false,
+      tableData: [],
+      csvData: [],
+    });
+
   const [contrabandStopPurposeYear, setContrabandStopPurposeYear] = useState(YEARS_DEFAULT);
   const [contrabandGroupedStopPurposeData, setContrabandGroupedStopPurposeData] = useState([
     {
@@ -74,6 +91,13 @@ function Contraband(props) {
   ]);
   const [contrabandTypes, setContrabandTypes] = useState(() =>
     STATIC_CONTRABAND_KEYS.map((k) => ({ ...k }))
+  );
+
+  const [selectedGroupedContrabandType, setSelectedGroupedContrabandType] = useState(
+    CONTRABAND_TYPES[0]
+  );
+  const [selectedGroupedContrabandStopPurpose, setSelectedGroupedContrabandStopPurpose] = useState(
+    STOP_PURPOSE_TYPES[0]
   );
 
   const [visibleContrabandTypes, setVisibleContrabandTypes] = useState([
@@ -185,6 +209,7 @@ function Contraband(props) {
     axios
       .get(url)
       .then((res) => {
+        console.log(res.data);
         const colors = {
           Drugs: '#feaba6',
           Alcohol: '#86c6dd',
@@ -193,7 +218,7 @@ function Contraband(props) {
           Other: '#ffd4a0',
         };
         const stopPurposeDataSets = res.data.map((sp, _) => ({
-          labels: ['White', 'Black', 'Hispanic', 'Asian', 'Native American', 'Other'],
+          labels: ['W', 'B', 'H', 'A', 'NA', 'O'],
           datasets: sp.data.map((ds, _) => ({
             label: ds.contraband,
             data: ds.data,
@@ -206,11 +231,26 @@ function Contraband(props) {
   }, [year]);
 
   useEffect(() => {
-    const url = `/api/agency/${agencyId}/contraband-grouped-stop-purpose/modal/`;
+    const url = `/api/agency/${agencyId}/contraband-stop-purpose/modal/`;
     axios.get(url).then((res) => {
       setContrabandStopPurposeModalData({ ...contrabandStopPurposeModalData, modalData: res.data });
     });
   }, []);
+
+  useEffect(() => {
+    const contraband_types = {
+      [CONTRABAND_TYPES[0]]: 'drugs_found',
+      [CONTRABAND_TYPES[1]]: 'alcohol_found',
+      [CONTRABAND_TYPES[2]]: 'money_found',
+      [CONTRABAND_TYPES[3]]: 'weapons_found',
+      [CONTRABAND_TYPES[4]]: 'other_found',
+    };
+    const contrabandType = contraband_types[selectedGroupedContrabandType];
+    const url = `/api/agency/${agencyId}/contraband-grouped-stop-purpose/modal/?grouped_stop_purpose=${selectedGroupedContrabandStopPurpose}&contraband_type=${contrabandType}`;
+    axios.get(url).then((res) => {
+      updateGroupedContrabandModalData(res.data);
+    });
+  }, [selectedGroupedContrabandStopPurpose, selectedGroupedContrabandType]);
 
   const showContrabandModal = () => {
     if (!chartState.data[CONTRABAND_HIT_RATE]) return;
@@ -322,6 +362,40 @@ function Contraband(props) {
     );
   };
 
+  const handleGroupedContrabandTypeSelect = (c) => {
+    if (c === selectedGroupedContrabandType) return;
+    setSelectedGroupedContrabandType(c);
+  };
+
+  const handleGroupedContrabandStopPurposeSelect = (c) => {
+    if (c === selectedGroupedContrabandStopPurpose) return;
+    setSelectedGroupedContrabandStopPurpose(c);
+  };
+
+  const updateGroupedContrabandModalData = (modalData) => {
+    const tableData = [];
+    range(2002, new Date().getFullYear() + 1, 1).forEach((e) => {
+      const races = ['white', 'black', 'hispanic', 'asian', 'native_american', 'other'];
+      const row = {
+        year: e,
+      };
+      const total = [];
+      races.forEach((r, j) => {
+        // The data is indexed by the stop purpose group, then the index of the race then the index of the year.
+        row[r] = modalData.datasets[j]['data'].find((y) => y.year === e)?.count || 0;
+        total.unshift(row[r]);
+      });
+      row['total'] = total.reduce((a, b) => a + b, 0);
+      tableData.unshift(row);
+    });
+    const newState = {
+      ...groupedContrabandStopPurposeModalData,
+      tableData,
+      csvData: tableData,
+    };
+    setGroupedContrabandStopPurposeModalData(newState);
+  };
+
   return (
     <ContrabandStyled>
       {renderMetaTags()}
@@ -392,7 +466,7 @@ function Contraband(props) {
             label="Stop Purpose"
             value={contrabandStopPurposeModalData.selectedPurpose}
             onChange={showGroupedContrabandModal}
-            options={contrabandStopPurposeModalData.purposeTypes}
+            options={STOP_PURPOSE_TYPES}
           />
         </NewModal>
         <S.ChartSubsection showCompare={showCompare}>
@@ -419,13 +493,43 @@ function Contraband(props) {
       <S.ChartSection marginTop={5}>
         <ChartHeader
           chartTitle='Contraband "Hit Rate" By Stop Purpose'
-          handleViewData={handleViewData}
+          handleViewData={() =>
+            setGroupedContrabandStopPurposeModalData((state) => ({ ...state, isOpen: true }))
+          }
         />
         <S.ChartDescription>
           <P>
             Shows what percentage of searches discovered contraband for a given race / ethnic group
           </P>
         </S.ChartDescription>
+        <NewModal
+          tableHeader='Contraband "Hit Rate" Grouped by Stop Purpose'
+          tableSubheader="Shows the number of traffics stops broken down by purpose and race / ethnicity."
+          agencyName={chartState.data[AGENCY_DETAILS].name}
+          tableData={groupedContrabandStopPurposeModalData.tableData}
+          csvData={groupedContrabandStopPurposeModalData.csvData}
+          columns={CONTRABAND_TABLE_COLUMNS}
+          tableDownloadName="Traffic Stops By Stop Purpose"
+          isOpen={groupedContrabandStopPurposeModalData.isOpen}
+          closeModal={() =>
+            setGroupedContrabandStopPurposeModalData((state) => ({ ...state, isOpen: false }))
+          }
+        >
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <DataSubsetPicker
+              label="Stop Purpose"
+              value={selectedGroupedContrabandStopPurpose}
+              onChange={handleGroupedContrabandStopPurposeSelect}
+              options={STOP_PURPOSE_TYPES}
+            />
+            <DataSubsetPicker
+              label="Contraband Type"
+              value={selectedGroupedContrabandType}
+              onChange={handleGroupedContrabandTypeSelect}
+              options={CONTRABAND_TYPES}
+            />
+          </div>
+        </NewModal>
         <div style={{ marginTop: '1em' }}>
           <P weight={WEIGHTS[1]}>Toggle graphs:</P>
           <div style={{ display: 'flex', gap: '10px', flexDirection: 'row', flexWrap: 'wrap' }}>
@@ -535,30 +639,6 @@ const CONTRABAND_TABLE_COLUMNS = [
   {
     Header: 'Hispanic',
     accessor: 'hispanic',
-  },
-  {
-    Header: 'Total',
-    accessor: 'total',
-  },
-];
-
-// eslint-disable-next-line no-unused-vars
-const CONTRABAND_STOP_PURPOSE_TABLE_COLUMNS = [
-  {
-    Header: 'Year',
-    accessor: 'year',
-  },
-  {
-    Header: 'Safety Violation',
-    accessor: 'safety',
-  },
-  {
-    Header: 'Regulatory and Equipment',
-    accessor: 'regulatory',
-  },
-  {
-    Header: 'Other',
-    accessor: 'other',
   },
   {
     Header: 'Total',

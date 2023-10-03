@@ -704,7 +704,7 @@ class AgencyContrabandStopPurposeView(APIView):
         return Response(data=data, status=200)
 
 
-class AgencyContrabandStopGroupByPurposeView(APIView):
+class AgencyContrabandStopPurposeModalView(APIView):
     def group_by_purpose(self, df, purpose, years):
         def get_values(col):
             if purpose in df and col in df[purpose]:
@@ -782,9 +782,17 @@ class AgencyContrabandStopGroupByPurposeView(APIView):
 
 
 class AgencyContrabandGroupedStopPurposeView(APIView):
-    def create_searches_df(self, _filter, year=None):
-        qs = StopSummary.objects.filter(_filter).annotate(year=ExtractYear("date"))
+    contraband_types = [
+        "drugs_found",
+        "alcohol_found",
+        "money_found",
+        "weapons_found",
+        "other_found",
+    ]
 
+    columns = ["White", "Black", "Hispanic", "Asian", "Native American", "Other"]
+
+    def create_searches_df(self, qs, year=None):
         if year:
             qs = qs.filter(year=year)
 
@@ -799,7 +807,7 @@ class AgencyContrabandGroupedStopPurposeView(APIView):
         ).fillna(value=0)
         return pd.DataFrame(pivot_df)
 
-    def create_contraband_df(self, _filter, contraband_found, year=None):
+    def get_qs(self, _filter, year=None):
         qs = (
             Contraband.objects.filter(_filter)
             .annotate(year=ExtractYear("stop__date"))
@@ -874,6 +882,9 @@ class AgencyContrabandGroupedStopPurposeView(APIView):
         )
         if year:
             qs = qs.filter(year=year)
+        return qs
+
+    def create_contraband_df(self, qs, contraband_found):
         qs = (
             qs.values("year", "driver_race_comb", "stop_purpose_group", contraband_found)
             .annotate(count=Count(contraband_found))
@@ -881,29 +892,19 @@ class AgencyContrabandGroupedStopPurposeView(APIView):
         )
         return pd.DataFrame(qs).fillna(value=0)
 
-    def create_dataset(self, agency_id, stop_purpose, year=None):
+    def create_dataset(self, contraband_qs, stop_purpose, *args, **kwargs):
         data = []
-        contrabands = [
-            "drugs_found",
-            "alcohol_found",
-            "money_found",
-            "weapons_found",
-            "other_found",
-        ]
-        columns = ["White", "Black", "Hispanic", "Asian", "Native American", "Other"]
+        searches_qs = kwargs.get("searches_qs")
+        year = kwargs.get("year")
 
-        for contraband in contrabands:
+        for contraband in self.contraband_types:
             group = {
                 "contraband": contraband.split("_")[0].title(),
                 "data": [],
             }
-            for c in columns:
-                searches_df = self.create_searches_df(
-                    Q(agency_id=agency_id, search_type__isnull=False), year
-                )
-                contraband_df = self.create_contraband_df(
-                    Q(stop__agency__id=agency_id, person__type="D"), contraband, year
-                )
+            for c in self.columns:
+                searches_df = self.create_searches_df(searches_qs, year)
+                contraband_df = self.create_contraband_df(contraband_qs, contraband)
 
                 searches_mean = searches_df[stop_purpose].mean()
 
@@ -927,19 +928,93 @@ class AgencyContrabandGroupedStopPurposeView(APIView):
     def get(self, request, agency_id):
         year = request.GET.get("year", None)
 
+        searches_qs = StopSummary.objects.filter(
+            Q(agency_id=agency_id, search_type__isnull=False)
+        ).annotate(year=ExtractYear("date"))
+        contraband_qs = self.get_qs(Q(stop__agency__id=agency_id, person__type="D"), year)
+
         data = [
             {
                 "stop_purpose": "Safety Violation",
-                "data": self.create_dataset(agency_id, StopPurposeGroup.SAFETY_VIOLATION, year),
+                "data": self.create_dataset(
+                    contraband_qs,
+                    StopPurposeGroup.SAFETY_VIOLATION,
+                    year=year,
+                    searches_qs=searches_qs,
+                ),
             },
             {
                 "stop_purpose": "Regulatory and Equipment",
-                "data": self.create_dataset(agency_id, StopPurposeGroup.REGULATORY_EQUIPMENT, year),
+                "data": self.create_dataset(
+                    contraband_qs,
+                    StopPurposeGroup.REGULATORY_EQUIPMENT,
+                    year=year,
+                    searches_qs=searches_qs,
+                ),
             },
             {
                 "stop_purpose": "Other",
-                "data": self.create_dataset(agency_id, StopPurposeGroup.OTHER, year),
+                "data": self.create_dataset(
+                    contraband_qs, StopPurposeGroup.OTHER, year=year, searches_qs=searches_qs
+                ),
             },
         ]
 
         return Response(data=data, status=200)
+
+
+class AgencyContrabandStopGroupByPurposeModalView(AgencyContrabandGroupedStopPurposeView):
+    def get(self, request, agency_id):
+        grouped_stop_purpose = request.GET.get("grouped_stop_purpose")
+        contraband_type = request.GET.get("contraband_type")
+        year = request.GET.get("year", None)
+
+        contraband_qs = self.get_qs(Q(stop__agency__id=agency_id, person__type="D"), year)
+
+        contraband_df = self.create_contraband_df(contraband_qs, contraband_type)
+        contraband_df = contraband_df[contraband_df["stop_purpose_group"] == grouped_stop_purpose]
+        contraband_df = contraband_df[contraband_df[contraband_type] == True]  # noqa E712
+
+        def get_values(col):
+            values = contraband_df[contraband_df["driver_race_comb"] == col]
+            years = values.year.unique()
+
+            if values.empty:
+                return [0] * len(years)
+
+            contraband_values = []
+            for v in values.values:
+                contraband_values.append({"year": v[0], "count": v[-1]})
+
+            return contraband_values
+
+        contraband_modal_data = {
+            "datasets": [
+                {
+                    "label": "White",
+                    "data": get_values("White"),
+                },
+                {
+                    "label": "Black",
+                    "data": get_values("Black"),
+                },
+                {
+                    "label": "Hispanic",
+                    "data": get_values("Hispanic"),
+                },
+                {
+                    "label": "Asian",
+                    "data": get_values("Asian"),
+                },
+                {
+                    "label": "Native American",
+                    "data": get_values("Native American"),
+                },
+                {
+                    "label": "Other",
+                    "data": get_values("Other"),
+                },
+            ],
+        }
+
+        return Response(data=contraband_modal_data, status=200)
