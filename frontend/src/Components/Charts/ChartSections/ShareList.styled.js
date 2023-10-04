@@ -6,24 +6,24 @@ export const ShareList = styled.div`
   flex-direction: row;
   align-items: center;
   margin-right: 1.5em;
+  gap: 15px;
 
   @media (${phoneOnly}) {
     margin: 0;
     justify-content: center;
-    margin-top: 1.5em;
   }
 `;
 
 export const ShareItem = styled.a`
-  margin: 0 1.5em;
+  margin: 0;
 `;
 
 export const FBLogo = styled.img`
-  height: 32px;
-  width: 32px;
+  height: 75px;
+  width: 150px;
 `;
 
 export const TWLogo = styled.img`
-  height: 32px;
-  width: 32px;
+  height: 25px;
+  width: 25px;
 `;

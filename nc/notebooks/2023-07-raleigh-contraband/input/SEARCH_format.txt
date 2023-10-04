@@ -1,0 +1,13 @@
+10.0
+11
+1       SQLCHAR             0       12      ""       1     SearchID                                         ""
+2       SQLCHAR             0       12      ""       2     StopID                                           ""
+3       SQLCHAR             0       12      ""       3     PersonID                                         ""
+4       SQLCHAR             0       5       ""       4     Type                                             ""
+5       SQLCHAR             0       3       ""       5     VehicleSearch                                    ""
+6       SQLCHAR             0       3       ""       6     DriverSearch                                     ""
+7       SQLCHAR             0       3       ""       7     PassengerSearch                                  ""
+8       SQLCHAR             0       3       ""       8     PropertySearch                                   ""
+9       SQLCHAR             0       3       ""       9     VehicleSeized                                    ""
+10      SQLCHAR             0       3       ""       10    PersonalPropertySeized                           ""
+11      SQLCHAR             0       3       "\r\n"   11    OtherPropertySeized                              ""
