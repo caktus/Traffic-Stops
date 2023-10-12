@@ -5,16 +5,9 @@ import ContrabandStyled, {
   HorizontalBarWrapper,
 } from './Contraband.styled';
 import * as S from '../ChartSections/ChartsCommon.styled';
-import { useTheme } from 'styled-components';
 
 // Util
-import {
-  CONTRABAND_DEFAULT,
-  CONTRABAND_TYPES,
-  STATIC_CONTRABAND_KEYS,
-  STATIC_LEGEND_KEYS,
-  YEARS_DEFAULT,
-} from '../chartUtils';
+import { CONTRABAND_TYPES, STATIC_CONTRABAND_KEYS, YEARS_DEFAULT } from '../chartUtils';
 
 // Hooks
 import useMetaTags from '../../../Hooks/useMetaTags';
@@ -39,14 +32,13 @@ const STOP_PURPOSE_TYPES = ['Safety Violation', 'Regulatory and Equipment', 'Oth
 
 function Contraband(props) {
   const { agencyId, showCompare } = props;
-  const theme = useTheme();
 
   const [chartState] = useDataset(agencyId, CONTRABAND_HIT_RATE);
 
   const [year, setYear] = useState(YEARS_DEFAULT);
 
   const renderMetaTags = useMetaTags();
-  const [renderTableModal, { openModal }] = useTableModal();
+  const [renderTableModal] = useTableModal();
   const [contrabandData, setContrabandData] = useState({ labels: [], datasets: [] });
   const [contrabandModalData, setContrabandModalData] = useState({
     isOpen: false,
@@ -138,9 +130,6 @@ function Contraband(props) {
     setContrabandStopPurposeYear(y);
   };
 
-  const handleViewData = () => {
-    openModal(CONTRABAND_HIT_RATE, CONTRABAND_TABLE_COLUMNS);
-  };
   // Build New Contraband Data
   useEffect(() => {
     let url = `/api/agency/${agencyId}/contraband/`;
@@ -183,7 +172,7 @@ function Contraband(props) {
           'Regulatory Equipment': '#ffa500',
           Other: '#ACE1AF',
         };
-        const stopPurposeDataSets = res.data.map((ds, _) => ({
+        const stopPurposeDataSets = res.data.map((ds) => ({
           axis: 'x',
           label: ds.stop_purpose,
           data: ds.data,
@@ -209,7 +198,6 @@ function Contraband(props) {
     axios
       .get(url)
       .then((res) => {
-        console.log(res.data);
         const colors = {
           Drugs: '#feaba6',
           Alcohol: '#86c6dd',
@@ -217,9 +205,9 @@ function Contraband(props) {
           Money: '#dbc3df',
           Other: '#ffd4a0',
         };
-        const stopPurposeDataSets = res.data.map((sp, _) => ({
+        const stopPurposeDataSets = res.data.map((sp) => ({
           labels: ['W', 'B', 'H', 'A', 'NA', 'O'],
-          datasets: sp.data.map((ds, _) => ({
+          datasets: sp.data.map((ds) => ({
             label: ds.contraband,
             data: ds.data,
             backgroundColor: colors[ds.contraband],
@@ -245,6 +233,7 @@ function Contraband(props) {
       [CONTRABAND_TYPES[3]]: 'weapons_found',
       [CONTRABAND_TYPES[4]]: 'other_found',
     };
+    // eslint-disable-next-line camelcase
     const contrabandType = contraband_types[selectedGroupedContrabandType];
     const url = `/api/agency/${agencyId}/contraband-grouped-stop-purpose/modal/?grouped_stop_purpose=${selectedGroupedContrabandStopPurpose}&contraband_type=${contrabandType}`;
     axios.get(url).then((res) => {
@@ -255,7 +244,7 @@ function Contraband(props) {
   const showContrabandModal = () => {
     if (!chartState.data[CONTRABAND_HIT_RATE]) return;
     const tableData = [];
-    chartState.data[CONTRABAND_HIT_RATE].contraband.forEach((e, i) => {
+    chartState.data[CONTRABAND_HIT_RATE].contraband.forEach((e) => {
       const dataCounts = { ...e };
       delete dataCounts.year;
       // Need to assign explicitly otherwise the download data orders columns by alphabet.
