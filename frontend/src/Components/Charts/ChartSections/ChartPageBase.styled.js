@@ -7,10 +7,12 @@ export const ChartPageBase = styled(motion.article)`
   height: 100%;
   overflow-y: hidden;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 `;
 
 export const ChartPageContent = styled.div`
-  margin: 0 auto;
   padding: 1.5em 6em 3em 4em;
   overflow: hidden;
 
