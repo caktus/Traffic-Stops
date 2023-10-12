@@ -68,13 +68,13 @@ export default function ChartModal({
           <S.Heading>
             <P>{tableSubheader}</P>
           </S.Heading>
-          {children}
           <S.Download>
             <Button variant="positive" {...S.ButtonInlines} onClick={downloadChart}>
               <S.Icon icon={ICONS.download} height={25} width={25} fill={theme.colors.white} />
-              Download Chart
+              Download Graph
             </Button>
           </S.Download>
+          {children}
         </S.ChartModal>
       </>
     ),

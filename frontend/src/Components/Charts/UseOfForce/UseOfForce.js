@@ -144,7 +144,7 @@ function UseOfForce(props) {
         <S.ChartDescription>
           <P>
             Shows the race/ethnic composition of drivers {subjectObserving()} reported using force
-            against
+            against.
           </P>
         </S.ChartDescription>
         <S.ChartSubsection showCompare={showCompare}>
@@ -161,15 +161,12 @@ function UseOfForce(props) {
                 }}
               />
             </S.LineWrapper>
-            <S.LegendBelow>
-              <Legend
-                heading="Show on graph:"
-                keys={ethnicGroupKeys}
-                onKeySelect={handleGroupKeySelected}
-                showNonHispanic
-                row={!props.showCompare}
-              />
-            </S.LegendBelow>
+            <Legend
+              heading="Show on graph:"
+              keys={ethnicGroupKeys}
+              onKeySelect={handleGroupKeySelected}
+              showNonHispanic
+            />
           </S.LineSection>
           <S.PieSection>
             <S.PieWrapper>

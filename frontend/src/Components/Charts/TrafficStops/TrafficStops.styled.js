@@ -22,9 +22,12 @@ export const PieWrapper = styled.div`
   flex-direction: row;
   gap: 10px;
   justify-content: space-evenly;
+  width: auto;
+  height: 400px;
 
   @media (${smallerThanTabletLandscape}) {
     flex-direction: column;
+    height: auto;
   }
 `;
 

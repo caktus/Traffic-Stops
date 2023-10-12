@@ -3,7 +3,7 @@ import { ABOUT_SLUG } from '../../Routes/slugs';
 import { calculatePercentage, RACES } from '../Charts/chartUtils';
 import { COLORS, SIZES } from '../../styles/StyledComponents/Typography';
 import toTitleCase from '../../util/toTitleCase';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { usePopper } from 'react-popper';
 import { useHistory } from 'react-router-dom';
 
@@ -11,17 +11,24 @@ export default function CensusData({ agencyDetails, showCompareDepartments }) {
   const history = useHistory();
   const [referenceElement, setReferenceElement] = useState(null);
   const [popperElement, setPopperElement] = useState(null);
-  const { styles, attributes } = usePopper(referenceElement, popperElement, {
-    placement: 'top',
+  const { styles, attributes, update } = usePopper(referenceElement, popperElement, {
+    placement: 'top-start',
     modifiers: [
       {
         name: 'offset',
         options: {
-          offset: [showCompareDepartments ? 0 : -300, 10],
+          offset: [0, 10],
         },
       },
     ],
   });
+
+  useEffect(() => {
+    if (popperElement) {
+      // Force updating the position of the census tooltip when showing/hiding compare departments
+      update();
+    }
+  }, [showCompareDepartments]);
 
   const showTooltip = () => {
     popperElement.setAttribute('data-show', true);

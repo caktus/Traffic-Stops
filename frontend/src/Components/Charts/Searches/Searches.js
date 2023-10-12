@@ -197,6 +197,7 @@ function Searches(props) {
                 keys={percentageEthnicGroups}
                 onKeySelect={handlePercentageKeySelected}
                 showNonHispanic
+                direction="column"
               />
             </S.Spacing>
           </S.LegendBeside>
@@ -238,6 +239,7 @@ function Searches(props) {
                 keys={countEthnicGroups}
                 onKeySelect={handleCountKeySelected}
                 showNonHispanic
+                direction="column"
               />
             </S.Spacing>
           </S.LegendBeside>

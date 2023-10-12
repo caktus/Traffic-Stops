@@ -21,14 +21,14 @@ export const LegendHeading = styled(P)`
 
 export const KeysList = styled.ul`
   display: flex;
-  flex-direction: ${(props) => (props.row ? 'row' : 'column')};
+  flex-direction: ${(props) => props.direction};
   list-style: none;
   padding: 0;
   margin: 0;
+  flex-wrap: wrap;
 
   @media (${smallerThanDesktop}) {
     flex-direction: row;
-    flex-wrap: wrap;
     justify-content: space-between;
   }
 `;
