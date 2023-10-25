@@ -302,6 +302,7 @@ class Resource(models.Model):
     RESOURCE_IMAGES = [
         ("copwatch-new-policy", "New Policy"),
         ("forward-justice-logo", "Forward Justice Logo"),
+        ("copwatch-white-paper", "White Paper"),
     ]
     agencies = models.ManyToManyField("Agency", related_name="resources")
     title = models.CharField(max_length=500, null=False, blank=False)

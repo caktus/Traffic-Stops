@@ -161,14 +161,12 @@ function UseOfForce(props) {
                 }}
               />
             </S.LineWrapper>
-            <S.LegendBelow>
-              <Legend
-                heading="Show on graph:"
-                keys={ethnicGroupKeys}
-                onKeySelect={handleGroupKeySelected}
-                showNonHispanic
-              />
-            </S.LegendBelow>
+            <Legend
+              heading="Show on graph:"
+              keys={ethnicGroupKeys}
+              onKeySelect={handleGroupKeySelected}
+              showNonHispanic
+            />
           </S.LineSection>
           <S.PieSection>
             <S.PieWrapper>

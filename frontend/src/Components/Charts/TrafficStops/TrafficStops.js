@@ -585,14 +585,12 @@ function TrafficStops(props) {
                 yAxisLabel={(val) => `${val}%`}
               />
             </S.LineWrapper>
-            <S.LegendBeside>
-              <Legend
-                heading="Show on graph:"
-                keys={percentageEthnicGroups}
-                onKeySelect={handlePercentageKeySelected}
-                showNonHispanic
-              />
-            </S.LegendBeside>
+            <Legend
+              heading="Show on graph:"
+              keys={percentageEthnicGroups}
+              onKeySelect={handlePercentageKeySelected}
+              showNonHispanic
+            />
           </S.LineSection>
           <ChartModal
             tableHeader="Traffic Stops By Percentage"

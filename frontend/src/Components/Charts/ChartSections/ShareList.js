@@ -2,8 +2,8 @@ import React from 'react';
 import * as S from './ShareList.styled';
 
 // Deps
-import TwitterLogo from '../../../img/twitter_logo_blue.png';
-import FacebookLogo from '../../../img/f_logo_RGB-Blue_58.png';
+import TwitterLogo from '../../../img/x-logo-black.png';
+import FacebookLogo from '../../../img/meta_logo_primary.svg';
 
 function ShareList({ shareUrl, twitterTitle, onPressHandler }) {
   return (
