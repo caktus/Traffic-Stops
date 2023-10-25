@@ -39,6 +39,12 @@ export const STATIC_LEGEND_KEYS = RACES.map((r) => ({
   selected: true,
 }));
 
+export const STATIC_CONTRABAND_KEYS = CONTRABAND_TYPES.map((r) => ({
+  value: r,
+  label: toTitleCase(r),
+  selected: true,
+}));
+
 export function roundToInt(num, dec) {
   return num.toFixed(dec);
 }
