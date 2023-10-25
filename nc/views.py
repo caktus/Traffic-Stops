@@ -801,6 +801,8 @@ class AgencyContrabandGroupedStopPurposeView(APIView):
             .annotate(count=Sum("count"))
             .order_by("year")
         )
+        if qs.count() == 0:
+            return None
         df = pd.DataFrame(qs)
         pivot_df = df.pivot(
             index="year", columns=["stop_purpose_group", "driver_race_comb"], values="count"
@@ -885,6 +887,8 @@ class AgencyContrabandGroupedStopPurposeView(APIView):
         return qs
 
     def create_contraband_df(self, qs, contraband_found):
+        if not contraband_found:
+            return None
         qs = (
             qs.values("year", "driver_race_comb", "stop_purpose_group", contraband_found)
             .annotate(count=Count(contraband_found))
@@ -904,6 +908,8 @@ class AgencyContrabandGroupedStopPurposeView(APIView):
             }
             for c in self.columns:
                 searches_df = self.create_searches_df(searches_qs, year)
+                if not searches_df:
+                    continue
                 contraband_df = self.create_contraband_df(contraband_qs, contraband)
 
                 searches_mean = searches_df[stop_purpose].mean()
@@ -972,6 +978,8 @@ class AgencyContrabandStopGroupByPurposeModalView(AgencyContrabandGroupedStopPur
         contraband_qs = self.get_qs(Q(stop__agency__id=agency_id, person__type="D"), year)
 
         contraband_df = self.create_contraband_df(contraband_qs, contraband_type)
+        if not contraband_df:
+            return Response(data={}, status=200)
         contraband_df = contraband_df[contraband_df["stop_purpose_group"] == grouped_stop_purpose]
         contraband_df = contraband_df[contraband_df[contraband_type] == True]  # noqa E712
 
