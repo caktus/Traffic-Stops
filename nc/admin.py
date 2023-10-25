@@ -1,3 +1,5 @@
+from ckeditor.widgets import CKEditorWidget
+from django import forms
 from django.contrib import admin
 
 from nc.models import Agency, Resource, ResourceFile, StopSummary
@@ -52,6 +54,14 @@ class InlineResourceFile(admin.StackedInline):
     extra = 0
 
 
+class ResourceForm(forms.ModelForm):
+    description = forms.CharField(widget=CKEditorWidget())
+
+    class Meta:
+        model = Resource
+        fields = "__all__"
+
+
 class ResourceAdmin(admin.ModelAdmin):
     fields = (
         "agencies",
@@ -70,6 +80,7 @@ class ResourceAdmin(admin.ModelAdmin):
     filter_horizontal = ("agencies",)
     inlines = [InlineResourceFile]
     readonly_fields = ("created_date",)
+    form = ResourceForm
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)

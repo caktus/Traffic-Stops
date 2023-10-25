@@ -185,6 +185,7 @@ INSTALLED_APPS = [
     "django_filters",
     "rest_framework",
     "django_pgviews",
+    "ckeditor",
     # Custom apps
     "tsdata",
     "nc",
@@ -357,3 +358,5 @@ NC_FTP_PASSWORD = os.environ.get("NC_FTP_PASSWORD", "")
 
 # Contact us Email
 CONTACT_US_EMAILS = os.getenv("CONTACT_US_EMAILS", "forwardjustice-team@caktusgroup.com").split(":")
+
+CKEDITOR_BASEPATH = "/static/ckeditor/ckeditor/"
