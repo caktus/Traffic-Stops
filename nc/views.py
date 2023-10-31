@@ -908,7 +908,7 @@ class AgencyContrabandGroupedStopPurposeView(APIView):
             }
             for c in self.columns:
                 searches_df = self.create_searches_df(searches_qs, year)
-                if not searches_df:
+                if not searches_df or searches_df.empty:
                     continue
                 contraband_df = self.create_contraband_df(contraband_qs, contraband)
 
@@ -978,7 +978,7 @@ class AgencyContrabandStopGroupByPurposeModalView(AgencyContrabandGroupedStopPur
         contraband_qs = self.get_qs(Q(stop__agency__id=agency_id, person__type="D"), year)
 
         contraband_df = self.create_contraband_df(contraband_qs, contraband_type)
-        if not contraband_df:
+        if not contraband_df or contraband_df.empty:
             return Response(data={}, status=200)
         contraband_df = contraband_df[contraband_df["stop_purpose_group"] == grouped_stop_purpose]
         contraband_df = contraband_df[contraband_df[contraband_type] == True]  # noqa E712
