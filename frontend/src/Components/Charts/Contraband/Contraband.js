@@ -139,7 +139,7 @@ function Contraband(props) {
     axios
       .get(url)
       .then((res) => {
-        const colors = ['#80d9d8', '#beb4fa', '#ca8794', '#ffeeb2', '#8598ac', '#cab6c7'];
+        const colors = ['#02bcbb', '#8879fc', '#9c0f2e', '#ffe066', '#0c3a66', '#9e7b9b'];
         const data = {
           labels: ['White', 'Black', 'Hispanic', 'Asian', 'Native American', 'Other'],
           datasets: [
@@ -150,6 +150,7 @@ function Contraband(props) {
               fill: false,
               backgroundColor: colors,
               borderColor: colors,
+              hoverBackgroundColor: colors,
               borderWidth: 1,
             },
           ],
@@ -168,9 +169,9 @@ function Contraband(props) {
       .get(url)
       .then((res) => {
         const colors = {
-          'Safety Violation': '#CFA9D6',
-          'Regulatory Equipment': '#ffa500',
-          Other: '#ACE1AF',
+          'Safety Violation': '#b173bc',
+          'Regulatory Equipment': '#e69500',
+          Other: '#7dd082',
         };
         const stopPurposeDataSets = res.data.map((ds) => ({
           axis: 'x',
@@ -179,6 +180,7 @@ function Contraband(props) {
           fill: false,
           backgroundColor: colors[ds.stop_purpose],
           borderColor: colors[ds.stop_purpose],
+          hoverBackgroundColor: colors[ds.stop_purpose],
           borderWidth: 1,
         }));
         const data = {
@@ -199,11 +201,11 @@ function Contraband(props) {
       .get(url)
       .then((res) => {
         const colors = {
-          Drugs: '#feaba6',
-          Alcohol: '#86c6dd',
-          Weapons: '#c2e9bf',
-          Money: '#dbc3df',
-          Other: '#ffd4a0',
+          Drugs: '#3C91E6',
+          Alcohol: '#9FD356',
+          Weapons: '#ED217C',
+          Money: '#EFCEFA',
+          Other: '#2F4858',
         };
         const stopPurposeDataSets = res.data.map((sp) => ({
           labels: ['W', 'B', 'H', 'A', 'NA', 'O'],
@@ -211,6 +213,7 @@ function Contraband(props) {
             label: ds.contraband,
             data: ds.data,
             backgroundColor: colors[ds.contraband],
+            hoverBackgroundColor: colors[ds.contraband],
           })),
         }));
         setContrabandGroupedStopPurposeData(stopPurposeDataSets);
