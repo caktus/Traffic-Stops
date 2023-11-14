@@ -91,11 +91,14 @@ function TrafficStops(props) {
     STATIC_LEGEND_KEYS.map((k) => ({ ...k }))
   );
 
+  const pieColors = ['#02bcbb', '#8879fc', '#9c0f2e', '#ffe066', '#0c3a66', '#9e7b9b'];
+
   const [byPercentageLineData, setByPercentageLineData] = useState([]);
   const pieChartLabels = ['White', 'Black', 'Hispanic', 'Asian', 'Native American', 'Other'];
   const pieChartConfig = {
-    backgroundColor: ['#80d9d8', '#beb4fa', '#ca8794', '#ffeeb2', '#8598ac', '#cab6c7'],
-    borderColor: ['#02bcbb', '#8879fc', '#9c0f2e', '#ffe066', '#0c3a66', '#9e7b9b'],
+    backgroundColor: pieColors,
+    borderColor: pieColors,
+    hoverBackgroundColor: pieColors,
     borderWidth: 1,
   };
   const [byPercentagePieData, setByPercentagePieData] = useState({
@@ -120,8 +123,9 @@ function TrafficStops(props) {
     max_step_size: null,
   });
   const groupedPieChartConfig = {
-    backgroundColor: ['#80d9d8', '#beb4fa', '#ca8794', '#ffeeb2', '#8598ac', '#cab6c7'],
-    borderColor: ['#02bcbb', '#8879fc', '#9c0f2e', '#ffe066', '#0c3a66', '#9e7b9b'],
+    backgroundColor: pieColors,
+    borderColor: pieColors,
+    hoverBackgroundColor: pieColors,
     borderWidth: 1,
   };
   const groupedPieChartLabels = ['White', 'Black', 'Hispanic', 'Asian', 'Native American', 'Other'];

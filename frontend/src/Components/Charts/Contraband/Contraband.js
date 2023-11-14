@@ -1,101 +1,117 @@
 import React, { useEffect, useState } from 'react';
-import ContrabandStyled from './Contraband.styled';
+import ContrabandStyled, {
+  BarContainer,
+  ChartWrapper,
+  HorizontalBarWrapper,
+} from './Contraband.styled';
 import * as S from '../ChartSections/ChartsCommon.styled';
-import { useTheme } from 'styled-components';
 
 // Util
-import toTitleCase from '../../../util/toTitleCase';
-import {
-  reduceYearsToTotal,
-  calculatePercentage,
-  getQuantityForYear,
-  CONTRABAND_TYPES,
-  CONTRABAND_DEFAULT,
-  RACES,
-  YEARS_DEFAULT,
-} from '../chartUtils';
+import { CONTRABAND_TYPES, STATIC_CONTRABAND_KEYS, YEARS_DEFAULT } from '../chartUtils';
 
 // Hooks
 import useMetaTags from '../../../Hooks/useMetaTags';
 import useTableModal from '../../../Hooks/useTableModal';
 
 // State
-import useDataset, { CONTRABAND_HIT_RATE } from '../../../Hooks/useDataset';
+import useDataset, { AGENCY_DETAILS, CONTRABAND_HIT_RATE } from '../../../Hooks/useDataset';
 
 // Children
-import { P } from '../../../styles/StyledComponents/Typography';
-import Bar from '../ChartPrimitives/Bar';
+import { P, WEIGHTS } from '../../../styles/StyledComponents/Typography';
 import ChartHeader from '../ChartSections/ChartHeader';
 import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
+import HorizontalBarChart from '../../NewCharts/HorizontalBarChart';
+import axios from '../../../Services/Axios';
+import NewModal from '../../NewCharts/NewModal';
+import Legend from '../ChartSections/Legend/Legend';
+import cloneDeep from 'lodash.clonedeep';
+import Checkbox from '../../Elements/Inputs/Checkbox';
+import range from 'lodash.range';
 
-function SearchRate(props) {
+const STOP_PURPOSE_TYPES = ['Safety Violation', 'Regulatory and Equipment', 'Other'];
+
+function Contraband(props) {
   const { agencyId, showCompare } = props;
-  const theme = useTheme();
 
   const [chartState] = useDataset(agencyId, CONTRABAND_HIT_RATE);
 
   const [year, setYear] = useState(YEARS_DEFAULT);
-  const [contrabandType, setContrabandType] = useState(CONTRABAND_DEFAULT);
-
-  const [contrabandData, setContrabandData] = useState();
 
   const renderMetaTags = useMetaTags();
-  const [renderTableModal, { openModal }] = useTableModal();
+  const [renderTableModal] = useTableModal();
+  const [contrabandData, setContrabandData] = useState({ labels: [], datasets: [] });
+  const [contrabandModalData, setContrabandModalData] = useState({
+    isOpen: false,
+    tableData: [],
+    csvData: [],
+  });
+  const [contrabandYear, setContrabandYear] = useState(YEARS_DEFAULT);
+  const [contrabandStopPurposeData, setContrabandStopPurposeData] = useState({
+    labels: [],
+    datasets: [],
+  });
+  const [contrabandStopPurposeModalData, setContrabandStopPurposeModalData] = useState({
+    modalData: {},
+    isOpen: false,
+    tableData: [],
+    csvData: [],
+    selectedPurpose: STOP_PURPOSE_TYPES[0],
+  });
 
-  /* CALCULATE AND BUILD CHART DATA */
-  // Build data for Contraband Hit Rate
-  useEffect(() => {
-    const data = chartState.data[CONTRABAND_HIT_RATE];
-    if (data) {
-      const { contraband, searches, contraband_types: contrabandTypes } = data;
-      if (year && year !== YEARS_DEFAULT) {
-        // If an agency has no data for selected year
-        if (contraband.filter((c) => c.year === year).length === 0) {
-          setContrabandData(
-            RACES.map((ethnicGroup) => ({
-              displayName: toTitleCase(ethnicGroup),
-              color: `${theme.colors.ethnicGroup[ethnicGroup]}90`,
-              x: toTitleCase(ethnicGroup),
-              y: 0,
-            }))
-          );
-          return;
-        }
-      }
-      const mappedData = [];
-      const contrabandDataList =
-        contrabandType !== CONTRABAND_DEFAULT
-          ? contrabandTypes.filter((c) => c.contraband_type === contrabandType)
-          : contraband;
-      RACES.forEach((ethnicGroup) => {
-        const groupBar = {};
-        const displayName = toTitleCase(ethnicGroup);
-        groupBar.displayName = displayName;
-        groupBar.color = `${theme.colors.ethnicGroup[ethnicGroup]}90`;
-        groupBar.x = displayName;
-        if (year === YEARS_DEFAULT) {
-          const groupContraband = reduceYearsToTotal(contrabandDataList, ethnicGroup)[ethnicGroup];
-          const groupSearches = reduceYearsToTotal(searches, ethnicGroup)[ethnicGroup];
-          groupBar.y = calculatePercentage(groupContraband, groupSearches);
-        } else {
-          const yearInt = parseInt(year, 10);
-          const groupContrabandForYear = getQuantityForYear(
-            contrabandDataList,
-            yearInt,
-            ethnicGroup
-          );
-          const groupSearchesForYear = getQuantityForYear(searches, yearInt, ethnicGroup);
-          groupBar.y = calculatePercentage(groupContrabandForYear, groupSearchesForYear);
-        }
-        mappedData.push(groupBar);
-      });
-      if (mappedData) {
-        setContrabandData(mappedData.reverse());
-      } else {
-        setContrabandData([]);
-      }
-    }
-  }, [chartState.data[CONTRABAND_HIT_RATE], year, contrabandType]);
+  const [groupedContrabandStopPurposeModalData, setGroupedContrabandStopPurposeModalData] =
+    useState({
+      modalData: {},
+      isOpen: false,
+      tableData: [],
+      csvData: [],
+    });
+
+  const [contrabandStopPurposeYear, setContrabandStopPurposeYear] = useState(YEARS_DEFAULT);
+  const [contrabandGroupedStopPurposeData, setContrabandGroupedStopPurposeData] = useState([
+    {
+      labels: [],
+      datasets: [],
+    },
+    {
+      labels: [],
+      datasets: [],
+    },
+    {
+      labels: [],
+      datasets: [],
+    },
+  ]);
+  const [contrabandTypes, setContrabandTypes] = useState(() =>
+    STATIC_CONTRABAND_KEYS.map((k) => ({ ...k }))
+  );
+
+  const [selectedGroupedContrabandType, setSelectedGroupedContrabandType] = useState(
+    CONTRABAND_TYPES[0]
+  );
+  const [selectedGroupedContrabandStopPurpose, setSelectedGroupedContrabandStopPurpose] = useState(
+    STOP_PURPOSE_TYPES[0]
+  );
+
+  const [visibleContrabandTypes, setVisibleContrabandTypes] = useState([
+    {
+      key: 'safety',
+      title: 'Safety Violation',
+      visible: true,
+      order: 1,
+    },
+    {
+      key: 'regulatory',
+      title: 'Regulatory/Equipment',
+      visible: true,
+      order: 2,
+    },
+    {
+      key: 'other',
+      title: 'Other',
+      visible: false,
+      order: 3,
+    },
+  ]);
 
   /* INTERACTIONS */
   // Handle year dropdown state
@@ -104,13 +120,272 @@ function SearchRate(props) {
     setYear(y);
   };
 
-  const handleViewData = () => {
-    openModal(CONTRABAND_HIT_RATE, TABLE_COLUMNS);
+  const handleContrabandYearSelect = (y) => {
+    if (y === contrabandYear) return;
+    setContrabandYear(y);
   };
 
-  const handleContrabandTypeSelect = (c) => {
-    if (c === contrabandType) return;
-    setContrabandType(c);
+  const handleGroupedContrabandYearSelect = (y) => {
+    if (y === contrabandStopPurposeYear) return;
+    setContrabandStopPurposeYear(y);
+  };
+
+  // Build New Contraband Data
+  useEffect(() => {
+    let url = `/api/agency/${agencyId}/contraband/`;
+    if (contrabandYear && contrabandYear !== 'All') {
+      url = `${url}?year=${contrabandYear}`;
+    }
+    axios
+      .get(url)
+      .then((res) => {
+        const colors = ['#02bcbb', '#8879fc', '#9c0f2e', '#ffe066', '#0c3a66', '#9e7b9b'];
+        const data = {
+          labels: ['White', 'Black', 'Hispanic', 'Asian', 'Native American', 'Other'],
+          datasets: [
+            {
+              axis: 'y',
+              label: 'All',
+              data: res.data,
+              fill: false,
+              backgroundColor: colors,
+              borderColor: colors,
+              hoverBackgroundColor: colors,
+              borderWidth: 1,
+            },
+          ],
+        };
+        setContrabandData(data);
+      })
+      .catch((err) => console.log(err));
+  }, [contrabandYear]);
+
+  useEffect(() => {
+    let url = `/api/agency/${agencyId}/contraband-stop-purpose/`;
+    if (contrabandStopPurposeYear && contrabandStopPurposeYear !== 'All') {
+      url = `${url}?year=${contrabandStopPurposeYear}`;
+    }
+    axios
+      .get(url)
+      .then((res) => {
+        const colors = {
+          'Safety Violation': '#b173bc',
+          'Regulatory Equipment': '#e69500',
+          Other: '#7dd082',
+        };
+        const stopPurposeDataSets = res.data.map((ds) => ({
+          axis: 'x',
+          label: ds.stop_purpose,
+          data: ds.data,
+          fill: false,
+          backgroundColor: colors[ds.stop_purpose],
+          borderColor: colors[ds.stop_purpose],
+          hoverBackgroundColor: colors[ds.stop_purpose],
+          borderWidth: 1,
+        }));
+        const data = {
+          labels: ['White', 'Black', 'Hispanic', 'Asian', 'Native American', 'Other'],
+          datasets: stopPurposeDataSets,
+        };
+        setContrabandStopPurposeData(data);
+      })
+      .catch((err) => console.log(err));
+  }, [contrabandStopPurposeYear]);
+
+  useEffect(() => {
+    let url = `/api/agency/${agencyId}/contraband-grouped-stop-purpose/`;
+    if (year && year !== 'All') {
+      url = `${url}?year=${year}`;
+    }
+    axios
+      .get(url)
+      .then((res) => {
+        const colors = {
+          Drugs: '#3C91E6',
+          Alcohol: '#9FD356',
+          Weapons: '#ED217C',
+          Money: '#EFCEFA',
+          Other: '#2F4858',
+        };
+        const stopPurposeDataSets = res.data.map((sp) => ({
+          labels: ['W', 'B', 'H', 'A', 'NA', 'O'],
+          datasets: sp.data.map((ds) => ({
+            label: ds.contraband,
+            data: ds.data,
+            backgroundColor: colors[ds.contraband],
+            hoverBackgroundColor: colors[ds.contraband],
+          })),
+        }));
+        setContrabandGroupedStopPurposeData(stopPurposeDataSets);
+      })
+      .catch((err) => console.log(err));
+  }, [year]);
+
+  useEffect(() => {
+    const url = `/api/agency/${agencyId}/contraband-stop-purpose/modal/`;
+    axios.get(url).then((res) => {
+      setContrabandStopPurposeModalData({ ...contrabandStopPurposeModalData, modalData: res.data });
+    });
+  }, []);
+
+  useEffect(() => {
+    const contraband_types = {
+      [CONTRABAND_TYPES[0]]: 'drugs_found',
+      [CONTRABAND_TYPES[1]]: 'alcohol_found',
+      [CONTRABAND_TYPES[2]]: 'money_found',
+      [CONTRABAND_TYPES[3]]: 'weapons_found',
+      [CONTRABAND_TYPES[4]]: 'other_found',
+    };
+    // eslint-disable-next-line camelcase
+    const contrabandType = contraband_types[selectedGroupedContrabandType];
+    const url = `/api/agency/${agencyId}/contraband-grouped-stop-purpose/modal/?grouped_stop_purpose=${selectedGroupedContrabandStopPurpose}&contraband_type=${contrabandType}`;
+    axios.get(url).then((res) => {
+      updateGroupedContrabandModalData(res.data);
+    });
+  }, [selectedGroupedContrabandStopPurpose, selectedGroupedContrabandType]);
+
+  const showContrabandModal = () => {
+    if (!chartState.data[CONTRABAND_HIT_RATE]) return;
+    const tableData = [];
+    chartState.data[CONTRABAND_HIT_RATE].contraband.forEach((e) => {
+      const dataCounts = { ...e };
+      delete dataCounts.year;
+      // Need to assign explicitly otherwise the download data orders columns by alphabet.
+      tableData.unshift({
+        year: e.year,
+        white: e.white,
+        black: e.black,
+        native_american: e.native_american,
+        asian: e.asian,
+        other: e.other,
+        hispanic: e.hispanic,
+        total: Object.values(dataCounts).reduce((a, b) => a + b, 0),
+      });
+    });
+    const newState = {
+      isOpen: true,
+      tableData,
+      csvData: tableData,
+    };
+    setContrabandModalData(newState);
+  };
+
+  const showGroupedContrabandModal = (stopPurpose = 'Safety Violation') => {
+    const stopPurposeKey = {
+      'Safety Violation': 'safety',
+      'Regulatory and Equipment': 'regulatory',
+      Other: 'other',
+    };
+    const tableData = [];
+    let stopPurposeSelected = 'Safety Violation';
+    if (typeof stopPurpose === 'string') {
+      stopPurposeSelected = stopPurpose;
+    }
+    const modalData = contrabandStopPurposeModalData.modalData[stopPurposeKey[stopPurposeSelected]];
+    modalData.labels.forEach((e, y) => {
+      const races = ['white', 'black', 'hispanic', 'asian', 'native_american', 'other'];
+      const row = {
+        year: e,
+      };
+      const total = [];
+      races.forEach((r, j) => {
+        // The data is indexed by the stop purpose group, then the index of the race then the index of the year.
+        row[r] = modalData.datasets[j]['data'][y];
+        total.unshift(row[r]);
+      });
+      row['total'] = total.reduce((a, b) => a + b, 0);
+      tableData.unshift(row);
+    });
+    const newState = {
+      ...contrabandStopPurposeModalData,
+      isOpen: true,
+      tableData,
+      csvData: tableData,
+      selectedPurpose: stopPurposeSelected,
+    };
+    setContrabandStopPurposeModalData(newState);
+  };
+
+  const handleContrabandKeySelected = (type) => {
+    const groupIndex = contrabandTypes.indexOf(contrabandTypes.find((t) => t.value === type.value));
+    const updatedTypes = [...contrabandTypes];
+    updatedTypes[groupIndex].selected = !updatedTypes[groupIndex].selected;
+    setContrabandTypes(updatedTypes);
+
+    const newContrabandState = cloneDeep(contrabandGroupedStopPurposeData);
+    newContrabandState[0].datasets.forEach((s) => {
+      // eslint-disable-next-line no-param-reassign
+      s.hidden = !updatedTypes.find((t) => t.label === s.label).selected;
+    });
+    newContrabandState[1].datasets.forEach((r) => {
+      // eslint-disable-next-line no-param-reassign
+      r.hidden = !updatedTypes.find((t) => t.label === r.label).selected;
+    });
+    newContrabandState[2].datasets.forEach((i) => {
+      // eslint-disable-next-line no-param-reassign
+      i.hidden = !updatedTypes.find((t) => t.label === i.label).selected;
+    });
+    setContrabandGroupedStopPurposeData(newContrabandState);
+  };
+
+  const formatTooltipLabel = (ctx) => {
+    if (ctx.length) {
+      const context = ctx[0];
+      return context.dataset.label;
+    }
+    return '';
+  };
+
+  const formatTooltipValue = (ctx) => `${ctx.raw.toFixed(1)}%`;
+
+  const toggleGroupedPurposeGraphs = (key) => {
+    const toggleState = visibleContrabandTypes;
+    const toggleGraph = toggleState.find((v) => v.key === key);
+    const otherGraphs = toggleState.filter((v) => v.key !== key);
+
+    setVisibleContrabandTypes(
+      [
+        ...otherGraphs,
+        { key, visible: !toggleGraph.visible, title: toggleGraph.title, order: toggleGraph.order },
+      ].sort(
+        // eslint-disable-next-line no-nested-ternary
+        (a, b) => (a.order < b.order ? (a.order === b.order ? 0 : -1) : 1)
+      )
+    );
+  };
+
+  const handleGroupedContrabandTypeSelect = (c) => {
+    if (c === selectedGroupedContrabandType) return;
+    setSelectedGroupedContrabandType(c);
+  };
+
+  const handleGroupedContrabandStopPurposeSelect = (c) => {
+    if (c === selectedGroupedContrabandStopPurpose) return;
+    setSelectedGroupedContrabandStopPurpose(c);
+  };
+
+  const updateGroupedContrabandModalData = (modalData) => {
+    const tableData = [];
+    range(2002, new Date().getFullYear() + 1, 1).forEach((e) => {
+      const races = ['white', 'black', 'hispanic', 'asian', 'native_american', 'other'];
+      const row = {
+        year: e,
+      };
+      const total = [];
+      races.forEach((r, j) => {
+        // The data is indexed by the stop purpose group, then the index of the race then the index of the year.
+        row[r] = modalData.datasets[j]['data'].find((y) => y.year === e)?.count || 0;
+        total.unshift(row[r]);
+      });
+      row['total'] = total.reduce((a, b) => a + b, 0);
+      tableData.unshift(row);
+    });
+    const newState = {
+      ...groupedContrabandStopPurposeModalData,
+      tableData,
+      csvData: tableData,
+    };
+    setGroupedContrabandStopPurposeModalData(newState);
   };
 
   return (
@@ -118,69 +393,217 @@ function SearchRate(props) {
       {renderMetaTags()}
       {renderTableModal()}
       <S.ChartSection>
-        <ChartHeader chartTitle='Contraband "Hit Rate"' handleViewData={handleViewData} />
+        <ChartHeader chartTitle='Contraband "Hit Rate"' handleViewData={showContrabandModal} />
         <S.ChartDescription>
           <P>
             Shows what percentage of searches discovered illegal items for a given race / ethnic
             group.
           </P>
+          <NewModal
+            tableHeader='Contraband "Hit Rate"'
+            tableSubheader="Shows the number of traffics stops broken down by purpose and race / ethnicity."
+            agencyName={chartState.data[AGENCY_DETAILS].name}
+            tableData={contrabandModalData.tableData}
+            csvData={contrabandModalData.csvData}
+            columns={CONTRABAND_TABLE_COLUMNS}
+            tableDownloadName="Traffic Stops By Stop Purpose"
+            isOpen={contrabandModalData.isOpen}
+            closeModal={() => setContrabandModalData((state) => ({ ...state, isOpen: false }))}
+          />
         </S.ChartDescription>
         <S.ChartSubsection showCompare={showCompare}>
-          <S.LineSection>
-            <S.LineWrapper>
-              <Bar
-                data={contrabandData}
-                chartProps={{
-                  domainPadding: { x: 20 },
-                }}
-                yAxisProps={{
-                  tickValues: [0, 20, 40, 60, 80, 100],
-                  tickFormat: (t) => `${t}%`,
-                }}
-                xAxisProps={{
-                  tickFormat: (t) => {
-                    if (t === 'Native American') {
-                      return 'Native \n American';
-                    }
-                    return t;
-                  },
-                }}
-                barProps={{
-                  horizontal: true,
-                  style: {
-                    data: { fill: ({ datum }) => datum.color },
-                    labels: { fontSize: 8 },
-                  },
-                  labels: ({ datum }) => `${datum.y}%`,
-                  barWidth: 20,
-                }}
-              />
-            </S.LineWrapper>
-          </S.LineSection>
+          <ChartWrapper>
+            <HorizontalBarChart
+              title="Contraband Hit Rate"
+              data={contrabandData}
+              displayLegend={false}
+              tooltipLabelCallback={formatTooltipValue}
+            />
+          </ChartWrapper>
           <S.LegendSection>
             <DataSubsetPicker
               label="Year"
-              value={year}
-              onChange={handleYearSelect}
+              value={contrabandYear}
+              onChange={handleContrabandYearSelect}
               options={[YEARS_DEFAULT].concat(chartState.yearRange)}
               dropUp={!!showCompare}
             />
+          </S.LegendSection>
+        </S.ChartSubsection>
+      </S.ChartSection>
+      <S.ChartSection>
+        <ChartHeader
+          chartTitle='Contraband "Hit Rate" By Stop Purpose'
+          handleViewData={showGroupedContrabandModal}
+        />
+        <S.ChartDescription>
+          <P>
+            Shows what percentage of searches discovered contraband for a given race / ethnic group
+          </P>
+        </S.ChartDescription>
+        <NewModal
+          tableHeader='Contraband "Hit Rate" Grouped by Stop Purpose'
+          tableSubheader="Shows the number of traffics stops broken down by purpose and race / ethnicity."
+          agencyName={chartState.data[AGENCY_DETAILS].name}
+          tableData={contrabandStopPurposeModalData.tableData}
+          csvData={contrabandStopPurposeModalData.csvData}
+          columns={CONTRABAND_TABLE_COLUMNS}
+          tableDownloadName="Traffic Stops By Stop Purpose"
+          isOpen={contrabandStopPurposeModalData.isOpen}
+          closeModal={() =>
+            setContrabandStopPurposeModalData((state) => ({ ...state, isOpen: false }))
+          }
+        >
+          <DataSubsetPicker
+            label="Stop Purpose"
+            value={contrabandStopPurposeModalData.selectedPurpose}
+            onChange={showGroupedContrabandModal}
+            options={STOP_PURPOSE_TYPES}
+          />
+        </NewModal>
+        <S.ChartSubsection showCompare={showCompare}>
+          <ChartWrapper>
+            <HorizontalBarChart
+              title="Contraband Hit Rate Grouped By Stop Purpose"
+              data={contrabandStopPurposeData}
+              tooltipTitleCallback={formatTooltipLabel}
+              tooltipLabelCallback={formatTooltipValue}
+              displayStopPurposeTooltips
+            />
+          </ChartWrapper>
+          <S.LegendSection>
             <DataSubsetPicker
-              label="Contraband Type"
-              value={contrabandType}
-              onChange={handleContrabandTypeSelect}
-              options={[CONTRABAND_DEFAULT].concat(CONTRABAND_TYPES)}
+              label="Year"
+              value={contrabandStopPurposeYear}
+              onChange={handleGroupedContrabandYearSelect}
+              options={[YEARS_DEFAULT].concat(chartState.yearRange)}
+              dropUp={!!showCompare}
             />
           </S.LegendSection>
         </S.ChartSubsection>
+      </S.ChartSection>
+      <S.ChartSection marginTop={5}>
+        <ChartHeader
+          chartTitle='Contraband "Hit Rate" By Stop Purpose'
+          handleViewData={() =>
+            setGroupedContrabandStopPurposeModalData((state) => ({ ...state, isOpen: true }))
+          }
+        />
+        <S.ChartDescription>
+          <P>
+            Shows what percentage of searches discovered contraband for a given race / ethnic group
+          </P>
+        </S.ChartDescription>
+        <NewModal
+          tableHeader='Contraband "Hit Rate" Grouped by Stop Purpose'
+          tableSubheader="Shows the number of traffics stops broken down by purpose and race / ethnicity."
+          agencyName={chartState.data[AGENCY_DETAILS].name}
+          tableData={groupedContrabandStopPurposeModalData.tableData}
+          csvData={groupedContrabandStopPurposeModalData.csvData}
+          columns={CONTRABAND_TABLE_COLUMNS}
+          tableDownloadName="Traffic Stops By Stop Purpose"
+          isOpen={groupedContrabandStopPurposeModalData.isOpen}
+          closeModal={() =>
+            setGroupedContrabandStopPurposeModalData((state) => ({ ...state, isOpen: false }))
+          }
+        >
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <DataSubsetPicker
+              label="Stop Purpose"
+              value={selectedGroupedContrabandStopPurpose}
+              onChange={handleGroupedContrabandStopPurposeSelect}
+              options={STOP_PURPOSE_TYPES}
+            />
+            <DataSubsetPicker
+              label="Contraband Type"
+              value={selectedGroupedContrabandType}
+              onChange={handleGroupedContrabandTypeSelect}
+              options={CONTRABAND_TYPES}
+            />
+          </div>
+        </NewModal>
+        <div style={{ marginTop: '1em' }}>
+          <P weight={WEIGHTS[1]}>Toggle graphs:</P>
+          <div style={{ display: 'flex', gap: '10px', flexDirection: 'row', flexWrap: 'wrap' }}>
+            {visibleContrabandTypes.map((vg, i) => (
+              <Checkbox
+                height={25}
+                width={25}
+                label={vg.title}
+                value={vg.key}
+                key={i}
+                checked={vg.visible}
+                onChange={toggleGroupedPurposeGraphs}
+              />
+            ))}
+          </div>
+        </div>
+        <DataSubsetPicker
+          label="Year"
+          value={year}
+          onChange={handleYearSelect}
+          options={[YEARS_DEFAULT].concat(chartState.yearRange)}
+          dropUp={!!showCompare}
+        />
+        <HorizontalBarWrapper>
+          <BarContainer visible={visibleContrabandTypes[0].visible}>
+            <HorizontalBarChart
+              title="Safety Violation"
+              maintainAspectRatio={false}
+              data={contrabandGroupedStopPurposeData[0]}
+              tooltipTitleCallback={formatTooltipLabel}
+              tooltipLabelCallback={formatTooltipValue}
+              displayLegend={false}
+              xStacked
+              yStacked
+              redraw
+            />
+          </BarContainer>
+          <BarContainer visible={visibleContrabandTypes[1].visible}>
+            <HorizontalBarChart
+              title="Regulatory/Equipment"
+              maintainAspectRatio={false}
+              data={contrabandGroupedStopPurposeData[1]}
+              tooltipTitleCallback={formatTooltipLabel}
+              tooltipLabelCallback={formatTooltipValue}
+              displayLegend={false}
+              yAxisShowLabels={!visibleContrabandTypes[0].visible}
+              xStacked
+              yStacked
+              redraw
+            />
+          </BarContainer>
+          <BarContainer visible={visibleContrabandTypes[2].visible}>
+            <HorizontalBarChart
+              title="Other"
+              maintainAspectRatio={false}
+              data={contrabandGroupedStopPurposeData[2]}
+              tooltipTitleCallback={formatTooltipLabel}
+              tooltipLabelCallback={formatTooltipValue}
+              displayLegend={false}
+              yAxisShowLabels={
+                !visibleContrabandTypes[0].visible && !visibleContrabandTypes[1].visible
+              }
+              xStacked
+              yStacked
+              redraw
+            />
+          </BarContainer>
+        </HorizontalBarWrapper>
+        <Legend
+          heading="Show on graph:"
+          keys={contrabandTypes}
+          onKeySelect={handleContrabandKeySelected}
+          showNonHispanic={false}
+        />
       </S.ChartSection>
     </ContrabandStyled>
   );
 }
 
-export default SearchRate;
+export default Contraband;
 
-const TABLE_COLUMNS = [
+const CONTRABAND_TABLE_COLUMNS = [
   {
     Header: 'Year',
     accessor: 'year', // accessor is the "key" in the data

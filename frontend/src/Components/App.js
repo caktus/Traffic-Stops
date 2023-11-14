@@ -44,6 +44,7 @@ import * as S from './HomePage/HomePage.styled';
 // New Charts
 import {
   ArcElement,
+  BarElement,
   CategoryScale,
   Chart as ChartJS,
   Legend,
@@ -56,6 +57,7 @@ import {
 
 ChartJS.register(
   ArcElement,
+  BarElement,
   CategoryScale,
   LinearScale,
   PointElement,
