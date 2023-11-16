@@ -2,7 +2,7 @@ name: deploy
 
 on:
   push:
-    branches: [main, develop, CU-868656ku9]
+    branches: [main, develop]
 
 jobs:
   deploy:
