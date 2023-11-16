@@ -55,6 +55,7 @@ class InlineResourceFile(admin.StackedInline):
 
 
 class ResourceForm(forms.ModelForm):
+    # https://django-ckeditor.readthedocs.io/en/latest/#widget
     description = forms.CharField(widget=CKEditorWidget())
 
     class Meta:
