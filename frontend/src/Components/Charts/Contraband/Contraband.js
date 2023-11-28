@@ -39,9 +39,10 @@ function Contraband(props) {
 
   const renderMetaTags = useMetaTags();
   const [renderTableModal] = useTableModal();
-  const [contrabandData, setContrabandData] = useState({ labels: [], datasets: [] });
-  const [contrabandModalData, setContrabandModalData] = useState({
-    isOpen: false,
+  const [contrabandData, setContrabandData] = useState({
+    labels: [],
+    datasets: [],
+    isModalOpen: false,
     tableData: [],
     csvData: [],
   });
@@ -139,6 +140,23 @@ function Contraband(props) {
     axios
       .get(url)
       .then((res) => {
+        const tableData = [];
+        const resTableData = JSON.parse(res.data.table_data);
+        resTableData.data.forEach((e) => {
+          const dataCounts = { ...e };
+          delete dataCounts.year;
+          // Need to assign explicitly otherwise the download data orders columns by alphabet.
+          tableData.unshift({
+            year: e.year,
+            white: e.white,
+            black: e.black,
+            native_american: e.native_american,
+            asian: e.asian,
+            other: e.other,
+            hispanic: e.hispanic,
+            total: Object.values(dataCounts).reduce((a, b) => a + b, 0),
+          });
+        });
         const colors = ['#02bcbb', '#8879fc', '#9c0f2e', '#ffe066', '#0c3a66', '#9e7b9b'];
         const data = {
           labels: ['White', 'Black', 'Hispanic', 'Asian', 'Native American', 'Other'],
@@ -146,7 +164,7 @@ function Contraband(props) {
             {
               axis: 'y',
               label: 'All',
-              data: res.data,
+              data: res.data.contraband_percentages,
               fill: false,
               backgroundColor: colors,
               borderColor: colors,
@@ -154,6 +172,9 @@ function Contraband(props) {
               borderWidth: 1,
             },
           ],
+          isModalOpen: false,
+          tableData,
+          csvData: tableData,
         };
         setContrabandData(data);
       })
@@ -243,32 +264,6 @@ function Contraband(props) {
       updateGroupedContrabandModalData(res.data);
     });
   }, [selectedGroupedContrabandStopPurpose, selectedGroupedContrabandType]);
-
-  const showContrabandModal = () => {
-    if (!chartState.data[CONTRABAND_HIT_RATE]) return;
-    const tableData = [];
-    chartState.data[CONTRABAND_HIT_RATE].contraband.forEach((e) => {
-      const dataCounts = { ...e };
-      delete dataCounts.year;
-      // Need to assign explicitly otherwise the download data orders columns by alphabet.
-      tableData.unshift({
-        year: e.year,
-        white: e.white,
-        black: e.black,
-        native_american: e.native_american,
-        asian: e.asian,
-        other: e.other,
-        hispanic: e.hispanic,
-        total: Object.values(dataCounts).reduce((a, b) => a + b, 0),
-      });
-    });
-    const newState = {
-      isOpen: true,
-      tableData,
-      csvData: tableData,
-    };
-    setContrabandModalData(newState);
-  };
 
   const showGroupedContrabandModal = (stopPurpose = 'Safety Violation') => {
     const stopPurposeKey = {
@@ -393,7 +388,10 @@ function Contraband(props) {
       {renderMetaTags()}
       {renderTableModal()}
       <S.ChartSection>
-        <ChartHeader chartTitle='Contraband "Hit Rate"' handleViewData={showContrabandModal} />
+        <ChartHeader
+          chartTitle='Contraband "Hit Rate"'
+          handleViewData={() => setContrabandData((state) => ({ ...state, isOpen: true }))}
+        />
         <S.ChartDescription>
           <P>
             Shows what percentage of searches discovered illegal items for a given race / ethnic
@@ -403,12 +401,12 @@ function Contraband(props) {
             tableHeader='Contraband "Hit Rate"'
             tableSubheader="Shows the number of traffics stops broken down by purpose and race / ethnicity."
             agencyName={chartState.data[AGENCY_DETAILS].name}
-            tableData={contrabandModalData.tableData}
-            csvData={contrabandModalData.csvData}
+            tableData={contrabandData.tableData}
+            csvData={contrabandData.csvData}
             columns={CONTRABAND_TABLE_COLUMNS}
             tableDownloadName="Traffic Stops By Stop Purpose"
-            isOpen={contrabandModalData.isOpen}
-            closeModal={() => setContrabandModalData((state) => ({ ...state, isOpen: false }))}
+            isOpen={contrabandData.isOpen}
+            closeModal={() => setContrabandData((state) => ({ ...state, isOpen: false }))}
           />
         </S.ChartDescription>
         <S.ChartSubsection showCompare={showCompare}>

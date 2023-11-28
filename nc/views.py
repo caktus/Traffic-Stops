@@ -9,7 +9,7 @@ import pandas as pd
 from dateutil import relativedelta
 from django.conf import settings
 from django.core.mail import send_mail
-from django.db.models import Case, Count, F, Q, Sum, Value, When
+from django.db.models import Case, Count, ExpressionWrapper, F, FloatField, Q, Sum, Value, When
 from django.db.models.functions import ExtractYear
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
@@ -25,7 +25,15 @@ from rest_framework_extensions.key_constructor.constructors import DefaultObject
 from nc import serializers
 from nc.filters import DriverStopsFilter
 from nc.models import SEARCH_TYPE_CHOICES as SEARCH_TYPE_CHOICES_TUPLES
-from nc.models import Agency, Contraband, Person, Resource, StopPurposeGroup, StopSummary
+from nc.models import (
+    Agency,
+    Contraband,
+    ContrabandSummary,
+    Person,
+    Resource,
+    StopPurposeGroup,
+    StopSummary,
+)
 from nc.pagination import NoCountPagination
 from nc.serializers import ContactFormSerializer
 from tsdata.models import StateFacts
@@ -626,30 +634,58 @@ class AgencyStopGroupByPurposeView(APIView):
 
 
 class AgencyContrabandView(APIView):
-    def create_df(self, _filter, year=None):
-        qs = StopSummary.objects.filter(_filter).annotate(year=ExtractYear("date"))
-        if year:
-            qs = qs.filter(year=year)
-        if qs.count() == 0:
-            return pd.DataFrame()
-        qs = qs.values("year", "driver_race_comb").annotate(count=Sum("count")).order_by("year")
-        df = pd.DataFrame(qs)
-        pivot_df = df.pivot(index="year", columns="driver_race_comb", values="count").fillna(
-            value=0
-        )
-        return pd.DataFrame(pivot_df).mean()
-
     def get(self, request, agency_id):
         year = request.GET.get("year", None)
-        searches_df = self.create_df(Q(agency_id=agency_id, search_type__isnull=False), year)
-        contraband_df = self.create_df(Q(agency_id=agency_id, contraband_found=True), year)
-        data = []
+
+        qs = (
+            ContrabandSummary.objects.filter(agency_id=agency_id)
+            .values("driver_race_comb")
+            .annotate(
+                search_count=Count("search_id", distinct=True),
+                contraband_found_count=Count("contraband_id", distinct=True),
+            )
+        )
+
+        # Build charts data
+        contraband_percentages_qs = qs.annotate(
+            hit_rate=ExpressionWrapper(
+                F("contraband_found_count") * 1.0 / F("search_count"), output_field=FloatField()
+            )
+        )
+        contraband_percentages_df = pd.DataFrame(contraband_percentages_qs)
         columns = ["White", "Black", "Hispanic", "Asian", "Native American", "Other"]
-        for c in columns:
-            if c in contraband_df and c in searches_df:
-                data.append((contraband_df[c] / searches_df[c]) * 100)
-            else:
-                data.append(0)
+        contraband_percentages = [0] * len(columns)
+
+        if contraband_percentages_qs.count() > 0:
+            for i, c in enumerate(columns):
+                filtered_df = contraband_percentages_df[
+                    contraband_percentages_df["driver_race_comb"] == c
+                ]
+                contraband_percentages[i] = filtered_df["hit_rate"].values[0] * 100
+
+        # Build modal table data
+        table_data_qs = qs.annotate(year=ExtractYear("date"))
+        table_data_df = (
+            pd.DataFrame(table_data_qs)
+            .pivot(index="year", columns=["driver_race_comb"], values="contraband_found_count")
+            .fillna(value=0)
+        )
+
+        pivot_df = pd.DataFrame(table_data_df).rename(
+            columns={
+                "White": "white",
+                "Black": "black",
+                "Hispanic": "hispanic",
+                "Asian": "asian",
+                "Native American": "native_american",
+                "Other": "other",
+            }
+        )
+
+        data = {
+            "contraband_percentages": contraband_percentages,
+            "table_data": pivot_df.to_json(orient="table"),
+        }
 
         return Response(data=data, status=200)
 
