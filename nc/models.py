@@ -340,7 +340,7 @@ CONTRABAND_SUMMARY_VIEW_SQL = f"""
         , nc_stop.agency_id
         , nc_stop.officer_id
         , (CASE WHEN nc_stop.purpose IN ({",".join(map(str, StopPurposeGroup.safety_violation_purposes()))}) THEN 'Safety Violation'
-                WHEN nc_stop.purpose IN ({",".join(map(str, StopPurposeGroup.other_purposes()))}) THEN 'Investigatory'
+                WHEN nc_stop.purpose IN ({",".join(map(str, StopPurposeGroup.other_purposes()))}) THEN 'Other'
                 WHEN nc_stop.purpose IN ({",".join(map(str, StopPurposeGroup.regulatory_purposes()))}) THEN 'Regulatory and Equipment'
                 ELSE 'Other'
             END) as stop_purpose_group

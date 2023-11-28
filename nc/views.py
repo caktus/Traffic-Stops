@@ -637,13 +637,18 @@ class AgencyContrabandView(APIView):
     def get(self, request, agency_id):
         year = request.GET.get("year", None)
 
-        qs = (
-            ContrabandSummary.objects.filter(agency_id=agency_id)
-            .values("driver_race_comb")
-            .annotate(
-                search_count=Count("search_id", distinct=True),
-                contraband_found_count=Count("contraband_id", distinct=True),
-            )
+        qs = ContrabandSummary.objects.filter(agency_id=agency_id)
+
+        agency_id = int(agency_id)
+        if agency_id != -1:
+            qs = qs.filter(agency_id=agency_id)
+        officer = request.query_params.get("officer", None)
+        if officer:
+            qs = qs.filter(officer_id=officer)
+
+        qs = qs.values("driver_race_comb").annotate(
+            search_count=Count("search_id", distinct=True),
+            contraband_found_count=Count("contraband_id", distinct=True),
         )
 
         # Build charts data
@@ -652,6 +657,9 @@ class AgencyContrabandView(APIView):
                 F("contraband_found_count") * 1.0 / F("search_count"), output_field=FloatField()
             )
         )
+        if year:
+            contraband_percentages_qs = contraband_percentages_qs.annotate(year=ExtractYear("date")).filter(year=year)
+
         contraband_percentages_df = pd.DataFrame(contraband_percentages_qs)
         columns = ["White", "Black", "Hispanic", "Asian", "Native American", "Other"]
         contraband_percentages = [0] * len(columns)
@@ -665,13 +673,13 @@ class AgencyContrabandView(APIView):
 
         # Build modal table data
         table_data_qs = qs.annotate(year=ExtractYear("date"))
-        table_data_df = (
+        pivot_df = (
             pd.DataFrame(table_data_qs)
             .pivot(index="year", columns=["driver_race_comb"], values="contraband_found_count")
             .fillna(value=0)
         )
 
-        pivot_df = pd.DataFrame(table_data_df).rename(
+        pivot_df = pd.DataFrame(pivot_df).rename(
             columns={
                 "White": "white",
                 "Black": "black",
@@ -691,56 +699,6 @@ class AgencyContrabandView(APIView):
 
 
 class AgencyContrabandStopPurposeView(APIView):
-    def create_df(self, _filter, year=None):
-        qs = StopSummary.objects.filter(_filter).annotate(year=ExtractYear("date"))
-        if year:
-            qs = qs.filter(year=year)
-        if qs.count() == 0:
-            return pd.DataFrame()
-        qs = (
-            qs.values("year", "driver_race_comb", "stop_purpose_group")
-            .annotate(count=Sum("count"))
-            .order_by("year")
-        )
-        df = pd.DataFrame(qs)
-        pivot_df = df.pivot(
-            index="year", columns=["stop_purpose_group", "driver_race_comb"], values="count"
-        ).fillna(value=0)
-        return pd.DataFrame(pivot_df)
-
-    def get(self, request, agency_id):
-        year = request.GET.get("year", None)
-        searches_df = self.create_df(Q(agency_id=agency_id, search_type__isnull=False), year)
-        contraband_df = self.create_df(Q(agency_id=agency_id, contraband_found=True), year)
-        data = []
-        stop_purpose_types = [
-            StopPurposeGroup.SAFETY_VIOLATION,
-            StopPurposeGroup.REGULATORY_EQUIPMENT,
-            StopPurposeGroup.OTHER,
-        ]
-        columns = ["White", "Black", "Hispanic", "Asian", "Native American", "Other"]
-
-        for stop_purpose in stop_purpose_types:
-            group = {
-                "stop_purpose": " ".join([name.title() for name in stop_purpose.name.split("_")]),
-                "data": [],
-            }
-            if stop_purpose in searches_df and stop_purpose in contraband_df:
-                searches_mean = searches_df[stop_purpose].mean()
-                contraband_mean = contraband_df[stop_purpose].mean()
-                for c in columns:
-                    if c in contraband_mean and c in searches_mean:
-                        group["data"].append((contraband_mean[c] / searches_mean[c]) * 100)
-                    else:
-                        group["data"].append(0)
-            else:
-                group["data"].append(0)
-            data.append(group)
-
-        return Response(data=data, status=200)
-
-
-class AgencyContrabandStopPurposeModalView(APIView):
     def group_by_purpose(self, df, purpose, years):
         def get_values(col):
             if purpose in df and col in df[purpose]:
@@ -778,28 +736,67 @@ class AgencyContrabandStopPurposeModalView(APIView):
         }
 
     def get(self, request, agency_id):
-        qs = StopSummary.objects.filter(contraband_found=True)
+        year = request.GET.get("year", None)
+
+        qs = ContrabandSummary.objects.filter(agency_id=agency_id)
+
         agency_id = int(agency_id)
         if agency_id != -1:
             qs = qs.filter(agency_id=agency_id)
         officer = request.query_params.get("officer", None)
         if officer:
             qs = qs.filter(officer_id=officer)
-        qs = (
-            qs.annotate(year=ExtractYear("date"))
-            .values("year", "driver_race_comb", "stop_purpose_group")
-            .annotate(count=Sum("count"))
-            .order_by("year")
-        )
-        if qs.count() == 0:
-            return Response(data={"labels": [], "datasets": []}, status=200)
-        df = pd.DataFrame(qs)
-        unique_years = df.year.unique()
-        pivot_table = df.pivot(
-            index="year", columns=["stop_purpose_group", "driver_race_comb"], values="count"
-        ).fillna(value=0)
-        pivot_df = pd.DataFrame(pivot_table)
 
+        qs = qs.values("driver_race_comb", "stop_purpose_group").annotate(
+            search_count=Count("search_id", distinct=True),
+            contraband_found_count=Count("contraband_id", distinct=True),
+        )
+
+        # Build charts data
+        contraband_percentages_qs = qs.annotate(
+            hit_rate=ExpressionWrapper(
+                F("contraband_found_count") * 1.0 / F("search_count"), output_field=FloatField()
+            )
+        )
+        contraband_percentages_df = pd.DataFrame(contraband_percentages_qs)
+        columns = ["White", "Black", "Hispanic", "Asian", "Native American", "Other"]
+        contraband_percentages = []
+        stop_purpose_types = [
+            StopPurposeGroup.SAFETY_VIOLATION,
+            StopPurposeGroup.REGULATORY_EQUIPMENT,
+            StopPurposeGroup.OTHER,
+        ]
+
+        if contraband_percentages_qs.count() > 0:
+            for stop_purpose in stop_purpose_types:
+                group = {
+                    "stop_purpose": " ".join(
+                        [name.title() for name in stop_purpose.name.split("_")]
+                    ),
+                    "data": [0] * len(columns),
+                }
+
+                for i, c in enumerate(columns):
+                    filtered_df = contraband_percentages_df[
+                        contraband_percentages_df["driver_race_comb"] == c
+                    ]
+                    filtered_df = filtered_df[
+                        filtered_df["stop_purpose_group"] == stop_purpose.value
+                    ]
+                    group["data"][i] = filtered_df["hit_rate"].values[0] * 100
+
+                contraband_percentages.append(group)
+
+        # Build modal data
+        table_data_qs = qs.annotate(year=ExtractYear("date")).order_by("year")
+        table_df = pd.DataFrame(table_data_qs)
+        pivot_df = table_df.pivot(
+            index="year",
+            columns=["stop_purpose_group", "driver_race_comb"],
+            values="contraband_found_count",
+        ).fillna(value=0)
+
+        unique_years = table_df.year.unique()
         safety_data = self.group_by_purpose(
             pivot_df, StopPurposeGroup.SAFETY_VIOLATION, unique_years
         )
@@ -807,13 +804,16 @@ class AgencyContrabandStopPurposeModalView(APIView):
             pivot_df, StopPurposeGroup.REGULATORY_EQUIPMENT, unique_years
         )
         other_data = self.group_by_purpose(pivot_df, StopPurposeGroup.OTHER, unique_years)
-        data = {
-            "labels": unique_years,
-            "safety": safety_data,
-            "regulatory": regulatory_data,
-            "other": other_data,
-        }
 
+        data = {
+            "contraband_percentages": contraband_percentages,
+            "table_data": {
+                "labels": unique_years,
+                "safety": safety_data,
+                "regulatory": regulatory_data,
+                "other": other_data,
+            },
+        }
         return Response(data=data, status=200)
 
 

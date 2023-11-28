@@ -194,7 +194,7 @@ function Contraband(props) {
           'Regulatory Equipment': '#e69500',
           Other: '#7dd082',
         };
-        const stopPurposeDataSets = res.data.map((ds) => ({
+        const stopPurposeDataSets = res.data.contraband_percentages.map((ds) => ({
           axis: 'x',
           label: ds.stop_purpose,
           data: ds.data,
@@ -209,6 +209,10 @@ function Contraband(props) {
           datasets: stopPurposeDataSets,
         };
         setContrabandStopPurposeData(data);
+        setContrabandStopPurposeModalData({
+          ...contrabandStopPurposeModalData,
+          modalData: res.data.table_data,
+        });
       })
       .catch((err) => console.log(err));
   }, [contrabandStopPurposeYear]);
@@ -241,13 +245,6 @@ function Contraband(props) {
       })
       .catch((err) => console.log(err));
   }, [year]);
-
-  useEffect(() => {
-    const url = `/api/agency/${agencyId}/contraband-stop-purpose/modal/`;
-    axios.get(url).then((res) => {
-      setContrabandStopPurposeModalData({ ...contrabandStopPurposeModalData, modalData: res.data });
-    });
-  }, []);
 
   useEffect(() => {
     const contraband_types = {
