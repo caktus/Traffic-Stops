@@ -358,7 +358,7 @@ CONTRABAND_SUMMARY_VIEW_SQL = f"""
         , nc_search.search_id
         , contraband_found
         , contraband_id
-        , contraband_type AS contraband_type_found
+        , contraband_type
     FROM "nc_stop"
     INNER JOIN "nc_person"
         ON ("nc_stop"."stop_id" = "nc_person"."stop_id" AND "nc_person"."type" = 'D')

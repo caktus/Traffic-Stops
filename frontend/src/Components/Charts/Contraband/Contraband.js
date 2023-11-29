@@ -26,7 +26,6 @@ import NewModal from '../../NewCharts/NewModal';
 import Legend from '../ChartSections/Legend/Legend';
 import cloneDeep from 'lodash.clonedeep';
 import Checkbox from '../../Elements/Inputs/Checkbox';
-import range from 'lodash.range';
 
 const STOP_PURPOSE_TYPES = ['Safety Violation', 'Regulatory and Equipment', 'Other'];
 
@@ -68,7 +67,8 @@ function Contraband(props) {
     });
 
   const [contrabandStopPurposeYear, setContrabandStopPurposeYear] = useState(YEARS_DEFAULT);
-  const [contrabandGroupedStopPurposeData, setContrabandGroupedStopPurposeData] = useState([
+
+  const initialContrabandGroupedData = [
     {
       labels: [],
       datasets: [],
@@ -81,7 +81,10 @@ function Contraband(props) {
       labels: [],
       datasets: [],
     },
-  ]);
+  ];
+  const [contrabandGroupedStopPurposeData, setContrabandGroupedStopPurposeData] = useState(
+    initialContrabandGroupedData
+  );
   const [contrabandTypes, setContrabandTypes] = useState(() =>
     STATIC_CONTRABAND_KEYS.map((k) => ({ ...k }))
   );
@@ -119,6 +122,8 @@ function Contraband(props) {
   const handleYearSelect = (y) => {
     if (y === year) return;
     setYear(y);
+    setContrabandGroupedStopPurposeData(initialContrabandGroupedData);
+    fetchHitRateByStopPurpose(y);
   };
 
   const handleContrabandYearSelect = (y) => {
@@ -218,47 +223,47 @@ function Contraband(props) {
   }, [contrabandStopPurposeYear]);
 
   useEffect(() => {
+    fetchHitRateByStopPurpose('All');
+  }, []);
+
+  const fetchHitRateByStopPurpose = (yr) => {
     let url = `/api/agency/${agencyId}/contraband-grouped-stop-purpose/`;
-    if (year && year !== 'All') {
-      url = `${url}?year=${year}`;
+    if (yr && yr !== 'All') {
+      url = `${url}?year=${yr}`;
     }
     axios
       .get(url)
       .then((res) => {
-        const colors = {
-          Drugs: '#3C91E6',
-          Alcohol: '#9FD356',
-          Weapons: '#ED217C',
-          Money: '#EFCEFA',
-          Other: '#2F4858',
-        };
-        const stopPurposeDataSets = res.data.map((sp) => ({
-          labels: ['W', 'B', 'H', 'A', 'NA', 'O'],
-          datasets: sp.data.map((ds) => ({
-            label: ds.contraband,
-            data: ds.data,
-            backgroundColor: colors[ds.contraband],
-            hoverBackgroundColor: colors[ds.contraband],
-          })),
-        }));
-        setContrabandGroupedStopPurposeData(stopPurposeDataSets);
+        updateContrabandHitRateByStopPurpose(res.data);
       })
       .catch((err) => console.log(err));
-  }, [year]);
+  };
+
+  const updateContrabandHitRateByStopPurpose = (data) => {
+    const colors = {
+      Drugs: '#3C91E6',
+      Alcohol: '#9FD356',
+      Weapons: '#ED217C',
+      Money: '#EFCEFA',
+      Other: '#2F4858',
+    };
+    const stopPurposeDataSets = data.map((sp) => ({
+      labels: ['W', 'B', 'H', 'A', 'NA', 'O'],
+      datasets: sp.data.map((ds) => ({
+        label: ds.contraband,
+        data: ds.data,
+        backgroundColor: colors[ds.contraband],
+        hoverBackgroundColor: colors[ds.contraband],
+      })),
+    }));
+    setContrabandGroupedStopPurposeData(stopPurposeDataSets);
+  };
 
   useEffect(() => {
-    const contraband_types = {
-      [CONTRABAND_TYPES[0]]: 'drugs_found',
-      [CONTRABAND_TYPES[1]]: 'alcohol_found',
-      [CONTRABAND_TYPES[2]]: 'money_found',
-      [CONTRABAND_TYPES[3]]: 'weapons_found',
-      [CONTRABAND_TYPES[4]]: 'other_found',
-    };
-    // eslint-disable-next-line camelcase
-    const contrabandType = contraband_types[selectedGroupedContrabandType];
-    const url = `/api/agency/${agencyId}/contraband-grouped-stop-purpose/modal/?grouped_stop_purpose=${selectedGroupedContrabandStopPurpose}&contraband_type=${contrabandType}`;
+    const url = `/api/agency/${agencyId}/contraband-grouped-stop-purpose/modal/?grouped_stop_purpose=${selectedGroupedContrabandStopPurpose}&contraband_type=${selectedGroupedContrabandType}`;
     axios.get(url).then((res) => {
-      updateGroupedContrabandModalData(res.data);
+      const tableData = JSON.parse(res.data.table_data)['data'];
+      updateGroupedContrabandModalData(tableData);
     });
   }, [selectedGroupedContrabandStopPurpose, selectedGroupedContrabandType]);
 
@@ -357,21 +362,16 @@ function Contraband(props) {
   };
 
   const updateGroupedContrabandModalData = (modalData) => {
-    const tableData = [];
-    range(2002, new Date().getFullYear() + 1, 1).forEach((e) => {
+    modalData.forEach((e) => {
       const races = ['white', 'black', 'hispanic', 'asian', 'native_american', 'other'];
-      const row = {
-        year: e,
-      };
-      const total = [];
-      races.forEach((r, j) => {
-        // The data is indexed by the stop purpose group, then the index of the race then the index of the year.
-        row[r] = modalData.datasets[j]['data'].find((y) => y.year === e)?.count || 0;
-        total.unshift(row[r]);
+      races.forEach((r) => {
+        e[r] = e[r] || 0;
       });
-      row['total'] = total.reduce((a, b) => a + b, 0);
-      tableData.unshift(row);
+      e['total'] = races.map((r) => e[r]).reduce((a, b) => a + b, 0);
     });
+    const tableData = modalData
+      // eslint-disable-next-line no-nested-ternary
+      .sort((a, b) => (a['year'] < b['year'] ? 1 : b['year'] < a['year'] ? -1 : 0));
     const newState = {
       ...groupedContrabandStopPurposeModalData,
       tableData,
