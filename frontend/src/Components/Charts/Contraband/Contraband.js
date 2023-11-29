@@ -85,6 +85,7 @@ function Contraband(props) {
   const [contrabandGroupedStopPurposeData, setContrabandGroupedStopPurposeData] = useState(
     initialContrabandGroupedData
   );
+  const [shouldRedrawContrabandGraphs, setShouldReDrawContrabandGraphs] = useState(true);
   const [contrabandTypes, setContrabandTypes] = useState(() =>
     STATIC_CONTRABAND_KEYS.map((k) => ({ ...k }))
   );
@@ -257,6 +258,7 @@ function Contraband(props) {
       })),
     }));
     setContrabandGroupedStopPurposeData(stopPurposeDataSets);
+    setShouldReDrawContrabandGraphs(false);
   };
 
   useEffect(() => {
@@ -349,6 +351,10 @@ function Contraband(props) {
         (a, b) => (a.order < b.order ? (a.order === b.order ? 0 : -1) : 1)
       )
     );
+    setShouldReDrawContrabandGraphs(true);
+    setTimeout(() => {
+      setShouldReDrawContrabandGraphs(false);
+    }, 1000);
   };
 
   const handleGroupedContrabandTypeSelect = (c) => {
@@ -551,7 +557,7 @@ function Contraband(props) {
               displayLegend={false}
               xStacked
               yStacked
-              redraw
+              redraw={shouldRedrawContrabandGraphs}
             />
           </BarContainer>
           <BarContainer visible={visibleContrabandTypes[1].visible}>
@@ -565,7 +571,7 @@ function Contraband(props) {
               yAxisShowLabels={!visibleContrabandTypes[0].visible}
               xStacked
               yStacked
-              redraw
+              redraw={shouldRedrawContrabandGraphs}
             />
           </BarContainer>
           <BarContainer visible={visibleContrabandTypes[2].visible}>
@@ -581,7 +587,7 @@ function Contraband(props) {
               }
               xStacked
               yStacked
-              redraw
+              redraw={shouldRedrawContrabandGraphs}
             />
           </BarContainer>
         </HorizontalBarWrapper>
