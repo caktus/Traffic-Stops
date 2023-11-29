@@ -9,7 +9,7 @@ import pandas as pd
 from dateutil import relativedelta
 from django.conf import settings
 from django.core.mail import send_mail
-from django.db.models import Case, Count, ExpressionWrapper, F, FloatField, Q, Sum, Value, When
+from django.db.models import Case, Count, F, Q, Sum, Value, When
 from django.db.models.functions import ExtractYear
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
@@ -646,31 +646,47 @@ class AgencyContrabandView(APIView):
         if officer:
             qs = qs.filter(officer_id=officer)
 
-        qs = qs.values("driver_race_comb").annotate(
+        contraband_qs = qs
+        if year:
+            contraband_qs = contraband_qs.annotate(year=ExtractYear("date")).filter(year=year)
+
+        contraband_qs = contraband_qs.values("driver_race_comb").annotate(
             search_count=Count("search_id", distinct=True),
             contraband_found_count=Count("contraband_id", distinct=True),
         )
 
         # Build charts data
-        contraband_percentages_qs = qs.annotate(
-            hit_rate=ExpressionWrapper(
-                F("contraband_found_count") * 1.0 / F("search_count"), output_field=FloatField()
-            )
-        )
-
-        contraband_percentages_df = pd.DataFrame(contraband_percentages_qs)
+        contraband_percentages_df = pd.DataFrame(contraband_qs)
         columns = ["White", "Black", "Hispanic", "Asian", "Native American", "Other"]
         contraband_percentages = [0] * len(columns)
 
-        if contraband_percentages_qs.count() > 0:
+        if contraband_qs.count() > 0:
             for i, c in enumerate(columns):
                 filtered_df = contraband_percentages_df[
                     contraband_percentages_df["driver_race_comb"] == c
                 ]
-                contraband_percentages[i] = filtered_df["hit_rate"].values[0] * 100
+                search_count = filtered_df["search_count"].values[0] if not filtered_df.empty else 0
+                contraband_found_count = (
+                    filtered_df["contraband_found_count"].values[0] if not filtered_df.empty else 0
+                )
+                try:
+                    hit_rate = contraband_found_count / search_count
+                except ZeroDivisionError:
+                    hit_rate = 0
+
+                if math.isnan(hit_rate):
+                    hit_rate = 0
+                contraband_percentages[i] = round(hit_rate * 100, 2)
 
         # Build modal table data
-        table_data_qs = qs.annotate(year=ExtractYear("date"))
+        table_data_qs = (
+            qs.values("driver_race_comb")
+            .annotate(
+                search_count=Count("search_id", distinct=True),
+                contraband_found_count=Count("contraband_id", distinct=True),
+            )
+            .annotate(year=ExtractYear("date"))
+        )
         pivot_df = (
             pd.DataFrame(table_data_qs)
             .pivot(index="year", columns=["driver_race_comb"], values="contraband_found_count")
