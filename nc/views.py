@@ -825,8 +825,11 @@ class AgencyContrabandGroupedStopPurposeView(APIView):
 
     columns = ["White", "Black", "Hispanic", "Asian", "Native American", "Other"]
 
-    def create_dataset(self, query_set, stop_purpose, *args, **kwargs):
+    def create_dataset(self, contraband_df, searches_df, stop_purpose):
         data = []
+
+        searches_df = searches_df[searches_df["stop_purpose_group"] == stop_purpose]
+        contraband_df = contraband_df[contraband_df["stop_purpose_group"] == stop_purpose]
 
         for contraband in self.contraband_types:
             group = {
@@ -834,23 +837,15 @@ class AgencyContrabandGroupedStopPurposeView(APIView):
                 "data": [],
             }
             for c in self.columns:
-                contraband_qs = query_set.filter(
-                    stop_purpose_group=stop_purpose.value, driver_race_comb=c
-                )
+                s_df = searches_df[searches_df["driver_race_comb"] == c]
+                searches_count = s_df["search_count"].values[0] if not s_df.empty else 0
 
-                search_qs = contraband_qs.aggregate(
-                    search_count=Count("search_id", distinct=True),
-                )
-                contraband_found_qs = (
-                    contraband_qs.filter(stop_purpose_group=stop_purpose.value, driver_race_comb=c)
-                    .filter(
-                        contraband_found=True,
-                        contraband_type=contraband,
-                    )
-                    .count()
-                )
+                c_df = contraband_df[contraband_df["driver_race_comb"] == c]
+                c_df = c_df[c_df["contraband_type"] == contraband]
+                contraband_count = c_df["contraband_found_count"].values[0] if not c_df.empty else 0
+
                 try:
-                    hit_rate = (contraband_found_qs / search_qs["search_count"]) * 100
+                    hit_rate = (contraband_count / searches_count) * 100
                 except ZeroDivisionError:
                     hit_rate = 0
 
@@ -873,24 +868,38 @@ class AgencyContrabandGroupedStopPurposeView(APIView):
         if year:
             qs = qs.annotate(year=ExtractYear("date")).filter(year=year)
 
+        searches_df = pd.DataFrame(
+            qs.values("driver_race_comb", "stop_purpose_group").annotate(
+                search_count=Count("search_id", distinct=True)
+            )
+        )
+
+        contraband_df = pd.DataFrame(
+            qs.values("driver_race_comb", "stop_purpose_group", "contraband_type").annotate(
+                contraband_found_count=Count(
+                    "contraband_id", distinct=True, filter=Q(contraband_found=True)
+                )
+            )
+        )
+
         data = [
             {
                 "stop_purpose": "Safety Violation",
                 "data": self.create_dataset(
-                    qs,
-                    StopPurposeGroup.SAFETY_VIOLATION,
+                    contraband_df, searches_df, StopPurposeGroup.SAFETY_VIOLATION.value
                 ),
             },
             {
                 "stop_purpose": "Regulatory and Equipment",
                 "data": self.create_dataset(
-                    qs,
-                    StopPurposeGroup.REGULATORY_EQUIPMENT,
+                    contraband_df, searches_df, StopPurposeGroup.REGULATORY_EQUIPMENT.value
                 ),
             },
             {
                 "stop_purpose": "Other",
-                "data": self.create_dataset(qs, StopPurposeGroup.OTHER),
+                "data": self.create_dataset(
+                    contraband_df, searches_df, StopPurposeGroup.OTHER.value
+                ),
             },
         ]
         return Response(data=data, status=200)
