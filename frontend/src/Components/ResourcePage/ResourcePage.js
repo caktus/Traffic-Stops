@@ -19,7 +19,7 @@ function Resource({ resource }) {
       <div>
         <H2>{resource.title} </H2>
         {resource.publication_date && <P size={14}>{resourcePublicationDate}</P>}
-        <P size={18}>{resource.description}</P>
+        <P size={18} dangerouslySetInnerHTML={{ __html: resource.description }} />
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
           {resource.agencies_list.map((a) => (
             <S.ResourceTag href={`/agencies/${a.id}`}>{a.name}</S.ResourceTag>
