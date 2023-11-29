@@ -110,7 +110,7 @@ export default function HorizontalBarChart({
     popperElement.removeAttribute('data-show');
   };
 
-  if (!data.datasets.length) {
+  if (!data.labels.length) {
     return <DataLoading />;
   }
 

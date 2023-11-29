@@ -41,11 +41,6 @@ urlpatterns = [  # noqa
         name="contraband-percentages-stop-purpose-groups",
     ),
     path(
-        "api/agency/<int:agency_id>/contraband-stop-purpose/modal/",
-        views.AgencyContrabandStopPurposeModalView.as_view(),
-        name="contraband-percentages-stop-purpose-groups-modal",
-    ),
-    path(
         "api/agency/<int:agency_id>/contraband-grouped-stop-purpose/",
         views.AgencyContrabandGroupedStopPurposeView.as_view(),
         name="contraband-percentages-grouped-stop-purpose",
