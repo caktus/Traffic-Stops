@@ -1,4 +1,5 @@
 import datetime
+import math
 
 from functools import reduce
 from operator import concat
@@ -845,11 +846,14 @@ class AgencyContrabandGroupedStopPurposeView(APIView):
                 contraband_count = c_df["contraband_found_count"].values[0] if not c_df.empty else 0
 
                 try:
-                    hit_rate = (contraband_count / searches_count) * 100
+                    hit_rate = contraband_count / searches_count
                 except ZeroDivisionError:
                     hit_rate = 0
 
-                group["data"].append(hit_rate)
+                if math.isnan(hit_rate):
+                    hit_rate = 0
+
+                group["data"].append(round(hit_rate * 100, 2))
             data.append(group)
         return data
 
