@@ -244,7 +244,7 @@ function Contraband(props) {
     const colors = {
       Drugs: '#3C91E6',
       Alcohol: '#9FD356',
-      Weapons: '#EB78AA',
+      Weapons: '#A653F4',
       Money: '#EFCEFA',
       Other: '#2F4858',
     };
