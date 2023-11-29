@@ -397,12 +397,12 @@ function Contraband(props) {
         />
         <S.ChartDescription>
           <P>
-            Shows what percentage of searches discovered illegal items for a given race / ethnic
-            group.
+            Shows what percentage of searches led to the discovery of illegal items by
+            race/ethnicity.
           </P>
           <NewModal
             tableHeader='Contraband "Hit Rate"'
-            tableSubheader="Shows the number of traffics stops broken down by purpose and race / ethnicity."
+            tableSubheader="Shows what percentage of searches led to the discovery of illegal items by race/ethnicity."
             agencyName={chartState.data[AGENCY_DETAILS].name}
             tableData={contrabandData.tableData}
             csvData={contrabandData.csvData}
@@ -439,12 +439,13 @@ function Contraband(props) {
         />
         <S.ChartDescription>
           <P>
-            Shows what percentage of searches discovered contraband for a given race / ethnic group
+            Shows what percentage of searches led to the discovery of illegal items broken down by
+            race/ethnicity and original stop purpose.
           </P>
         </S.ChartDescription>
         <NewModal
           tableHeader='Contraband "Hit Rate" Grouped by Stop Purpose'
-          tableSubheader="Shows the number of traffics stops broken down by purpose and race / ethnicity."
+          tableSubheader="Shows what percentage of searches led to the discovery of illegal items broken down by race/ethnicity and original stop purpose."
           agencyName={chartState.data[AGENCY_DETAILS].name}
           tableData={contrabandStopPurposeModalData.tableData}
           csvData={contrabandStopPurposeModalData.csvData}
@@ -492,12 +493,13 @@ function Contraband(props) {
         />
         <S.ChartDescription>
           <P>
-            Shows what percentage of searches discovered contraband for a given race / ethnic group
+            Shows the specific types of illegal items discovered in searches by race and initial
+            stop type.
           </P>
         </S.ChartDescription>
         <NewModal
           tableHeader='Contraband "Hit Rate" Grouped by Stop Purpose'
-          tableSubheader="Shows the number of traffics stops broken down by purpose and race / ethnicity."
+          tableSubheader="Shows the specific types of illegal items discovered in searches by race and initial stop type."
           agencyName={chartState.data[AGENCY_DETAILS].name}
           tableData={groupedContrabandStopPurposeModalData.tableData}
           csvData={groupedContrabandStopPurposeModalData.csvData}
