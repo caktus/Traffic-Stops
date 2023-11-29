@@ -390,6 +390,36 @@ function Contraband(props) {
     <ContrabandStyled>
       {renderMetaTags()}
       {renderTableModal()}
+      <details>
+        <summary style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            style={{ width: '20px', height: '20px' }}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
+            />
+          </svg>
+          <P>Shortcomings in the Official Data Impacting this Graph</P>
+        </summary>
+        <span>
+          The data indicates that sometimes illegal items are found during traffic stops, even
+          though there is no direct match for the type of illegal item associated with that stop.
+          This happens because very small amounts of illegal items seem to be changed to zero when
+          the data is recorded by the local agency or the NCDOJ (North Carolina Department of
+          Justice) computers. When the amounts of illegal items are entered into the system, they
+          are rounded either up or down to the nearest whole number. For example, if there&apos;s
+          0.49 units of an illegal item, it&apos;s recorded as 0 units. This issue with the data
+          seems to affect only cases involving drugs and alcohol, where someone might be found with
+          a tiny fraction of the illegal substance
+        </span>
+      </details>
       <S.ChartSection>
         <ChartHeader
           chartTitle='Contraband "Hit Rate"'
