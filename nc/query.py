@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 import pandas as pd
 
 from django.db.models import Count, Q
@@ -32,7 +34,7 @@ def contraband_query(agency_id=None, officer_id=None, group_by=None, debug=False
     search &= Q(driver_searched=True)
     # Always group by year for table
     year_group_by = group_by.copy()
-    year_group_by.add("year")
+    year_group_by.insert(0, "year")
     qs = (
         ContrabandSummary.objects.filter(search)
         .annotate(year=ExtractYear("date"))
@@ -49,7 +51,7 @@ def contraband_query(agency_id=None, officer_id=None, group_by=None, debug=False
     return pd.DataFrame(qs)
 
 
-def hit_rate_chart(query_df: pd.DataFrame, group_by: set):
+def hit_rate_chart(query_df: pd.DataFrame, group_by: list):
     """
     Calculate th contraband "hit rate" aggregated within `group_by` columns.
     """
@@ -65,7 +67,7 @@ def hit_rate_chart(query_df: pd.DataFrame, group_by: set):
     #    5            White          2492                     533
     #
     df = (
-        query_df.groupby(*group_by)[["search_count", "contraband_found_count"]]
+        query_df.groupby(by=group_by)[["search_count", "contraband_found_count"]]
         .agg("sum")
         .reset_index()
     )
@@ -85,8 +87,8 @@ def hit_rate_chart(query_df: pd.DataFrame, group_by: set):
     #    driver_race  Asian  Black  Hispanic  Native American  Other  White
     #    hit_rate     20.24  27.66     17.13            23.33  24.49  21.39
     #
-    table = df.round(2).pivot_table(columns=group_by, values=["hit_rate"])
-    # Return formated as dict like {column -> [values]}
+    chart = df.round(2).pivot_table(columns=group_by, values=["hit_rate"])
+    # Convert formated as dict like {column -> [values]}
     #
     #   {'Asian': [20.24],
     #    'Black': [27.66],
@@ -95,10 +97,35 @@ def hit_rate_chart(query_df: pd.DataFrame, group_by: set):
     #    'Other': [24.49],
     #    'White': [21.39]}
     #
-    return table.to_dict("list")
+    chart = chart.to_dict("list")
+    # If group_by is multiple columns, created a nested dictionary like so:
+    #    {'Other': {'Asian': [10.0],
+    #               'Black': [26.45],
+    #               'Hispanic': [21.76],
+    #               'Native American': [33.33],
+    #               'Other': [20.0],
+    #               'White': [27.13]},
+    #     'Regulatory and Equipment': {'Asian': [22.73],
+    #                                  'Black': [27.62],
+    #                                  'Hispanic': [18.63],
+    #                                  'Native American': [20.0],
+    #                                  'Other': [22.73],
+    #                                  'White': [20.59]},
+    #     'Safety Violation': {'Asian': [21.15],
+    #                          'Black': [28.53],
+    #                          'Hispanic': [14.25],
+    #                          'Native American': [23.53],
+    #                          'Other': [29.41],
+    #                          'White': [19.5]}}
+    if len(group_by) > 1:
+        nested = defaultdict(dict)
+        for groups, vals in chart.items():
+            nested[groups[0]][groups[1]] = vals
+        chart = dict(nested)
+    return chart
 
 
-def hit_rate_table(query_df: pd.DataFrame, group_by: set):
+def hit_rate_table(query_df: pd.DataFrame, group_by: list):
     """Return hit rate data table to support chart calculations"""
     # Pivot to a wide-format DataFrame along year and group_by columns:
     #
