@@ -453,7 +453,7 @@ class AgencyTrafficStopsByCountView(APIView):
         else:
             date_precision = "date"
 
-        qs_df_cols = ["driver_race_comb"]
+        qs_df_cols = ["driver_race"]
         stop_purpose = int(request.query_params.get("purpose", 0))
         if stop_purpose != 0:
             qs_df_cols.insert(0, "stop_purpose")
@@ -590,7 +590,7 @@ class AgencyStopGroupByPurposeView(APIView):
             qs = qs.filter(officer_id=officer)
         qs = (
             qs.annotate(year=ExtractYear("date"))
-            .values("year", "driver_race_comb", "stop_purpose_group")
+            .values("year", "driver_race", "stop_purpose_group")
             .annotate(count=Sum("count"))
             .order_by("year")
         )
@@ -599,7 +599,7 @@ class AgencyStopGroupByPurposeView(APIView):
         df = pd.DataFrame(qs)
         unique_years = df.year.unique()
         pivot_table = pd.pivot_table(
-            df, index="year", columns=["stop_purpose_group", "driver_race_comb"], values="count"
+            df, index="year", columns=["stop_purpose_group", "driver_race"], values="count"
         ).fillna(value=0)
         pivot_df = pd.DataFrame(pivot_table)
 
@@ -650,7 +650,7 @@ class AgencyContrabandView(APIView):
         if year:
             contraband_qs = contraband_qs.annotate(year=ExtractYear("date")).filter(year=year)
 
-        contraband_qs = contraband_qs.values("driver_race_comb").annotate(
+        contraband_qs = contraband_qs.values("driver_race").annotate(
             search_count=Count("search_id", distinct=True),
             contraband_found_count=Count("contraband_id", distinct=True),
         )
@@ -663,7 +663,7 @@ class AgencyContrabandView(APIView):
         if contraband_qs.count() > 0:
             for i, c in enumerate(columns):
                 filtered_df = contraband_percentages_df[
-                    contraband_percentages_df["driver_race_comb"] == c
+                    contraband_percentages_df["driver_race"] == c
                 ]
                 search_count = filtered_df["search_count"].values[0] if not filtered_df.empty else 0
                 contraband_found_count = (
@@ -680,7 +680,7 @@ class AgencyContrabandView(APIView):
 
         # Build modal table data
         table_data_qs = (
-            qs.values("driver_race_comb")
+            qs.values("driver_race")
             .annotate(
                 search_count=Count("search_id", distinct=True),
                 contraband_found_count=Count("contraband_id", distinct=True),
@@ -691,7 +691,7 @@ class AgencyContrabandView(APIView):
         if table_data_qs.count() > 0:
             pivot_df = (
                 pd.DataFrame(table_data_qs)
-                .pivot(index="year", columns=["driver_race_comb"], values="contraband_found_count")
+                .pivot(index="year", columns=["driver_race"], values="contraband_found_count")
                 .fillna(value=0)
             )
 
@@ -768,7 +768,7 @@ class AgencyContrabandStopPurposeView(APIView):
         if year:
             contraband_qs = contraband_qs.annotate(year=ExtractYear("date")).filter(year=year)
 
-        contraband_qs = contraband_qs.values("driver_race_comb", "stop_purpose_group").annotate(
+        contraband_qs = contraband_qs.values("driver_race", "stop_purpose_group").annotate(
             search_count=Count("search_id", distinct=True),
             contraband_found_count=Count("contraband_id", distinct=True),
         )
@@ -794,7 +794,7 @@ class AgencyContrabandStopPurposeView(APIView):
 
                 for i, c in enumerate(columns):
                     filtered_df = contraband_percentages_df[
-                        contraband_percentages_df["driver_race_comb"] == c
+                        contraband_percentages_df["driver_race"] == c
                     ]
                     filtered_df = filtered_df[
                         filtered_df["stop_purpose_group"] == stop_purpose.value
@@ -820,7 +820,7 @@ class AgencyContrabandStopPurposeView(APIView):
 
         # Build modal data
         table_data_qs = (
-            qs.values("driver_race_comb", "stop_purpose_group")
+            qs.values("driver_race", "stop_purpose_group")
             .annotate(
                 search_count=Count("search_id", distinct=True),
                 contraband_found_count=Count("contraband_id", distinct=True),
@@ -833,7 +833,7 @@ class AgencyContrabandStopPurposeView(APIView):
             table_df = pd.DataFrame(table_data_qs)
             pivot_df = table_df.pivot(
                 index="year",
-                columns=["stop_purpose_group", "driver_race_comb"],
+                columns=["stop_purpose_group", "driver_race"],
                 values="contraband_found_count",
             ).fillna(value=0)
 
@@ -884,10 +884,10 @@ class AgencyContrabandGroupedStopPurposeView(APIView):
                 "data": [],
             }
             for c in self.columns:
-                s_df = searches_df[searches_df["driver_race_comb"] == c]
+                s_df = searches_df[searches_df["driver_race"] == c]
                 searches_count = s_df["search_count"].values[0] if not s_df.empty else 0
 
-                c_df = contraband_df[contraband_df["driver_race_comb"] == c]
+                c_df = contraband_df[contraband_df["driver_race"] == c]
                 c_df = c_df[c_df["contraband_type"] == contraband]
                 contraband_count = c_df["contraband_found_count"].values[0] if not c_df.empty else 0
 
@@ -934,13 +934,13 @@ class AgencyContrabandGroupedStopPurposeView(APIView):
         ]
         if qs.count() > 0:
             searches_df = pd.DataFrame(
-                qs.values("driver_race_comb", "stop_purpose_group").annotate(
+                qs.values("driver_race", "stop_purpose_group").annotate(
                     search_count=Count("search_id", distinct=True)
                 )
             )
 
             contraband_df = pd.DataFrame(
-                qs.values("driver_race_comb", "stop_purpose_group", "contraband_type").annotate(
+                qs.values("driver_race", "stop_purpose_group", "contraband_type").annotate(
                     contraband_found_count=Count(
                         "contraband_id", distinct=True, filter=Q(contraband_found=True)
                     )
@@ -990,7 +990,7 @@ class AgencyContrabandStopGroupByPurposeModalView(APIView):
                 contraband_type=contraband_type,
                 stop_purpose_group=grouped_stop_purpose,
             )
-            .values("driver_race_comb")
+            .values("driver_race")
             .annotate(
                 year=ExtractYear("date"), contraband_count=Count("contraband_id", distinct=True)
             )
@@ -1003,7 +1003,7 @@ class AgencyContrabandStopGroupByPurposeModalView(APIView):
                 pd.DataFrame(qs)
                 .pivot(
                     index="year",
-                    columns=["driver_race_comb"],
+                    columns=["driver_race"],
                     values="contraband_count",
                 )
                 .fillna(value=0)
