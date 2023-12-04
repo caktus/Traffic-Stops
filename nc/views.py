@@ -676,7 +676,7 @@ class AgencyContrabandView(APIView):
 
                 if math.isnan(hit_rate):
                     hit_rate = 0
-                contraband_percentages[i] = round(hit_rate * 100, 2)
+                contraband_percentages[i] = hit_rate
 
         # Build modal table data
         table_data_qs = (
@@ -760,7 +760,7 @@ class AgencyContrabandTypesView(APIView):
 
                 if math.isnan(hit_rate):
                     hit_rate = 0
-                contraband_percentages[i] = round(hit_rate * 100, 2)
+                contraband_percentages[i] = hit_rate
 
         # Build modal table data
         table_data_qs = (
@@ -899,7 +899,7 @@ class AgencyContrabandStopPurposeView(APIView):
 
                     if math.isnan(hit_rate):
                         hit_rate = 0
-                    group["data"][i] = round(hit_rate * 100, 2)
+                    group["data"][i] = hit_rate
 
                 contraband_percentages.append(group)
 
@@ -984,7 +984,7 @@ class AgencyContrabandGroupedStopPurposeView(APIView):
                 if math.isnan(hit_rate):
                     hit_rate = 0
 
-                group["data"].append(round(hit_rate * 100, 2))
+                group["data"].append(hit_rate)
             data.append(group)
         return data
 

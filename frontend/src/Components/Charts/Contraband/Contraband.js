@@ -396,7 +396,7 @@ function Contraband(props) {
     return '';
   };
 
-  const formatTooltipValue = (ctx) => `${ctx.raw.toFixed(1)}%`;
+  const formatTooltipValue = (ctx) => `${(ctx.raw * 100).toFixed(2)}%`;
 
   const toggleGroupedPurposeGraphs = (key) => {
     const toggleState = visibleContrabandTypes;
