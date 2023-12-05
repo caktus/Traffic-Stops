@@ -501,7 +501,7 @@ function Contraband(props) {
             tableData={contrabandData.tableData}
             csvData={contrabandData.csvData}
             columns={CONTRABAND_TABLE_COLUMNS}
-            tableDownloadName="Traffic Stops By Stop Purpose"
+            tableDownloadName='Contraband "Hit Rate"'
             isOpen={contrabandData.isOpen}
             closeModal={() => setContrabandData((state) => ({ ...state, isOpen: false }))}
           />
@@ -509,7 +509,7 @@ function Contraband(props) {
         <S.ChartSubsection showCompare={showCompare}>
           <ChartWrapper>
             <HorizontalBarChart
-              title="Contraband Hit Rate"
+              title='Contraband "Hit Rate"'
               data={contrabandData}
               displayLegend={false}
               tooltipLabelCallback={formatTooltipValue}
@@ -528,7 +528,7 @@ function Contraband(props) {
       </S.ChartSection>
       <S.ChartSection>
         <ChartHeader
-          chartTitle='Contraband "Hit Rate" By Stop Purpose'
+          chartTitle='Contraband "Hit Rate" Grouped By Stop Purpose'
           handleViewData={showGroupedContrabandModal}
         />
         <S.ChartDescription>
@@ -538,13 +538,13 @@ function Contraband(props) {
           </P>
         </S.ChartDescription>
         <NewModal
-          tableHeader='Contraband "Hit Rate" Grouped by Stop Purpose'
+          tableHeader='Contraband "Hit Rate" Grouped By Stop Purpose'
           tableSubheader="Shows what percentage of searches led to the discovery of illegal items broken down by race/ethnicity and original stop purpose."
           agencyName={chartState.data[AGENCY_DETAILS].name}
           tableData={contrabandStopPurposeModalData.tableData}
           csvData={contrabandStopPurposeModalData.csvData}
           columns={CONTRABAND_TABLE_COLUMNS}
-          tableDownloadName="Contraband 'Hit Rate' By Stop Purpose"
+          tableDownloadName='Contraband "Hit Rate" Grouped By Stop Purpose'
           isOpen={contrabandStopPurposeModalData.isOpen}
           closeModal={() =>
             setContrabandStopPurposeModalData((state) => ({ ...state, isOpen: false }))
@@ -560,7 +560,7 @@ function Contraband(props) {
         <S.ChartSubsection showCompare={showCompare}>
           <ChartWrapper>
             <HorizontalBarChart
-              title="Contraband Hit Rate Grouped By Stop Purpose"
+              title='Contraband "Hit Rate" Grouped By Stop Purpose'
               data={contrabandStopPurposeData}
               tooltipTitleCallback={formatTooltipLabel}
               tooltipLabelCallback={formatTooltipValue}
@@ -592,7 +592,7 @@ function Contraband(props) {
             tableData={contrabandTypesData.tableData}
             csvData={contrabandTypesData.csvData}
             columns={CONTRABAND_TYPES_TABLE_COLUMNS}
-            tableDownloadName="Contraband 'Hit Rate' by type"
+            tableDownloadName='Contraband "Hit Rate" by type'
             isOpen={contrabandTypesData.isOpen}
             closeModal={() => setContrabandTypesData((state) => ({ ...state, isOpen: false }))}
           />
@@ -600,7 +600,7 @@ function Contraband(props) {
         <S.ChartSubsection showCompare={showCompare}>
           <ChartWrapper>
             <HorizontalBarChart
-              title="Contraband 'Hit Rate' by type"
+              title='Contraband "Hit Rate" by type'
               data={contrabandTypesData}
               displayLegend={false}
               tooltipLabelCallback={formatTooltipValue}
@@ -619,7 +619,7 @@ function Contraband(props) {
       </S.ChartSection>
       <S.ChartSection marginTop={5}>
         <ChartHeader
-          chartTitle='Contraband "Hit Rate" By Stop Purpose'
+          chartTitle='Contraband "Hit Rate" by Type grouped by Stop Purpose'
           handleViewData={() =>
             setGroupedContrabandStopPurposeModalData((state) => ({ ...state, isOpen: true }))
           }
@@ -631,13 +631,13 @@ function Contraband(props) {
           </P>
         </S.ChartDescription>
         <NewModal
-          tableHeader='Contraband "Hit Rate" Grouped by Stop Purpose'
+          tableHeader='Contraband "Hit Rate" by Type grouped by Stop Purpose'
           tableSubheader="Shows the specific types of illegal items discovered in searches by race and initial stop type."
           agencyName={chartState.data[AGENCY_DETAILS].name}
           tableData={groupedContrabandStopPurposeModalData.tableData}
           csvData={groupedContrabandStopPurposeModalData.csvData}
           columns={CONTRABAND_TABLE_COLUMNS}
-          tableDownloadName="Contraband 'Hit Rate' By Stop Purpose"
+          tableDownloadName='Contraband "Hit Rate" by Type grouped by Stop Purpose'
           isOpen={groupedContrabandStopPurposeModalData.isOpen}
           closeModal={() =>
             setGroupedContrabandStopPurposeModalData((state) => ({ ...state, isOpen: false }))
