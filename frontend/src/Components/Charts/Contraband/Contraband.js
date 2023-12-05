@@ -26,6 +26,7 @@ import NewModal from '../../NewCharts/NewModal';
 import Legend from '../ChartSections/Legend/Legend';
 import cloneDeep from 'lodash.clonedeep';
 import Checkbox from '../../Elements/Inputs/Checkbox';
+import toTitleCase from '../../../util/toTitleCase';
 
 const STOP_PURPOSE_TYPES = ['Safety Violation', 'Regulatory and Equipment', 'Other'];
 
@@ -323,7 +324,9 @@ function Contraband(props) {
   };
 
   useEffect(() => {
-    const url = `/api/agency/${agencyId}/contraband-grouped-stop-purpose/modal/?grouped_stop_purpose=${selectedGroupedContrabandStopPurpose}&contraband_type=${selectedGroupedContrabandType}`;
+    const url = `/api/agency/${agencyId}/contraband-grouped-stop-purpose/modal/?grouped_stop_purpose=${selectedGroupedContrabandStopPurpose}&contraband_type=${toTitleCase(
+      selectedGroupedContrabandType
+    )}`;
     axios.get(url).then((res) => {
       const tableData = JSON.parse(res.data.table_data)['data'];
       updateGroupedContrabandModalData(tableData);
@@ -649,9 +652,9 @@ function Contraband(props) {
             />
             <DataSubsetPicker
               label="Contraband Type"
-              value={selectedGroupedContrabandType}
+              value={toTitleCase(selectedGroupedContrabandType)}
               onChange={handleGroupedContrabandTypeSelect}
-              options={CONTRABAND_TYPES}
+              options={CONTRABAND_TYPES.map((c) => toTitleCase(c))}
             />
           </div>
         </NewModal>
@@ -728,6 +731,7 @@ function Contraband(props) {
           keys={contrabandTypes}
           onKeySelect={handleContrabandKeySelected}
           showNonHispanic={false}
+          legendColors="contrabandTypes"
         />
       </S.ChartSection>
     </ContrabandStyled>

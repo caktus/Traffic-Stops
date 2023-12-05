@@ -37,6 +37,13 @@ export default Object.freeze({
       white: '#02bcbb',
       average: '#939393',
     },
+    contrabandTypes: {
+      alcohol: '#9FD356',
+      drugs: '#3C91E6',
+      money: '#EFCEFA',
+      other: '#2F4858',
+      weapons: '#A653F4',
+    },
     fontColorsByEthnicGroup: {
       asian: '#212121',
       black: '#212121',
