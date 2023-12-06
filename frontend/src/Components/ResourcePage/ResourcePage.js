@@ -17,7 +17,7 @@ function Resource({ resource }) {
         <S.ResourceImage src={resource.image_url} alt={resource.title} />
       </div>
       <div>
-        <H2>{resource.title} </H2>
+        <H2 dangerouslySetInnerHTML={{ __html: resource.title }} />
         {resource.publication_date && <P size={14}>{resourcePublicationDate}</P>}
         <P size={18} dangerouslySetInnerHTML={{ __html: resource.description }} />
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
