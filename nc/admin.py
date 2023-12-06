@@ -56,6 +56,7 @@ class InlineResourceFile(admin.StackedInline):
 
 class ResourceForm(forms.ModelForm):
     # https://django-ckeditor.readthedocs.io/en/latest/#widget
+    title = forms.CharField(widget=CKEditorWidget())
     description = forms.CharField(widget=CKEditorWidget())
 
     class Meta:
@@ -74,7 +75,7 @@ class ResourceAdmin(admin.ModelAdmin):
         "view_more_link",
     )
     list_display = (
-        "title",
+        "__str__",
         "created_date",
         "publication_date",
     )

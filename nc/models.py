@@ -1,5 +1,6 @@
 from caching.base import CachingManager, CachingMixin
 from django.db import models
+from django.utils.html import format_html
 from django_pgviews import view as pg
 
 from tsdata.models import CensusProfile
@@ -418,7 +419,7 @@ class Resource(models.Model):
         ordering = ("-created_date",)
 
     def __str__(self):
-        return f"{self.title}"
+        return format_html(self.title)
 
 
 class ResourceFile(models.Model):
