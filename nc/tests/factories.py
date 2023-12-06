@@ -15,6 +15,7 @@ class ViewRefreshFactory(factory.django.DjangoModelFactory):
     @factory.post_generation
     def refresh_view(obj, create, extracted, **kwargs):
         models.StopSummary.refresh()
+        models.ContrabandSummary.refresh()
 
 
 class AgencyFactory(ViewRefreshFactory):

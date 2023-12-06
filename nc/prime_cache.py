@@ -21,6 +21,10 @@ API_ENDPOINT_NAMES = (
     "nc:stops-by-count",
     "nc:stop-purpose-groups",
     "nc:stops-grouped-by-purpose",
+    "nc:contraband-percentages",
+    "nc:contraband-percentages-stop-purpose-groups",
+    "nc:contraband-percentages-grouped-stop-purpose",
+    "nc:contraband-percentages-grouped-stop-purpose-modal",
 )
 DEFAULT_CUTOFF_SECS = 4
 

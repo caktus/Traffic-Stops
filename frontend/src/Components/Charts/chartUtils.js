@@ -21,7 +21,7 @@ export const STOP_TYPES = [
   'Checkpoint',
   'Average',
 ];
-export const CONTRABAND_TYPES = ['Drugs', 'Alcohol', 'Money', 'Weapons', 'Other'];
+export const CONTRABAND_TYPES = ['drugs', 'alcohol', 'money', 'weapons', 'other'];
 export const YEARS_DEFAULT = 'All';
 export const PURPOSE_DEFAULT = 'All';
 export const SEARCH_TYPE_DEFAULT = 'All';
@@ -34,6 +34,12 @@ export const AVERAGE = {
 };
 
 export const STATIC_LEGEND_KEYS = RACES.map((r) => ({
+  value: r,
+  label: toTitleCase(r),
+  selected: true,
+}));
+
+export const STATIC_CONTRABAND_KEYS = CONTRABAND_TYPES.map((r) => ({
   value: r,
   label: toTitleCase(r),
   selected: true,
