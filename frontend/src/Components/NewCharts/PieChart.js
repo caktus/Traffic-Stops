@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { Pie } from 'react-chartjs-2';
 import DataLoading from '../Charts/ChartPrimitives/DataLoading';
+import ChartModal from './ChartModal';
 
 export default function PieChart({
   data,
@@ -9,9 +10,8 @@ export default function PieChart({
   displayTitle = true,
   displayLegend = true,
   legendPosition = 'right',
-  displayOutlabels = false,
   showWhiteBackground = true,
-  chartRef = null,
+  modalConfig = {},
 }) {
   const options = {
     responsive: true,
@@ -20,9 +20,16 @@ export default function PieChart({
       mode: 'nearest',
       intersect: false,
     },
+    onHover(evt, chartEl) {
+      // If there is a chart element found on hover, set the cursor to pointer
+      // to let users know they can view the modal
+      // eslint-disable-next-line no-param-reassign
+      evt.native.target.style.cursor = chartEl.length ? 'pointer' : 'default';
+    },
     onClick(evt, activeEls) {
-      console.log(evt);
-      console.log(activeEls);
+      if (activeEls.length) {
+        setIsChartOpen(true);
+      }
     },
     plugins: {
       legend: {
@@ -32,7 +39,7 @@ export default function PieChart({
       tooltip: {
         mode: 'nearest',
         intersect: false,
-        enabled: !displayOutlabels,
+        enabled: true,
         callbacks: {
           label(context) {
             return `${context.parsed}%`;
@@ -105,11 +112,29 @@ export default function PieChart({
   if (showWhiteBackground) {
     plugins.push(whiteBackground);
   }
-  if (displayOutlabels) {
-    plugins.push(alwaysShowTooltip);
-  }
 
   const noData = data.datasets[0].data.every((v) => parseInt(v, 10) === 0);
+
+  // Setup modal options
+  const [isChartOpen, setIsChartOpen] = useState(false);
+  const zoomedPieCharRef = useRef(null);
+
+  const createModalOptions = (opts) => {
+    const modalOptions = JSON.parse(JSON.stringify(opts));
+    modalOptions.plugins.legend = {
+      display: true,
+      position: 'right',
+    };
+    modalOptions.plugins.tooltip.enabled = false;
+    modalOptions.plugins.title = {
+      display: true,
+      text: modalConfig.chartTitle,
+    };
+    return modalOptions;
+  };
+
+  const pieChartModalPlugins = [...plugins, alwaysShowTooltip];
+  const pieChartModalOptions = createModalOptions(options);
 
   if (!data.datasets.length) {
     return <DataLoading />;
@@ -118,7 +143,20 @@ export default function PieChart({
   return (
     <>
       {noData && <div style={{ textAlign: 'center' }}>No Data Found</div>}
-      <Pie ref={chartRef} options={options} data={data} plugins={plugins} />
+      <Pie ref={zoomedPieCharRef} options={options} data={data} plugins={plugins} />
+      <ChartModal
+        isOpen={isChartOpen}
+        closeModal={() => setIsChartOpen(false)}
+        chartToPrintRef={zoomedPieCharRef}
+        {...modalConfig}
+      >
+        <Pie
+          ref={zoomedPieCharRef}
+          options={pieChartModalOptions}
+          data={data}
+          plugins={pieChartModalPlugins}
+        />
+      </ChartModal>
     </>
   );
 }

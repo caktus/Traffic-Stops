@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import TrafficStopsStyled, {
   GroupedStopsContainer,
   LineWrapper,
@@ -46,8 +46,6 @@ import axios from '../../../Services/Axios';
 import NewModal from '../../NewCharts/NewModal';
 import displayDefinition from '../../../util/displayDefinition';
 import PieChart from '../../NewCharts/PieChart';
-import ChartModal from '../../NewCharts/ChartModal';
-import Button from '../../Elements/Button';
 import Switch from 'react-switch';
 import Checkbox from '../../Elements/Inputs/Checkbox';
 
@@ -195,9 +193,6 @@ function TrafficStops(props) {
   });
   const [yearForGroupedPieCharts, setYearForGroupedPieCharts] = useState('All');
   const [checked, setChecked] = useState(false);
-
-  const [showZoomedPieChart, setShowZoomedPieChart] = useState(false);
-  const zoomedPieCharRef = useRef(null);
 
   const [trafficStopsByCountRange, setTrafficStopsByCountRange] = useState(null);
   const [trafficStopsByCountPurpose, setTrafficStopsByCountPurpose] = useState(0);
@@ -547,16 +542,34 @@ function TrafficStops(props) {
     );
   };
 
+  const getDownloadableTitle = (title) => `${title.split(' ').join('_').toLowerCase()}.png`;
+
   const pieChartTitle = (download = false) => {
     let subject = stopsChartState.data[AGENCY_DETAILS].name;
     if (subjectObserving() === 'officer') {
       subject = `Officer ${officerId}`;
     }
     let title = `Traffic Stops By Percentage for ${subject} ${
-      year === YEARS_DEFAULT ? `since ${stopsChartState.yearRange[0]}` : `during ${year}`
+      year === YEARS_DEFAULT ? `since ${stopsChartState.yearRange.reverse()[0]}` : `during ${year}`
     }`;
     if (download) {
-      title = `${title.split(' ').join('_').toLowerCase()}.png`;
+      title = getDownloadableTitle(title);
+    }
+    return title;
+  };
+
+  const getStopPurposeAndRaceCountPieTitle = (stopPurpose, download = false) => {
+    let subject = stopsChartState.data[AGENCY_DETAILS].name;
+    if (subjectObserving() === 'officer') {
+      subject = `Officer ${officerId}`;
+    }
+    let title = `Traffic Stops By ${stopPurpose} and Race Count for ${subject} ${
+      yearForGroupedPieCharts === YEARS_DEFAULT
+        ? `since ${stopsGroupedByPurposeData.labels[0]}`
+        : `during ${yearForGroupedPieCharts}`
+    }`;
+    if (download) {
+      title = getDownloadableTitle(title);
     }
     return title;
   };
@@ -596,37 +609,20 @@ function TrafficStops(props) {
               showNonHispanic
             />
           </S.LineSection>
-          <ChartModal
-            tableHeader="Traffic Stops By Percentage"
-            tableSubheader={`Shows the race/ethnic composition of drivers stopped by this ${subjectObserving()} over time.`}
-            agencyName={stopsChartState.data[AGENCY_DETAILS].name}
-            isOpen={showZoomedPieChart}
-            closeModal={() => setShowZoomedPieChart(false)}
-            chartToPrintRef={zoomedPieCharRef}
-            fileName={pieChartTitle(true)}
-          >
-            <S.PieSection zoomed>
-              <S.PieWrapper zoomed>
-                <PieChart
-                  data={byPercentagePieData}
-                  title={pieChartTitle()}
-                  displayTitle
-                  displayLegend
-                  displayOutlabels
-                  maintainAspectRatio
-                  chartRef={zoomedPieCharRef}
-                />
-              </S.PieWrapper>
-            </S.PieSection>
-          </ChartModal>
 
           <S.PieSection alignItems="start">
             <S.PieWrapper>
               <PieChart
                 data={byPercentagePieData}
-                displayTitle
                 displayLegend={false}
                 maintainAspectRatio
+                modalConfig={{
+                  tableHeader: 'Traffic Stops By Percentage',
+                  tableSubheader: `Shows the race/ethnic composition of drivers stopped by this ${subjectObserving()} over time.`,
+                  agencyName: stopsChartState.data[AGENCY_DETAILS].name,
+                  chartTitle: pieChartTitle(),
+                  fileName: pieChartTitle(true),
+                }}
               />
             </S.PieWrapper>
             <S.PieActionsWrapper>
@@ -636,13 +632,6 @@ function TrafficStops(props) {
                 onChange={handleYearSelect}
                 options={[YEARS_DEFAULT].concat(stopsChartState.yearRange)}
               />
-              <div
-                style={{
-                  marginTop: '1em',
-                }}
-              >
-                <Button onClick={() => setShowZoomedPieChart(true)}>Expand</Button>
-              </div>
             </S.PieActionsWrapper>
           </S.PieSection>
         </S.ChartSubsection>
@@ -811,6 +800,14 @@ function TrafficStops(props) {
                 title="Safety Violation"
                 maintainAspectRatio={false}
                 displayLegend={false}
+                modalConfig={{
+                  tableHeader: 'Traffic Stops By Stop Purpose and Race Count',
+                  tableSubheader:
+                    'Shows the number of traffics stops broken down by purpose and race / ethnicity',
+                  agencyName: stopsChartState.data[AGENCY_DETAILS].name,
+                  chartTitle: getStopPurposeAndRaceCountPieTitle('Safety Violation'),
+                  fileName: getStopPurposeAndRaceCountPieTitle('Safety Violation', true),
+                }}
               />
             </PieWrapper>
           </PieStopsContainer>
@@ -821,6 +818,13 @@ function TrafficStops(props) {
                 title="Regulatory/Equipment"
                 maintainAspectRatio={false}
                 displayLegend={false}
+                modalConfig={{
+                  tableHeader: 'Traffic Stops By Stop Purpose and Race Count',
+                  tableSubheader: `Shows the number of traffics stops broken down by purpose and race / ethnicity`,
+                  agencyName: stopsChartState.data[AGENCY_DETAILS].name,
+                  chartTitle: getStopPurposeAndRaceCountPieTitle('Regulatory/Equipment'),
+                  fileName: getStopPurposeAndRaceCountPieTitle('Regulatory/Equipment', true),
+                }}
               />
             </PieWrapper>
           </PieStopsContainer>
@@ -831,6 +835,13 @@ function TrafficStops(props) {
                 title="Other"
                 maintainAspectRatio={false}
                 displayLegend={false}
+                modalConfig={{
+                  tableHeader: 'Traffic Stops By Stop Purpose and Race Count',
+                  tableSubheader: `Shows the number of traffics stops broken down by purpose and race / ethnicity`,
+                  agencyName: stopsChartState.data[AGENCY_DETAILS].name,
+                  chartTitle: getStopPurposeAndRaceCountPieTitle('Other'),
+                  fileName: getStopPurposeAndRaceCountPieTitle('Other', true),
+                }}
               />
             </PieWrapper>
           </PieStopsContainer>
