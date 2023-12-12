@@ -8,7 +8,9 @@ export default function PieChart({
   maintainAspectRatio = true,
   displayTitle = true,
   displayLegend = true,
+  legendPosition = 'right',
   displayOutlabels = false,
+  showWhiteBackground = true,
   chartRef = null,
 }) {
   const options = {
@@ -18,10 +20,14 @@ export default function PieChart({
       mode: 'nearest',
       intersect: false,
     },
+    onClick(evt, activeEls) {
+      console.log(evt);
+      console.log(activeEls);
+    },
     plugins: {
       legend: {
         display: displayLegend,
-        position: displayOutlabels ? 'right' : 'top',
+        position: legendPosition,
       },
       tooltip: {
         mode: 'nearest',
@@ -95,7 +101,10 @@ export default function PieChart({
     },
   };
 
-  const plugins = [whiteBackground];
+  const plugins = [];
+  if (showWhiteBackground) {
+    plugins.push(whiteBackground);
+  }
   if (displayOutlabels) {
     plugins.push(alwaysShowTooltip);
   }
