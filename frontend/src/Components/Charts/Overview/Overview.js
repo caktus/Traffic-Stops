@@ -31,6 +31,8 @@ import ChartHeader from '../ChartSections/ChartHeader';
 import useOfficerId from '../../../Hooks/useOfficerId';
 import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
 import PieChart from '../../NewCharts/PieChart';
+import getDownloadableTitle from '../../../util/getDownloadableTitle';
+import { pieChartConfig, pieChartLabels } from '../../../util/setChartColors';
 
 function Overview(props) {
   const { agencyId } = props;
@@ -43,15 +45,6 @@ function Overview(props) {
   const [chartState] = useDataset(agencyId, USE_OF_FORCE);
 
   const [year, setYear] = useState(YEARS_DEFAULT);
-
-  const pieColors = ['#02bcbb', '#8879fc', '#9c0f2e', '#ffe066', '#0c3a66', '#9e7b9b'];
-  const pieChartLabels = ['White', 'Black', 'Hispanic', 'Asian', 'Native American', 'Other'];
-  const pieChartConfig = {
-    backgroundColor: pieColors,
-    borderColor: pieColors,
-    hoverBackgroundColor: pieColors,
-    borderWidth: 1,
-  };
 
   const initChartData = {
     labels: pieChartLabels,
@@ -127,8 +120,6 @@ function Overview(props) {
       ],
     });
   }
-
-  const getDownloadableTitle = (title) => `${title.split(' ').join('_').toLowerCase()}.png`;
 
   const pieChartTitle = (chartTitle, download = false) => {
     let subject = chartState.data[AGENCY_DETAILS].name;

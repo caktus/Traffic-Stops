@@ -48,6 +48,8 @@ import displayDefinition from '../../../util/displayDefinition';
 import PieChart from '../../NewCharts/PieChart';
 import Switch from 'react-switch';
 import Checkbox from '../../Elements/Inputs/Checkbox';
+import getDownloadableTitle from '../../../util/getDownloadableTitle';
+import { pieChartConfig, pieChartLabels, pieColors } from '../../../util/setChartColors';
 
 function TrafficStops(props) {
   const { agencyId } = props;
@@ -89,16 +91,7 @@ function TrafficStops(props) {
     STATIC_LEGEND_KEYS.map((k) => ({ ...k }))
   );
 
-  const pieColors = ['#02bcbb', '#8879fc', '#9c0f2e', '#ffe066', '#0c3a66', '#9e7b9b'];
-
   const [byPercentageLineData, setByPercentageLineData] = useState([]);
-  const pieChartLabels = ['White', 'Black', 'Hispanic', 'Asian', 'Native American', 'Other'];
-  const pieChartConfig = {
-    backgroundColor: pieColors,
-    borderColor: pieColors,
-    hoverBackgroundColor: pieColors,
-    borderWidth: 1,
-  };
   const [byPercentagePieData, setByPercentagePieData] = useState({
     labels: pieChartLabels,
     datasets: [
@@ -541,8 +534,6 @@ function TrafficStops(props) {
       )
     );
   };
-
-  const getDownloadableTitle = (title) => `${title.split(' ').join('_').toLowerCase()}.png`;
 
   const pieChartTitle = (download = false) => {
     let subject = stopsChartState.data[AGENCY_DETAILS].name;
