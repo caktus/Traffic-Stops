@@ -8,13 +8,13 @@ import {
   YEARS_DEFAULT,
   STATIC_LEGEND_KEYS,
   RACES,
-  reduceFullDataset,
   calculatePercentage,
   calculateYearTotal,
+  reduceYearsToTotal,
 } from '../chartUtils';
 
 // State
-import useDataset, { USE_OF_FORCE } from '../../../Hooks/useDataset';
+import useDataset, { AGENCY_DETAILS, USE_OF_FORCE } from '../../../Hooks/useDataset';
 
 // Hooks
 import useMetaTags from '../../../Hooks/useMetaTags';
@@ -25,10 +25,11 @@ import { P } from '../../../styles/StyledComponents/Typography';
 import ChartHeader from '../ChartSections/ChartHeader';
 import Legend from '../ChartSections/Legend/Legend';
 import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
-import toTitleCase from '../../../util/toTitleCase';
 import useOfficerId from '../../../Hooks/useOfficerId';
 import GroupedBar from '../ChartPrimitives/GroupedBar';
-import Pie from '../ChartPrimitives/Pie';
+import PieChart from '../../NewCharts/PieChart';
+import getDownloadableTitle from '../../../util/getDownloadableTitle';
+import { pieChartConfig, pieChartLabels } from '../../../util/setChartColors';
 
 function UseOfForce(props) {
   const { agencyId, showCompare } = props;
@@ -46,7 +47,15 @@ function UseOfForce(props) {
   );
 
   const [useOfForceData, setUseOfForceData] = useState([]);
-  const [useOfForcePieData, setUseOfForcePieData] = useState([]);
+  const [useOfForcePieData, setUseOfForcePieData] = useState({
+    labels: pieChartLabels,
+    datasets: [
+      {
+        data: [],
+        ...pieChartConfig,
+      },
+    ],
+  });
 
   const renderMetaTags = useMetaTags();
   const [renderTableModal, { openModal }] = useTableModal();
@@ -87,25 +96,34 @@ function UseOfForce(props) {
 
   // Pie chart data
   useEffect(() => {
-    const data = chartState.data[USE_OF_FORCE];
-    if (data) {
-      if (!year || year === YEARS_DEFAULT) {
-        setUseOfForcePieData(reduceFullDataset(data, RACES, theme));
+    if (chartState.data[USE_OF_FORCE]) {
+      const data = chartState.data[USE_OF_FORCE];
+      let chartData = [0, 0, 0, 0, 0];
+
+      if (!year || year === 'All') {
+        const totals = {};
+        RACES.forEach((race) => {
+          totals[race] = reduceYearsToTotal(data, race)[race];
+        });
+        const total = calculateYearTotal(totals, RACES);
+        chartData = RACES.map((race) => calculatePercentage(totals[race], total));
       } else {
         const yearData = data.find((d) => d.year === year);
-        const total = calculateYearTotal(yearData);
-        setUseOfForcePieData(
-          RACES.map((race) => {
-            const rData = {
-              x: toTitleCase(race),
-              color: theme.colors.ethnicGroup[race],
-              fontColor: theme.colors.fontColorsByEthnicGroup[race],
-            };
-            rData.y = yearData ? calculatePercentage(yearData[race], total) : 0;
-            return rData;
-          })
-        );
+        if (yearData) {
+          const total = RACES.map((race) => yearData[race]).reduce((a, b) => a + b, 0);
+          chartData = RACES.map((race) => calculatePercentage(yearData[race], total));
+        }
       }
+
+      setUseOfForcePieData({
+        labels: pieChartLabels,
+        datasets: [
+          {
+            data: chartData,
+            ...pieChartConfig,
+          },
+        ],
+      });
     }
   }, [chartState.data[USE_OF_FORCE], year]);
 
@@ -133,6 +151,20 @@ function UseOfForce(props) {
       return t;
     }
     return t % 2 === 0 ? t : null;
+  };
+
+  const pieChartTitle = (download = false) => {
+    let subject = chartState.data[AGENCY_DETAILS].name;
+    if (subjectObserving() === 'officer') {
+      subject = `Officer ${officerId}`;
+    }
+    let title = `Use of Force for ${subject} ${
+      year === YEARS_DEFAULT ? `since ${chartState.yearRange.reverse()[0]}` : `during ${year}`
+    }`;
+    if (download) {
+      title = getDownloadableTitle(title);
+    }
+    return title;
   };
 
   return (
@@ -170,7 +202,19 @@ function UseOfForce(props) {
           </S.LineSection>
           <S.PieSection>
             <S.PieWrapper>
-              <Pie data={useOfForcePieData} loading={chartState.loading[USE_OF_FORCE]} />
+              <PieChart
+                data={useOfForcePieData}
+                displayLegend={false}
+                maintainAspectRatio
+                modalConfig={{
+                  tableHeader: 'Use of Force',
+                  tableSubheader: `Shows the race/ethnic composition of drivers ${subjectObserving()} reported using force
+            against.`,
+                  agencyName: chartState.data[AGENCY_DETAILS].name,
+                  chartTitle: pieChartTitle(),
+                  fileName: pieChartTitle(true),
+                }}
+              />
             </S.PieWrapper>
             <DataSubsetPicker
               label="Year"
