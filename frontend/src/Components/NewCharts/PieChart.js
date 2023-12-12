@@ -133,7 +133,7 @@ export default function PieChart({
     return modalOptions;
   };
 
-  const pieChartModalPlugins = [...plugins, alwaysShowTooltip];
+  const pieChartModalPlugins = [whiteBackground, alwaysShowTooltip];
   const pieChartModalOptions = createModalOptions(options);
 
   if (!data.datasets.length) {

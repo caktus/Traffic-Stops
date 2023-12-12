@@ -128,6 +128,25 @@ function Overview(props) {
     });
   }
 
+  const getDownloadableTitle = (title) => `${title.split(' ').join('_').toLowerCase()}.png`;
+
+  const pieChartTitle = (chartTitle, download = false) => {
+    let subject = chartState.data[AGENCY_DETAILS].name;
+    if (subjectObserving() === 'officer') {
+      subject = `Officer ${officerId}`;
+    }
+    let title = `${chartTitle} for ${subject}`;
+    if (chartTitle !== 'Census Demographics') {
+      title = `${title} ${
+        year === YEARS_DEFAULT ? `since ${chartState.yearRange.reverse()[0]}` : `during ${year}`
+      }`;
+    }
+    if (download) {
+      title = getDownloadableTitle(title);
+    }
+    return title;
+  };
+
   // TRAFFIC STOPS
   useEffect(() => {
     if (chartState.data[STOPS]) {
@@ -203,6 +222,15 @@ function Overview(props) {
               displayTitle
               maintainAspectRatio
               showWhiteBackground={false}
+              modalConfig={{
+                tableHeader: 'Census Demographics',
+                tableSubheader: `This data reflects the race/ethnic composition based on the most recent census data.
+            While it can be used for general comparative purposes, the actual driving population may
+            vary significantly from these figures.`,
+                agencyName: chartState.data[AGENCY_DETAILS].name,
+                chartTitle: pieChartTitle('Census Demographics'),
+                fileName: pieChartTitle('Census Demographics', true),
+              }}
             />
           </S.PieWrapper>
           <S.Note>
@@ -220,6 +248,13 @@ function Overview(props) {
               displayTitle
               maintainAspectRatio
               showWhiteBackground={false}
+              modalConfig={{
+                tableHeader: 'Traffic Stops',
+                tableSubheader: `Shows the race/ethnic composition of drivers stopped by this ${subjectObserving()}.`,
+                agencyName: chartState.data[AGENCY_DETAILS].name,
+                chartTitle: pieChartTitle('Traffic Stops'),
+                fileName: pieChartTitle('Traffic Stops', true),
+              }}
             />
           </S.PieWrapper>
           <S.Note>
@@ -239,6 +274,13 @@ function Overview(props) {
               displayTitle
               maintainAspectRatio
               showWhiteBackground={false}
+              modalConfig={{
+                tableHeader: 'Searches',
+                tableSubheader: `Shows the race/ethnic composition of drivers searched by this ${subjectObserving()}.`,
+                agencyName: chartState.data[AGENCY_DETAILS].name,
+                chartTitle: pieChartTitle('Searches'),
+                fileName: pieChartTitle('Searches', true),
+              }}
             />
           </S.PieWrapper>
           <S.Note>
@@ -254,6 +296,14 @@ function Overview(props) {
               displayTitle
               maintainAspectRatio
               showWhiteBackground={false}
+              modalConfig={{
+                tableHeader: 'Use of Force',
+                tableSubheader: `Shows the race/ethnic composition of drivers whom ${useOfForcePieChartCopy()} reported
+            using force against.`,
+                agencyName: chartState.data[AGENCY_DETAILS].name,
+                chartTitle: pieChartTitle('Use of Force'),
+                fileName: pieChartTitle('Use of Force', true),
+              }}
             />
           </S.PieWrapper>
           <S.Note>
