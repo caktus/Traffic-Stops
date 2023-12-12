@@ -142,8 +142,10 @@ export default function PieChart({
 
   return (
     <>
-      {noData && <div style={{ textAlign: 'center' }}>No Data Found</div>}
-      <Pie ref={zoomedPieCharRef} options={options} data={data} plugins={plugins} />
+      <div style={{ width: '100%' }}>
+        {noData && <div style={{ textAlign: 'center' }}>No Data Found</div>}
+        <Pie ref={zoomedPieCharRef} options={options} data={data} plugins={plugins} />
+      </div>
       <ChartModal
         isOpen={isChartOpen}
         closeModal={() => setIsChartOpen(false)}
