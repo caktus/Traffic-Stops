@@ -159,12 +159,17 @@ function UseOfForce(props) {
       subject = `Officer ${officerId}`;
     }
     let title = `Use of Force for ${subject} ${
-      year === YEARS_DEFAULT ? `since ${chartState.yearRange.reverse()[0]}` : `during ${year}`
+      year === YEARS_DEFAULT ? `since ${chartState.yearRange.reverse()[0]}` : `in ${year}`
     }`;
     if (download) {
       title = getDownloadableTitle(title);
     }
     return title;
+  };
+
+  const getChartModalSubHeading = () => {
+    const yearSelected = year && year !== 'All' ? ` in ${year}` : '';
+    return `Shows the race/ethnic composition of drivers ${subjectObserving()}${yearSelected} reported using force against.`;
   };
 
   return (
@@ -208,8 +213,7 @@ function UseOfForce(props) {
                 maintainAspectRatio
                 modalConfig={{
                   tableHeader: 'Use of Force',
-                  tableSubheader: `Shows the race/ethnic composition of drivers ${subjectObserving()} reported using force
-            against.`,
+                  tableSubheader: getChartModalSubHeading(),
                   agencyName: chartState.data[AGENCY_DETAILS].name,
                   chartTitle: pieChartTitle(),
                   fileName: pieChartTitle(true),

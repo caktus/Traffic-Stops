@@ -73,6 +73,14 @@ function Overview(props) {
     return '';
   };
 
+  const getYearPhrase = () => (year && year !== 'All' ? ` in ${year}` : '');
+
+  const getChartModalSubHeading = (title) =>
+    `${title} by this ${subjectObserving()}${getYearPhrase()}.`;
+
+  const getOverviewSubheader = () =>
+    `Shows the race/ethnic composition of drivers ${subjectObserving()}${getYearPhrase()} reported using force against.`;
+
   /* Build Data */
   // CENSUS
   useEffect(() => {
@@ -129,7 +137,7 @@ function Overview(props) {
     let title = `${chartTitle} for ${subject}`;
     if (chartTitle !== 'Census Demographics') {
       title = `${title} ${
-        year === YEARS_DEFAULT ? `since ${chartState.yearRange.reverse()[0]}` : `during ${year}`
+        year === YEARS_DEFAULT ? `since ${chartState.yearRange.reverse()[0]}` : `in ${year}`
       }`;
     }
     if (download) {
@@ -241,7 +249,9 @@ function Overview(props) {
               showWhiteBackground={false}
               modalConfig={{
                 tableHeader: 'Traffic Stops',
-                tableSubheader: `Shows the race/ethnic composition of drivers stopped by this ${subjectObserving()}.`,
+                tableSubheader: getChartModalSubHeading(
+                  'Shows the race/ethnic composition of drivers stopped'
+                ),
                 agencyName: chartState.data[AGENCY_DETAILS].name,
                 chartTitle: pieChartTitle('Traffic Stops'),
                 fileName: pieChartTitle('Traffic Stops', true),
@@ -267,7 +277,9 @@ function Overview(props) {
               showWhiteBackground={false}
               modalConfig={{
                 tableHeader: 'Searches',
-                tableSubheader: `Shows the race/ethnic composition of drivers searched by this ${subjectObserving()}.`,
+                tableSubheader: getChartModalSubHeading(
+                  'Shows the race/ethnic composition of drivers searched'
+                ),
                 agencyName: chartState.data[AGENCY_DETAILS].name,
                 chartTitle: pieChartTitle('Searches'),
                 fileName: pieChartTitle('Searches', true),
@@ -289,8 +301,7 @@ function Overview(props) {
               showWhiteBackground={false}
               modalConfig={{
                 tableHeader: 'Use of Force',
-                tableSubheader: `Shows the race/ethnic composition of drivers whom ${useOfForcePieChartCopy()} reported
-            using force against.`,
+                tableSubheader: getOverviewSubheader(),
                 agencyName: chartState.data[AGENCY_DETAILS].name,
                 chartTitle: pieChartTitle('Use of Force'),
                 fileName: pieChartTitle('Use of Force', true),
