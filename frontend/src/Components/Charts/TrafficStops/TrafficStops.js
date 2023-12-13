@@ -541,12 +541,17 @@ function TrafficStops(props) {
       subject = `Officer ${officerId}`;
     }
     let title = `Traffic Stops By Percentage for ${subject} ${
-      year === YEARS_DEFAULT ? `since ${stopsChartState.yearRange.reverse()[0]}` : `during ${year}`
+      year === YEARS_DEFAULT ? `since ${stopsChartState.yearRange.reverse()[0]}` : `in ${year}`
     }`;
     if (download) {
       title = getDownloadableTitle(title);
     }
     return title;
+  };
+
+  const getChartModalSubHeading = (title) => {
+    const yearSelected = year && year !== 'All' ? ` in ${year}` : '';
+    return `${title} by this ${subjectObserving()}${yearSelected}.`;
   };
 
   const getStopPurposeAndRaceCountPieTitle = (stopPurpose, download = false) => {
@@ -557,7 +562,7 @@ function TrafficStops(props) {
     let title = `Traffic Stops By ${stopPurpose} and Race Count for ${subject} ${
       yearForGroupedPieCharts === YEARS_DEFAULT
         ? `since ${stopsGroupedByPurposeData.labels[0]}`
-        : `during ${yearForGroupedPieCharts}`
+        : `in ${yearForGroupedPieCharts}`
     }`;
     if (download) {
       title = getDownloadableTitle(title);
@@ -609,7 +614,9 @@ function TrafficStops(props) {
                 maintainAspectRatio
                 modalConfig={{
                   tableHeader: 'Traffic Stops By Percentage',
-                  tableSubheader: `Shows the race/ethnic composition of drivers stopped by this ${subjectObserving()} over time.`,
+                  tableSubheader: getChartModalSubHeading(
+                    'Shows the race/ethnic composition of drivers stopped'
+                  ),
                   agencyName: stopsChartState.data[AGENCY_DETAILS].name,
                   chartTitle: pieChartTitle(),
                   fileName: pieChartTitle(true),
@@ -793,8 +800,9 @@ function TrafficStops(props) {
                 displayLegend={false}
                 modalConfig={{
                   tableHeader: 'Traffic Stops By Stop Purpose and Race Count',
-                  tableSubheader:
-                    'Shows the number of traffics stops broken down by purpose and race / ethnicity',
+                  tableSubheader: getChartModalSubHeading(
+                    'Shows the number of traffics stops broken down by purpose and race / ethnicity'
+                  ),
                   agencyName: stopsChartState.data[AGENCY_DETAILS].name,
                   chartTitle: getStopPurposeAndRaceCountPieTitle('Safety Violation'),
                   fileName: getStopPurposeAndRaceCountPieTitle('Safety Violation', true),
@@ -811,7 +819,9 @@ function TrafficStops(props) {
                 displayLegend={false}
                 modalConfig={{
                   tableHeader: 'Traffic Stops By Stop Purpose and Race Count',
-                  tableSubheader: `Shows the number of traffics stops broken down by purpose and race / ethnicity`,
+                  tableSubheader: getChartModalSubHeading(
+                    'Shows the number of traffics stops broken down by purpose and race / ethnicity'
+                  ),
                   agencyName: stopsChartState.data[AGENCY_DETAILS].name,
                   chartTitle: getStopPurposeAndRaceCountPieTitle('Regulatory/Equipment'),
                   fileName: getStopPurposeAndRaceCountPieTitle('Regulatory/Equipment', true),
@@ -828,7 +838,9 @@ function TrafficStops(props) {
                 displayLegend={false}
                 modalConfig={{
                   tableHeader: 'Traffic Stops By Stop Purpose and Race Count',
-                  tableSubheader: `Shows the number of traffics stops broken down by purpose and race / ethnicity`,
+                  tableSubheader: getChartModalSubHeading(
+                    'Shows the number of traffics stops broken down by purpose and race / ethnicity'
+                  ),
                   agencyName: stopsChartState.data[AGENCY_DETAILS].name,
                   chartTitle: getStopPurposeAndRaceCountPieTitle('Other'),
                   fileName: getStopPurposeAndRaceCountPieTitle('Other', true),
