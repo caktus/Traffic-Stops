@@ -1,20 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import * as S from '../ChartSections/ChartsCommon.styled';
 import OverviewStyled from './Overview.styled';
-import { useTheme } from 'styled-components';
 
 // Router
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
 // Constants
-import toTitleCase from '../../../util/toTitleCase';
 import {
   calculatePercentage,
-  reduceFullDataset,
   YEARS_DEFAULT,
-  STATIC_LEGEND_KEYS,
   RACES,
   calculateYearTotal,
+  reduceYearsToTotal,
 } from '../chartUtils';
 import * as slugs from '../../../Routes/slugs';
 
@@ -31,14 +28,14 @@ import useDataset, {
 
 // Children
 import ChartHeader from '../ChartSections/ChartHeader';
-import Legend from '../ChartSections/Legend/Legend';
 import useOfficerId from '../../../Hooks/useOfficerId';
-import Pie from '../ChartPrimitives/Pie';
 import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
+import PieChart from '../../NewCharts/PieChart';
+import getDownloadableTitle from '../../../util/getDownloadableTitle';
+import { pieChartConfig, pieChartLabels } from '../../../util/setChartColors';
 
 function Overview(props) {
   const { agencyId } = props;
-  const theme = useTheme();
   const history = useHistory();
   const match = useRouteMatch();
   const officerId = useOfficerId();
@@ -49,10 +46,20 @@ function Overview(props) {
 
   const [year, setYear] = useState(YEARS_DEFAULT);
 
-  const [censusPieData, setCensusPieData] = useState([]);
-  const [trafficStopsData, setTrafficStopsData] = useState([]);
-  const [searchesData, setSearchesData] = useState([]);
-  const [useOfForceData, setUseOfForceData] = useState([]);
+  const initChartData = {
+    labels: pieChartLabels,
+    datasets: [
+      {
+        data: [],
+        ...pieChartConfig,
+      },
+    ],
+  };
+
+  const [censusPieData, setCensusPieData] = useState(initChartData);
+  const [trafficStopsData, setTrafficStopsData] = useState(initChartData);
+  const [searchesData, setSearchesData] = useState(initChartData);
+  const [useOfForceData, setUseOfForceData] = useState(initChartData);
 
   const renderMetaTags = useMetaTags();
 
@@ -66,101 +73,97 @@ function Overview(props) {
     return '';
   };
 
+  const getYearPhrase = () => (year && year !== 'All' ? ` in ${year}` : '');
+
+  const getChartModalSubHeading = (title) =>
+    `${title} by this ${subjectObserving()}${getYearPhrase()}.`;
+
+  const getOverviewSubheader = () =>
+    `Shows the race/ethnic composition of drivers ${subjectObserving()}${getYearPhrase()} reported using force against.`;
+
   /* Build Data */
   // CENSUS
   useEffect(() => {
     if (chartState.data[AGENCY_DETAILS].census_profile) {
       const data = chartState.data[AGENCY_DETAILS].census_profile;
-      if (Object.keys(data).length === 0) {
-        setCensusPieData([]);
-        return;
-      }
-      setCensusPieData(
-        RACES.map((race) => ({
-          x: toTitleCase(race),
-          y: calculatePercentage(data[race], data.total),
-          color: theme.colors.ethnicGroup[race],
-          fontColor: theme.colors.fontColorsByEthnicGroup[race],
-        }))
-      );
+      const chartData = RACES.map((race) => calculatePercentage(data[race], data['total']));
+
+      setCensusPieData({
+        labels: pieChartLabels,
+        datasets: [
+          {
+            data: chartData,
+            ...pieChartConfig,
+          },
+        ],
+      });
     }
-  }, [chartState.data[AGENCY_DETAILS], year]);
+  }, [chartState.data[AGENCY_DETAILS]]);
+
+  function buildPieData(data, setFunc, dropdownYear = null) {
+    let chartData = [0, 0, 0, 0, 0];
+
+    if (!dropdownYear || dropdownYear === 'All') {
+      const totals = {};
+      RACES.forEach((race) => {
+        totals[race] = reduceYearsToTotal(data, race)[race];
+      });
+      const total = calculateYearTotal(totals, RACES);
+      chartData = RACES.map((race) => calculatePercentage(totals[race], total));
+    } else {
+      const yearData = data.find((d) => d.year === dropdownYear);
+      if (yearData) {
+        const total = RACES.map((race) => yearData[race]).reduce((a, b) => a + b, 0);
+        chartData = RACES.map((race) => calculatePercentage(yearData[race], total));
+      }
+    }
+
+    setFunc({
+      labels: pieChartLabels,
+      datasets: [
+        {
+          data: chartData,
+          ...pieChartConfig,
+        },
+      ],
+    });
+  }
+
+  const pieChartTitle = (chartTitle, download = false) => {
+    let subject = chartState.data[AGENCY_DETAILS].name;
+    if (subjectObserving() === 'officer') {
+      subject = `Officer ${officerId}`;
+    }
+    let title = `${chartTitle} for ${subject}`;
+    if (chartTitle !== 'Census Demographics') {
+      title = `${title} ${
+        year === YEARS_DEFAULT ? `since ${chartState.yearRange.reverse()[0]}` : `in ${year}`
+      }`;
+    }
+    if (download) {
+      title = getDownloadableTitle(title);
+    }
+    return title;
+  };
 
   // TRAFFIC STOPS
   useEffect(() => {
-    const data = chartState.data[STOPS];
-    if (data) {
-      if (!year || year === 'All') {
-        setTrafficStopsData(reduceFullDataset(data, RACES, theme));
-      } else {
-        let yearData = data.filter((d) => d.year === year);
-        let total = 0;
-        if (yearData.length > 0) {
-          // eslint-disable-next-line prefer-destructuring
-          yearData = yearData[0];
-          total = calculateYearTotal(yearData);
-        }
-        setTrafficStopsData(
-          RACES.map((race) => ({
-            x: toTitleCase(race),
-            y: calculatePercentage(yearData[race], total),
-            color: theme.colors.ethnicGroup[race],
-            fontColor: theme.colors.fontColorsByEthnicGroup[race],
-          }))
-        );
-      }
+    if (chartState.data[STOPS]) {
+      buildPieData(chartState.data[STOPS], setTrafficStopsData, year);
     }
   }, [chartState.data[STOPS], year]);
 
   // SEARCHES
   useEffect(() => {
-    const data = chartState.data[SEARCHES];
-    if (data) {
-      if (!year || year === 'All') {
-        setSearchesData(reduceFullDataset(data, RACES, theme));
-      } else {
-        let yearData = data.filter((d) => d.year === year);
-        let total = 0;
-        if (yearData.length > 0) {
-          // eslint-disable-next-line prefer-destructuring
-          yearData = yearData[0];
-          total = calculateYearTotal(yearData);
-        }
-        setSearchesData(
-          RACES.map((race) => ({
-            x: toTitleCase(race),
-            y: calculatePercentage(yearData[race], total),
-            color: theme.colors.ethnicGroup[race],
-            fontColor: theme.colors.fontColorsByEthnicGroup[race],
-          }))
-        );
-      }
+    if (chartState.data[SEARCHES]) {
+      buildPieData(chartState.data[SEARCHES], setSearchesData, year);
     }
   }, [chartState.data[SEARCHES], year]);
 
   // USE OF FORCE
   useEffect(() => {
-    const data = chartState.data[USE_OF_FORCE];
-    if (data) {
-      if (!year || year === 'All') {
-        setUseOfForceData(reduceFullDataset(data, RACES, theme));
-      } else {
-        let yearData = data.filter((d) => d.year === year);
-        let total = 0;
-        if (yearData.length > 0) {
-          // eslint-disable-next-line prefer-destructuring
-          yearData = yearData[0];
-          total = calculateYearTotal(yearData);
-        }
-        setUseOfForceData(
-          RACES.map((race) => ({
-            x: toTitleCase(race),
-            y: calculatePercentage(yearData[race], total),
-            color: theme.colors.ethnicGroup[race],
-            fontColor: theme.colors.fontColorsByEthnicGroup[race],
-          }))
-        );
-      }
+    if (chartState.data[USE_OF_FORCE]) {
+      buildPieData(chartState.data[USE_OF_FORCE], setUseOfForceData, year);
     }
   }, [chartState.data[USE_OF_FORCE], year]);
 
@@ -213,8 +216,21 @@ function Overview(props) {
         <S.PieContainer>
           <S.ChartTitle>Census Demographics</S.ChartTitle>
           <S.PieWrapper>
-            <Pie loading={chartState.loading[AGENCY_DETAILS]} data={censusPieData} />
-            <Legend keys={STATIC_LEGEND_KEYS} isStatic showNonHispanic direction="column" />
+            <PieChart
+              data={censusPieData}
+              displayTitle
+              maintainAspectRatio
+              showWhiteBackground={false}
+              modalConfig={{
+                tableHeader: 'Census Demographics',
+                tableSubheader: `This data reflects the race/ethnic composition based on the most recent census data.
+            While it can be used for general comparative purposes, the actual driving population may
+            vary significantly from these figures.`,
+                agencyName: chartState.data[AGENCY_DETAILS].name,
+                chartTitle: pieChartTitle('Census Demographics'),
+                fileName: pieChartTitle('Census Demographics', true),
+              }}
+            />
           </S.PieWrapper>
           <S.Note>
             <strong>NOTE: </strong>
@@ -226,8 +242,21 @@ function Overview(props) {
         <S.PieContainer>
           <S.ChartTitle>Traffic Stops</S.ChartTitle>
           <S.PieWrapper>
-            <Pie loading={chartState.loading[STOPS]} data={trafficStopsData} />
-            <Legend keys={STATIC_LEGEND_KEYS} isStatic showNonHispanic direction="column" />
+            <PieChart
+              data={trafficStopsData}
+              displayTitle
+              maintainAspectRatio
+              showWhiteBackground={false}
+              modalConfig={{
+                tableHeader: 'Traffic Stops',
+                tableSubheader: getChartModalSubHeading(
+                  'Shows the race/ethnic composition of drivers stopped'
+                ),
+                agencyName: chartState.data[AGENCY_DETAILS].name,
+                chartTitle: pieChartTitle('Traffic Stops'),
+                fileName: pieChartTitle('Traffic Stops', true),
+              }}
+            />
           </S.PieWrapper>
           <S.Note>
             Shows the race/ethnic composition of drivers stopped by this {subjectObserving()}.
@@ -241,8 +270,21 @@ function Overview(props) {
         <S.PieContainer>
           <S.ChartTitle>Searches</S.ChartTitle>
           <S.PieWrapper>
-            <Pie loading={chartState.loading[SEARCHES]} data={searchesData} />
-            <Legend keys={STATIC_LEGEND_KEYS} isStatic showNonHispanic direction="column" />
+            <PieChart
+              data={searchesData}
+              displayTitle
+              maintainAspectRatio
+              showWhiteBackground={false}
+              modalConfig={{
+                tableHeader: 'Searches',
+                tableSubheader: getChartModalSubHeading(
+                  'Shows the race/ethnic composition of drivers searched'
+                ),
+                agencyName: chartState.data[AGENCY_DETAILS].name,
+                chartTitle: pieChartTitle('Searches'),
+                fileName: pieChartTitle('Searches', true),
+              }}
+            />
           </S.PieWrapper>
           <S.Note>
             Shows the race/ethnic composition of drivers searched by this {subjectObserving()}.
@@ -252,8 +294,19 @@ function Overview(props) {
         <S.PieContainer>
           <S.ChartTitle>Use of Force</S.ChartTitle>
           <S.PieWrapper>
-            <Pie loading={chartState.loading[USE_OF_FORCE]} data={useOfForceData} />
-            <Legend keys={STATIC_LEGEND_KEYS} isStatic showNonHispanic direction="column" />
+            <PieChart
+              data={useOfForceData}
+              displayTitle
+              maintainAspectRatio
+              showWhiteBackground={false}
+              modalConfig={{
+                tableHeader: 'Use of Force',
+                tableSubheader: getOverviewSubheader(),
+                agencyName: chartState.data[AGENCY_DETAILS].name,
+                chartTitle: pieChartTitle('Use of Force'),
+                fileName: pieChartTitle('Use of Force', true),
+              }}
+            />
           </S.PieWrapper>
           <S.Note>
             Shows the race/ethnic composition of drivers whom {useOfForcePieChartCopy()} reported
