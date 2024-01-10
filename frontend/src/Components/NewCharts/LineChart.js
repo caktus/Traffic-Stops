@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import { tooltipLanguage } from '../../util/tooltipLanguage';
 import { usePopper } from 'react-popper';
 import styled from 'styled-components';
 import DataLoading from '../Charts/ChartPrimitives/DataLoading';
+import ChartModal from './ChartModal';
 
 export const Tooltip = styled.div`
   background: #333;
@@ -30,6 +31,7 @@ export default function LineChart({
   displayStopPurposeTooltips = false,
   showLegendOnBottom = true,
   redraw = false,
+  modalConfig = {},
 }) {
   const options = {
     responsive: true,
@@ -37,6 +39,17 @@ export default function LineChart({
     hover: {
       mode: 'nearest',
       intersect: false,
+    },
+    onHover(evt, chartEl) {
+      // If there is a chart element found on hover, set the cursor to pointer
+      // to let users know they can view the modal
+      // eslint-disable-next-line no-param-reassign
+      evt.native.target.style.cursor = chartEl.length ? 'pointer' : 'default';
+    },
+    onClick(evt, activeEls) {
+      if (activeEls.length) {
+        setIsChartOpen(true);
+      }
     },
     plugins: {
       legend: {
@@ -89,6 +102,8 @@ export default function LineChart({
       },
     ],
   });
+  const [isChartOpen, setIsChartOpen] = useState(false);
+  const zoomedLineChartRef = useRef(null);
 
   const showTooltip = () => {
     popperElement.setAttribute('data-show', true);
@@ -97,6 +112,37 @@ export default function LineChart({
   const hideTooltip = () => {
     popperElement.removeAttribute('data-show');
   };
+
+  const whiteBackground = {
+    id: 'customLineCanvasBackgroundColor',
+    beforeDraw: (chart, args, config) => {
+      const { ctx } = chart;
+      ctx.save();
+      ctx.globalCompositeOperation = 'destination-over';
+      ctx.fillStyle = config.color || '#fff';
+      ctx.fillRect(0, 0, chart.width, chart.height);
+      ctx.restore();
+    },
+  };
+
+  const createModalOptions = (opts) => {
+    const modalOptions = JSON.parse(JSON.stringify(opts));
+    modalOptions.plugins.legend = {
+      display: true,
+      position: 'top',
+    };
+    modalOptions.plugins.tooltip.enabled = true;
+    modalOptions.plugins.title = {
+      display: true,
+      text: modalConfig.chartTitle,
+    };
+    modalOptions.scales.y.max = null;
+    modalOptions.scales.y.ticks.display = true;
+    return modalOptions;
+  };
+
+  const lineChartModalPlugins = [whiteBackground];
+  const lineChartModalOptions = createModalOptions(options);
 
   if (!data.datasets.length) {
     return <DataLoading />;
@@ -116,7 +162,28 @@ export default function LineChart({
           </Tooltip>
         </>
       )}
-      <Line options={options} data={data} redraw={redraw} datasetIdKey={title} />
+      <Line
+        options={options}
+        data={data}
+        redraw={redraw}
+        datasetIdKey={title}
+        plugins={[whiteBackground]}
+      />
+      <ChartModal
+        isOpen={isChartOpen}
+        closeModal={() => setIsChartOpen(false)}
+        chartToPrintRef={zoomedLineChartRef}
+        {...modalConfig}
+      >
+        <Line
+          options={lineChartModalOptions}
+          data={data}
+          redraw={false}
+          datasetIdKey={title}
+          plugins={lineChartModalPlugins}
+          ref={zoomedLineChartRef}
+        />
+      </ChartModal>
     </>
   );
 }
