@@ -27,12 +27,15 @@ import Legend from '../ChartSections/Legend/Legend';
 import cloneDeep from 'lodash.clonedeep';
 import Checkbox from '../../Elements/Inputs/Checkbox';
 import toTitleCase from '../../../util/toTitleCase';
+import getDownloadableTitle from '../../../util/getDownloadableTitle';
+import useOfficerId from '../../../Hooks/useOfficerId';
 
 const STOP_PURPOSE_TYPES = ['Safety Violation', 'Regulatory and Equipment', 'Other'];
 
 function Contraband(props) {
   const { agencyId, showCompare } = props;
 
+  const officerId = useOfficerId();
   const [chartState] = useDataset(agencyId, CONTRABAND_HIT_RATE);
 
   const [year, setYear] = useState(YEARS_DEFAULT);
@@ -450,6 +453,34 @@ function Contraband(props) {
     setGroupedContrabandStopPurposeModalData(newState);
   };
 
+  const subjectObserving = () => {
+    if (officerId) {
+      return 'officer';
+    }
+    if (agencyId) {
+      return 'department';
+    }
+    return '';
+  };
+
+  const getBarChartModalSubHeading = (title) => `${title} by this ${subjectObserving()}.`;
+
+  const getBarChartModalHeading = (title, yearSelected, download = false) => {
+    let subject = chartState.data[AGENCY_DETAILS].name;
+    if (subjectObserving() === 'officer') {
+      subject = `Officer ${officerId}`;
+    }
+    let fromYear = ` since ${chartState.yearRange[chartState.yearRange.length - 1]}`;
+    if (yearSelected && yearSelected !== 'All') {
+      fromYear = ` in ${yearSelected}`;
+    }
+    let heading = `${title} by ${subject}${fromYear}`;
+    if (download) {
+      heading = getDownloadableTitle(heading);
+    }
+    return heading;
+  };
+
   return (
     <ContrabandStyled>
       {renderMetaTags()}
@@ -513,6 +544,15 @@ function Contraband(props) {
               data={contrabandData}
               displayLegend={false}
               tooltipLabelCallback={formatTooltipValue}
+              modalConfig={{
+                tableHeader: 'Contraband "Hit Rate"',
+                tableSubheader: getBarChartModalSubHeading(
+                  'Shows what percentage of searches led to the discovery of illegal items by race/ethnicity'
+                ),
+                agencyName: chartState.data[AGENCY_DETAILS].name,
+                chartTitle: getBarChartModalHeading('Contraband "Hit Rate"', contrabandYear),
+                fileName: getBarChartModalHeading('Contraband "Hit Rate"', contrabandYear, true),
+              }}
             />
           </ChartWrapper>
           <S.LegendSection>
@@ -565,6 +605,22 @@ function Contraband(props) {
               tooltipTitleCallback={formatTooltipLabel}
               tooltipLabelCallback={formatTooltipValue}
               displayStopPurposeTooltips
+              modalConfig={{
+                tableHeader: 'Contraband "Hit Rate" Grouped By Stop Purpose',
+                tableSubheader: getBarChartModalSubHeading(
+                  'Shows what percentage of searches led to the discovery of illegal items broken down by race/ethnicity and original stop purpose'
+                ),
+                agencyName: chartState.data[AGENCY_DETAILS].name,
+                chartTitle: getBarChartModalHeading(
+                  'Contraband "Hit Rate" Grouped By Stop Purpose',
+                  contrabandStopPurposeYear
+                ),
+                fileName: getBarChartModalHeading(
+                  'Contraband "Hit Rate" Grouped By Stop Purpose',
+                  contrabandStopPurposeYear,
+                  true
+                ),
+              }}
             />
           </ChartWrapper>
           <S.LegendSection>
@@ -604,6 +660,22 @@ function Contraband(props) {
               data={contrabandTypesData}
               displayLegend={false}
               tooltipLabelCallback={formatTooltipValue}
+              modalConfig={{
+                tableHeader: 'Contraband "Hit Rate" by type',
+                tableSubheader: getBarChartModalSubHeading(
+                  'Shows what percentage of searches discovered specific types of illegal items'
+                ),
+                agencyName: chartState.data[AGENCY_DETAILS].name,
+                chartTitle: getBarChartModalHeading(
+                  'Contraband "Hit Rate" by type',
+                  contrabandTypesYear
+                ),
+                fileName: getBarChartModalHeading(
+                  'Contraband "Hit Rate" by type',
+                  contrabandTypesYear,
+                  true
+                ),
+              }}
             />
           </ChartWrapper>
           <S.LegendSection>
@@ -693,6 +765,22 @@ function Contraband(props) {
               xStacked
               yStacked
               redraw={shouldRedrawContrabandGraphs}
+              modalConfig={{
+                tableHeader: 'Contraband "Hit Rate" by Type grouped by Safety Violation',
+                tableSubheader: getBarChartModalSubHeading(
+                  'Shows the specific types of illegal items discovered in searches by race and initial stop type'
+                ),
+                agencyName: chartState.data[AGENCY_DETAILS].name,
+                chartTitle: getBarChartModalHeading(
+                  'Contraband "Hit Rate" by Type grouped by Safety Violation',
+                  year
+                ),
+                fileName: getBarChartModalHeading(
+                  'Contraband "Hit Rate" by Type grouped by Safety Violation',
+                  year,
+                  true
+                ),
+              }}
             />
           </BarContainer>
           <BarContainer visible={visibleContrabandTypes[1].visible}>
@@ -707,6 +795,22 @@ function Contraband(props) {
               xStacked
               yStacked
               redraw={shouldRedrawContrabandGraphs}
+              modalConfig={{
+                tableHeader: 'Contraband "Hit Rate" by Type grouped by Regulatory/Equipment',
+                tableSubheader: getBarChartModalSubHeading(
+                  'Shows the specific types of illegal items discovered in searches by race and initial stop type'
+                ),
+                agencyName: chartState.data[AGENCY_DETAILS].name,
+                chartTitle: getBarChartModalHeading(
+                  'Contraband "Hit Rate" by Type grouped by Regulatory/Equipment',
+                  year
+                ),
+                fileName: getBarChartModalHeading(
+                  'Contraband "Hit Rate" by Type grouped by Regulatory/Equipment',
+                  year,
+                  true
+                ),
+              }}
             />
           </BarContainer>
           <BarContainer visible={visibleContrabandTypes[2].visible}>
@@ -723,6 +827,22 @@ function Contraband(props) {
               xStacked
               yStacked
               redraw={shouldRedrawContrabandGraphs}
+              modalConfig={{
+                tableHeader: 'Contraband "Hit Rate" by Type grouped by Other',
+                tableSubheader: getBarChartModalSubHeading(
+                  'Shows the specific types of illegal items discovered in searches by race and initial stop type'
+                ),
+                agencyName: chartState.data[AGENCY_DETAILS].name,
+                chartTitle: getBarChartModalHeading(
+                  'Contraband "Hit Rate" by Type grouped by Other',
+                  year
+                ),
+                fileName: getBarChartModalHeading(
+                  'Contraband "Hit Rate" by Type grouped by Other',
+                  year,
+                  true
+                ),
+              }}
             />
           </BarContainer>
         </HorizontalBarWrapper>
