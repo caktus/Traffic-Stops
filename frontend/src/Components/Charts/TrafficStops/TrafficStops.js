@@ -737,7 +737,7 @@ function TrafficStops(props) {
               modalConfig={{
                 tableHeader: 'Traffic Stops By Group',
                 tableSubheader: getLineChartModalSubHeading(
-                  'Shows the number of traffics stops broken down by purpose and race / ethnicity.'
+                  'Shows the number of traffics stops broken down by purpose and race / ethnicity'
                 ),
                 agencyName: stopsChartState.data[AGENCY_DETAILS].name,
                 chartTitle: getLineChartModalHeading('Traffic Stops By Group'),
@@ -806,7 +806,7 @@ function TrafficStops(props) {
               modalConfig={{
                 tableHeader: 'Traffic Stops By Stop Purpose and Race Count',
                 tableSubheader: getLineChartModalSubHeading(
-                  'Shows the number of traffics stops broken down by purpose and race / ethnicity.'
+                  'Shows the number of traffics stops broken down by purpose and race / ethnicity'
                 ),
                 agencyName: stopsChartState.data[AGENCY_DETAILS].name,
                 chartTitle: getLineChartModalHeading('Traffic Stops Grouped By Safety Violation'),
@@ -830,7 +830,7 @@ function TrafficStops(props) {
               modalConfig={{
                 tableHeader: 'Traffic Stops By Stop Purpose and Race Count',
                 tableSubheader: getLineChartModalSubHeading(
-                  'Shows the number of traffics stops broken down by purpose and race / ethnicity.'
+                  'Shows the number of traffics stops broken down by purpose and race / ethnicity'
                 ),
                 agencyName: stopsChartState.data[AGENCY_DETAILS].name,
                 chartTitle: getLineChartModalHeading(
@@ -858,7 +858,7 @@ function TrafficStops(props) {
               modalConfig={{
                 tableHeader: 'Traffic Stops By Stop Purpose and Race Count',
                 tableSubheader: getLineChartModalSubHeading(
-                  'Shows the number of traffics stops broken down by purpose and race / ethnicity.'
+                  'Shows the number of traffics stops broken down by purpose and race / ethnicity'
                 ),
                 agencyName: stopsChartState.data[AGENCY_DETAILS].name,
                 chartTitle: getLineChartModalHeading('Traffic Stops Grouped By Other'),

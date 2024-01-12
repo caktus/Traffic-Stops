@@ -6,16 +6,19 @@ import { useTheme } from 'styled-components';
 // Util
 import {
   AVERAGE,
-  filterDataBySearchType,
   getSearchRateForYearByGroup,
-  reduceStopReasonsByEthnicity,
   SEARCH_TYPE_DEFAULT,
   SEARCH_TYPES,
   STATIC_LEGEND_KEYS,
 } from '../chartUtils';
 
 // State
-import useDataset, { SEARCHES, SEARCHES_BY_TYPE, STOPS } from '../../../Hooks/useDataset';
+import useDataset, {
+  AGENCY_DETAILS,
+  SEARCHES,
+  SEARCHES_BY_TYPE,
+  STOPS,
+} from '../../../Hooks/useDataset';
 
 // Hooks
 import useMetaTags from '../../../Hooks/useMetaTags';
@@ -31,6 +34,10 @@ import ChartHeader from '../ChartSections/ChartHeader';
 import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
 import useOfficerId from '../../../Hooks/useOfficerId';
 import displayDefinition from '../../../util/displayDefinition';
+import { LineWrapper, StopGroupsContainer } from '../TrafficStops/TrafficStops.styled';
+import LineChart from '../../NewCharts/LineChart';
+import axios from '../../../Services/Axios';
+import getDownloadableTitle from '../../../util/getDownloadableTitle';
 
 function Searches(props) {
   const { agencyId } = props;
@@ -47,14 +54,11 @@ function Searches(props) {
   const [percentageEthnicGroups, setPercentageEthnicGroups] = useState(() =>
     STATIC_LEGEND_KEYS.map((k) => ({ ...k })).concat([AVERAGE])
   );
-  const [countEthnicGroups, setCountEthnicGroups] = useState(() =>
-    STATIC_LEGEND_KEYS.map((k) => ({ ...k }))
-  );
 
   const [byPercentageLineData, setByPercentageLineData] = useState();
 
-  const [byCountLineData, setByCountLineData] = useState();
-
+  const [searchCountData, setSearchCountData] = useState({ labels: [], datasets: [] });
+  const [searchCountType, setSearchCountType] = useState(0);
   const renderMetaTags = useMetaTags();
   const [renderTableModal, { openModal }] = useTableModal();
 
@@ -96,34 +100,33 @@ function Searches(props) {
     chartState.yearRange,
   ]);
 
-  // Calculate search counts
+  // Build Searches By Count
   useEffect(() => {
-    const data = chartState.data[SEARCHES_BY_TYPE];
-    if (data && chartState.yearRange.length > 0) {
-      const mappedData = [];
-      const ethnicGroups = countEthnicGroups.filter((g) => g.selected).map((g) => g.value);
-      const dataBySearchReason = filterDataBySearchType(data, searchType);
-      ethnicGroups.forEach((ethnicGroup) => {
-        const group = {};
-        group.id = ethnicGroup;
-        group.color = theme.colors.ethnicGroup[ethnicGroup];
-        group.data = reduceStopReasonsByEthnicity(
-          dataBySearchReason,
-          chartState.yearRange,
-          ethnicGroup,
-          searchType
-        );
-        mappedData.push(group);
-      });
-      setByCountLineData(mappedData);
+    const params = [];
+    if (searchType !== 0) {
+      params.push({ param: 'search_type', val: searchCountType });
     }
-  }, [chartState.data[SEARCHES_BY_TYPE], chartState.yearRange, countEthnicGroups, searchType]);
+    if (officerId !== null) {
+      params.push({ param: 'officer', val: officerId });
+    }
+
+    const urlParams = params.map((p) => `${p.param}=${p.val}`).join('&');
+    const url = `/api/agency/${agencyId}/searches-by-count/?${urlParams}`;
+
+    axios
+      .get(url)
+      .then((res) => {
+        setSearchCountData(res.data);
+      })
+      .catch((err) => console.log(err));
+  }, [searchCountType]);
 
   /* INTERACTIONS */
   // Handle search type dropdown state
-  const handleStopPurposeSelect = (s) => {
+  const handleStopPurposeSelect = (s, i) => {
     if (s === searchType) return;
     setSearchType(s);
+    setSearchCountType(i);
   };
 
   // Handle stops by percentage legend interactions
@@ -134,16 +137,6 @@ function Searches(props) {
     const updatedGroups = [...percentageEthnicGroups];
     updatedGroups[groupIndex].selected = !updatedGroups[groupIndex].selected;
     setPercentageEthnicGroups(updatedGroups);
-  };
-
-  // Handle stops by count legend interactions
-  const handleCountKeySelected = (ethnicGroup) => {
-    const groupIndex = countEthnicGroups.indexOf(
-      countEthnicGroups.find((g) => g.value === ethnicGroup.value)
-    );
-    const updatedGroups = [...countEthnicGroups];
-    updatedGroups[groupIndex].selected = !updatedGroups[groupIndex].selected;
-    setCountEthnicGroups(updatedGroups);
   };
 
   const handleViewPercentageData = () => {
@@ -162,6 +155,36 @@ function Searches(props) {
       return 'department';
     }
     return '';
+  };
+
+  const getLineChartModalSubHeading = (title, showStopPurpose = false) => {
+    let stopPurposeSelected = '';
+    if (showStopPurpose) {
+      stopPurposeSelected =
+        searchCountType && searchCountType !== 0 // All
+          ? ` for ${SEARCH_TYPES[searchCountType - 1]}`
+          : '';
+    }
+    return `${title} by this ${subjectObserving()}${stopPurposeSelected}.`;
+  };
+
+  const getLineChartModalHeading = (title, showStopPurpose = false, download = false) => {
+    let subject = chartState.data[AGENCY_DETAILS].name;
+    if (subjectObserving() === 'officer') {
+      subject = `Officer ${officerId}`;
+    }
+    let stopPurposeSelected = '';
+    if (showStopPurpose) {
+      stopPurposeSelected =
+        searchCountType && searchCountType !== 0 // All
+          ? ` for ${SEARCH_TYPES[searchCountType - 1]}`
+          : '';
+    }
+    let heading = `${title} by ${subject}${stopPurposeSelected} since ${searchCountData.labels[0]}`;
+    if (download) {
+      heading = getDownloadableTitle(heading);
+    }
+    return heading;
   };
 
   return (
@@ -211,20 +234,25 @@ function Searches(props) {
           type and race / ethnicity.
         </P>
         <S.ChartSubsection showCompare={props.showCompare}>
-          <S.LineWrapper>
-            <Line
-              data={byCountLineData}
-              loading={chartState.loading[SEARCHES_BY_TYPE]}
-              iTickFormat={(t) => (t % 2 === 0 ? t : null)}
-              iTickValues={chartState.yearSet}
-              iAxisProps={{
-                minDomain: { y: 1 },
-              }}
-              dAxisProps={{
-                tickFormat: (t) => `${t}`,
-              }}
-            />
-          </S.LineWrapper>
+          <LineWrapper visible>
+            <StopGroupsContainer>
+              <LineChart
+                data={searchCountData}
+                title="Searches By Count"
+                maintainAspectRatio={false}
+                showLegendOnBottom
+                modalConfig={{
+                  tableHeader: 'Searches By Count',
+                  tableSubheader: getLineChartModalSubHeading(
+                    'Shows the number of searches performed by the {subjectObserving()}, broken down by search type and race / ethnicity'
+                  ),
+                  agencyName: chartState.data[AGENCY_DETAILS].name,
+                  chartTitle: getLineChartModalHeading('Searches By Count'),
+                  fileName: getLineChartModalHeading('Searches By Count', false, true),
+                }}
+              />
+            </StopGroupsContainer>
+          </LineWrapper>
           <S.LegendBeside>
             <DataSubsetPicker
               label="Search Type"
@@ -233,15 +261,6 @@ function Searches(props) {
               options={[SEARCH_TYPE_DEFAULT].concat(SEARCH_TYPES)}
             />
             <p style={{ marginTop: '10px' }}>{displayDefinition(searchType)}</p>
-            <S.Spacing>
-              <Legend
-                heading="Show on graph:"
-                keys={countEthnicGroups}
-                onKeySelect={handleCountKeySelected}
-                showNonHispanic
-                direction="column"
-              />
-            </S.Spacing>
           </S.LegendBeside>
         </S.ChartSubsection>
       </S.ChartSection>
