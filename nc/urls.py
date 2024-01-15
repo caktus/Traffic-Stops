@@ -31,6 +31,11 @@ urlpatterns = [  # noqa
         name="stops-grouped-by-purpose",
     ),
     path(
+        "api/agency/<agency_id>/searches-by-percentage/",
+        views.AgencySearchesByPercentageView.as_view(),
+        name="stops-by-count",
+    ),
+    path(
         "api/agency/<agency_id>/searches-by-count/",
         views.AgencySearchesByCountView.as_view(),
         name="stops-by-count",

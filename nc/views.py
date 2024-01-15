@@ -1109,6 +1109,118 @@ class AgencyContrabandStopGroupByPurposeModalView(APIView):
         return Response(data, status=200)
 
 
+class AgencySearchesByPercentageView(APIView):
+    def build_response(self, df, x_range):
+        def get_values(race):
+            if race in df:
+                return list(df[race].values)
+
+            return [0] * len(x_range)
+
+        return {
+            "labels": x_range,
+            "datasets": [
+                {
+                    "label": "White",
+                    "data": get_values("White"),
+                    "borderColor": "#02bcbb",
+                    "backgroundColor": "#80d9d8",
+                },
+                {
+                    "label": "Black",
+                    "data": get_values("Black"),
+                    "borderColor": "#8879fc",
+                    "backgroundColor": "#beb4fa",
+                },
+                {
+                    "label": "Hispanic",
+                    "data": get_values("Hispanic"),
+                    "borderColor": "#9c0f2e",
+                    "backgroundColor": "#ca8794",
+                },
+                {
+                    "label": "Asian",
+                    "data": get_values("Asian"),
+                    "borderColor": "#ffe066",
+                    "backgroundColor": "#ffeeb2",
+                },
+                {
+                    "label": "Native American",
+                    "data": get_values("Native American"),
+                    "borderColor": "#0c3a66",
+                    "backgroundColor": "#8598ac",
+                },
+                {
+                    "label": "Other",
+                    "data": get_values("Other"),
+                    "borderColor": "#9e7b9b",
+                    "backgroundColor": "#cab6c7",
+                },
+                {
+                    "label": "Average",
+                    "data": get_values("Average"),
+                    "borderColor": "#6e6e6e",
+                    "backgroundColor": "#888888",
+                },
+            ],
+        }
+
+    def get(self, request, agency_id):
+        stop_qs = StopSummary.objects.all().annotate(year=ExtractYear("date"))
+
+        search_qs = StopSummary.objects.filter(search_type__isnull=False).annotate(
+            year=ExtractYear("date")
+        )
+        agency_id = int(agency_id)
+        if agency_id != -1:
+            search_qs = search_qs.filter(agency_id=agency_id)
+            stop_qs = stop_qs.filter(agency_id=agency_id)
+
+        officer = request.query_params.get("officer", None)
+        if officer:
+            search_qs = search_qs.filter(officer_id=officer)
+            stop_qs = stop_qs.filter(officer_id=officer)
+
+        date_precision = "year"
+        qs_values = [date_precision, "driver_race_comb"]
+
+        search_qs = (
+            search_qs.values(*qs_values).annotate(count=Sum("count")).order_by(date_precision)
+        )
+        stop_qs = stop_qs.values(*qs_values).annotate(count=Sum("count")).order_by(date_precision)
+
+        if search_qs.count() == 0:
+            return Response(data={"labels": [], "datasets": []}, status=200)
+
+        search_df = pd.DataFrame(search_qs)
+        stops_df = pd.DataFrame(stop_qs)
+
+        unique_x_range = search_df[date_precision].unique()
+        search_pivot_df = search_df.pivot(
+            index=date_precision, columns="driver_race_comb", values="count"
+        ).fillna(value=0)
+        search_df = pd.DataFrame(search_pivot_df)
+        search_df["Average"] = pd.Series([0] * len(unique_x_range))
+
+        stop_pivot_df = stops_df.pivot(
+            index=date_precision, columns="driver_race_comb", values="count"
+        ).fillna(value=0)
+        stops_df = pd.DataFrame(stop_pivot_df)
+
+        columns = ["White", "Black", "Hispanic", "Asian", "Native American", "Other"]
+        for year in unique_x_range:
+            total_search = 0
+            total_stop = 0
+            for c in columns:
+                total_search += search_df[c][year]
+                total_stop += stops_df[c][year]
+                search_df[c][year] = search_df[c][year] / stops_df[c][year]
+            search_df["Average"][year] = total_search / total_stop
+
+        data = self.build_response(search_df, unique_x_range)
+        return Response(data=data, status=200)
+
+
 class AgencySearchesByCountView(APIView):
     def build_response(self, df, x_range, purpose=None):
         def get_values(race):

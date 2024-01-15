@@ -28,6 +28,9 @@ export default function LineChart({
   displayLegend = true,
   yAxisMax = null,
   yAxisShowLabels = true,
+  yScaleFormat = 'decimal',
+  tooltipTitleCallback = null,
+  tooltipLabelCallback,
   displayStopPurposeTooltips = false,
   showLegendOnBottom = true,
   redraw = false,
@@ -71,6 +74,20 @@ export default function LineChart({
       tooltip: {
         mode: 'nearest',
         intersect: false,
+        callbacks: {
+          title(context) {
+            if (tooltipTitleCallback) {
+              return tooltipTitleCallback(context);
+            }
+            return context.title;
+          },
+          label(context) {
+            if (tooltipLabelCallback) {
+              return tooltipLabelCallback(context);
+            }
+            return `${context.dataset.label}: ${context.formattedValue}`;
+          },
+        },
       },
       title: {
         display: displayTitle,
@@ -83,6 +100,9 @@ export default function LineChart({
         max: yAxisMax,
         ticks: {
           display: yAxisShowLabels,
+          format: {
+            style: yScaleFormat,
+          },
         },
       },
     },
