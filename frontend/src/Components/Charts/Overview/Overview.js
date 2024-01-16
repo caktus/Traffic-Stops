@@ -31,7 +31,6 @@ import ChartHeader from '../ChartSections/ChartHeader';
 import useOfficerId from '../../../Hooks/useOfficerId';
 import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
 import PieChart from '../../NewCharts/PieChart';
-import getDownloadableTitle from '../../../util/getDownloadableTitle';
 import { pieChartConfig, pieChartLabels } from '../../../util/setChartColors';
 
 function Overview(props) {
@@ -129,7 +128,7 @@ function Overview(props) {
     });
   }
 
-  const pieChartTitle = (chartTitle, download = false) => {
+  const pieChartTitle = (chartTitle) => {
     let subject = chartState.data[AGENCY_DETAILS].name;
     if (subjectObserving() === 'officer') {
       subject = `Officer ${officerId}`;
@@ -139,9 +138,6 @@ function Overview(props) {
       title = `${title} ${
         year === YEARS_DEFAULT ? `since ${chartState.yearRange.reverse()[0]}` : `in ${year}`
       }`;
-    }
-    if (download) {
-      title = getDownloadableTitle(title);
     }
     return title;
   };
@@ -228,7 +224,6 @@ function Overview(props) {
             vary significantly from these figures.`,
                 agencyName: chartState.data[AGENCY_DETAILS].name,
                 chartTitle: pieChartTitle('Census Demographics'),
-                fileName: pieChartTitle('Census Demographics', true),
               }}
             />
           </S.PieWrapper>
@@ -254,7 +249,6 @@ function Overview(props) {
                 ),
                 agencyName: chartState.data[AGENCY_DETAILS].name,
                 chartTitle: pieChartTitle('Traffic Stops'),
-                fileName: pieChartTitle('Traffic Stops', true),
               }}
             />
           </S.PieWrapper>
@@ -282,7 +276,6 @@ function Overview(props) {
                 ),
                 agencyName: chartState.data[AGENCY_DETAILS].name,
                 chartTitle: pieChartTitle('Searches'),
-                fileName: pieChartTitle('Searches', true),
               }}
             />
           </S.PieWrapper>
@@ -304,7 +297,6 @@ function Overview(props) {
                 tableSubheader: getOverviewSubheader(),
                 agencyName: chartState.data[AGENCY_DETAILS].name,
                 chartTitle: pieChartTitle('Use of Force'),
-                fileName: pieChartTitle('Use of Force', true),
               }}
             />
           </S.PieWrapper>

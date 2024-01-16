@@ -117,7 +117,7 @@ export default function PieChart({
 
   // Setup modal options
   const [isChartOpen, setIsChartOpen] = useState(false);
-  const zoomedPieCharRef = useRef(null);
+  const zoomedPieChartRef = useRef(null);
 
   const createModalOptions = (opts) => {
     const modalOptions = JSON.parse(JSON.stringify(opts));
@@ -144,16 +144,17 @@ export default function PieChart({
     <>
       <div style={{ width: '100%' }}>
         {noData && <div style={{ textAlign: 'center' }}>No Data Found</div>}
-        <Pie ref={zoomedPieCharRef} options={options} data={data} plugins={plugins} />
+        <Pie ref={zoomedPieChartRef} options={options} data={data} plugins={plugins} />
       </div>
       <ChartModal
         isOpen={isChartOpen}
         closeModal={() => setIsChartOpen(false)}
-        chartToPrintRef={zoomedPieCharRef}
+        chartToPrintRef={zoomedPieChartRef}
+        chartTitle={modalConfig.chartTitle}
         {...modalConfig}
       >
         <Pie
-          ref={zoomedPieCharRef}
+          ref={zoomedPieChartRef}
           options={pieChartModalOptions}
           data={data}
           plugins={pieChartModalPlugins}

@@ -7,6 +7,7 @@ import * as S from './ChartModal.styled';
 import { H2, P } from '../../styles/StyledComponents/Typography';
 import useOfficerId from '../../Hooks/useOfficerId';
 import Button from '../Elements/Button';
+import getDownloadableTitle from '../../util/getDownloadableTitle';
 
 export default function ChartModal({
   tableHeader,
@@ -15,7 +16,7 @@ export default function ChartModal({
   isOpen,
   closeModal,
   chartToPrintRef,
-  fileName = 'chart.png',
+  chartTitle,
   children,
 }) {
   const theme = useTheme();
@@ -42,7 +43,7 @@ export default function ChartModal({
 
   const downloadChart = useCallback(() => {
     const link = document.createElement('a');
-    link.download = fileName;
+    link.download = getDownloadableTitle(chartTitle);
     link.href = chartToPrintRef.current.toBase64Image();
     link.click();
   });
