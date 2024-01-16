@@ -28,7 +28,6 @@ import displayDefinition from '../../../util/displayDefinition';
 import { LineWrapper, StopGroupsContainer } from '../TrafficStops/TrafficStops.styled';
 import LineChart from '../../NewCharts/LineChart';
 import axios from '../../../Services/Axios';
-import getDownloadableTitle from '../../../util/getDownloadableTitle';
 
 function Searches(props) {
   const { agencyId } = props;
@@ -124,7 +123,7 @@ function Searches(props) {
     return `${title} by this ${subjectObserving()}${stopPurposeSelected}.`;
   };
 
-  const getLineChartModalHeading = (title, showStopPurpose = false, download = false) => {
+  const getLineChartModalHeading = (title, showStopPurpose = false) => {
     let subject = chartState.data[AGENCY_DETAILS].name;
     if (subjectObserving() === 'officer') {
       subject = `Officer ${officerId}`;
@@ -136,11 +135,7 @@ function Searches(props) {
           ? ` for ${SEARCH_TYPES[searchCountType - 1]}`
           : '';
     }
-    let heading = `${title} by ${subject}${stopPurposeSelected} since ${searchCountData.labels[0]}`;
-    if (download) {
-      heading = getDownloadableTitle(heading);
-    }
-    return heading;
+    return `${title} by ${subject}${stopPurposeSelected} since ${searchCountData.labels[0]}`;
   };
 
   const formatTooltipLabel = (ctx) => {
@@ -181,8 +176,7 @@ function Searches(props) {
                     'Shows the percent of stops that led to searches, broken down by race/ethnicity'
                   ),
                   agencyName: chartState.data[AGENCY_DETAILS].name,
-                  chartTitle: getLineChartModalHeading('Searches By Percentage'),
-                  fileName: getLineChartModalHeading('Searches By Percentage', false, true),
+                  chartTitle: getLineChartModalHeading('Searches By Percentage', false),
                 }}
               />
             </StopGroupsContainer>
@@ -210,8 +204,7 @@ function Searches(props) {
                     `Shows the number of searches performed by the ${subjectObserving()}, broken down by search type and race / ethnicity`
                   ),
                   agencyName: chartState.data[AGENCY_DETAILS].name,
-                  chartTitle: getLineChartModalHeading('Searches By Count'),
-                  fileName: getLineChartModalHeading('Searches By Count', false, true),
+                  chartTitle: getLineChartModalHeading('Searches By Count', true),
                 }}
               />
             </StopGroupsContainer>

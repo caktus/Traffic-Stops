@@ -193,6 +193,7 @@ export default function LineChart({
         isOpen={isChartOpen}
         closeModal={() => setIsChartOpen(false)}
         chartToPrintRef={zoomedLineChartRef}
+        chartTitle={modalConfig.chartTitle}
         {...modalConfig}
       >
         <Line

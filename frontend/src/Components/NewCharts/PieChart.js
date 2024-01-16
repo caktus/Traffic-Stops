@@ -150,6 +150,7 @@ export default function PieChart({
         isOpen={isChartOpen}
         closeModal={() => setIsChartOpen(false)}
         chartToPrintRef={zoomedPieChartRef}
+        chartTitle={modalConfig.chartTitle}
         {...modalConfig}
       >
         <Pie

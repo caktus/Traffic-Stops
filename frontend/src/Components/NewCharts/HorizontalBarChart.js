@@ -184,6 +184,7 @@ export default function HorizontalBarChart({
         isOpen={isChartOpen}
         closeModal={() => setIsChartOpen(false)}
         chartToPrintRef={zoomedLineChartRef}
+        chartTitle={modalConfig.chartTitle}
         {...modalConfig}
       >
         <Bar

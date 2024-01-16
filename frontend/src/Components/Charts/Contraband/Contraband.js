@@ -27,7 +27,6 @@ import Legend from '../ChartSections/Legend/Legend';
 import cloneDeep from 'lodash.clonedeep';
 import Checkbox from '../../Elements/Inputs/Checkbox';
 import toTitleCase from '../../../util/toTitleCase';
-import getDownloadableTitle from '../../../util/getDownloadableTitle';
 import useOfficerId from '../../../Hooks/useOfficerId';
 
 const STOP_PURPOSE_TYPES = ['Safety Violation', 'Regulatory and Equipment', 'Other'];
@@ -465,7 +464,7 @@ function Contraband(props) {
 
   const getBarChartModalSubHeading = (title) => `${title} by this ${subjectObserving()}.`;
 
-  const getBarChartModalHeading = (title, yearSelected, download = false) => {
+  const getBarChartModalHeading = (title, yearSelected) => {
     let subject = chartState.data[AGENCY_DETAILS].name;
     if (subjectObserving() === 'officer') {
       subject = `Officer ${officerId}`;
@@ -474,11 +473,7 @@ function Contraband(props) {
     if (yearSelected && yearSelected !== 'All') {
       fromYear = ` in ${yearSelected}`;
     }
-    let heading = `${title} by ${subject}${fromYear}`;
-    if (download) {
-      heading = getDownloadableTitle(heading);
-    }
-    return heading;
+    return `${title} by ${subject}${fromYear}`;
   };
 
   return (
@@ -551,7 +546,6 @@ function Contraband(props) {
                 ),
                 agencyName: chartState.data[AGENCY_DETAILS].name,
                 chartTitle: getBarChartModalHeading('Contraband "Hit Rate"', contrabandYear),
-                fileName: getBarChartModalHeading('Contraband "Hit Rate"', contrabandYear, true),
               }}
             />
           </ChartWrapper>
@@ -615,11 +609,6 @@ function Contraband(props) {
                   'Contraband "Hit Rate" Grouped By Stop Purpose',
                   contrabandStopPurposeYear
                 ),
-                fileName: getBarChartModalHeading(
-                  'Contraband "Hit Rate" Grouped By Stop Purpose',
-                  contrabandStopPurposeYear,
-                  true
-                ),
               }}
             />
           </ChartWrapper>
@@ -669,11 +658,6 @@ function Contraband(props) {
                 chartTitle: getBarChartModalHeading(
                   'Contraband "Hit Rate" by type',
                   contrabandTypesYear
-                ),
-                fileName: getBarChartModalHeading(
-                  'Contraband "Hit Rate" by type',
-                  contrabandTypesYear,
-                  true
                 ),
               }}
             />
@@ -775,11 +759,6 @@ function Contraband(props) {
                   'Contraband "Hit Rate" by Type grouped by Safety Violation',
                   year
                 ),
-                fileName: getBarChartModalHeading(
-                  'Contraband "Hit Rate" by Type grouped by Safety Violation',
-                  year,
-                  true
-                ),
               }}
             />
           </BarContainer>
@@ -804,11 +783,6 @@ function Contraband(props) {
                 chartTitle: getBarChartModalHeading(
                   'Contraband "Hit Rate" by Type grouped by Regulatory/Equipment',
                   year
-                ),
-                fileName: getBarChartModalHeading(
-                  'Contraband "Hit Rate" by Type grouped by Regulatory/Equipment',
-                  year,
-                  true
                 ),
               }}
             />
@@ -836,11 +810,6 @@ function Contraband(props) {
                 chartTitle: getBarChartModalHeading(
                   'Contraband "Hit Rate" by Type grouped by Other',
                   year
-                ),
-                fileName: getBarChartModalHeading(
-                  'Contraband "Hit Rate" by Type grouped by Other',
-                  year,
-                  true
                 ),
               }}
             />

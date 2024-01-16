@@ -48,7 +48,6 @@ import displayDefinition from '../../../util/displayDefinition';
 import PieChart from '../../NewCharts/PieChart';
 import Switch from 'react-switch';
 import Checkbox from '../../Elements/Inputs/Checkbox';
-import getDownloadableTitle from '../../../util/getDownloadableTitle';
 import { pieChartConfig, pieChartLabels, pieColors } from '../../../util/setChartColors';
 
 function TrafficStops(props) {
@@ -535,18 +534,14 @@ function TrafficStops(props) {
     );
   };
 
-  const pieChartTitle = (download = false) => {
+  const pieChartTitle = () => {
     let subject = stopsChartState.data[AGENCY_DETAILS].name;
     if (subjectObserving() === 'officer') {
       subject = `Officer ${officerId}`;
     }
-    let title = `Traffic Stops By Percentage for ${subject} ${
+    return `Traffic Stops By Percentage for ${subject} ${
       year === YEARS_DEFAULT ? `since ${stopsChartState.yearRange.reverse()[0]}` : `in ${year}`
     }`;
-    if (download) {
-      title = getDownloadableTitle(title);
-    }
-    return title;
   };
 
   const getPieChartModalSubHeading = (title) => {
@@ -554,20 +549,16 @@ function TrafficStops(props) {
     return `${title} by this ${subjectObserving()}${yearSelected}.`;
   };
 
-  const getPieChartModalHeading = (stopPurpose, download = false) => {
+  const getPieChartModalHeading = (stopPurpose) => {
     let subject = stopsChartState.data[AGENCY_DETAILS].name;
     if (subjectObserving() === 'officer') {
       subject = `Officer ${officerId}`;
     }
-    let title = `Traffic Stops By ${stopPurpose} and Race Count for ${subject} ${
+    return `Traffic Stops By ${stopPurpose} and Race Count for ${subject} ${
       yearForGroupedPieCharts === YEARS_DEFAULT
         ? `since ${stopsGroupedByPurposeData.labels[0]}`
         : `in ${yearForGroupedPieCharts}`
     }`;
-    if (download) {
-      title = getDownloadableTitle(title);
-    }
-    return title;
   };
 
   const getLineChartModalSubHeading = (title, showStopPurpose = false) => {
@@ -581,7 +572,7 @@ function TrafficStops(props) {
     return `${title} by this ${subjectObserving()}${stopPurposeSelected}.`;
   };
 
-  const getLineChartModalHeading = (title, showStopPurpose = false, download = false) => {
+  const getLineChartModalHeading = (title, showStopPurpose = false) => {
     let subject = stopsChartState.data[AGENCY_DETAILS].name;
     if (subjectObserving() === 'officer') {
       subject = `Officer ${officerId}`;
@@ -593,11 +584,7 @@ function TrafficStops(props) {
           ? ` for ${STOP_TYPES[trafficStopsByCountPurpose - 1]}`
           : '';
     }
-    let heading = `${title} by ${subject}${stopPurposeSelected} since ${trafficStopsByCount.labels[0]}`;
-    if (download) {
-      heading = getDownloadableTitle(heading);
-    }
-    return heading;
+    return `${title} by ${subject}${stopPurposeSelected} since ${trafficStopsByCount.labels[0]}`;
   };
 
   return (
@@ -649,7 +636,6 @@ function TrafficStops(props) {
                   ),
                   agencyName: stopsChartState.data[AGENCY_DETAILS].name,
                   chartTitle: pieChartTitle(),
-                  fileName: pieChartTitle(true),
                 }}
               />
             </S.PieWrapper>
@@ -682,7 +668,6 @@ function TrafficStops(props) {
                   ),
                   agencyName: stopsChartState.data[AGENCY_DETAILS].name,
                   chartTitle: getLineChartModalHeading('Traffic Stops By Count', true),
-                  fileName: getLineChartModalHeading('Traffic Stops By Count', true, true),
                 }}
               />
             </StopGroupsContainer>
@@ -741,7 +726,6 @@ function TrafficStops(props) {
                 ),
                 agencyName: stopsChartState.data[AGENCY_DETAILS].name,
                 chartTitle: getLineChartModalHeading('Traffic Stops By Group'),
-                fileName: getLineChartModalHeading('Traffic Stops By Group', false, true),
               }}
             />
           </StopGroupsContainer>
@@ -810,11 +794,6 @@ function TrafficStops(props) {
                 ),
                 agencyName: stopsChartState.data[AGENCY_DETAILS].name,
                 chartTitle: getLineChartModalHeading('Traffic Stops Grouped By Safety Violation'),
-                fileName: getLineChartModalHeading(
-                  'Traffic Stops Grouped By Safety Violation',
-                  false,
-                  true
-                ),
               }}
             />
           </GroupedStopsContainer>
@@ -835,11 +814,6 @@ function TrafficStops(props) {
                 agencyName: stopsChartState.data[AGENCY_DETAILS].name,
                 chartTitle: getLineChartModalHeading(
                   'Traffic Stops Grouped By Regulatory/Equipment'
-                ),
-                fileName: getLineChartModalHeading(
-                  'Traffic Stops Grouped By Regulatory/Equipment',
-                  false,
-                  true
                 ),
               }}
             />
@@ -862,7 +836,6 @@ function TrafficStops(props) {
                 ),
                 agencyName: stopsChartState.data[AGENCY_DETAILS].name,
                 chartTitle: getLineChartModalHeading('Traffic Stops Grouped By Other'),
-                fileName: getLineChartModalHeading('Traffic Stops Grouped By Other', false, true),
               }}
             />
           </GroupedStopsContainer>
@@ -890,7 +863,6 @@ function TrafficStops(props) {
                   ),
                   agencyName: stopsChartState.data[AGENCY_DETAILS].name,
                   chartTitle: getPieChartModalHeading('Safety Violation'),
-                  fileName: getPieChartModalHeading('Safety Violation', true),
                 }}
               />
             </PieWrapper>
@@ -909,7 +881,6 @@ function TrafficStops(props) {
                   ),
                   agencyName: stopsChartState.data[AGENCY_DETAILS].name,
                   chartTitle: getPieChartModalHeading('Regulatory/Equipment'),
-                  fileName: getPieChartModalHeading('Regulatory/Equipment', true),
                 }}
               />
             </PieWrapper>
@@ -928,7 +899,6 @@ function TrafficStops(props) {
                   ),
                   agencyName: stopsChartState.data[AGENCY_DETAILS].name,
                   chartTitle: getPieChartModalHeading('Other'),
-                  fileName: getPieChartModalHeading('Other', true),
                 }}
               />
             </PieWrapper>

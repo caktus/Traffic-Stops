@@ -153,18 +153,14 @@ function UseOfForce(props) {
     return t % 2 === 0 ? t : null;
   };
 
-  const pieChartTitle = (download = false) => {
+  const pieChartTitle = () => {
     let subject = chartState.data[AGENCY_DETAILS].name;
     if (subjectObserving() === 'officer') {
       subject = `Officer ${officerId}`;
     }
-    let title = `Use of Force for ${subject} ${
+    return `Use of Force for ${subject} ${
       year === YEARS_DEFAULT ? `since ${chartState.yearRange.reverse()[0]}` : `in ${year}`
     }`;
-    if (download) {
-      title = getDownloadableTitle(title);
-    }
-    return title;
   };
 
   const getChartModalSubHeading = () => {
@@ -216,7 +212,6 @@ function UseOfForce(props) {
                   tableSubheader: getChartModalSubHeading(),
                   agencyName: chartState.data[AGENCY_DETAILS].name,
                   chartTitle: pieChartTitle(),
-                  fileName: pieChartTitle(true),
                 }}
               />
             </S.PieWrapper>
