@@ -28,7 +28,6 @@ import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker
 import useOfficerId from '../../../Hooks/useOfficerId';
 import GroupedBar from '../ChartPrimitives/GroupedBar';
 import PieChart from '../../NewCharts/PieChart';
-import getDownloadableTitle from '../../../util/getDownloadableTitle';
 import { pieChartConfig, pieChartLabels } from '../../../util/setChartColors';
 
 function UseOfForce(props) {
