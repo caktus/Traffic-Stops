@@ -22,6 +22,8 @@ API_ENDPOINT_NAMES = (
     "nc:stop-purpose-groups",
     "nc:stops-grouped-by-purpose",
     "nc:contraband-percentages",
+    "nc:searches-by-percentage",
+    "nc:searches-by-count",
     "nc:contraband-percentages-stop-purpose-groups",
     "nc:contraband-percentages-grouped-stop-purpose",
     "nc:contraband-percentages-grouped-stop-purpose-modal",
