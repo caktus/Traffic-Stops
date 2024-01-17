@@ -45,7 +45,6 @@ export default function VerticalBarChart({
             if (tooltipLabelCallback) {
               return tooltipLabelCallback(context);
             }
-            // console.log(context);
             return `${context.dataset.label}: ${context.formattedValue}`;
           },
         },
