@@ -9,6 +9,8 @@ export default function VerticalBarChart({
   maintainAspectRatio = true,
   tooltipTitleCallback = null,
   tooltipLabelCallback = null,
+  stacked = false,
+  disableLegend = false,
   modalConfig = {},
 }) {
   const options = {
@@ -24,6 +26,15 @@ export default function VerticalBarChart({
       if (activeEls.length) {
         setIsChartOpen(true);
       }
+    },
+    scales: {
+      x: {
+        stacked,
+      },
+      y: {
+        stacked,
+        max: stacked ? 1 : null,
+      },
     },
     plugins: {
       title: {
@@ -51,6 +62,17 @@ export default function VerticalBarChart({
       },
     },
   };
+
+  if (disableLegend) {
+    options.plugins.legend.onClick = null;
+  }
+  if (stacked) {
+    options.scales.y.ticks = {
+      format: {
+        style: 'percent',
+      },
+    };
+  }
 
   const [isChartOpen, setIsChartOpen] = useState(false);
   const zoomedLineChartRef = useRef(null);
