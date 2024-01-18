@@ -42,8 +42,9 @@ export default function HorizontalBarChart({
     scales: {
       x: {
         stacked: xStacked,
-        max: 1,
+        // max: 1,
         ticks: {
+          stepSize: 0.5,
           format: {
             style: 'percent',
           },

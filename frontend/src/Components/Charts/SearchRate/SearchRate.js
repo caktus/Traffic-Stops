@@ -1,14 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import SearchRateStyled, { Tooltip } from './SearchRate.styled';
+import SearchRateStyled from './SearchRate.styled';
 import * as S from '../ChartSections/ChartsCommon.styled';
-import { useTheme } from 'styled-components';
-import { usePopper } from 'react-popper';
-
-// Router
-import { useHistory } from 'react-router-dom';
 
 // Data
-import useDataset, { LIKELIHOOD_OF_SEARCH } from '../../../Hooks/useDataset';
+import useDataset, { AGENCY_DETAILS, LIKELIHOOD_OF_SEARCH } from '../../../Hooks/useDataset';
 
 // Hooks
 import useOfficerId from '../../../Hooks/useOfficerId';
@@ -16,151 +11,82 @@ import useMetaTags from '../../../Hooks/useMetaTags';
 import useTableModal from '../../../Hooks/useTableModal';
 
 // Constants
-import {
-  STATIC_LEGEND_KEYS,
-  YEARS_DEFAULT,
-  getGroupValueBasedOnYear,
-  getRatesAgainstBase,
-  STOP_TYPES,
-  calculateAveragePercentage,
-} from '../chartUtils';
-import { AGENCY_LIST_SLUG, SEARCHES_SLUG } from '../../../Routes/slugs';
+import { YEARS_DEFAULT } from '../chartUtils';
 
 // Children
 import { P } from '../../../styles/StyledComponents/Typography';
 import ChartHeader from '../ChartSections/ChartHeader';
-import Legend from '../ChartSections/Legend/Legend';
 import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
-import GroupedBar from '../ChartPrimitives/GroupedBar';
-import { VictoryLabel } from 'victory';
-import { tooltipLanguage } from '../../../util/tooltipLanguage';
+import axios from '../../../Services/Axios';
+import HorizontalBarChart from '../../NewCharts/HorizontalBarChart';
 
 function SearchRate(props) {
   const { agencyId, showCompare } = props;
-  const theme = useTheme();
-  const history = useHistory();
   const officerId = useOfficerId();
 
   const [chartState] = useDataset(agencyId, LIKELIHOOD_OF_SEARCH);
 
   const [year, setYear] = useState(YEARS_DEFAULT);
-  const [ethnicGroupKeys, setEthnicGroupKeys] = useState(() =>
-    STATIC_LEGEND_KEYS.map((k) => ({ ...k })).filter((k) => k.value !== 'white')
-  );
-
-  const [chartData, setChartData] = useState([]);
-  const [noBaseSearches, setNoBaseSearches] = useState(false);
+  const [searchRateData, setSearchRateData] = useState({ labels: [], datasets: [] });
 
   const renderMetaTags = useMetaTags();
   const [renderTableModal, { openModal }] = useTableModal();
 
-  const [referenceElement, setReferenceElement] = useState(null);
-  const [tooltipText, setTooltipText] = useState('');
-  const [popperElement, setPopperElement] = useState(null);
-  const { styles, attributes } = usePopper(referenceElement, popperElement, {
-    placement: 'top',
-    modifiers: [
-      {
-        name: 'offset',
-        options: {
-          offset: [0, 10],
-        },
-      },
-    ],
-  });
-
-  const showTooltip = (e) => {
-    setReferenceElement(e.currentTarget);
-    setTooltipText(tooltipLanguage(e.target.parentElement.id));
-    popperElement.setAttribute('data-show', true);
-  };
-
-  const hideTooltip = () => {
-    setTooltipText('');
-    popperElement.removeAttribute('data-show');
-  };
-
-  /* BUILD DATA */
   useEffect(() => {
-    const data = chartState.data[LIKELIHOOD_OF_SEARCH];
-    if (data) {
-      const baseGroupTotalSearches = getGroupValueBasedOnYear(
-        data.searches,
-        'white',
-        year,
-        STOP_TYPES
-      );
-      if (_entityHasNoBaseSearches(baseGroupTotalSearches)) {
-        setNoBaseSearches(true);
-        return;
-      }
-      setNoBaseSearches(false);
-
-      const baseGroupTotalStops = getGroupValueBasedOnYear(data.stops, 'white', year, STOP_TYPES);
-      let mappedData = ethnicGroupKeys
-        .filter((g) => g.selected && g.value !== 'white')
-        .map((g) => {
-          const ethnicGroup = g.value;
-          const groupTotalSearches = getGroupValueBasedOnYear(
-            data.searches,
-            ethnicGroup,
-            year,
-            STOP_TYPES
-          );
-          const groupTotalStops = getGroupValueBasedOnYear(
-            data.stops,
-            ethnicGroup,
-            year,
-            STOP_TYPES
-          );
-          const ratesByReason = getRatesAgainstBase(
-            baseGroupTotalSearches,
-            baseGroupTotalStops,
-            groupTotalSearches,
-            groupTotalStops
-          );
-          return {
-            id: ethnicGroup,
-            color: `${theme.colors.ethnicGroup[ethnicGroup]}90`,
-            data: STOP_TYPES.map((reason) => ({
-              x: reason,
-              y: ratesByReason[reason],
-              ethnicGroup: g.label,
-              color: theme.colors.ethnicGroup[ethnicGroup],
-            })),
-          };
-        });
-      mappedData = calculateAveragePercentage(mappedData);
-      setChartData(mappedData);
+    let url = `/api/agency/${agencyId}/search-rate/`;
+    if (year && year !== 'All') {
+      url = `${url}?year=${year}`;
     }
-  }, [chartState.data[LIKELIHOOD_OF_SEARCH], ethnicGroupKeys, year]);
+    if (officerId) {
+      url = `${url}&officer=${officerId}`;
+    }
+    axios
+      .get(url)
+      .then((res) => {
+        setSearchRateData(res.data);
+      })
+      .catch((err) => console.log(err));
+  }, [year]);
 
-  const _entityHasNoBaseSearches = (baseGroupSearches) =>
-    Object.values(baseGroupSearches).every((v) => v === 0);
-
-  /* INTERACTIONS */
-  // Handle year dropdown state
   const handleYearSelected = (y) => {
     if (y === year) return;
     setYear(y);
-  };
-
-  // Legend interaction
-  const handleGroupKeySelected = (ethnicGroup) => {
-    const groupIndex = ethnicGroupKeys.indexOf(
-      ethnicGroupKeys.find((g) => g.value === ethnicGroup.value)
-    );
-    const updatedGroups = [...ethnicGroupKeys];
-    updatedGroups[groupIndex].selected = !updatedGroups[groupIndex].selected;
-    setEthnicGroupKeys(updatedGroups);
   };
 
   const handleViewData = () => {
     openModal(LIKELIHOOD_OF_SEARCH, TABLE_COLUMNS);
   };
 
-  const getSearchesUrlForOfficer = () =>
-    `${AGENCY_LIST_SLUG}/${agencyId}${SEARCHES_SLUG}/?officer=${officerId}`;
+  const formatTooltipLabel = (ctx) => ctx[0].dataset.label;
+  const formatTooltipValue = (ctx) => `${ctx.label}: ${(ctx.raw * 100).toFixed(2)}%`;
+
+  const subjectObserving = () => {
+    if (officerId) {
+      return 'officer';
+    }
+    if (agencyId) {
+      return 'department';
+    }
+    return '';
+  };
+
+  const getBarChartModalSubHeading =
+    () => `Shows the likelihood that drivers of a particular race / ethnicity are searched
+                      compared to white drivers, based on stop cause. Stops done for “safety”
+                      purposes may be less likely to show racial bias than stops done for “investigatory”
+                      purposes by this ${subjectObserving()}.`;
+
+  const getBarChartModalHeading = (title) => {
+    let subject = chartState.data[AGENCY_DETAILS].name;
+    if (subjectObserving() === 'officer') {
+      subject = `Officer ${officerId}`;
+    }
+    let fromYear = ` since ${chartState.yearRange[chartState.yearRange.length - 1]}`;
+    if (year && year !== 'All') {
+      fromYear = ` in ${year}`;
+    }
+    return `${title} by ${subject}${fromYear}`;
+  };
 
   return (
     <SearchRateStyled>
@@ -182,82 +108,25 @@ function SearchRate(props) {
         </S.ChartDescription>
         <S.ChartSubsection showCompare={showCompare}>
           <S.LineWrapper>
-            {noBaseSearches ? (
-              <S.NoBaseSearches>
-                <P>
-                  This {officerId ? 'officer' : 'department'}{' '}
-                  <strong>has not reported searching any people identified as white</strong>. No
-                  comparisons can be made.
-                </P>
-                <P>
-                  For a better comparison, view{' '}
-                  <S.NoBaseLink onClick={() => history.push(getSearchesUrlForOfficer())}>
-                    search counts and percentages
-                  </S.NoBaseLink>
-                  .
-                </P>
-              </S.NoBaseSearches>
-            ) : (
-              <>
-                <Tooltip
-                  ref={setPopperElement}
-                  style={{
-                    ...styles.popper,
-                    maxWidth: '500px',
-                    zIndex: 1000,
-                    display: tooltipText !== '' ? 'block' : 'none',
-                  }}
-                  {...attributes.popper}
-                >
-                  {tooltipText}
-                </Tooltip>
-                <GroupedBar
-                  data={chartData}
-                  loading={chartState.loading[LIKELIHOOD_OF_SEARCH]}
-                  horizontal
-                  iAxisProps={{
-                    tickLabelComponent: (
-                      <VictoryLabel
-                        x={100}
-                        dx={-50}
-                        style={{
-                          fontSize: 6,
-                          cursor: 'default',
-                          textDecorationLine: 'underline',
-                          textDecorationStyle: 'dotted',
-                          textUnderlineOffset: '5px',
-                        }}
-                        id={(t) => (Array.isArray(t.text) ? t.text.join('') : null)}
-                        events={{
-                          onMouseEnter: (evt) => showTooltip(evt),
-                          onMouseLeave: () => hideTooltip(),
-                        }}
-                      />
-                    ),
-                    tickFormat: (t) => (t.split ? t.split(' ') : t),
-                  }}
-                  dAxisProps={{
-                    tickFormat: (t) => `${t}%`,
-                  }}
-                  chartProps={{
-                    height: 500,
-                    width: 400,
-                  }}
-                  barProps={{ barWidth: 10, yAxisLabel: (val) => `${val}%` }}
-                  toolTipFontSize={7}
-                />
-              </>
-            )}
+            <div style={{ height: '200vh' }}>
+              <HorizontalBarChart
+                title="Likelihood of Search"
+                data={searchRateData}
+                maintainAspectRatio={false}
+                tooltipTitleCallback={formatTooltipLabel}
+                tooltipLabelCallback={formatTooltipValue}
+                legendPosition="bottom"
+                modalConfig={{
+                  tableHeader: 'Likelihood of Search',
+                  tableSubheader: getBarChartModalSubHeading(),
+                  agencyName: chartState.data[AGENCY_DETAILS].name,
+                  chartTitle: getBarChartModalHeading('Likelihood of Search'),
+                }}
+              />
+            </div>
           </S.LineWrapper>
           <S.LegendBelow>
             <S.Spacing>
-              <Legend
-                heading="Show on graph:"
-                keys={ethnicGroupKeys}
-                onKeySelect={handleGroupKeySelected}
-                showNonHispanic
-                direction="column"
-              />
               <DataSubsetPicker
                 label="Year"
                 value={year}
