@@ -464,9 +464,11 @@ class AgencyTrafficStopsByPercentageView(APIView):
         columns = ["White", "Black", "Hispanic", "Asian", "Native American", "Other"]
         for year in unique_x_range:
             total_stops_for_year = sum(
-                float(stops_df[c][year]) for c in columns if year in stops_df[c]
+                float(stops_df[c][year]) for c in columns if c in stops_df and year in stops_df[c]
             )
             for col in columns:
+                if col not in stops_df or year not in stops_df[col]:
+                    continue
                 try:
                     stops_df[col][year] = float(stops_df[col][year] / total_stops_for_year)
                 except ZeroDivisionError:
