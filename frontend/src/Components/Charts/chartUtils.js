@@ -72,22 +72,6 @@ export function reduceYearsToTotal(data, ethnicGroup) {
 export function filterSinglePurpose(data, purpose) {
   return data.filter((d) => d.purpose === purpose);
 }
-
-export const filterDataBySearchType = (data, searchTypeFilter) => {
-  if (searchTypeFilter === SEARCH_TYPE_DEFAULT) return data;
-  return data.filter((d) => d.search_type === searchTypeFilter);
-};
-
-export const getQuantityForYear = (data, year, ethnicGroup) => {
-  if (data.length > 0) {
-    const statForYear = data.find((d) => d.year === year);
-    if (statForYear) {
-      return statForYear[ethnicGroup];
-    }
-  }
-  return 0;
-};
-
 /**
  * Given an Array of objects with shape { year, asian, black, etc. }, reduce to percentages of total by race.
  * provide Theme object to provide fill colors.
@@ -125,72 +109,6 @@ export function reduceFullDatasetOnlyTotals(data, ethnicGroups) {
 
   return totals;
 }
-
-export function buildStackedBarData(data, filteredKeys, theme) {
-  const mappedData = [];
-  const yearTotals = {};
-  data.forEach((row) => {
-    yearTotals[row.year] = calculateYearTotal(row, filteredKeys);
-  });
-
-  filteredKeys.forEach((ethnicGroup) => {
-    const groupSet = {};
-    groupSet.id = toTitleCase(ethnicGroup);
-    groupSet.color = theme.colors.ethnicGroup[ethnicGroup];
-    groupSet.data = data.map((datum) => ({
-      x: datum.year,
-      y: calculatePercentage(datum[ethnicGroup], yearTotals[datum.year]),
-      displayName: toTitleCase(ethnicGroup),
-      color: theme.colors.ethnicGroup[ethnicGroup],
-    }));
-    mappedData.push(groupSet);
-  });
-  return mappedData;
-}
-
-export function getSearchRateForYearByGroup(searches, stops, year, ethnicGroup, filteredKeys) {
-  const searchesForYear = searches.find((s) => s.year === year);
-  const stopsForYear = stops.find((s) => s.year === year);
-  // Officers often have no results for a year.
-  if (!searchesForYear || !stopsForYear) return 0;
-  if (ethnicGroup === AVERAGE_KEY) {
-    let totalSearches = 0;
-    let totalStops = 0;
-    filteredKeys.forEach((eg) => {
-      const g = eg.value;
-      if (g === AVERAGE_KEY) return;
-      totalSearches += searchesForYear[g];
-      totalStops += stopsForYear[g];
-    });
-    return calculatePercentage(totalSearches, totalStops);
-  }
-  const searchesForGroup = searchesForYear ? searchesForYear[ethnicGroup] : 0;
-  const stopsForGroup = stopsForYear ? stopsForYear[ethnicGroup] : 0;
-  return calculatePercentage(searchesForGroup, stopsForGroup);
-}
-
-export const reduceStopReasonsByEthnicity = (data, yearsSet, ethnicGroup, searchTypeFilter) =>
-  yearsSet.map((year) => {
-    const tick = {};
-    tick.x = year;
-    tick.symbol = 'circle';
-    tick.displayName = toTitleCase(ethnicGroup);
-    if (searchTypeFilter === SEARCH_TYPE_DEFAULT) {
-      const yrSet = data.filter((d) => d.year === year);
-      // No searches this year
-      if (yrSet.length === 0) tick.y = 0;
-      else {
-        tick.y = yrSet.reduce((acc, curr) => ({
-          [ethnicGroup]: acc[ethnicGroup] + curr[ethnicGroup],
-        }))[ethnicGroup];
-      }
-    } else {
-      const yearData = data.find((d) => d.year === year);
-      tick.y = yearData ? yearData[ethnicGroup] : 0;
-    }
-    return tick;
-  });
-
 export const reduceEthnicityByYears = (data, yearsSet, ethnicGroups = RACES) => {
   const yearData = [];
   yearsSet.forEach((yr) => {
