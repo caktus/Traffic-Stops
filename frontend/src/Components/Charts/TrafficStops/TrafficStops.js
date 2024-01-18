@@ -16,7 +16,6 @@ import {
   reduceFullDataset,
   calculatePercentage,
   calculateYearTotal,
-  buildStackedBarData,
   STATIC_LEGEND_KEYS,
   YEARS_DEFAULT,
   PURPOSE_DEFAULT,
@@ -35,7 +34,6 @@ import useMetaTags from '../../../Hooks/useMetaTags';
 import useTableModal from '../../../Hooks/useTableModal';
 
 // Children
-import StackedBar from '../ChartPrimitives/StackedBar';
 import Legend from '../ChartSections/Legend/Legend';
 import ChartHeader from '../ChartSections/ChartHeader';
 import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
@@ -49,6 +47,7 @@ import PieChart from '../../NewCharts/PieChart';
 import Switch from 'react-switch';
 import Checkbox from '../../Elements/Inputs/Checkbox';
 import { pieChartConfig, pieChartLabels, pieColors } from '../../../util/setChartColors';
+import VerticalBarChart from '../../NewCharts/VerticalBarChart';
 
 function TrafficStops(props) {
   const { agencyId } = props;
@@ -70,7 +69,7 @@ function TrafficStops(props) {
   // Don't include Average as that's only used in the Search Rate graph.
   const stopTypes = STOP_TYPES.filter((st) => st !== 'Average');
 
-  const [percentageEthnicGroups, setPercentageEthnicGroups] = useState(
+  const [percentageEthnicGroups] = useState(
     /* I sure wish I understood with certainty why this is necessary. Here's what I know:
       - Setting both of these states to STATIC_LEGEND_KEYS cause calling either setState function
       to mutate both states.
@@ -90,7 +89,6 @@ function TrafficStops(props) {
     STATIC_LEGEND_KEYS.map((k) => ({ ...k }))
   );
 
-  const [byPercentageLineData, setByPercentageLineData] = useState([]);
   const [byPercentagePieData, setByPercentagePieData] = useState({
     labels: pieChartLabels,
     datasets: [
@@ -281,16 +279,20 @@ function TrafficStops(props) {
       .catch((err) => console.log(err));
   }, []);
 
-  /* CALCULATE AND BUILD CHART DATA */
-  // Build data for Stops by Percentage line chart
+  const [stopsByPercentageData, setStopsByPercentageData] = useState({ labels: [], datasets: [] });
+
   useEffect(() => {
-    const data = stopsChartState.data[STOPS];
-    if (data && pickerActive === null) {
-      const filteredGroups = percentageEthnicGroups.filter((g) => g.selected).map((g) => g.value);
-      const derivedData = buildStackedBarData(data, filteredGroups, theme);
-      setByPercentageLineData(derivedData);
+    let url = `/api/agency/${agencyId}/stops-by-percentage/`;
+    if (officerId !== null) {
+      url = `${url}?officer=${officerId}`;
     }
-  }, [stopsChartState.data[STOPS], percentageEthnicGroups]);
+    axios
+      .get(url)
+      .then((res) => {
+        setStopsByPercentageData(res.data);
+      })
+      .catch((err) => console.log(err));
+  }, []);
 
   // Build data for Stops by Percentage pie chart
   useEffect(() => {
@@ -330,16 +332,6 @@ function TrafficStops(props) {
     if (p === purpose) return;
     setPurpose(p);
     setTrafficStopsByCountPurpose(i);
-  };
-
-  // Handle stops by percentage legend interactions
-  const handlePercentageKeySelected = (ethnicGroup) => {
-    const groupIndex = percentageEthnicGroups.indexOf(
-      percentageEthnicGroups.find((g) => g.value === ethnicGroup.value)
-    );
-    const updatedGroups = [...percentageEthnicGroups];
-    updatedGroups[groupIndex].selected = !updatedGroups[groupIndex].selected;
-    setPercentageEthnicGroups(updatedGroups);
   };
 
   // Handle stops grouped by purpose legend interactions
@@ -587,6 +579,16 @@ function TrafficStops(props) {
     return `${title} by ${subject}${stopPurposeSelected} since ${trafficStopsByCount.labels[0]}`;
   };
 
+  const formatTooltipValue = (ctx) => `${ctx.dataset.label}: ${(ctx.raw * 100).toFixed(2)}%`;
+
+  const stopsByPercentageModalTitle = () => {
+    let subject = stopsChartState.data[AGENCY_DETAILS].name;
+    if (subjectObserving() === 'officer') {
+      subject = `Officer ${officerId}`;
+    }
+    return `Traffic Stops by Percentage for ${subject} since ${stopsByPercentageData.labels[0]}`;
+  };
+
   return (
     <TrafficStopsStyled>
       {/* Traffic Stops by Percentage */}
@@ -606,20 +608,18 @@ function TrafficStops(props) {
         </S.ChartDescription>
         <S.ChartSubsection showCompare={props.showCompare}>
           <S.LineSection>
-            <S.LineWrapper>
-              <StackedBar
-                horizontal
-                data={byPercentageLineData}
-                tickValues={stopsChartState.yearSet}
-                loading={stopsChartState.loading[STOPS]}
-                yAxisLabel={(val) => `${val}%`}
-              />
-            </S.LineWrapper>
-            <Legend
-              heading="Show on graph:"
-              keys={percentageEthnicGroups}
-              onKeySelect={handlePercentageKeySelected}
-              showNonHispanic
+            <VerticalBarChart
+              title="Traffic Stops By Percentage"
+              data={stopsByPercentageData}
+              stacked
+              disableLegend
+              tooltipLabelCallback={formatTooltipValue}
+              modalConfig={{
+                tableHeader: 'Traffic Stops By Percentage',
+                tableSubheader: `Shows the race/ethnic composition of drivers stopped by this ${subjectObserving()} over time.`,
+                agencyName: stopsChartState.data[AGENCY_DETAILS].name,
+                chartTitle: stopsByPercentageModalTitle(),
+              }}
             />
           </S.LineSection>
 
