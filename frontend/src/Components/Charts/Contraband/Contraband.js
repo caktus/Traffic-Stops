@@ -260,9 +260,9 @@ function Contraband(props) {
       .get(url)
       .then((res) => {
         const colors = {
-          'Safety Violation': '#cf66e7',
-          'Regulatory Equipment': '#ed8b02',
-          Other: '#4ab13f',
+          'Safety Violation': '#5F0F40',
+          'Regulatory Equipment': '#E36414',
+          Other: '#0F4C5C',
         };
         const stopPurposeDataSets = res.data.contraband_percentages.map((ds) => ({
           axis: 'x',
