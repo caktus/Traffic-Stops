@@ -16,6 +16,11 @@ urlpatterns = [  # noqa
     re_path(r"^api/", include(router.urls)),
     path("api/about/contact/", csrf_exempt(views.ContactView.as_view()), name="contact-form"),
     path(
+        "api/agency/<agency_id>/stops-by-percentage/",
+        views.AgencyTrafficStopsByPercentageView.as_view(),
+        name="stops-by-percentage",
+    ),
+    path(
         "api/agency/<agency_id>/stops-by-count/",
         views.AgencyTrafficStopsByCountView.as_view(),
         name="stops-by-count",
@@ -29,6 +34,16 @@ urlpatterns = [  # noqa
         "api/agency/<agency_id>/stops-grouped-by-purpose/",
         views.AgencyStopGroupByPurposeView.as_view(),
         name="stops-grouped-by-purpose",
+    ),
+    path(
+        "api/agency/<agency_id>/searches-by-percentage/",
+        views.AgencySearchesByPercentageView.as_view(),
+        name="searches-by-percentage",
+    ),
+    path(
+        "api/agency/<agency_id>/searches-by-count/",
+        views.AgencySearchesByCountView.as_view(),
+        name="searches-by-count",
     ),
     path(
         "api/agency/<int:agency_id>/contraband/",
@@ -54,5 +69,10 @@ urlpatterns = [  # noqa
         "api/agency/<int:agency_id>/contraband-grouped-stop-purpose/modal/",
         views.AgencyContrabandStopGroupByPurposeModalView.as_view(),
         name="contraband-percentages-grouped-stop-purpose-modal",
+    ),
+    path(
+        "api/agency/<agency_id>/use-of-force/",
+        views.AgencyUseOfForceView.as_view(),
+        name="use-of-force",
     ),
 ]

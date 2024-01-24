@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import UseOfForceStyled from './UseOfForce.styled';
 import * as S from '../ChartSections/ChartsCommon.styled';
-import { useTheme } from 'styled-components';
 
 // Util
 import {
   YEARS_DEFAULT,
-  STATIC_LEGEND_KEYS,
   RACES,
   calculatePercentage,
   calculateYearTotal,
@@ -23,30 +21,22 @@ import useTableModal from '../../../Hooks/useTableModal';
 // Children
 import { P } from '../../../styles/StyledComponents/Typography';
 import ChartHeader from '../ChartSections/ChartHeader';
-import Legend from '../ChartSections/Legend/Legend';
 import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
 import useOfficerId from '../../../Hooks/useOfficerId';
-import GroupedBar from '../ChartPrimitives/GroupedBar';
 import PieChart from '../../NewCharts/PieChart';
-import getDownloadableTitle from '../../../util/getDownloadableTitle';
 import { pieChartConfig, pieChartLabels } from '../../../util/setChartColors';
+import VerticalBarChart from '../../NewCharts/VerticalBarChart';
+import axios from '../../../Services/Axios';
 
 function UseOfForce(props) {
   const { agencyId, showCompare } = props;
   const officerId = useOfficerId();
-  const theme = useTheme();
 
   const [chartState] = useDataset(agencyId, USE_OF_FORCE);
 
   const [year, setYear] = useState(YEARS_DEFAULT);
-  const [pickerActive] = useState(null);
-  const [pickerXAxis] = useState(null);
 
-  const [ethnicGroupKeys, setEthnicGroupKeys] = useState(() =>
-    STATIC_LEGEND_KEYS.map((k) => ({ ...k }))
-  );
-
-  const [useOfForceData, setUseOfForceData] = useState([]);
+  const [useOfForceBarData, setUseOfForceBarData] = useState({ labels: [], datasets: [] });
   const [useOfForcePieData, setUseOfForcePieData] = useState({
     labels: pieChartLabels,
     datasets: [
@@ -70,29 +60,18 @@ function UseOfForce(props) {
     return '';
   };
 
-  /* BUILD DATA */
-  // Bar chart data
   useEffect(() => {
-    const data = chartState.data[USE_OF_FORCE];
-    if (data) {
-      const mappedData = ethnicGroupKeys
-        .filter((e) => e.selected)
-        .map((eg) => {
-          const ethnicGroup = eg.value;
-          return {
-            id: ethnicGroup,
-            color: theme.colors.ethnicGroup[ethnicGroup],
-            data: data.map((d) => ({
-              x: pickerXAxis === 'Month' ? d.date : d.year,
-              y: d[ethnicGroup],
-              ethnicGroup: eg.label,
-              color: theme.colors.ethnicGroup[ethnicGroup],
-            })),
-          };
-        });
-      setUseOfForceData(mappedData);
+    let url = `/api/agency/${agencyId}/use-of-force/`;
+    if (officerId !== null) {
+      url = `${url}?officer=${officerId}`;
     }
-  }, [chartState.data[USE_OF_FORCE], ethnicGroupKeys]);
+    axios
+      .get(url)
+      .then((res) => {
+        setUseOfForceBarData(res.data);
+      })
+      .catch((err) => console.log(err));
+  }, []);
 
   // Pie chart data
   useEffect(() => {
@@ -134,42 +113,28 @@ function UseOfForce(props) {
     setYear(y);
   };
   // Handle stops by percentage legend interactions
-  const handleGroupKeySelected = (ethnicGroup) => {
-    const groupIndex = ethnicGroupKeys.indexOf(
-      ethnicGroupKeys.find((g) => g.value === ethnicGroup.value)
-    );
-    const updatedGroups = [...ethnicGroupKeys];
-    updatedGroups[groupIndex].selected = !updatedGroups[groupIndex].selected;
-    setEthnicGroupKeys(updatedGroups);
-  };
   const handleViewData = () => {
     openModal(USE_OF_FORCE, TABLE_COLUMNS);
   };
 
-  const lineAxisFormat = (t) => {
-    if (pickerActive) {
-      return t;
-    }
-    return t % 2 === 0 ? t : null;
-  };
-
-  const pieChartTitle = (download = false) => {
+  const chartModalTitle = (displayYear = true) => {
     let subject = chartState.data[AGENCY_DETAILS].name;
     if (subjectObserving() === 'officer') {
       subject = `Officer ${officerId}`;
     }
-    let title = `Use of Force for ${subject} ${
-      year === YEARS_DEFAULT ? `since ${chartState.yearRange.reverse()[0]}` : `in ${year}`
-    }`;
-    if (download) {
-      title = getDownloadableTitle(title);
+    let yearOf = `since ${useOfForceBarData.labels[0]}`;
+    if (displayYear) {
+      yearOf = year === YEARS_DEFAULT ? `since ${useOfForceBarData.labels[0]}` : `in ${year}`;
     }
-    return title;
+    return `Use of Force for ${subject} ${yearOf}`;
   };
 
-  const getChartModalSubHeading = () => {
-    const yearSelected = year && year !== 'All' ? ` in ${year}` : '';
-    return `Shows the race/ethnic composition of drivers ${subjectObserving()}${yearSelected} reported using force against.`;
+  const getChartModalSubHeading = (displayYear = true) => {
+    let yearOf = '';
+    if (displayYear) {
+      yearOf = year && year !== 'All' ? ` in ${year}` : '';
+    }
+    return `Shows the race/ethnic composition of drivers ${subjectObserving()}${yearOf} reported using force against.`;
   };
 
   return (
@@ -185,49 +150,38 @@ function UseOfForce(props) {
           </P>
         </S.ChartDescription>
         <S.ChartSubsection showCompare={showCompare}>
-          <S.LineSection>
-            <S.LineWrapper>
-              <GroupedBar
-                data={useOfForceData}
-                iTickFormat={lineAxisFormat}
-                iTickValues={chartState.yearSet}
-                loading={chartState.loading[USE_OF_FORCE]}
-                toolTipFontSize={16}
-                dAxisProps={{
-                  tickFormat: (t) => `${t}`,
-                }}
-              />
-            </S.LineWrapper>
-            <Legend
-              heading="Show on graph:"
-              keys={ethnicGroupKeys}
-              onKeySelect={handleGroupKeySelected}
-              showNonHispanic
+          <VerticalBarChart
+            title="Use Of Force"
+            data={useOfForceBarData}
+            modalConfig={{
+              tableHeader: 'Use of Force',
+              tableSubheader: getChartModalSubHeading(false),
+              agencyName: chartState.data[AGENCY_DETAILS].name,
+              chartTitle: chartModalTitle(false),
+            }}
+          />
+        </S.ChartSubsection>
+        <S.ChartSubsection>
+          <S.PieWrapper>
+            <PieChart
+              data={useOfForcePieData}
+              displayLegend={false}
+              maintainAspectRatio
+              modalConfig={{
+                tableHeader: 'Use of Force',
+                tableSubheader: getChartModalSubHeading(),
+                agencyName: chartState.data[AGENCY_DETAILS].name,
+                chartTitle: chartModalTitle(),
+              }}
             />
-          </S.LineSection>
-          <S.PieSection>
-            <S.PieWrapper>
-              <PieChart
-                data={useOfForcePieData}
-                displayLegend={false}
-                maintainAspectRatio
-                modalConfig={{
-                  tableHeader: 'Use of Force',
-                  tableSubheader: getChartModalSubHeading(),
-                  agencyName: chartState.data[AGENCY_DETAILS].name,
-                  chartTitle: pieChartTitle(),
-                  fileName: pieChartTitle(true),
-                }}
-              />
-            </S.PieWrapper>
-            <DataSubsetPicker
-              label="Year"
-              value={year}
-              onChange={handleYearSelected}
-              options={[YEARS_DEFAULT].concat(chartState.yearRange)}
-              dropUp
-            />
-          </S.PieSection>
+          </S.PieWrapper>
+          <DataSubsetPicker
+            label="Year"
+            value={year}
+            onChange={handleYearSelected}
+            options={[YEARS_DEFAULT].concat(chartState.yearRange)}
+            dropUp
+          />
         </S.ChartSubsection>
       </S.ChartSection>
     </UseOfForceStyled>

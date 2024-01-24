@@ -13,7 +13,7 @@ export const ChartModal = styled.div`
 
   padding: 2.5em;
   width: 100%;
-  max-width: 1000px;
+  max-width: 1300px;
   height: 95%;
 
   position: fixed;
