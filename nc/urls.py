@@ -46,6 +46,11 @@ urlpatterns = [  # noqa
         name="searches-by-count",
     ),
     path(
+        "api/agency/<agency_id>/search-rate/",
+        views.AgencySearchRateView.as_view(),
+        name="search-rate",
+    ),
+    path(
         "api/agency/<int:agency_id>/contraband/",
         views.AgencyContrabandView.as_view(),
         name="contraband-percentages",

@@ -31,6 +31,7 @@ from nc.models import (
     ContrabandSummary,
     Person,
     Resource,
+    StopPurpose,
     StopPurposeGroup,
     StopSummary,
 )
@@ -1402,6 +1403,128 @@ class AgencySearchesByCountView(APIView):
         )
         df = pd.DataFrame(pivot_df)
         data = self.build_response(df, unique_x_range, stop_purpose if stop_purpose != 0 else None)
+        return Response(data=data, status=200)
+
+
+class AgencySearchRateView(APIView):
+    def build_response(self, df, labels):
+        def get_values(race):
+            if race in df:
+                values = [float(df[race][label]) if label in df[race] else 0 for label in labels]
+                values.insert(0, sum(values) / len(values))
+                return values
+
+            return [0] * (len(labels) + 1)
+
+        return {
+            "labels": ["Average"] + list(labels.values()),
+            "datasets": [
+                {
+                    "label": "Black",
+                    "data": get_values("Black"),
+                    "borderColor": "#8879fc",
+                    "backgroundColor": "#beb4fa",
+                },
+                {
+                    "label": "Hispanic",
+                    "data": get_values("Hispanic"),
+                    "borderColor": "#9c0f2e",
+                    "backgroundColor": "#ca8794",
+                },
+                {
+                    "label": "Asian",
+                    "data": get_values("Asian"),
+                    "borderColor": "#ffe066",
+                    "backgroundColor": "#ffeeb2",
+                },
+                {
+                    "label": "Native American",
+                    "data": get_values("Native American"),
+                    "borderColor": "#0c3a66",
+                    "backgroundColor": "#8598ac",
+                },
+                {
+                    "label": "Other",
+                    "data": get_values("Other"),
+                    "borderColor": "#9e7b9b",
+                    "backgroundColor": "#cab6c7",
+                },
+            ],
+        }
+
+    def get(self, request, agency_id):
+        stop_qs = StopSummary.objects.all().annotate(year=ExtractYear("date"))
+        search_qs = StopSummary.objects.filter(search_type__isnull=False).annotate(
+            year=ExtractYear("date")
+        )
+
+        agency_id = int(agency_id)
+        if agency_id != -1:
+            search_qs = search_qs.filter(agency_id=agency_id)
+            stop_qs = stop_qs.filter(agency_id=agency_id)
+
+        officer = request.query_params.get("officer", None)
+        if officer:
+            search_qs = search_qs.filter(officer_id=officer)
+            stop_qs = stop_qs.filter(officer_id=officer)
+
+        year = request.query_params.get("year", None)
+        if year:
+            search_qs = search_qs.filter(year=year)
+            stop_qs = stop_qs.filter(year=year)
+
+        search_qs = search_qs.values("stop_purpose", "driver_race_comb").annotate(
+            count=Sum("count")
+        )
+        stop_qs = stop_qs.values("stop_purpose", "driver_race_comb").annotate(count=Sum("count"))
+
+        if search_qs.count() == 0:
+            return Response(data={"labels": [], "datasets": []}, status=200)
+
+        search_df = pd.DataFrame(search_qs)
+        stops_df = pd.DataFrame(stop_qs)
+
+        search_pivot_df = search_df.pivot(
+            index="stop_purpose", columns="driver_race_comb", values="count"
+        ).fillna(value=0)
+        search_df = pd.DataFrame(search_pivot_df)
+
+        stop_pivot_df = stops_df.pivot(
+            index="stop_purpose", columns="driver_race_comb", values="count"
+        ).fillna(value=0)
+        stops_df = pd.DataFrame(stop_pivot_df)
+
+        columns = ["Black", "Hispanic", "Asian", "Native American", "Other"]
+        purpose_choices = {e.value: e.label for e in StopPurpose}
+        purpose_choices = dict(reversed(purpose_choices.items()))
+
+        def get_val(df, column, purpose):
+            if column in df and purpose in df[column]:
+                return df[column][purpose]
+            return 0
+
+        for col in columns:
+            for k, v in purpose_choices.items():
+                base_searches, base_stops = get_val(search_df, "White", k), get_val(
+                    stops_df, "White", k
+                )
+                purpose_searches, purpose_stops = get_val(search_df, col, k), get_val(
+                    stops_df, col, k
+                )
+                try:
+                    base_rate = base_searches / base_stops
+                except ZeroDivisionError:
+                    base_rate = 0
+                try:
+                    purpose_rate = float(purpose_searches) / float(purpose_stops)
+                except ZeroDivisionError:
+                    purpose_rate = 0
+                if col in search_df and k in search_df[col]:
+                    search_df[col][k] = (
+                        (purpose_rate - base_rate) / base_rate if base_rate != 0 else 0
+                    )
+
+        data = self.build_response(search_df, purpose_choices)
         return Response(data=data, status=200)
 
 
