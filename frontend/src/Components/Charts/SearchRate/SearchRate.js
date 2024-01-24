@@ -116,6 +116,7 @@ function SearchRate(props) {
                 tooltipTitleCallback={formatTooltipLabel}
                 tooltipLabelCallback={formatTooltipValue}
                 legendPosition="bottom"
+                pinMaxValue={false}
                 modalConfig={{
                   tableHeader: 'Likelihood of Search',
                   tableSubheader: getBarChartModalSubHeading(),
