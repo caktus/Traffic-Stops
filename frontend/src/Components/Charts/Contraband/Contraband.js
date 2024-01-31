@@ -271,7 +271,6 @@ function Contraband(props) {
           fill: false,
           backgroundColor: colors[ds.stop_purpose],
           borderColor: colors[ds.stop_purpose],
-          hoverBackgroundColor: colors[ds.stop_purpose],
           borderWidth: 1,
         }));
         const data = {
@@ -573,7 +572,7 @@ function Contraband(props) {
         </S.ChartDescription>
         <NewModal
           tableHeader='Contraband "Hit Rate" Grouped By Stop Purpose'
-          tableSubheader="Shows what percentage of searches led to the discovery of illegal items broken down by race/ethnicity and original stop purpose."
+          tableSubheader="Shows what number of searches led to the discovery of illegal items by race/ethnicity and original stop purpose."
           agencyName={chartState.data[AGENCY_DETAILS].name}
           tableData={contrabandStopPurposeModalData.tableData}
           csvData={contrabandStopPurposeModalData.csvData}
@@ -602,7 +601,7 @@ function Contraband(props) {
               modalConfig={{
                 tableHeader: 'Contraband "Hit Rate" Grouped By Stop Purpose',
                 tableSubheader: getBarChartModalSubHeading(
-                  'Shows what percentage of searches led to the discovery of illegal items broken down by race/ethnicity and original stop purpose'
+                  'Shows what number of searches led to the discovery of illegal items by race/ethnicity and original stop purpose'
                 ),
                 agencyName: chartState.data[AGENCY_DETAILS].name,
                 chartTitle: getBarChartModalHeading(
@@ -632,7 +631,7 @@ function Contraband(props) {
           <P>Shows what percentage of searches discovered specific types of illegal items.</P>
           <NewModal
             tableHeader='Contraband "Hit Rate" by type'
-            tableSubheader="Shows what percentage of searches discovered specific types of illegal items."
+            tableSubheader="Shows what number of searches discovered specific types of illegal items."
             agencyName={chartState.data[AGENCY_DETAILS].name}
             tableData={contrabandTypesData.tableData}
             csvData={contrabandTypesData.csvData}
@@ -652,7 +651,7 @@ function Contraband(props) {
               modalConfig={{
                 tableHeader: 'Contraband "Hit Rate" by type',
                 tableSubheader: getBarChartModalSubHeading(
-                  'Shows what percentage of searches discovered specific types of illegal items'
+                  'Shows what number of searches discovered specific types of illegal items'
                 ),
                 agencyName: chartState.data[AGENCY_DETAILS].name,
                 chartTitle: getBarChartModalHeading(

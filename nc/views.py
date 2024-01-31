@@ -607,20 +607,20 @@ class AgencyStopPurposeGroupView(APIView):
                 {
                     "label": StopPurposeGroup.SAFETY_VIOLATION,
                     "data": self.get_values(df, StopPurposeGroup.SAFETY_VIOLATION, years_len),
-                    "borderColor": "#7F428A",
-                    "backgroundColor": "#CFA9D6",
+                    "borderColor": "#5F0F40",
+                    "backgroundColor": "#5F0F40",
                 },
                 {
                     "label": StopPurposeGroup.REGULATORY_EQUIPMENT,
                     "data": self.get_values(df, StopPurposeGroup.REGULATORY_EQUIPMENT, years_len),
-                    "borderColor": "#b36800",
-                    "backgroundColor": "#ffa500",
+                    "borderColor": "#E36414",
+                    "backgroundColor": "#E36414",
                 },
                 {
                     "label": StopPurposeGroup.OTHER,
                     "data": self.get_values(df, StopPurposeGroup.OTHER, years_len),
-                    "borderColor": "#1B4D3E",
-                    "backgroundColor": "#ACE1AF",
+                    "borderColor": "#0F4C5C",
+                    "backgroundColor": "#0F4C5C",
                 },
             ],
         }
