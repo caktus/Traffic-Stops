@@ -33,6 +33,7 @@ export default function HorizontalBarChart({
   yAxisShowLabels = true,
   displayStopPurposeTooltips = false,
   redraw = false,
+  pinMaxValue = true, // Some graph percentages go beyond 100%
   modalConfig = {},
 }) {
   const options = {
@@ -42,8 +43,9 @@ export default function HorizontalBarChart({
     scales: {
       x: {
         stacked: xStacked,
-        max: 1,
+        max: pinMaxValue ? 1 : null,
         ticks: {
+          stepSize: pinMaxValue ? 0.1 : 0.5,
           format: {
             style: 'percent',
           },
