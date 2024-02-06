@@ -177,7 +177,9 @@ function Contraband(props) {
       .get(url)
       .then((res) => {
         const tableData = [];
-        const resTableData = JSON.parse(res.data.table_data);
+        const resTableData = res.data.table_data.length
+          ? JSON.parse(res.data.table_data)
+          : { data: [] };
         resTableData.data.forEach((e) => {
           const dataCounts = { ...e };
           delete dataCounts.year;
@@ -232,7 +234,9 @@ function Contraband(props) {
       .get(url)
       .then((res) => {
         const tableData = [];
-        const resTableData = JSON.parse(res.data.table_data);
+        const resTableData = res.data.table_data.length
+          ? JSON.parse(res.data.table_data)
+          : { data: [] };
         resTableData.data.forEach((e) => {
           const dataCounts = { ...e };
           delete dataCounts.year;
@@ -358,16 +362,22 @@ function Contraband(props) {
 
   useEffect(() => {
     const params = [];
+    params.push({
+      param: 'grouped_stop_purpose',
+      val: selectedGroupedContrabandStopPurpose,
+    });
+    params.push({
+      param: 'contraband_type',
+      val: toTitleCase(selectedGroupedContrabandType),
+    });
     if (officerId) {
       params.push({ param: 'officer', val: officerId });
     }
 
     const urlParams = params.map((p) => `${p.param}=${p.val}`).join('&');
-    const url = `/api/agency/${agencyId}/contraband-grouped-stop-purpose/modal/?grouped_stop_purpose=${selectedGroupedContrabandStopPurpose}&contraband_type=${toTitleCase(
-      selectedGroupedContrabandType
-    )}/${urlParams}`;
+    const url = `/api/agency/${agencyId}/contraband-grouped-stop-purpose/modal/?${urlParams}`;
     axios.get(url).then((res) => {
-      const tableData = JSON.parse(res.data.table_data)['data'];
+      const tableData = res.data.table_data.length ? JSON.parse(res.data.table_data).data : [];
       updateGroupedContrabandModalData(tableData);
     });
   }, [selectedGroupedContrabandStopPurpose, selectedGroupedContrabandType]);

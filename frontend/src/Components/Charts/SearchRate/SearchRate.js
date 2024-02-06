@@ -46,7 +46,6 @@ function SearchRate(props) {
     axios
       .get(url)
       .then((res) => {
-        console.log(res);
         setSearchRateData(res.data);
       })
       .catch((err) => console.log(err));
