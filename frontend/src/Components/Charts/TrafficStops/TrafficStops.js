@@ -102,12 +102,16 @@ function TrafficStops(props) {
   const renderMetaTags = useMetaTags();
   const [renderTableModal, { openModal }] = useTableModal();
 
-  const [stopPurposeGroupsData, setStopPurposeGroups] = useState({ labels: [], datasets: [] });
+  const [stopPurposeGroupsData, setStopPurposeGroups] = useState({
+    labels: [],
+    datasets: [],
+    loading: true,
+  });
   const [stopsGroupedByPurposeData, setStopsGroupedByPurpose] = useState({
     labels: [],
-    safety: { labels: [], datasets: [] },
-    regulatory: { labels: [], datasets: [] },
-    other: { labels: [], datasets: [] },
+    safety: { labels: [], datasets: [], loading: true },
+    regulatory: { labels: [], datasets: [], loading: true },
+    other: { labels: [], datasets: [], loading: true },
     max_step_size: null,
   });
   const groupedPieChartConfig = {
@@ -126,6 +130,7 @@ function TrafficStops(props) {
           ...groupedPieChartConfig,
         },
       ],
+      loading: true,
     },
     regulatory: {
       labels: groupedPieChartLabels,
@@ -135,6 +140,7 @@ function TrafficStops(props) {
           ...groupedPieChartConfig,
         },
       ],
+      loading: true,
     },
     other: {
       labels: groupedPieChartLabels,
@@ -144,6 +150,7 @@ function TrafficStops(props) {
           ...groupedPieChartConfig,
         },
       ],
+      loading: true,
     },
   });
 
@@ -193,6 +200,7 @@ function TrafficStops(props) {
   const [trafficStopsByCount, setTrafficStopsByCount] = useState({
     labels: [],
     datasets: [],
+    loading: true,
   });
 
   const createDateForRange = (yr) =>
@@ -252,6 +260,7 @@ function TrafficStops(props) {
   }, []);
 
   const buildPercentages = (data, ds) => {
+    if (!data.length) return [0, 0, 0, 0, 0, 0];
     const dsTotal = data[ds].datasets
       .map((s) => s.data.reduce((a, b) => a + b, 0))
       .reduce((a, b) => a + b, 0);
@@ -279,7 +288,11 @@ function TrafficStops(props) {
       .catch((err) => console.log(err));
   }, []);
 
-  const [stopsByPercentageData, setStopsByPercentageData] = useState({ labels: [], datasets: [] });
+  const [stopsByPercentageData, setStopsByPercentageData] = useState({
+    labels: [],
+    datasets: [],
+    loading: true,
+  });
 
   useEffect(() => {
     let url = `/api/agency/${agencyId}/stops-by-percentage/`;

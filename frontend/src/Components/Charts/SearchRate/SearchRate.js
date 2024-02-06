@@ -27,22 +27,26 @@ function SearchRate(props) {
   const [chartState] = useDataset(agencyId, LIKELIHOOD_OF_SEARCH);
 
   const [year, setYear] = useState(YEARS_DEFAULT);
-  const [searchRateData, setSearchRateData] = useState({ labels: [], datasets: [] });
+  const [searchRateData, setSearchRateData] = useState({ labels: [], datasets: [], loading: true });
 
   const renderMetaTags = useMetaTags();
   const [renderTableModal, { openModal }] = useTableModal();
 
   useEffect(() => {
-    let url = `/api/agency/${agencyId}/search-rate/`;
+    const params = [];
     if (year && year !== 'All') {
-      url = `${url}?year=${year}`;
+      params.push({ param: 'year', val: year });
     }
     if (officerId) {
-      url = `${url}&officer=${officerId}`;
+      params.push({ param: 'officer', val: officerId });
     }
+
+    const urlParams = params.map((p) => `${p.param}=${p.val}`).join('&');
+    const url = `/api/agency/${agencyId}/search-rate/?${urlParams}`;
     axios
       .get(url)
       .then((res) => {
+        console.log(res);
         setSearchRateData(res.data);
       })
       .catch((err) => console.log(err));

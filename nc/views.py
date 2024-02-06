@@ -544,6 +544,9 @@ class AgencyTrafficStopsByCountView(APIView):
         if officer:
             qs = qs.filter(officer_id=officer)
 
+        if qs.count() == 0:
+            return Response(data={"labels": [], "datasets": []}, status=200)
+
         if date_precision == "year":
             qs = qs.annotate(year=ExtractYear("date"))
         else:
@@ -556,8 +559,6 @@ class AgencyTrafficStopsByCountView(APIView):
         qs_values = [date_precision] + qs_df_cols
 
         qs = qs.values(*qs_values).annotate(count=Sum("count")).order_by(date_precision)
-        if qs.count() == 0:
-            return Response(data={"labels": [], "datasets": []}, status=200)
         df = pd.DataFrame(qs)
         unique_x_range = df[date_precision].unique()
         pivot_df = df.pivot(index=date_precision, columns=qs_df_cols, values="count").fillna(
@@ -691,7 +692,16 @@ class AgencyStopGroupByPurposeView(APIView):
             .order_by("year")
         )
         if qs.count() == 0:
-            return Response(data={"labels": [], "datasets": []}, status=200)
+            return Response(
+                data={
+                    "labels": [],
+                    "safety": {"labels": [], "datasets": []},
+                    "regulatory": {"labels": [], "datasets": []},
+                    "other": {"labels": [], "datasets": []},
+                    "max_step_size": 0,
+                },
+                status=200,
+            )
         df = pd.DataFrame(qs)
         unique_years = df.year.unique()
         pivot_table = pd.pivot_table(
@@ -1308,9 +1318,13 @@ class AgencySearchesByPercentageView(APIView):
             total_search = 0
             total_stop = 0
             for c in columns:
-                total_search += search_df[c][year]
-                total_stop += stops_df[c][year]
-                search_df[c][year] = search_df[c][year] / stops_df[c][year]
+                if c in search_df and c in stops_df:
+                    total_search += search_df[c][year] or 0
+                    total_stop += stops_df[c][year] or 0
+                    try:
+                        search_df[c][year] = float(search_df[c][year]) / float(stops_df[c][year])
+                    except (ValueError, ZeroDivisionError):
+                        search_df[c][year] = 0
             search_df["Average"][year] = total_search / total_stop
 
         data = self.build_response(search_df, unique_x_range)
@@ -1473,13 +1487,13 @@ class AgencySearchRateView(APIView):
             search_qs = search_qs.filter(year=year)
             stop_qs = stop_qs.filter(year=year)
 
+        if search_qs.count() == 0:
+            return Response(data={"labels": [], "datasets": []}, status=200)
+
         search_qs = search_qs.values("stop_purpose", "driver_race_comb").annotate(
             count=Sum("count")
         )
         stop_qs = stop_qs.values("stop_purpose", "driver_race_comb").annotate(count=Sum("count"))
-
-        if search_qs.count() == 0:
-            return Response(data={"labels": [], "datasets": []}, status=200)
 
         search_df = pd.DataFrame(search_qs)
         stops_df = pd.DataFrame(stop_qs)

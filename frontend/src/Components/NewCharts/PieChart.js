@@ -136,7 +136,7 @@ export default function PieChart({
   const pieChartModalPlugins = [whiteBackground, alwaysShowTooltip];
   const pieChartModalOptions = createModalOptions(options);
 
-  if (!data.datasets.length) {
+  if (data.loading) {
     return <DataLoading />;
   }
 

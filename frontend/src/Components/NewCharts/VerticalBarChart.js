@@ -77,10 +77,6 @@ export default function VerticalBarChart({
   const [isChartOpen, setIsChartOpen] = useState(false);
   const zoomedLineChartRef = useRef(null);
 
-  if (!data.labels.length) {
-    return <DataLoading />;
-  }
-
   const whiteBackground = {
     id: 'customVerticalBarCanvasBackgroundColor',
     beforeDraw: (chart, args, config) => {
@@ -105,6 +101,10 @@ export default function VerticalBarChart({
 
   const barChartModalPlugins = [whiteBackground];
   const barChartModalOptions = createModalOptions(options);
+
+  if (data.loading) {
+    return <DataLoading />;
+  }
 
   return (
     <>

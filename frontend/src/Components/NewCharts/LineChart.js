@@ -164,7 +164,7 @@ export default function LineChart({
   const lineChartModalPlugins = [whiteBackground];
   const lineChartModalOptions = createModalOptions(options);
 
-  if (!data.datasets.length) {
+  if (data.loading) {
     return <DataLoading />;
   }
 
