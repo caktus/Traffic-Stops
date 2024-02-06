@@ -40,9 +40,17 @@ function Searches(props) {
 
   const [searchType, setSearchType] = useState(SEARCH_TYPE_DEFAULT);
 
-  const [searchPercentageData, setSearchPercentageData] = useState({ labels: [], datasets: [] });
+  const [searchPercentageData, setSearchPercentageData] = useState({
+    labels: [],
+    datasets: [],
+    loading: true,
+  });
 
-  const [searchCountData, setSearchCountData] = useState({ labels: [], datasets: [] });
+  const [searchCountData, setSearchCountData] = useState({
+    labels: [],
+    datasets: [],
+    loading: true,
+  });
   const [searchCountType, setSearchCountType] = useState(0);
   const renderMetaTags = useMetaTags();
   const [renderTableModal, { openModal }] = useTableModal();

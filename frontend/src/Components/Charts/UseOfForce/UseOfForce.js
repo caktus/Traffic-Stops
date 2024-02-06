@@ -36,7 +36,11 @@ function UseOfForce(props) {
 
   const [year, setYear] = useState(YEARS_DEFAULT);
 
-  const [useOfForceBarData, setUseOfForceBarData] = useState({ labels: [], datasets: [] });
+  const [useOfForceBarData, setUseOfForceBarData] = useState({
+    labels: [],
+    datasets: [],
+    loading: true,
+  });
   const [useOfForcePieData, setUseOfForcePieData] = useState({
     labels: pieChartLabels,
     datasets: [

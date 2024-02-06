@@ -47,6 +47,7 @@ function Contraband(props) {
     isModalOpen: false,
     tableData: [],
     csvData: [],
+    loading: true,
   });
   const [contrabandYear, setContrabandYear] = useState(YEARS_DEFAULT);
   const [contrabandTypesData, setContrabandTypesData] = useState({
@@ -55,12 +56,14 @@ function Contraband(props) {
     isModalOpen: false,
     tableData: [],
     csvData: [],
+    loading: true,
   });
 
   const [contrabandTypesYear, setContrabandTypesYear] = useState(YEARS_DEFAULT);
   const [contrabandStopPurposeData, setContrabandStopPurposeData] = useState({
     labels: [],
     datasets: [],
+    loading: true,
   });
   const [contrabandStopPurposeModalData, setContrabandStopPurposeModalData] = useState({
     modalData: {},
@@ -68,6 +71,7 @@ function Contraband(props) {
     tableData: [],
     csvData: [],
     selectedPurpose: STOP_PURPOSE_TYPES[0],
+    loading: true,
   });
 
   const [groupedContrabandStopPurposeModalData, setGroupedContrabandStopPurposeModalData] =
@@ -76,6 +80,7 @@ function Contraband(props) {
       isOpen: false,
       tableData: [],
       csvData: [],
+      loading: true,
     });
 
   const [contrabandStopPurposeYear, setContrabandStopPurposeYear] = useState(YEARS_DEFAULT);
@@ -84,14 +89,17 @@ function Contraband(props) {
     {
       labels: [],
       datasets: [],
+      loading: true,
     },
     {
       labels: [],
       datasets: [],
+      loading: true,
     },
     {
       labels: [],
       datasets: [],
+      loading: true,
     },
   ];
   const [contrabandGroupedStopPurposeData, setContrabandGroupedStopPurposeData] = useState(
@@ -155,10 +163,16 @@ function Contraband(props) {
 
   // Build New Contraband Data
   useEffect(() => {
-    let url = `/api/agency/${agencyId}/contraband/`;
+    const params = [];
     if (contrabandYear && contrabandYear !== 'All') {
-      url = `${url}?year=${contrabandYear}`;
+      params.push({ param: 'year', val: contrabandYear });
     }
+    if (officerId) {
+      params.push({ param: 'officer', val: officerId });
+    }
+
+    const urlParams = params.map((p) => `${p.param}=${p.val}`).join('&');
+    const url = `/api/agency/${agencyId}/contraband/?${urlParams}`;
     axios
       .get(url)
       .then((res) => {
@@ -204,10 +218,16 @@ function Contraband(props) {
   }, [contrabandYear]);
 
   useEffect(() => {
-    let url = `/api/agency/${agencyId}/contraband-types/`;
+    const params = [];
     if (contrabandTypesYear && contrabandTypesYear !== 'All') {
-      url = `${url}?year=${contrabandTypesYear}`;
+      params.push({ param: 'year', val: contrabandTypesYear });
     }
+    if (officerId) {
+      params.push({ param: 'officer', val: officerId });
+    }
+
+    const urlParams = params.map((p) => `${p.param}=${p.val}`).join('&');
+    const url = `/api/agency/${agencyId}/contraband-types/?${urlParams}`;
     axios
       .get(url)
       .then((res) => {
@@ -252,10 +272,16 @@ function Contraband(props) {
   }, [contrabandTypesYear]);
 
   useEffect(() => {
-    let url = `/api/agency/${agencyId}/contraband-stop-purpose/`;
+    const params = [];
     if (contrabandStopPurposeYear && contrabandStopPurposeYear !== 'All') {
-      url = `${url}?year=${contrabandStopPurposeYear}`;
+      params.push({ param: 'year', val: contrabandStopPurposeYear });
     }
+    if (officerId) {
+      params.push({ param: 'officer', val: officerId });
+    }
+
+    const urlParams = params.map((p) => `${p.param}=${p.val}`).join('&');
+    const url = `/api/agency/${agencyId}/contraband-stop-purpose/?${urlParams}`;
     axios
       .get(url)
       .then((res) => {
@@ -291,10 +317,16 @@ function Contraband(props) {
   }, []);
 
   const fetchHitRateByStopPurpose = (yr) => {
-    let url = `/api/agency/${agencyId}/contraband-grouped-stop-purpose/`;
+    const params = [];
     if (yr && yr !== 'All') {
-      url = `${url}?year=${yr}`;
+      params.push({ param: 'year', val: yr });
     }
+    if (officerId) {
+      params.push({ param: 'officer', val: officerId });
+    }
+
+    const urlParams = params.map((p) => `${p.param}=${p.val}`).join('&');
+    const url = `/api/agency/${agencyId}/contraband-grouped-stop-purpose/?${urlParams}`;
     axios
       .get(url)
       .then((res) => {
@@ -325,9 +357,15 @@ function Contraband(props) {
   };
 
   useEffect(() => {
+    const params = [];
+    if (officerId) {
+      params.push({ param: 'officer', val: officerId });
+    }
+
+    const urlParams = params.map((p) => `${p.param}=${p.val}`).join('&');
     const url = `/api/agency/${agencyId}/contraband-grouped-stop-purpose/modal/?grouped_stop_purpose=${selectedGroupedContrabandStopPurpose}&contraband_type=${toTitleCase(
       selectedGroupedContrabandType
-    )}`;
+    )}/${urlParams}`;
     axios.get(url).then((res) => {
       const tableData = JSON.parse(res.data.table_data)['data'];
       updateGroupedContrabandModalData(tableData);

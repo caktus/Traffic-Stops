@@ -132,10 +132,6 @@ export default function HorizontalBarChart({
     popperElement.removeAttribute('data-show');
   };
 
-  if (!data.labels.length) {
-    return <DataLoading />;
-  }
-
   const whiteBackground = {
     id: 'customBarCanvasBackgroundColor',
     beforeDraw: (chart, args, config) => {
@@ -166,6 +162,10 @@ export default function HorizontalBarChart({
 
   const barChartModalPlugins = [whiteBackground];
   const barChartModalOptions = createModalOptions(options);
+
+  if (data.loading) {
+    return <DataLoading />;
+  }
 
   return (
     <>

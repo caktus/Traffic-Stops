@@ -53,6 +53,7 @@ function Overview(props) {
         ...pieChartConfig,
       },
     ],
+    loading: true,
   };
 
   const [censusPieData, setCensusPieData] = useState(initChartData);
