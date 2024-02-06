@@ -348,7 +348,7 @@ function Contraband(props) {
       Weapons: '#A653F4',
     };
     const stopPurposeDataSets = data.map((sp) => ({
-      labels: ['W', 'B', 'H', 'A', 'NA', 'O'],
+      labels: ['White', 'Black', 'Hispanic', 'Asian', 'Native American', 'Other'],
       datasets: sp.data.map((ds) => ({
         label: ds.contraband,
         data: ds.data,
