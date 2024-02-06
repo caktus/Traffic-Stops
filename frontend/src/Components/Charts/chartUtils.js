@@ -69,9 +69,6 @@ export function reduceYearsToTotal(data, ethnicGroup) {
   }));
 }
 
-export function filterSinglePurpose(data, purpose) {
-  return data.filter((d) => d.purpose === purpose);
-}
 /**
  * Given an Array of objects with shape { year, asian, black, etc. }, reduce to percentages of total by race.
  * provide Theme object to provide fill colors.
