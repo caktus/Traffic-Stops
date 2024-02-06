@@ -501,19 +501,19 @@ function Contraband(props) {
 
   const subjectObserving = () => {
     if (officerId) {
-      return 'officer';
+      return 'by this officer';
     }
-    if (agencyId) {
-      return 'department';
+    if (agencyId === '-1') {
+      return 'for the entire state';
     }
-    return '';
+    return 'by this department';
   };
 
-  const getBarChartModalSubHeading = (title) => `${title} by this ${subjectObserving()}.`;
+  const getBarChartModalSubHeading = (title) => `${title} ${subjectObserving()}.`;
 
   const getBarChartModalHeading = (title, yearSelected) => {
     let subject = chartState.data[AGENCY_DETAILS].name;
-    if (subjectObserving() === 'officer') {
+    if (officerId) {
       subject = `Officer ${officerId}`;
     }
     let fromYear = ` since ${chartState.yearRange[chartState.yearRange.length - 1]}`;

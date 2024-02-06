@@ -65,23 +65,23 @@ function SearchRate(props) {
 
   const subjectObserving = () => {
     if (officerId) {
-      return 'officer';
+      return 'by this officer';
     }
-    if (agencyId) {
-      return 'department';
+    if (agencyId === '-1') {
+      return 'for the entire state';
     }
-    return '';
+    return 'by this department';
   };
 
   const getBarChartModalSubHeading =
     () => `Shows the likelihood that drivers of a particular race / ethnicity are searched
                       compared to white drivers, based on stop cause. Stops done for “safety”
                       purposes may be less likely to show racial bias than stops done for “investigatory”
-                      purposes by this ${subjectObserving()}.`;
+                      purposes ${subjectObserving()}.`;
 
   const getBarChartModalHeading = (title) => {
     let subject = chartState.data[AGENCY_DETAILS].name;
-    if (subjectObserving() === 'officer') {
+    if (officerId) {
       subject = `Officer ${officerId}`;
     }
     let fromYear = ` since ${chartState.yearRange[chartState.yearRange.length - 1]}`;
