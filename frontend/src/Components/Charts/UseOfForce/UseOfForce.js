@@ -56,17 +56,17 @@ function UseOfForce(props) {
 
   const subjectObserving = () => {
     if (officerId) {
-      return 'whom this officer';
+      return 'by this officer';
     }
-    if (agencyId) {
-      return 'whom law enforcement officers';
+    if (agencyId === '-1') {
+      return 'for the entire state';
     }
-    return '';
+    return 'by this department';
   };
 
   useEffect(() => {
     let url = `/api/agency/${agencyId}/use-of-force/`;
-    if (officerId !== null) {
+    if (officerId) {
       url = `${url}?officer=${officerId}`;
     }
     axios
@@ -123,7 +123,7 @@ function UseOfForce(props) {
 
   const chartModalTitle = (displayYear = true) => {
     let subject = chartState.data[AGENCY_DETAILS].name;
-    if (subjectObserving() === 'officer') {
+    if (officerId) {
       subject = `Officer ${officerId}`;
     }
     let yearOf = `since ${useOfForceBarData.labels[0]}`;

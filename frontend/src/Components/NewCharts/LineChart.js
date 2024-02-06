@@ -5,6 +5,7 @@ import { usePopper } from 'react-popper';
 import styled from 'styled-components';
 import DataLoading from '../Charts/ChartPrimitives/DataLoading';
 import ChartModal from './ChartModal';
+import { EmptyMessage } from '../Charts/ChartSections/EmptyChartMessage';
 
 export const Tooltip = styled.div`
   background: #333;
@@ -182,6 +183,7 @@ export default function LineChart({
           </Tooltip>
         </>
       )}
+      {!data.labels.length && <EmptyMessage />}
       <Line
         options={options}
         data={data}
