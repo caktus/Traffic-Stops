@@ -51,27 +51,27 @@ urlpatterns = [  # noqa
         name="search-rate",
     ),
     path(
-        "api/agency/<int:agency_id>/contraband/",
+        "api/agency/<agency_id>/contraband/",
         views.AgencyContrabandView.as_view(),
         name="contraband-percentages",
     ),
     path(
-        "api/agency/<int:agency_id>/contraband-types/",
+        "api/agency/<agency_id>/contraband-types/",
         views.AgencyContrabandTypesView.as_view(),
         name="contraband-type-percentages",
     ),
     path(
-        "api/agency/<int:agency_id>/contraband-stop-purpose/",
+        "api/agency/<agency_id>/contraband-stop-purpose/",
         views.AgencyContrabandStopPurposeView.as_view(),
         name="contraband-percentages-stop-purpose-groups",
     ),
     path(
-        "api/agency/<int:agency_id>/contraband-grouped-stop-purpose/",
+        "api/agency/<agency_id>/contraband-grouped-stop-purpose/",
         views.AgencyContrabandGroupedStopPurposeView.as_view(),
         name="contraband-percentages-grouped-stop-purpose",
     ),
     path(
-        "api/agency/<int:agency_id>/contraband-grouped-stop-purpose/modal/",
+        "api/agency/<agency_id>/contraband-grouped-stop-purpose/modal/",
         views.AgencyContrabandStopGroupByPurposeModalView.as_view(),
         name="contraband-percentages-grouped-stop-purpose-modal",
     ),
