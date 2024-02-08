@@ -102,12 +102,16 @@ function TrafficStops(props) {
   const renderMetaTags = useMetaTags();
   const [renderTableModal, { openModal }] = useTableModal();
 
-  const [stopPurposeGroupsData, setStopPurposeGroups] = useState({ labels: [], datasets: [] });
+  const [stopPurposeGroupsData, setStopPurposeGroups] = useState({
+    labels: [],
+    datasets: [],
+    loading: true,
+  });
   const [stopsGroupedByPurposeData, setStopsGroupedByPurpose] = useState({
     labels: [],
-    safety: { labels: [], datasets: [] },
-    regulatory: { labels: [], datasets: [] },
-    other: { labels: [], datasets: [] },
+    safety: { labels: [], datasets: [], loading: true },
+    regulatory: { labels: [], datasets: [], loading: true },
+    other: { labels: [], datasets: [], loading: true },
     max_step_size: null,
   });
   const groupedPieChartConfig = {
@@ -126,6 +130,7 @@ function TrafficStops(props) {
           ...groupedPieChartConfig,
         },
       ],
+      loading: true,
     },
     regulatory: {
       labels: groupedPieChartLabels,
@@ -135,6 +140,7 @@ function TrafficStops(props) {
           ...groupedPieChartConfig,
         },
       ],
+      loading: true,
     },
     other: {
       labels: groupedPieChartLabels,
@@ -144,6 +150,7 @@ function TrafficStops(props) {
           ...groupedPieChartConfig,
         },
       ],
+      loading: true,
     },
   });
 
@@ -193,6 +200,7 @@ function TrafficStops(props) {
   const [trafficStopsByCount, setTrafficStopsByCount] = useState({
     labels: [],
     datasets: [],
+    loading: true,
   });
 
   const createDateForRange = (yr) =>
@@ -252,6 +260,7 @@ function TrafficStops(props) {
   }, []);
 
   const buildPercentages = (data, ds) => {
+    if (!data.length) return [0, 0, 0, 0, 0, 0];
     const dsTotal = data[ds].datasets
       .map((s) => s.data.reduce((a, b) => a + b, 0))
       .reduce((a, b) => a + b, 0);
@@ -279,7 +288,11 @@ function TrafficStops(props) {
       .catch((err) => console.log(err));
   }, []);
 
-  const [stopsByPercentageData, setStopsByPercentageData] = useState({ labels: [], datasets: [] });
+  const [stopsByPercentageData, setStopsByPercentageData] = useState({
+    labels: [],
+    datasets: [],
+    loading: true,
+  });
 
   useEffect(() => {
     let url = `/api/agency/${agencyId}/stops-by-percentage/`;
@@ -436,12 +449,12 @@ function TrafficStops(props) {
 
   const subjectObserving = () => {
     if (officerId) {
-      return 'officer';
+      return 'by this officer';
     }
-    if (agencyId) {
-      return 'department';
+    if (agencyId === '-1') {
+      return 'for the entire state';
     }
-    return '';
+    return 'by this department';
   };
 
   const updateStopsByCount = (val) => {
@@ -528,7 +541,7 @@ function TrafficStops(props) {
 
   const pieChartTitle = () => {
     let subject = stopsChartState.data[AGENCY_DETAILS].name;
-    if (subjectObserving() === 'officer') {
+    if (officerId) {
       subject = `Officer ${officerId}`;
     }
     return `Traffic Stops By Percentage for ${subject} ${
@@ -538,12 +551,12 @@ function TrafficStops(props) {
 
   const getPieChartModalSubHeading = (title) => {
     const yearSelected = year && year !== 'All' ? ` in ${year}` : '';
-    return `${title} by this ${subjectObserving()}${yearSelected}.`;
+    return `${title} ${subjectObserving()}${yearSelected}.`;
   };
 
   const getPieChartModalHeading = (stopPurpose) => {
     let subject = stopsChartState.data[AGENCY_DETAILS].name;
-    if (subjectObserving() === 'officer') {
+    if (officerId) {
       subject = `Officer ${officerId}`;
     }
     return `Traffic Stops By ${stopPurpose} and Race Count for ${subject} ${
@@ -561,12 +574,12 @@ function TrafficStops(props) {
           ? ` for ${STOP_TYPES[trafficStopsByCountPurpose - 1]}`
           : '';
     }
-    return `${title} by this ${subjectObserving()}${stopPurposeSelected}.`;
+    return `${title} ${subjectObserving()}${stopPurposeSelected}.`;
   };
 
   const getLineChartModalHeading = (title, showStopPurpose = false) => {
     let subject = stopsChartState.data[AGENCY_DETAILS].name;
-    if (subjectObserving() === 'officer') {
+    if (officerId) {
       subject = `Officer ${officerId}`;
     }
     let stopPurposeSelected = '';
@@ -583,7 +596,7 @@ function TrafficStops(props) {
 
   const stopsByPercentageModalTitle = () => {
     let subject = stopsChartState.data[AGENCY_DETAILS].name;
-    if (subjectObserving() === 'officer') {
+    if (officerId) {
       subject = `Officer ${officerId}`;
     }
     return `Traffic Stops by Percentage for ${subject} since ${stopsByPercentageData.labels[0]}`;
@@ -601,8 +614,7 @@ function TrafficStops(props) {
         />
         <S.ChartDescription>
           <P>
-            Shows the race/ethnic composition of drivers stopped by this {subjectObserving()} over
-            time.
+            Shows the race/ethnic composition of drivers stopped {subjectObserving()} over time.
           </P>
           <P>{getChartDetailedBreakdown()}</P>
         </S.ChartDescription>
@@ -616,7 +628,7 @@ function TrafficStops(props) {
               tooltipLabelCallback={formatTooltipValue}
               modalConfig={{
                 tableHeader: 'Traffic Stops By Percentage',
-                tableSubheader: `Shows the race/ethnic composition of drivers stopped by this ${subjectObserving()} over time.`,
+                tableSubheader: `Shows the race/ethnic composition of drivers stopped ${subjectObserving()} over time.`,
                 agencyName: stopsChartState.data[AGENCY_DETAILS].name,
                 chartTitle: stopsByPercentageModalTitle(),
               }}

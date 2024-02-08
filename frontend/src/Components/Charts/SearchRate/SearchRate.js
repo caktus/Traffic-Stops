@@ -27,19 +27,22 @@ function SearchRate(props) {
   const [chartState] = useDataset(agencyId, LIKELIHOOD_OF_SEARCH);
 
   const [year, setYear] = useState(YEARS_DEFAULT);
-  const [searchRateData, setSearchRateData] = useState({ labels: [], datasets: [] });
+  const [searchRateData, setSearchRateData] = useState({ labels: [], datasets: [], loading: true });
 
   const renderMetaTags = useMetaTags();
   const [renderTableModal, { openModal }] = useTableModal();
 
   useEffect(() => {
-    let url = `/api/agency/${agencyId}/search-rate/`;
+    const params = [];
     if (year && year !== 'All') {
-      url = `${url}?year=${year}`;
+      params.push({ param: 'year', val: year });
     }
     if (officerId) {
-      url = `${url}&officer=${officerId}`;
+      params.push({ param: 'officer', val: officerId });
     }
+
+    const urlParams = params.map((p) => `${p.param}=${p.val}`).join('&');
+    const url = `/api/agency/${agencyId}/search-rate/?${urlParams}`;
     axios
       .get(url)
       .then((res) => {
@@ -62,23 +65,23 @@ function SearchRate(props) {
 
   const subjectObserving = () => {
     if (officerId) {
-      return 'officer';
+      return 'by this officer';
     }
-    if (agencyId) {
-      return 'department';
+    if (agencyId === '-1') {
+      return 'for the entire state';
     }
-    return '';
+    return 'by this department';
   };
 
   const getBarChartModalSubHeading =
     () => `Shows the likelihood that drivers of a particular race / ethnicity are searched
                       compared to white drivers, based on stop cause. Stops done for “safety”
                       purposes may be less likely to show racial bias than stops done for “investigatory”
-                      purposes by this ${subjectObserving()}.`;
+                      purposes ${subjectObserving()}.`;
 
   const getBarChartModalHeading = (title) => {
     let subject = chartState.data[AGENCY_DETAILS].name;
-    if (subjectObserving() === 'officer') {
+    if (officerId) {
       subject = `Officer ${officerId}`;
     }
     let fromYear = ` since ${chartState.yearRange[chartState.yearRange.length - 1]}`;

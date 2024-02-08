@@ -5,6 +5,7 @@ import { usePopper } from 'react-popper';
 import { tooltipLanguage } from '../../util/tooltipLanguage';
 import styled from 'styled-components';
 import ChartModal from './ChartModal';
+import { EmptyMessage } from '../Charts/ChartSections/EmptyChartMessage';
 
 export const Tooltip = styled.div`
   background: #333;
@@ -132,10 +133,6 @@ export default function HorizontalBarChart({
     popperElement.removeAttribute('data-show');
   };
 
-  if (!data.labels.length) {
-    return <DataLoading />;
-  }
-
   const whiteBackground = {
     id: 'customBarCanvasBackgroundColor',
     beforeDraw: (chart, args, config) => {
@@ -167,6 +164,12 @@ export default function HorizontalBarChart({
   const barChartModalPlugins = [whiteBackground];
   const barChartModalOptions = createModalOptions(options);
 
+  if (data.loading) {
+    return <DataLoading />;
+  }
+
+  const noData = data.datasets.every((d) => d.data.every((v) => v === 0));
+
   return (
     <>
       {displayStopPurposeTooltips && (
@@ -181,6 +184,7 @@ export default function HorizontalBarChart({
           </Tooltip>
         </>
       )}
+      {noData && <EmptyMessage />}
       <Bar options={options} data={data} redraw={redraw} />
       <ChartModal
         isOpen={isChartOpen}

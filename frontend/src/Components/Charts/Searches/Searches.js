@@ -40,9 +40,17 @@ function Searches(props) {
 
   const [searchType, setSearchType] = useState(SEARCH_TYPE_DEFAULT);
 
-  const [searchPercentageData, setSearchPercentageData] = useState({ labels: [], datasets: [] });
+  const [searchPercentageData, setSearchPercentageData] = useState({
+    labels: [],
+    datasets: [],
+    loading: true,
+  });
 
-  const [searchCountData, setSearchCountData] = useState({ labels: [], datasets: [] });
+  const [searchCountData, setSearchCountData] = useState({
+    labels: [],
+    datasets: [],
+    loading: true,
+  });
   const [searchCountType, setSearchCountType] = useState(0);
   const renderMetaTags = useMetaTags();
   const [renderTableModal, { openModal }] = useTableModal();
@@ -104,12 +112,12 @@ function Searches(props) {
 
   const subjectObserving = () => {
     if (officerId) {
-      return 'officer';
+      return 'by this officer';
     }
-    if (agencyId) {
-      return 'department';
+    if (agencyId === '-1') {
+      return 'for the entire state';
     }
-    return '';
+    return 'by this department';
   };
 
   const getLineChartModalSubHeading = (title, showStopPurpose = false) => {
@@ -120,12 +128,12 @@ function Searches(props) {
           ? ` for ${SEARCH_TYPES[searchCountType - 1]}`
           : '';
     }
-    return `${title} by this ${subjectObserving()}${stopPurposeSelected}.`;
+    return `${title} ${subjectObserving()}${stopPurposeSelected}.`;
   };
 
   const getLineChartModalHeading = (title, showStopPurpose = false) => {
     let subject = chartState.data[AGENCY_DETAILS].name;
-    if (subjectObserving() === 'officer') {
+    if (officerId) {
       subject = `Officer ${officerId}`;
     }
     let stopPurposeSelected = '';
@@ -187,8 +195,8 @@ function Searches(props) {
       <S.ChartSection>
         <ChartHeader chartTitle="Searches By Count" handleViewData={handleViewCountData} />
         <P>
-          Shows the number of searches performed by the {subjectObserving()}, broken down by search
-          type and race / ethnicity.
+          Shows the number of searches performed {subjectObserving()}, broken down by search type
+          and race / ethnicity.
         </P>
         <S.ChartSubsection showCompare={props.showCompare}>
           <LineWrapper visible>
@@ -201,7 +209,7 @@ function Searches(props) {
                 modalConfig={{
                   tableHeader: 'Searches By Count',
                   tableSubheader: getLineChartModalSubHeading(
-                    `Shows the number of searches performed by the ${subjectObserving()}, broken down by search type and race / ethnicity`
+                    `Shows the number of searches performed ${subjectObserving()}, broken down by search type and race / ethnicity`
                   ),
                   agencyName: chartState.data[AGENCY_DETAILS].name,
                   chartTitle: getLineChartModalHeading('Searches By Count', true),

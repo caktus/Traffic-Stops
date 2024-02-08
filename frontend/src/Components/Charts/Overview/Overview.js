@@ -53,6 +53,7 @@ function Overview(props) {
         ...pieChartConfig,
       },
     ],
+    loading: true,
   };
 
   const [censusPieData, setCensusPieData] = useState(initChartData);
@@ -64,18 +65,17 @@ function Overview(props) {
 
   const subjectObserving = () => {
     if (officerId) {
-      return 'officer';
+      return 'by this officer';
     }
-    if (agencyId) {
-      return 'department';
+    if (agencyId === '-1') {
+      return 'for the entire state';
     }
-    return '';
+    return 'by this department';
   };
 
   const getYearPhrase = () => (year && year !== 'All' ? ` in ${year}` : '');
 
-  const getChartModalSubHeading = (title) =>
-    `${title} by this ${subjectObserving()}${getYearPhrase()}.`;
+  const getChartModalSubHeading = (title) => `${title} ${subjectObserving()}${getYearPhrase()}.`;
 
   const getOverviewSubheader = () =>
     `Shows the race/ethnic composition of drivers ${subjectObserving()}${getYearPhrase()} reported using force against.`;
@@ -130,7 +130,7 @@ function Overview(props) {
 
   const pieChartTitle = (chartTitle) => {
     let subject = chartState.data[AGENCY_DETAILS].name;
-    if (subjectObserving() === 'officer') {
+    if (officerId) {
       subject = `Officer ${officerId}`;
     }
     let title = `${chartTitle} for ${subject}`;
@@ -253,7 +253,7 @@ function Overview(props) {
             />
           </S.PieWrapper>
           <S.Note>
-            Shows the race/ethnic composition of drivers stopped by this {subjectObserving()}.
+            Shows the race/ethnic composition of drivers stopped {subjectObserving()}.
           </S.Note>
           <S.Link onClick={() => buildUrl(slugs.TRAFFIC_STOPS_SLUG)}>
             View traffic stops over time
@@ -280,7 +280,7 @@ function Overview(props) {
             />
           </S.PieWrapper>
           <S.Note>
-            Shows the race/ethnic composition of drivers searched by this {subjectObserving()}.
+            Shows the race/ethnic composition of drivers searched {subjectObserving()}.
           </S.Note>
           <S.Link onClick={() => buildUrl(slugs.SEARCHES_SLUG)}>View searches over time</S.Link>
         </S.PieContainer>
@@ -305,7 +305,7 @@ function Overview(props) {
             using force against.
           </S.Note>
           <S.Link onClick={() => buildUrl(slugs.USE_OF_FORCE_SLUG)}>
-            View use-of-force over time
+            View use of force over time
           </S.Link>
         </S.PieContainer>
       </S.ChartsWrapper>

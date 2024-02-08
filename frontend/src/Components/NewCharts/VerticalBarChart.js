@@ -2,6 +2,7 @@ import { Bar } from 'react-chartjs-2';
 import DataLoading from '../Charts/ChartPrimitives/DataLoading';
 import React, { useRef, useState } from 'react';
 import ChartModal from './ChartModal';
+import { EmptyMessage } from '../Charts/ChartSections/EmptyChartMessage';
 
 export default function VerticalBarChart({
   data,
@@ -77,10 +78,6 @@ export default function VerticalBarChart({
   const [isChartOpen, setIsChartOpen] = useState(false);
   const zoomedLineChartRef = useRef(null);
 
-  if (!data.labels.length) {
-    return <DataLoading />;
-  }
-
   const whiteBackground = {
     id: 'customVerticalBarCanvasBackgroundColor',
     beforeDraw: (chart, args, config) => {
@@ -106,9 +103,16 @@ export default function VerticalBarChart({
   const barChartModalPlugins = [whiteBackground];
   const barChartModalOptions = createModalOptions(options);
 
+  if (data.loading) {
+    return <DataLoading />;
+  }
+
   return (
     <>
-      <Bar options={options} data={data} />
+      <div style={{ width: '100%' }}>
+        {!data.labels.length && <EmptyMessage />}
+        <Bar options={options} data={data} />
+      </div>
       <ChartModal
         isOpen={isChartOpen}
         closeModal={() => setIsChartOpen(false)}
