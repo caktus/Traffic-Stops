@@ -38,6 +38,12 @@ function Searches(props) {
   useDataset(agencyId, SEARCHES);
   const [chartState] = useDataset(agencyId, SEARCHES_BY_TYPE);
 
+  useEffect(() => {
+    if (window.location.hash) {
+      document.querySelector(`${window.location.hash}`).scrollIntoView();
+    }
+  }, []);
+
   const [searchType, setSearchType] = useState(SEARCH_TYPE_DEFAULT);
 
   const [searchPercentageData, setSearchPercentageData] = useState({
@@ -161,10 +167,13 @@ function Searches(props) {
       {/* Search Rate */}
       {renderMetaTags()}
       {renderTableModal()}
-      <S.ChartSection>
+      <S.ChartSection id="searches_by_percentage">
         <ChartHeader
           chartTitle="Searches by Percentage"
           handleViewData={handleViewPercentageData}
+          shareProps={{
+            graphAnchor: 'searches_by_percentage',
+          }}
         />
         <P>Shows the percent of stops that led to searches, broken down by race/ethnicity.</P>
         <S.ChartSubsection showCompare={props.showCompare}>
@@ -192,8 +201,14 @@ function Searches(props) {
         </S.ChartSubsection>
       </S.ChartSection>
       {/* Searches by Count */}
-      <S.ChartSection>
-        <ChartHeader chartTitle="Searches By Count" handleViewData={handleViewCountData} />
+      <S.ChartSection id="searches_by_count">
+        <ChartHeader
+          chartTitle="Searches By Count"
+          handleViewData={handleViewCountData}
+          shareProps={{
+            graphAnchor: 'searches_by_count',
+          }}
+        />
         <P>
           Shows the number of searches performed {subjectObserving()}, broken down by search type
           and race / ethnicity.

@@ -60,6 +60,12 @@ function TrafficStops(props) {
   // TODO: Remove this when moving table modal data to new modal component
   useDataset(agencyId, STOPS_BY_REASON);
 
+  useEffect(() => {
+    if (window.location.hash) {
+      document.querySelector(`${window.location.hash}`).scrollIntoView();
+    }
+  }, []);
+
   const [pickerActive, setPickerActive] = useState(null);
 
   const [year, setYear] = useState(YEARS_DEFAULT);
@@ -663,8 +669,14 @@ function TrafficStops(props) {
         </S.ChartSubsection>
       </S.ChartSection>
       {/* Traffic Stops by Count */}
-      <S.ChartSection>
-        <ChartHeader chartTitle="Traffic Stops By Count" handleViewData={handleViewCountData} />
+      <S.ChartSection id="stops_by_count">
+        <ChartHeader
+          chartTitle="Traffic Stops By Count"
+          handleViewData={handleViewCountData}
+          shareProps={{
+            graphAnchor: 'stops_by_count',
+          }}
+        />
         <P>Shows the number of traffics stops broken down by purpose and race / ethnicity.</P>
         <S.ChartSubsection showCompare={props.showCompare}>
           <LineWrapper visible>
@@ -706,10 +718,13 @@ function TrafficStops(props) {
           </S.LegendBeside>
         </S.ChartSubsection>
       </S.ChartSection>
-      <S.ChartSection marginTop={5}>
+      <S.ChartSection marginTop={5} id="stops_by_purpose">
         <ChartHeader
           chartTitle="Traffic Stops By Stop Purpose"
           handleViewData={showStopPurposeModal}
+          shareProps={{
+            graphAnchor: 'stops_by_purpose',
+          }}
         />
         <P>Shows the number of traffics stops broken down by purpose and race / ethnicity.</P>
         <NewModal
@@ -743,10 +758,13 @@ function TrafficStops(props) {
           </StopGroupsContainer>
         </LineWrapper>
       </S.ChartSection>
-      <S.ChartSection marginTop={5}>
+      <S.ChartSection marginTop={5} id="stops_by_purpose_and_count">
         <ChartHeader
           chartTitle="Traffic Stops By Stop Purpose and Race Count"
           handleViewData={showGroupedStopPurposeModal}
+          shareProps={{
+            graphAnchor: 'stops_by_purpose_and_count',
+          }}
         />
         <P>Shows the number of traffics stops broken down by purpose and race / ethnicity.</P>
 

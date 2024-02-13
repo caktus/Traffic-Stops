@@ -37,6 +37,12 @@ function Contraband(props) {
   const officerId = useOfficerId();
   const [chartState] = useDataset(agencyId, CONTRABAND_HIT_RATE);
 
+  useEffect(() => {
+    if (window.location.hash) {
+      document.querySelector(`${window.location.hash}`).scrollIntoView();
+    }
+  }, []);
+
   const [year, setYear] = useState(YEARS_DEFAULT);
 
   const renderMetaTags = useMetaTags();
@@ -607,10 +613,13 @@ function Contraband(props) {
           </S.LegendSection>
         </S.ChartSubsection>
       </S.ChartSection>
-      <S.ChartSection>
+      <S.ChartSection id="hit_rate_by_stop_purpose">
         <ChartHeader
           chartTitle='Contraband "Hit Rate" Grouped By Stop Purpose'
           handleViewData={showGroupedContrabandModal}
+          shareProps={{
+            graphAnchor: 'hit_rate_by_stop_purpose',
+          }}
         />
         <S.ChartDescription>
           <P>
@@ -670,10 +679,13 @@ function Contraband(props) {
           </S.LegendSection>
         </S.ChartSubsection>
       </S.ChartSection>
-      <S.ChartSection>
+      <S.ChartSection id="hit_rate_by_type">
         <ChartHeader
           chartTitle='Contraband "Hit Rate" by type'
           handleViewData={() => setContrabandTypesData((state) => ({ ...state, isOpen: true }))}
+          shareProps={{
+            graphAnchor: 'hit_rate_by_type',
+          }}
         />
         <S.ChartDescription>
           <P>Shows what percentage of searches discovered specific types of illegal items.</P>
@@ -720,12 +732,15 @@ function Contraband(props) {
           </S.LegendSection>
         </S.ChartSubsection>
       </S.ChartSection>
-      <S.ChartSection marginTop={5}>
+      <S.ChartSection marginTop={5} id="hit_rate_by_type_and_stop_purpose">
         <ChartHeader
           chartTitle='Contraband "Hit Rate" by Type grouped by Stop Purpose'
           handleViewData={() =>
             setGroupedContrabandStopPurposeModalData((state) => ({ ...state, isOpen: true }))
           }
+          shareProps={{
+            graphAnchor: 'hit_rate_by_type_and_stop_purpose',
+          }}
         />
         <S.ChartDescription>
           <P>
