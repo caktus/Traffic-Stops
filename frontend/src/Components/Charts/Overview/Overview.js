@@ -32,12 +32,14 @@ import useOfficerId from '../../../Hooks/useOfficerId';
 import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
 import PieChart from '../../NewCharts/PieChart';
 import { pieChartConfig, pieChartLabels } from '../../../util/setChartColors';
+import useYearSet from '../../../Hooks/useYearSet';
 
 function Overview(props) {
   const { agencyId } = props;
   const history = useHistory();
   const match = useRouteMatch();
   const officerId = useOfficerId();
+  const [yearRange] = useYearSet();
 
   useDataset(agencyId, STOPS);
   useDataset(agencyId, SEARCHES);
@@ -203,7 +205,7 @@ function Overview(props) {
           label="Year"
           value={year}
           onChange={handleYearSelect}
-          options={[YEARS_DEFAULT].concat(chartState.yearRange)}
+          options={[YEARS_DEFAULT].concat(yearRange)}
           dropDown
         />
       </div>
