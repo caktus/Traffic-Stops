@@ -499,14 +499,14 @@ function Contraband(props) {
 
   const getBarChartModalSubHeading = (title) => `${title} ${subjectObserving()}.`;
 
-  const getBarChartModalHeading = (title, yearSelected) => {
+  const getBarChartModalHeading = (title) => {
     let subject = chartState.data[AGENCY_DETAILS].name;
     if (officerId) {
       subject = `Officer ${officerId}`;
     }
     let fromYear = ` since ${chartState.yearRange[chartState.yearRange.length - 1]}`;
-    if (yearSelected && yearSelected !== 'All') {
-      fromYear = ` in ${yearSelected}`;
+    if (year && year !== 'All') {
+      fromYear = ` in ${year}`;
     }
     return `${title} by ${subject}${fromYear}`;
   };
@@ -589,7 +589,7 @@ function Contraband(props) {
                   'Shows what percentage of searches led to the discovery of illegal items by race/ethnicity'
                 ),
                 agencyName: chartState.data[AGENCY_DETAILS].name,
-                chartTitle: getBarChartModalHeading('Contraband "Hit Rate"', year),
+                chartTitle: getBarChartModalHeading('Contraband "Hit Rate"'),
               }}
             />
           </ChartWrapper>
@@ -644,8 +644,7 @@ function Contraband(props) {
                 ),
                 agencyName: chartState.data[AGENCY_DETAILS].name,
                 chartTitle: getBarChartModalHeading(
-                  'Contraband "Hit Rate" Grouped By Stop Purpose',
-                  year
+                  'Contraband "Hit Rate" Grouped By Stop Purpose'
                 ),
               }}
             />
@@ -687,7 +686,7 @@ function Contraband(props) {
                   'Shows what number of searches discovered specific types of illegal items'
                 ),
                 agencyName: chartState.data[AGENCY_DETAILS].name,
-                chartTitle: getBarChartModalHeading('Contraband "Hit Rate" by type', year),
+                chartTitle: getBarChartModalHeading('Contraband "Hit Rate" by type'),
               }}
             />
           </ChartWrapper>
@@ -773,8 +772,7 @@ function Contraband(props) {
                 ),
                 agencyName: chartState.data[AGENCY_DETAILS].name,
                 chartTitle: getBarChartModalHeading(
-                  'Contraband "Hit Rate" by Type grouped by Safety Violation',
-                  year
+                  'Contraband "Hit Rate" by Type grouped by Safety Violation'
                 ),
               }}
             />
@@ -798,8 +796,7 @@ function Contraband(props) {
                 ),
                 agencyName: chartState.data[AGENCY_DETAILS].name,
                 chartTitle: getBarChartModalHeading(
-                  'Contraband "Hit Rate" by Type grouped by Regulatory/Equipment',
-                  year
+                  'Contraband "Hit Rate" by Type grouped by Regulatory/Equipment'
                 ),
               }}
             />
@@ -825,8 +822,7 @@ function Contraband(props) {
                 ),
                 agencyName: chartState.data[AGENCY_DETAILS].name,
                 chartTitle: getBarChartModalHeading(
-                  'Contraband "Hit Rate" by Type grouped by Other',
-                  year
+                  'Contraband "Hit Rate" by Type grouped by Other'
                 ),
               }}
             />
