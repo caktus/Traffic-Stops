@@ -55,7 +55,6 @@ function Contraband(props) {
     csvData: [],
     loading: true,
   });
-  const [contrabandYear, setContrabandYear] = useState(YEARS_DEFAULT);
   const [contrabandTypesData, setContrabandTypesData] = useState({
     labels: [],
     datasets: [],
@@ -65,7 +64,6 @@ function Contraband(props) {
     loading: true,
   });
 
-  const [contrabandTypesYear, setContrabandTypesYear] = useState(YEARS_DEFAULT);
   const [contrabandStopPurposeData, setContrabandStopPurposeData] = useState({
     labels: [],
     datasets: [],
@@ -88,8 +86,6 @@ function Contraband(props) {
       csvData: [],
       loading: true,
     });
-
-  const [contrabandStopPurposeYear, setContrabandStopPurposeYear] = useState(YEARS_DEFAULT);
 
   const initialContrabandGroupedData = [
     {
@@ -153,25 +149,11 @@ function Contraband(props) {
     fetchHitRateByStopPurpose(y);
   };
 
-  const handleContrabandYearSelect = (y) => {
-    if (y === contrabandYear) return;
-    setContrabandYear(y);
-  };
-  const handleContrabandTypesYearSelect = (y) => {
-    if (y === contrabandTypesYear) return;
-    setContrabandTypesYear(y);
-  };
-
-  const handleGroupedContrabandYearSelect = (y) => {
-    if (y === contrabandStopPurposeYear) return;
-    setContrabandStopPurposeYear(y);
-  };
-
   // Build New Contraband Data
   useEffect(() => {
     const params = [];
-    if (contrabandYear && contrabandYear !== 'All') {
-      params.push({ param: 'year', val: contrabandYear });
+    if (year && year !== 'All') {
+      params.push({ param: 'year', val: year });
     }
     if (officerId) {
       params.push({ param: 'officer', val: officerId });
@@ -223,12 +205,12 @@ function Contraband(props) {
         setContrabandData(data);
       })
       .catch((err) => console.log(err));
-  }, [contrabandYear]);
+  }, [year]);
 
   useEffect(() => {
     const params = [];
-    if (contrabandTypesYear && contrabandTypesYear !== 'All') {
-      params.push({ param: 'year', val: contrabandTypesYear });
+    if (year && year !== 'All') {
+      params.push({ param: 'year', val: year });
     }
     if (officerId) {
       params.push({ param: 'officer', val: officerId });
@@ -279,12 +261,12 @@ function Contraband(props) {
         setContrabandTypesData(data);
       })
       .catch((err) => console.log(err));
-  }, [contrabandTypesYear]);
+  }, [year]);
 
   useEffect(() => {
     const params = [];
-    if (contrabandStopPurposeYear && contrabandStopPurposeYear !== 'All') {
-      params.push({ param: 'year', val: contrabandStopPurposeYear });
+    if (year && year !== 'All') {
+      params.push({ param: 'year', val: year });
     }
     if (officerId) {
       params.push({ param: 'officer', val: officerId });
@@ -320,7 +302,7 @@ function Contraband(props) {
         });
       })
       .catch((err) => console.log(err));
-  }, [contrabandStopPurposeYear]);
+  }, [year]);
 
   useEffect(() => {
     fetchHitRateByStopPurpose('All');
@@ -517,14 +499,14 @@ function Contraband(props) {
 
   const getBarChartModalSubHeading = (title) => `${title} ${subjectObserving()}.`;
 
-  const getBarChartModalHeading = (title, yearSelected) => {
+  const getBarChartModalHeading = (title) => {
     let subject = chartState.data[AGENCY_DETAILS].name;
     if (officerId) {
       subject = `Officer ${officerId}`;
     }
     let fromYear = ` since ${chartState.yearRange[chartState.yearRange.length - 1]}`;
-    if (yearSelected && yearSelected !== 'All') {
-      fromYear = ` in ${yearSelected}`;
+    if (year && year !== 'All') {
+      fromYear = ` in ${year}`;
     }
     return `${title} by ${subject}${fromYear}`;
   };
@@ -563,6 +545,15 @@ function Contraband(props) {
           a tiny fraction of the illegal substance
         </span>
       </details>
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <DataSubsetPicker
+          label="Year"
+          value={year}
+          onChange={handleYearSelect}
+          options={[YEARS_DEFAULT].concat(chartState.yearRange)}
+          dropUp={!!showCompare}
+        />
+      </div>
       <S.ChartSection>
         <ChartHeader
           chartTitle='Contraband "Hit Rate"'
@@ -575,7 +566,7 @@ function Contraband(props) {
           </P>
           <NewModal
             tableHeader='Contraband "Hit Rate"'
-            tableSubheader="Shows what percentage of searches led to the discovery of illegal items by race/ethnicity."
+            tableSubheader="Shows what number of searches led to the discovery of illegal items by race/ethnicity."
             agencyName={chartState.data[AGENCY_DETAILS].name}
             tableData={contrabandData.tableData}
             csvData={contrabandData.csvData}
@@ -598,19 +589,10 @@ function Contraband(props) {
                   'Shows what percentage of searches led to the discovery of illegal items by race/ethnicity'
                 ),
                 agencyName: chartState.data[AGENCY_DETAILS].name,
-                chartTitle: getBarChartModalHeading('Contraband "Hit Rate"', contrabandYear),
+                chartTitle: getBarChartModalHeading('Contraband "Hit Rate"'),
               }}
             />
           </ChartWrapper>
-          <S.LegendSection>
-            <DataSubsetPicker
-              label="Year"
-              value={contrabandYear}
-              onChange={handleContrabandYearSelect}
-              options={[YEARS_DEFAULT].concat(chartState.yearRange)}
-              dropUp={!!showCompare}
-            />
-          </S.LegendSection>
         </S.ChartSubsection>
       </S.ChartSection>
       <S.ChartSection id="hit_rate_by_stop_purpose">
@@ -662,21 +644,11 @@ function Contraband(props) {
                 ),
                 agencyName: chartState.data[AGENCY_DETAILS].name,
                 chartTitle: getBarChartModalHeading(
-                  'Contraband "Hit Rate" Grouped By Stop Purpose',
-                  contrabandStopPurposeYear
+                  'Contraband "Hit Rate" Grouped By Stop Purpose'
                 ),
               }}
             />
           </ChartWrapper>
-          <S.LegendSection>
-            <DataSubsetPicker
-              label="Year"
-              value={contrabandStopPurposeYear}
-              onChange={handleGroupedContrabandYearSelect}
-              options={[YEARS_DEFAULT].concat(chartState.yearRange)}
-              dropUp={!!showCompare}
-            />
-          </S.LegendSection>
         </S.ChartSubsection>
       </S.ChartSection>
       <S.ChartSection id="hit_rate_by_type">
@@ -714,22 +686,11 @@ function Contraband(props) {
                   'Shows what number of searches discovered specific types of illegal items'
                 ),
                 agencyName: chartState.data[AGENCY_DETAILS].name,
-                chartTitle: getBarChartModalHeading(
-                  'Contraband "Hit Rate" by type',
-                  contrabandTypesYear
-                ),
+                chartTitle: getBarChartModalHeading('Contraband "Hit Rate" by type'),
               }}
             />
           </ChartWrapper>
-          <S.LegendSection>
-            <DataSubsetPicker
-              label="Year"
-              value={contrabandTypesYear}
-              onChange={handleContrabandTypesYearSelect}
-              options={[YEARS_DEFAULT].concat(chartState.yearRange)}
-              dropUp={!!showCompare}
-            />
-          </S.LegendSection>
+          <S.LegendSection />
         </S.ChartSubsection>
       </S.ChartSection>
       <S.ChartSection marginTop={5} id="hit_rate_by_type_and_stop_purpose">
@@ -792,13 +753,6 @@ function Contraband(props) {
             ))}
           </div>
         </div>
-        <DataSubsetPicker
-          label="Year"
-          value={year}
-          onChange={handleYearSelect}
-          options={[YEARS_DEFAULT].concat(chartState.yearRange)}
-          dropUp={!!showCompare}
-        />
         <HorizontalBarWrapper>
           <BarContainer visible={visibleContrabandTypes[0].visible}>
             <HorizontalBarChart
@@ -818,8 +772,7 @@ function Contraband(props) {
                 ),
                 agencyName: chartState.data[AGENCY_DETAILS].name,
                 chartTitle: getBarChartModalHeading(
-                  'Contraband "Hit Rate" by Type grouped by Safety Violation',
-                  year
+                  'Contraband "Hit Rate" by Type grouped by Safety Violation'
                 ),
               }}
             />
@@ -843,8 +796,7 @@ function Contraband(props) {
                 ),
                 agencyName: chartState.data[AGENCY_DETAILS].name,
                 chartTitle: getBarChartModalHeading(
-                  'Contraband "Hit Rate" by Type grouped by Regulatory/Equipment',
-                  year
+                  'Contraband "Hit Rate" by Type grouped by Regulatory/Equipment'
                 ),
               }}
             />
@@ -870,8 +822,7 @@ function Contraband(props) {
                 ),
                 agencyName: chartState.data[AGENCY_DETAILS].name,
                 chartTitle: getBarChartModalHeading(
-                  'Contraband "Hit Rate" by Type grouped by Other',
-                  year
+                  'Contraband "Hit Rate" by Type grouped by Other'
                 ),
               }}
             />
