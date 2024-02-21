@@ -266,7 +266,7 @@ function TrafficStops(props) {
   }, []);
 
   const buildPercentages = (data, ds) => {
-    if (!data.length) return [0, 0, 0, 0, 0, 0];
+    if (!data.hasOwnProperty(ds)) return [0, 0, 0, 0, 0, 0];
     const dsTotal = data[ds].datasets
       .map((s) => s.data.reduce((a, b) => a + b, 0))
       .reduce((a, b) => a + b, 0);
