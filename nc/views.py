@@ -12,7 +12,7 @@ from django.core.mail import send_mail
 from django.db.models import Case, Count, F, Q, Sum, Value, When
 from django.db.models.functions import ExtractYear
 from django.utils.decorators import method_decorator
-from django.views.decorators.cache import never_cache
+from django.views.decorators.cache import cache_page, never_cache
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -87,6 +87,9 @@ class QueryKeyConstructor(DefaultObjectKeyConstructor):
 
 
 query_cache_key_func = QueryKeyConstructor()
+
+
+CACHE_TIMEOUT = settings.CACHE_COUNT_TIMEOUT
 
 
 def get_date_range(request):
@@ -434,6 +437,7 @@ class AgencyTrafficStopsByPercentageView(APIView):
             ],
         }
 
+    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         stop_qs = StopSummary.objects.all().annotate(year=ExtractYear("date"))
 
@@ -531,6 +535,7 @@ class AgencyTrafficStopsByCountView(APIView):
             ],
         }
 
+    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         date_precision, date_range = get_date_range(request)
 
@@ -576,6 +581,7 @@ class AgencyStopPurposeGroupView(APIView):
         else:
             return [0] * years_len
 
+    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         qs = StopSummary.objects.all()
         agency_id = int(agency_id)
@@ -677,6 +683,7 @@ class AgencyStopGroupByPurposeView(APIView):
             ],
         }
 
+    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         qs = StopSummary.objects.all()
         agency_id = int(agency_id)
@@ -740,6 +747,7 @@ class AgencyStopGroupByPurposeView(APIView):
 
 
 class AgencyContrabandView(APIView):
+    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         year = request.GET.get("year", None)
 
@@ -822,6 +830,7 @@ class AgencyContrabandView(APIView):
 
 
 class AgencyContrabandTypesView(APIView):
+    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         year = request.GET.get("year", None)
 
@@ -943,6 +952,7 @@ class AgencyContrabandStopPurposeView(APIView):
             ],
         }
 
+    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         year = request.GET.get("year", None)
 
@@ -1094,6 +1104,7 @@ class AgencyContrabandGroupedStopPurposeView(APIView):
             data.append(group)
         return data
 
+    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         year = request.GET.get("year", None)
 
@@ -1162,6 +1173,7 @@ class AgencyContrabandGroupedStopPurposeView(APIView):
 
 
 class AgencyContrabandStopGroupByPurposeModalView(APIView):
+    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         grouped_stop_purpose = request.GET.get("grouped_stop_purpose")
         contraband_type = request.GET.get("contraband_type")
@@ -1271,6 +1283,7 @@ class AgencySearchesByPercentageView(APIView):
             ],
         }
 
+    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         stop_qs = StopSummary.objects.all().annotate(year=ExtractYear("date"))
 
@@ -1383,6 +1396,7 @@ class AgencySearchesByCountView(APIView):
             ],
         }
 
+    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         date_precision, date_range = get_date_range(request)
 
@@ -1466,6 +1480,7 @@ class AgencySearchRateView(APIView):
             ],
         }
 
+    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         stop_qs = StopSummary.objects.all().annotate(year=ExtractYear("date"))
         search_qs = StopSummary.objects.filter(search_type__isnull=False).annotate(
@@ -1592,6 +1607,7 @@ class AgencyUseOfForceView(APIView):
             ],
         }
 
+    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         qs = StopSummary.objects.filter(search_type__isnull=False, engage_force="t").annotate(
             year=ExtractYear("date")
