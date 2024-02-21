@@ -26,9 +26,7 @@ logger = logging.getLogger(__name__)
 MAGIC_NC_FTP_URL = "ftp://nc.us/"
 
 
-def run(
-    url, destination=None, zip_path=None, min_stop_id=None, max_stop_id=None, prime_cache=False
-):
+def run(url, destination=None, zip_path=None, min_stop_id=None, max_stop_id=None, prime_cache=True):
     """
     Download NC data, extract, convert to CSV, and load into PostgreSQL
 
