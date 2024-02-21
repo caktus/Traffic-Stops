@@ -89,7 +89,7 @@ class QueryKeyConstructor(DefaultObjectKeyConstructor):
 query_cache_key_func = QueryKeyConstructor()
 
 
-CACHE_TIMEOUT = 60 * 60 * 24
+CACHE_TIMEOUT = settings.CACHE_COUNT_TIMEOUT
 
 
 def get_date_range(request):
