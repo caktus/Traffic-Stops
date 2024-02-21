@@ -265,7 +265,7 @@ STOP_SUMMARY_VIEW_SQL = f"""
 """  # noqa
 
 
-class StopSummary(pg.ReadOnlyMaterializedView):
+class StopSummary(CachingMixin, pg.ReadOnlyMaterializedView):
     sql = STOP_SUMMARY_VIEW_SQL
     # Don't create view with data, this will be manually managed
     # and refreshed by the data import process
@@ -370,7 +370,7 @@ CONTRABAND_SUMMARY_VIEW_SQL = f"""
 """  # noqa
 
 
-class ContrabandSummary(pg.ReadOnlyMaterializedView):
+class ContrabandSummary(CachingMixin, pg.ReadOnlyMaterializedView):
     sql = CONTRABAND_SUMMARY_VIEW_SQL
     # Don't create view with data, this will be manually managed
     # and refreshed by the data import process
