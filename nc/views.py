@@ -4,6 +4,7 @@ import math
 from functools import reduce
 from operator import concat
 
+import numpy
 import pandas as pd
 
 from dateutil import relativedelta
@@ -1439,7 +1440,11 @@ class AgencySearchRateView(APIView):
         def get_values(race):
             if race in df:
                 values = [float(df[race][label]) if label in df[race] else 0 for label in labels]
-                values.insert(0, sum(values) / len(values))
+                try:
+                    average = sum(values) / len(values)
+                except ZeroDivisionError:
+                    average = 0
+                values.insert(0, average)
                 return values
 
             return [0] * (len(labels) + 1)
@@ -1529,8 +1534,9 @@ class AgencySearchRateView(APIView):
 
         def get_val(df, column, purpose):
             if column in df and purpose in df[column]:
-                return df[column][purpose]
-            return 0
+                val = df[column][purpose]
+                return float(0) if numpy.isnan(val) else float(val)
+            return float(0)
 
         for col in columns:
             for k, v in purpose_choices.items():
