@@ -551,7 +551,7 @@ function Contraband(props) {
           value={year}
           onChange={handleYearSelect}
           options={[YEARS_DEFAULT].concat(chartState.yearRange)}
-          dropUp={!!showCompare}
+          dropDown
         />
       </div>
       <S.ChartSection>
