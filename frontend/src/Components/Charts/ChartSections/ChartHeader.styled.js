@@ -30,12 +30,15 @@ export const ChartTitle = styled(H2)`
 export const ButtonsWrapper = styled.div`
   display: flex;
   flex-direction: row;
+  align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 30px;
 
   @media (${phoneOnly}) {
     width: 90%;
     margin: 0 auto;
+    flex-direction: column;
+    gap: 0;
 
     & button {
       margin: 0.5em 0;

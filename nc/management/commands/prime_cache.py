@@ -14,7 +14,7 @@ class Command(BaseCommand):
         )
         parser.add_argument("--clear-cache", "-c", action="store_true", default=False)
         parser.add_argument("--skip-agencies", action="store_true", default=False)
-        parser.add_argument("--skip-officers", action="store_true", default=False)
+        parser.add_argument("--skip-officers", action="store_true", default=True)
         parser.add_argument(
             "--officer-cutoff-count",
             type=int,

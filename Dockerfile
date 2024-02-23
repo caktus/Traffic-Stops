@@ -1,4 +1,4 @@
-FROM node:16-bullseye-slim as static_files
+FROM node:18.17.0-bullseye-slim as static_files
 
 WORKDIR /code
 ENV PATH /code/node_modules/.bin:$PATH
@@ -113,8 +113,8 @@ RUN groupadd --gid $USER_GID $USERNAME \
 #   openssh-client -- for git over SSH
 #   sudo -- to run commands as superuser
 #   vim -- enhanced vi editor for commits
-ENV KUBE_CLIENT_VERSION="v1.22.15"
-ENV HELM_VERSION="3.8.2"
+ENV KUBE_CLIENT_VERSION="v1.25.10"
+ENV HELM_VERSION="3.12.0"
 RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/apt \
     --mount=type=cache,mode=0755,target=/root/.cache/pip \
     set -ex \
@@ -124,6 +124,7 @@ RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/
     docker-compose-plugin \
     git-core \
     gnupg2 \
+    jq \
     libpcre3 \
     libpq-dev \
     mime-support \
@@ -147,7 +148,7 @@ RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/
     && curl https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor | tee /etc/apt/trusted.gpg.d/docker.gpg >/dev/null \
     && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/trusted.gpg.d/docker.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null \
     # nodejs
-    && sh -c 'echo "deb https://deb.nodesource.com/node_16.x $(lsb_release -cs) main" > /etc/apt/sources.list.d/nodesource.list' \
+    && sh -c 'echo "deb https://deb.nodesource.com/node_18.x $(lsb_release -cs) main" > /etc/apt/sources.list.d/nodesource.list' \
     && wget --quiet -O- https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add - \
     # PostgreSQL
     && sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list' \

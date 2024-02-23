@@ -18,7 +18,7 @@ export default Object.freeze({
     // aliased colors
     primary: '#272973',
     primaryDark: '#1565B3',
-    secondary: '#02BCBB',
+    secondary: '#29A3A1',
     background: '#ffffff',
     disabled: '#ACACAC',
     caution: '#F25F5C',
@@ -36,6 +36,13 @@ export default Object.freeze({
       other: '#9e7b9b',
       white: '#02bcbb',
       average: '#939393',
+    },
+    contrabandTypes: {
+      alcohol: '#9FD356',
+      drugs: '#3C91E6',
+      money: '#EFCEFA',
+      other: '#2F4858',
+      weapons: '#A653F4',
     },
     fontColorsByEthnicGroup: {
       asian: '#212121',

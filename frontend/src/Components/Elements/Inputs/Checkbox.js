@@ -4,11 +4,11 @@ import * as Styled from './Checkbox.styled';
 import CheckboxIcon from '../../../img/icons/CheckboxIcon';
 import { HelpText } from './Input.styled';
 
-function Checkbox({ value, checked, onChange, label, helpText }) {
+function Checkbox({ value, checked, onChange, label, helpText, ...props }) {
   return (
     <Styled.Wrapper>
       <Styled.CheckboxWrapper onClick={() => onChange(value)}>
-        <CheckboxIcon fill="black" checked={checked} />
+        <CheckboxIcon fill="black" checked={checked} {...props} />
         {label && <Styled.Label>{label}</Styled.Label>}
       </Styled.CheckboxWrapper>
       {helpText && <HelpText>{helpText}</HelpText>}

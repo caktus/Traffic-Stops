@@ -53,7 +53,7 @@ export const SubHeaderNavRow = styled.div`
 export const SubHeaderContentRow = styled.div`
   display: flex;
   flex: 1;
-  flex-direction: row;
+  flex-direction: ${(props) => props.flexDirection || 'row'};
   @media (${smallerThanDesktop}) {
     flex-direction: column;
   }
@@ -77,7 +77,7 @@ export const Other = styled(P)`
   font-size: 14px;
 `;
 
-export const ShowDepartmentsButton = styled.div`
+export const AgencyHeaderButton = styled.div`
   display: block;
   margin: 10px 0;
 `;

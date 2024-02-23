@@ -1,5 +1,6 @@
 from django.test import TestCase
 
+from nc.models import Agency
 from nc.prime_cache import run
 from nc.tests import factories
 
@@ -13,6 +14,8 @@ class PrimeCacheTests(TestCase):
     databases = "__all__"
 
     def test_prime_cache(self):
+        factories.AgencyFactory(id=-1)  # Statewide data
+
         factories.ContrabandFactory()
         factories.ContrabandFactory()
         factories.ContrabandFactory()

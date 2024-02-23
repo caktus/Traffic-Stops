@@ -1,5 +1,6 @@
 from caching.base import CachingManager, CachingMixin
 from django.db import models
+from django.utils.html import format_html
 from django_pgviews import view as pg
 
 from tsdata.models import CensusProfile
@@ -19,7 +20,6 @@ class StopPurpose(models.IntegerChoices):
 
 
 class StopPurposeGroup(models.TextChoices):
-
     SAFETY_VIOLATION = "Safety Violation"
     REGULATORY_EQUIPMENT = "Regulatory and Equipment"
     OTHER = "Other"
@@ -296,12 +296,118 @@ class StopSummary(pg.ReadOnlyMaterializedView):
         ]
 
 
+CONTRABAND_SUMMARY_VIEW_SQL = f"""
+    WITH
+        contraband_groups AS (
+            SELECT
+                *
+                , (CASE WHEN nc_contraband.pints > 0 OR nc_contraband.gallons > 0 THEN true
+                        ELSE false
+                   END) AS alcohol_found
+                , (CASE WHEN nc_contraband.ounces > 0 OR nc_contraband.pounds > 0 OR nc_contraband.dosages > 0 OR nc_contraband.grams > 0 OR nc_contraband.kilos > 0 THEN true
+                        ELSE false
+                   END) AS drugs_found
+                , (CASE WHEN nc_contraband.money > 0 THEN true
+                        ELSE false
+                   END) AS money_found
+                , (CASE WHEN nc_contraband.dollar_amount > 0 THEN true
+                        ELSE false
+                   END) AS other_found
+                , (CASE WHEN nc_contraband.weapons > 0 THEN true
+                        ELSE false
+                   END) AS weapons_found
+            FROM nc_contraband
+        ),
+        contraband_types_without_id AS (
+            SELECT
+                contraband_id
+                , person_id
+                , search_id
+                , stop_id
+                , unnest(ARRAY['Alcohol', 'Drugs', 'Money', 'Other', 'Weapons']) AS contraband_type
+                , unnest(ARRAY[alcohol_found, drugs_found, money_found, other_found, weapons_found]) AS contraband_found
+            FROM contraband_groups
+        ),
+        contraband_types AS (
+            SELECT
+                ROW_NUMBER() OVER () AS contraband_type_id
+                , *
+            FROM contraband_types_without_id
+        )
+    SELECT
+        contraband_type_id
+        , nc_stop.stop_id
+        , date AT TIME ZONE 'America/New_York' AS stop_date
+        , nc_stop.agency_id
+        , nc_stop.officer_id
+        , (CASE WHEN nc_stop.purpose IN ({",".join(map(str, StopPurposeGroup.safety_violation_purposes()))}) THEN 'Safety Violation'
+                WHEN nc_stop.purpose IN ({",".join(map(str, StopPurposeGroup.other_purposes()))}) THEN 'Other'
+                WHEN nc_stop.purpose IN ({",".join(map(str, StopPurposeGroup.regulatory_purposes()))}) THEN 'Regulatory and Equipment'
+                ELSE 'Other'
+            END) as stop_purpose_group
+        , (CASE WHEN nc_person.ethnicity = 'H' THEN 'Hispanic'
+                WHEN nc_person.ethnicity = 'N' AND nc_person.race = 'A' THEN 'Asian'
+                WHEN nc_person.ethnicity = 'N' AND nc_person.race = 'B' THEN 'Black'
+                WHEN nc_person.ethnicity = 'N' AND nc_person.race = 'I' THEN 'Native American'
+                WHEN nc_person.ethnicity = 'N' AND nc_person.race = 'U' THEN 'Other'
+                WHEN nc_person.ethnicity = 'N' AND nc_person.race = 'W' THEN 'White'
+            END) as driver_race
+        , (CASE WHEN nc_person.gender = 'M' THEN 'Male'
+                WHEN nc_person.gender = 'F' THEN 'Female'
+            END) as driver_gender
+        , (nc_search.search_id IS NOT NULL) AS driver_searched
+        , nc_search.search_id
+        , contraband_found
+        , contraband_id
+        , contraband_type
+    FROM "nc_stop"
+    INNER JOIN "nc_person"
+        ON ("nc_stop"."stop_id" = "nc_person"."stop_id" AND "nc_person"."type" = 'D')
+    INNER JOIN "nc_search"
+        ON ("nc_stop"."stop_id" = "nc_search"."stop_id")
+    LEFT OUTER JOIN "contraband_types"
+        ON ("nc_stop"."stop_id" = "contraband_types"."stop_id")
+"""  # noqa
+
+
+class ContrabandSummary(pg.ReadOnlyMaterializedView):
+    sql = CONTRABAND_SUMMARY_VIEW_SQL
+    # Don't create view with data, this will be manually managed
+    # and refreshed by the data import process
+    # https://github.com/mikicz/django-pgviews#with-no-data
+    with_data = False
+
+    id = models.PositiveIntegerField(primary_key=True, db_column="contraband_type_id")
+    stop = models.ForeignKey("Stop", on_delete=models.DO_NOTHING)
+    date = models.DateField(db_column="stop_date")
+    agency = models.ForeignKey("Agency", on_delete=models.DO_NOTHING)
+    officer_id = models.CharField(max_length=15)
+    stop_purpose_group = models.CharField(choices=StopPurposeGroup.choices, max_length=32)
+    driver_race_comb = models.CharField(
+        max_length=2, choices=DriverRace.choices, db_column="driver_race"
+    )
+    driver_gender = models.CharField(max_length=8, choices=GENDER_CHOICES)
+    driver_searched = models.BooleanField()
+    search = models.ForeignKey("Search", on_delete=models.DO_NOTHING)
+    contraband_found = models.BooleanField()
+    contraband = models.ForeignKey("Contraband", on_delete=models.DO_NOTHING)
+    contraband_type = models.CharField(max_length=16)
+
+    class Meta:
+        managed = False
+        indexes = [
+            models.Index(fields=["agency", "stop_purpose_group", "date"]),
+            models.Index(fields=["agency", "date"]),
+        ]
+
+
 class Resource(models.Model):
     created_date = models.DateTimeField(auto_now_add=True, editable=False)
     publication_date = models.DateField(null=True, blank=True, editable=True)
     RESOURCE_IMAGES = [
         ("copwatch-new-policy", "New Policy"),
         ("forward-justice-logo", "Forward Justice Logo"),
+        ("copwatch-white-paper", "White Paper"),
     ]
     agencies = models.ManyToManyField("Agency", related_name="resources")
     title = models.CharField(max_length=500, null=False, blank=False)
@@ -313,7 +419,7 @@ class Resource(models.Model):
         ordering = ("-created_date",)
 
     def __str__(self):
-        return f"{self.title}"
+        return format_html(self.title)
 
 
 class ResourceFile(models.Model):

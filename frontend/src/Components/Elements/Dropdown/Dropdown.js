@@ -9,15 +9,30 @@ export default function Dropdown({ value, onChange, options, dropUp, dropDown })
   const containerRef = React.useRef();
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleSelect = (selection) => {
+  const handleSelect = (selection, idx) => {
     setIsOpen(false);
-    onChange(selection);
+    onChange(selection, idx);
+  };
+
+  const getParentNodes = (elNode) => {
+    // Return ancestor nodes for the input node
+    let el = elNode.target;
+    const elements = [];
+    while (el) {
+      elements.push(el);
+      el = el.parentNode;
+    }
+    return elements;
   };
 
   // Close dropdown when anything else is clicked.
   useEffect(() => {
     function _closeOnBlur(e) {
-      if (e.target === containerRef.current || e.target === inputRef.current) return;
+      const inputNodes = getParentNodes(e);
+      // Check to see if the element that is clicked is or is a child of the refs to show/hide the dropdown.
+      if (inputNodes.includes(containerRef.current) || inputNodes.includes(inputRef.current)) {
+        return;
+      }
       setIsOpen(false);
     }
     document.addEventListener('click', _closeOnBlur, false);
@@ -39,8 +54,8 @@ export default function Dropdown({ value, onChange, options, dropUp, dropDown })
         dropDown={dropDown}
       >
         <S.DropdownList>
-          {options?.map((option) => (
-            <S.ListItem key={option} onClick={() => handleSelect(option)}>
+          {options?.map((option, i) => (
+            <S.ListItem key={option} onClick={() => handleSelect(option, i)}>
               {option}
             </S.ListItem>
           ))}

@@ -76,11 +76,11 @@ To use ``psql`` locally, make sure you have the following env variables loaded
 
     export DJANGO_SETTINGS_MODULE=traffic_stops.settings.local
     export PGHOST=127.0.0.1
-    export PGPORT=54344
+    export PGPORT=9051
     export PGUSER=postgres
-    export PGDATABASE=traffic_stops
-    export DATABASE_URL=postgres://127.0.0.1:54344/traffic_stops
-    export DATABASE_URL_NC=postgres://127.0.0.1:54344/traffic_stops_nc
+    export PGDATABASE=traffic_stops_nc
+    export DATABASE_URL=postgres://127.0.0.1:${PGPORT}/traffic_stops
+    export DATABASE_URL_NC=postgres://127.0.0.1:${PGPORT}/traffic_stops_nc
 
 To setup your local environment you should create a virtualenv and install the
 necessary requirements::
@@ -106,7 +106,6 @@ Exit the virtualenv and reactivate it to activate the settings just changed::
 Migrate the project databases::
 
     (traffic-stops)$ ./migrate_all_dbs.sh
-
 
 Frontend setup::
 
