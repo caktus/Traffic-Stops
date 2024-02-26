@@ -52,11 +52,12 @@ function Searches(props) {
     loading: true,
   });
 
-  const [searchCountData, setSearchCountData] = useState({
+  const initCountData = {
     labels: [],
     datasets: [],
     loading: true,
-  });
+  };
+  const [searchCountData, setSearchCountData] = useState(initCountData);
   const [searchCountType, setSearchCountType] = useState(0);
   const renderMetaTags = useMetaTags();
   const [renderTableModal, { openModal }] = useTableModal();
@@ -81,6 +82,7 @@ function Searches(props) {
 
   // Build Searches By Count
   useEffect(() => {
+    setSearchCountData(initCountData);
     const params = [];
     if (searchType !== 0) {
       params.push({ param: 'search_type', val: searchCountType });

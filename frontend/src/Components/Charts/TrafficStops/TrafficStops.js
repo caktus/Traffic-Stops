@@ -223,17 +223,19 @@ function TrafficStops(props) {
     null,
     null,
   ]);
-  const [trafficStopsByCount, setTrafficStopsByCount] = useState({
+  const initStopsByCount = {
     labels: [],
     datasets: [],
     loading: true,
-  });
+  };
+  const [trafficStopsByCount, setTrafficStopsByCount] = useState(initStopsByCount);
 
   const createDateForRange = (yr) =>
     Number.isInteger(yr) ? new Date(`${yr}-01-01`) : new Date(yr);
 
   // Build Stops By Count
   useEffect(() => {
+    setTrafficStopsByCount(initStopsByCount);
     const params = [];
     if (trafficStopsByCountRange !== null) {
       const _from = `${trafficStopsByCountRange.from.year}-${trafficStopsByCountRange.from.month

@@ -47,28 +47,35 @@ function Contraband(props) {
 
   const renderMetaTags = useMetaTags();
   const [renderTableModal] = useTableModal();
-  const [contrabandData, setContrabandData] = useState({
-    labels: [],
-    datasets: [],
-    isModalOpen: false,
-    tableData: [],
-    csvData: [],
-    loading: true,
-  });
-  const [contrabandTypesData, setContrabandTypesData] = useState({
-    labels: [],
-    datasets: [],
-    isModalOpen: false,
-    tableData: [],
-    csvData: [],
-    loading: true,
-  });
 
-  const [contrabandStopPurposeData, setContrabandStopPurposeData] = useState({
+  const initContrabandData = {
+    labels: [],
+    datasets: [],
+    isModalOpen: false,
+    tableData: [],
+    csvData: [],
+    loading: true,
+  };
+  const [contrabandData, setContrabandData] = useState(initContrabandData);
+
+  const initContrabandTypesData = {
+    labels: [],
+    datasets: [],
+    isModalOpen: false,
+    tableData: [],
+    csvData: [],
+    loading: true,
+  };
+  const [contrabandTypesData, setContrabandTypesData] = useState(initContrabandTypesData);
+
+  const initContrabandStopPurposeData = {
     labels: [],
     datasets: [],
     loading: true,
-  });
+  };
+  const [contrabandStopPurposeData, setContrabandStopPurposeData] = useState(
+    initContrabandStopPurposeData
+  );
   const [contrabandStopPurposeModalData, setContrabandStopPurposeModalData] = useState({
     modalData: {},
     isOpen: false,
@@ -87,7 +94,7 @@ function Contraband(props) {
       loading: true,
     });
 
-  const initialContrabandGroupedData = [
+  const initContrabandGroupedStopPurposeData = [
     {
       labels: [],
       datasets: [],
@@ -105,7 +112,7 @@ function Contraband(props) {
     },
   ];
   const [contrabandGroupedStopPurposeData, setContrabandGroupedStopPurposeData] = useState(
-    initialContrabandGroupedData
+    initContrabandGroupedStopPurposeData
   );
   const [shouldRedrawContrabandGraphs, setShouldReDrawContrabandGraphs] = useState(true);
   const [contrabandTypes, setContrabandTypes] = useState(() =>
@@ -145,7 +152,10 @@ function Contraband(props) {
   const handleYearSelect = (y) => {
     if (y === year) return;
     setYear(y);
-    setContrabandGroupedStopPurposeData(initialContrabandGroupedData);
+    setContrabandData(initContrabandData);
+    setContrabandTypesData(initContrabandTypesData);
+    setContrabandStopPurposeData(initContrabandStopPurposeData);
+    setContrabandGroupedStopPurposeData(initContrabandGroupedStopPurposeData);
     fetchHitRateByStopPurpose(y);
   };
 
