@@ -27,12 +27,15 @@ function SearchRate(props) {
   const [chartState] = useDataset(agencyId, LIKELIHOOD_OF_SEARCH);
 
   const [year, setYear] = useState(YEARS_DEFAULT);
-  const [searchRateData, setSearchRateData] = useState({ labels: [], datasets: [], loading: true });
+
+  const initData = { labels: [], datasets: [], loading: true };
+  const [searchRateData, setSearchRateData] = useState(initData);
 
   const renderMetaTags = useMetaTags();
   const [renderTableModal, { openModal }] = useTableModal();
 
   useEffect(() => {
+    setSearchRateData(initData);
     const params = [];
     if (year && year !== 'All') {
       params.push({ param: 'year', val: year });
