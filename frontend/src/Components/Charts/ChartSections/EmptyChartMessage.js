@@ -1,7 +1,7 @@
 import React from 'react';
 import * as S from './ChartsCommon.styled';
 
-function EmptyMessage() {
+export function EmptyMessage() {
   return (
     <S.LegendBelow>
       <S.ChartWarning>NO DATA AVAILABLE</S.ChartWarning>

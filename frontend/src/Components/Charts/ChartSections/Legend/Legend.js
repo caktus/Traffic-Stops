@@ -5,7 +5,15 @@ import * as S from './Legend.styled';
 import { ICONS } from '../../../../img/icons/Icon';
 import { WEIGHTS } from '../../../../styles/StyledComponents/Typography';
 
-function Legend({ keys, onKeySelect, isStatic, showNonHispanic, heading, direction = 'row' }) {
+function Legend({
+  keys,
+  onKeySelect,
+  isStatic,
+  showNonHispanic,
+  heading,
+  direction = 'row',
+  legendColors = 'ethnicGroup',
+}) {
   const theme = useTheme();
 
   return (
@@ -13,7 +21,8 @@ function Legend({ keys, onKeySelect, isStatic, showNonHispanic, heading, directi
       {heading && <S.LegendHeading weight={WEIGHTS[1]}>{heading}</S.LegendHeading>}
       <S.KeysList direction={direction}>
         {keys?.map((key) => {
-          const fill = key.selected ? theme.colors.ethnicGroup[key.value] : theme.colors.grey;
+          const colors = theme.colors[legendColors];
+          const fill = key.selected ? colors[key.value] : theme.colors.grey;
           const iconProps = {
             fill,
             width: 25,

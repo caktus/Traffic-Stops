@@ -16,6 +16,11 @@ urlpatterns = [  # noqa
     re_path(r"^api/", include(router.urls)),
     path("api/about/contact/", csrf_exempt(views.ContactView.as_view()), name="contact-form"),
     path(
+        "api/agency/<agency_id>/stops-by-percentage/",
+        views.AgencyTrafficStopsByPercentageView.as_view(),
+        name="stops-by-percentage",
+    ),
+    path(
         "api/agency/<agency_id>/stops-by-count/",
         views.AgencyTrafficStopsByCountView.as_view(),
         name="stops-by-count",
@@ -31,23 +36,48 @@ urlpatterns = [  # noqa
         name="stops-grouped-by-purpose",
     ),
     path(
-        "api/agency/<int:agency_id>/contraband/",
+        "api/agency/<agency_id>/searches-by-percentage/",
+        views.AgencySearchesByPercentageView.as_view(),
+        name="searches-by-percentage",
+    ),
+    path(
+        "api/agency/<agency_id>/searches-by-count/",
+        views.AgencySearchesByCountView.as_view(),
+        name="searches-by-count",
+    ),
+    path(
+        "api/agency/<agency_id>/search-rate/",
+        views.AgencySearchRateView.as_view(),
+        name="search-rate",
+    ),
+    path(
+        "api/agency/<agency_id>/contraband/",
         views.AgencyContrabandView.as_view(),
         name="contraband-percentages",
     ),
     path(
-        "api/agency/<int:agency_id>/contraband-stop-purpose/",
+        "api/agency/<agency_id>/contraband-types/",
+        views.AgencyContrabandTypesView.as_view(),
+        name="contraband-type-percentages",
+    ),
+    path(
+        "api/agency/<agency_id>/contraband-stop-purpose/",
         views.AgencyContrabandStopPurposeView.as_view(),
         name="contraband-percentages-stop-purpose-groups",
     ),
     path(
-        "api/agency/<int:agency_id>/contraband-grouped-stop-purpose/",
+        "api/agency/<agency_id>/contraband-grouped-stop-purpose/",
         views.AgencyContrabandGroupedStopPurposeView.as_view(),
         name="contraband-percentages-grouped-stop-purpose",
     ),
     path(
-        "api/agency/<int:agency_id>/contraband-grouped-stop-purpose/modal/",
+        "api/agency/<agency_id>/contraband-grouped-stop-purpose/modal/",
         views.AgencyContrabandStopGroupByPurposeModalView.as_view(),
         name="contraband-percentages-grouped-stop-purpose-modal",
+    ),
+    path(
+        "api/agency/<agency_id>/use-of-force/",
+        views.AgencyUseOfForceView.as_view(),
+        name="use-of-force",
     ),
 ]

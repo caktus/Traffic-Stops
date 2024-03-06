@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { Pie } from 'react-chartjs-2';
 import DataLoading from '../Charts/ChartPrimitives/DataLoading';
+import ChartModal from './ChartModal';
 
 export default function PieChart({
   data,
@@ -8,8 +9,9 @@ export default function PieChart({
   maintainAspectRatio = true,
   displayTitle = true,
   displayLegend = true,
-  displayOutlabels = false,
-  chartRef = null,
+  legendPosition = 'right',
+  showWhiteBackground = true,
+  modalConfig = {},
 }) {
   const options = {
     responsive: true,
@@ -18,15 +20,26 @@ export default function PieChart({
       mode: 'nearest',
       intersect: false,
     },
+    onHover(evt, chartEl) {
+      // If there is a chart element found on hover, set the cursor to pointer
+      // to let users know they can view the modal
+      // eslint-disable-next-line no-param-reassign
+      evt.native.target.style.cursor = chartEl.length ? 'pointer' : 'default';
+    },
+    onClick(evt, activeEls) {
+      if (activeEls.length) {
+        setIsChartOpen(true);
+      }
+    },
     plugins: {
       legend: {
         display: displayLegend,
-        position: displayOutlabels ? 'right' : 'top',
+        position: legendPosition,
       },
       tooltip: {
         mode: 'nearest',
         intersect: false,
-        enabled: !displayOutlabels,
+        enabled: true,
         callbacks: {
           label(context) {
             return `${context.parsed}%`;
@@ -95,21 +108,58 @@ export default function PieChart({
     },
   };
 
-  const plugins = [whiteBackground];
-  if (displayOutlabels) {
-    plugins.push(alwaysShowTooltip);
+  const plugins = [];
+  if (showWhiteBackground) {
+    plugins.push(whiteBackground);
   }
 
   const noData = data.datasets[0].data.every((v) => parseInt(v, 10) === 0);
 
-  if (!data.datasets.length) {
+  // Setup modal options
+  const [isChartOpen, setIsChartOpen] = useState(false);
+  const zoomedPieChartRef = useRef(null);
+
+  const createModalOptions = (opts) => {
+    const modalOptions = JSON.parse(JSON.stringify(opts));
+    modalOptions.plugins.legend = {
+      display: true,
+      position: 'right',
+    };
+    modalOptions.plugins.tooltip.enabled = false;
+    modalOptions.plugins.title = {
+      display: true,
+      text: modalConfig.chartTitle,
+    };
+    return modalOptions;
+  };
+
+  const pieChartModalPlugins = [whiteBackground, alwaysShowTooltip];
+  const pieChartModalOptions = createModalOptions(options);
+
+  if (data.loading) {
     return <DataLoading />;
   }
 
   return (
     <>
-      {noData && <div style={{ textAlign: 'center' }}>No Data Found</div>}
-      <Pie ref={chartRef} options={options} data={data} plugins={plugins} />
+      <div style={{ width: '100%' }}>
+        {noData && <div style={{ textAlign: 'center' }}>No Data Found</div>}
+        <Pie ref={zoomedPieChartRef} options={options} data={data} plugins={plugins} />
+      </div>
+      <ChartModal
+        isOpen={isChartOpen}
+        closeModal={() => setIsChartOpen(false)}
+        chartToPrintRef={zoomedPieChartRef}
+        chartTitle={modalConfig.chartTitle}
+        {...modalConfig}
+      >
+        <Pie
+          ref={zoomedPieChartRef}
+          options={pieChartModalOptions}
+          data={data}
+          plugins={pieChartModalPlugins}
+        />
+      </ChartModal>
     </>
   );
 }

@@ -1,9 +1,11 @@
 import { Bar } from 'react-chartjs-2';
 import DataLoading from '../Charts/ChartPrimitives/DataLoading';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { usePopper } from 'react-popper';
 import { tooltipLanguage } from '../../util/tooltipLanguage';
 import styled from 'styled-components';
+import ChartModal from './ChartModal';
+import { EmptyMessage } from '../Charts/ChartSections/EmptyChartMessage';
 
 export const Tooltip = styled.div`
   background: #333;
@@ -32,6 +34,8 @@ export default function HorizontalBarChart({
   yAxisShowLabels = true,
   displayStopPurposeTooltips = false,
   redraw = false,
+  pinMaxValue = true, // Some graph percentages go beyond 100%
+  modalConfig = {},
 }) {
   const options = {
     responsive: true,
@@ -40,7 +44,13 @@ export default function HorizontalBarChart({
     scales: {
       x: {
         stacked: xStacked,
-        max: 100,
+        max: pinMaxValue ? 1 : null,
+        ticks: {
+          stepSize: pinMaxValue ? 0.1 : 0.5,
+          format: {
+            style: 'percent',
+          },
+        },
       },
       y: {
         max: 200,
@@ -49,6 +59,17 @@ export default function HorizontalBarChart({
           display: yAxisShowLabels,
         },
       },
+    },
+    onHover(evt, chartEl) {
+      // If there is a chart element found on hover, set the cursor to pointer
+      // to let users know they can view the modal
+      // eslint-disable-next-line no-param-reassign
+      evt.native.target.style.cursor = chartEl.length ? 'pointer' : 'default';
+    },
+    onClick(evt, activeEls) {
+      if (activeEls.length) {
+        setIsChartOpen(true);
+      }
     },
     plugins: {
       legend: {
@@ -101,6 +122,8 @@ export default function HorizontalBarChart({
       },
     ],
   });
+  const [isChartOpen, setIsChartOpen] = useState(false);
+  const zoomedLineChartRef = useRef(null);
 
   const showTooltip = () => {
     popperElement.setAttribute('data-show', true);
@@ -110,9 +133,42 @@ export default function HorizontalBarChart({
     popperElement.removeAttribute('data-show');
   };
 
-  if (!data.labels.length) {
+  const whiteBackground = {
+    id: 'customBarCanvasBackgroundColor',
+    beforeDraw: (chart, args, config) => {
+      const { ctx } = chart;
+      ctx.save();
+      ctx.globalCompositeOperation = 'destination-over';
+      ctx.fillStyle = config.color || '#fff';
+      ctx.fillRect(0, 0, chart.width, chart.height);
+      ctx.restore();
+    },
+  };
+
+  const createModalOptions = (opts) => {
+    const modalOptions = JSON.parse(JSON.stringify(opts));
+    modalOptions.plugins.legend = {
+      display: data && data.datasets.length !== 1,
+      position: 'top',
+    };
+    modalOptions.plugins.tooltip.enabled = true;
+    modalOptions.plugins.title = {
+      display: true,
+      text: modalConfig.chartTitle,
+    };
+    modalOptions.scales.y.max = null;
+    modalOptions.scales.y.ticks.display = true;
+    return modalOptions;
+  };
+
+  const barChartModalPlugins = [whiteBackground];
+  const barChartModalOptions = createModalOptions(options);
+
+  if (data.loading) {
     return <DataLoading />;
   }
+
+  const noData = data.datasets.every((d) => d.data.every((v) => v === 0));
 
   return (
     <>
@@ -128,7 +184,22 @@ export default function HorizontalBarChart({
           </Tooltip>
         </>
       )}
+      {noData && <EmptyMessage />}
       <Bar options={options} data={data} redraw={redraw} />
+      <ChartModal
+        isOpen={isChartOpen}
+        closeModal={() => setIsChartOpen(false)}
+        chartToPrintRef={zoomedLineChartRef}
+        chartTitle={modalConfig.chartTitle}
+        {...modalConfig}
+      >
+        <Bar
+          ref={zoomedLineChartRef}
+          data={data}
+          options={barChartModalOptions}
+          plugins={barChartModalPlugins}
+        />
+      </ChartModal>
     </>
   );
 }

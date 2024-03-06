@@ -18,13 +18,18 @@ API_ENDPOINT_NAMES = (
     "nc:agency-api-searches-by-type",
     "nc:agency-api-contraband-hit-rate",
     "nc:agency-api-use-of-force",
+    "nc:stops-by-percentage",
     "nc:stops-by-count",
     "nc:stop-purpose-groups",
     "nc:stops-grouped-by-purpose",
     "nc:contraband-percentages",
+    "nc:searches-by-percentage",
+    "nc:searches-by-count",
+    "nc:search-rate",
     "nc:contraband-percentages-stop-purpose-groups",
     "nc:contraband-percentages-grouped-stop-purpose",
     "nc:contraband-percentages-grouped-stop-purpose-modal",
+    "nc:use-of-force",
 )
 DEFAULT_CUTOFF_SECS = 4
 
@@ -118,7 +123,7 @@ class CachePrimer:
 
     def prime(self):
         logger.info(f"{self} starting")
-        self.count = self.get_queryset().count()
+        self.count = len(self.get_queryset())
         logger.info(f"{self} priming {self.count:,} objects")
         for endpoints in self.get_endpoints():
             for endpoint in endpoints:
@@ -135,13 +140,24 @@ class CachePrimer:
 
 class AgencyStopsPrimer(CachePrimer):
     def get_queryset(self):
-        return (
+        qs = list(
             Stop.objects.no_cache()
             .annotate(agency_name=F("agency_description"))
             .values("agency_name", "agency_id")
             .annotate(num_stops=Count("stop_id"))
             .order_by("-num_stops")
         )
+        # Manually insert the statewide to force the caching since a
+        # stop instance won't directly be associated with the statewide agency id.
+        qs.insert(
+            0,
+            {
+                "agency_name": "North Carolina State",
+                "agency_id": -1,
+                "num_stops": Stop.objects.count(),
+            },
+        )
+        return qs
 
     def get_urls(self, row):
         urls = []
@@ -172,7 +188,7 @@ def run(
     cutoff_duration_secs=None,
     clear_cache=False,
     skip_agencies=False,
-    skip_officers=False,
+    skip_officers=True,
     officer_cutoff_count=None,
 ):
     """
@@ -211,6 +227,6 @@ def run(
     if not skip_officers:
         OfficerStopsPrimer(
             cutoff_secs=0, cutoff_count=officer_cutoff_count
-        ).prime()  # cache all officer endpoins for now
+        ).prime()  # cache all officer endpoints for now
 
     logger.info("Complete")
