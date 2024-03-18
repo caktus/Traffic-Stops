@@ -80,4 +80,9 @@ urlpatterns = [  # noqa
         views.AgencyUseOfForceView.as_view(),
         name="use-of-force",
     ),
+    path(
+        "api/agency/<agency_id>/arrests-by-percentage/",
+        views.AgencyArrestsByPercentageView.as_view(),
+        name="arrests-by-percentage",
+    ),
 ]

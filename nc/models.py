@@ -235,6 +235,7 @@ STOP_SUMMARY_VIEW_SQL = f"""
                 WHEN nc_stop.purpose IN ({",".join(map(str, StopPurposeGroup.regulatory_purposes()))}) THEN 'Regulatory and Equipment'
                 ELSE 'Other'
            END) as stop_purpose_group
+        , "nc_stop"."driver_arrest"
         , "nc_stop"."engage_force"
         , "nc_search"."type" AS "search_type"
         , (CASE
@@ -260,7 +261,7 @@ STOP_SUMMARY_VIEW_SQL = f"""
     LEFT OUTER JOIN "nc_contraband"
         ON ("nc_stop"."stop_id" = "nc_contraband"."stop_id")
     GROUP BY
-        2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+        2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
     ORDER BY "agency_id", "date" ASC;
 """  # noqa
 
@@ -277,6 +278,7 @@ class StopSummary(pg.ReadOnlyMaterializedView):
     agency = models.ForeignKey("Agency", on_delete=models.DO_NOTHING)
     stop_purpose = models.PositiveSmallIntegerField(choices=StopPurpose.choices)
     stop_purpose_group = models.CharField(choices=StopPurposeGroup.choices, max_length=32)
+    driver_arrest = models.BooleanField()
     engage_force = models.BooleanField()
     search_type = models.PositiveSmallIntegerField(choices=SEARCH_TYPE_CHOICES)
     contraband_found = models.BooleanField()

@@ -1640,3 +1640,70 @@ class AgencyUseOfForceView(APIView):
         df = pd.DataFrame(pivot_df)
         data = self.build_response(df, unique_x_range)
         return Response(data=data, status=200)
+
+
+class AgencyArrestsByPercentageView(APIView):
+    @method_decorator(cache_page(CACHE_TIMEOUT))
+    def get(self, request, agency_id):
+        year = request.GET.get("year", None)
+
+        qs = StopSummary.objects.all()
+
+        agency_id = int(agency_id)
+        if agency_id != -1:
+            qs = qs.filter(agency_id=agency_id)
+        officer = request.query_params.get("officer", None)
+        if officer:
+            qs = qs.filter(officer_id=officer)
+
+        arrest_qs = qs
+        if year:
+            arrest_qs = arrest_qs.annotate(year=ExtractYear("date")).filter(year=year)
+
+        arrest_qs = arrest_qs.values("driver_race_comb", "driver_arrest", "count")
+
+        # Build charts data
+        df = pd.DataFrame(arrest_qs)
+        columns = ["White", "Black", "Hispanic", "Asian", "Native American", "Other"]
+        percentages = [0] * len(columns)
+
+        if arrest_qs.count() > 0:
+            for i, c in enumerate(columns):
+                driver_arrest_cond = (df["driver_race_comb"] == c) & df["driver_arrest"]
+                filtered_df = df[driver_arrest_cond]
+
+                arrests_count = filtered_df["count"].sum()
+                stops_count = df[df["driver_race_comb"] == c]["count"].sum()
+                percentages[i] = arrests_count / stops_count
+
+        # Build modal table data
+        table_data_qs = (
+            qs.filter(driver_arrest=True)
+            .values("driver_race_comb")
+            .annotate(stop_count=Sum("count"))
+            .annotate(year=ExtractYear("date"))
+        )
+
+        table_data = []
+        if table_data_qs.count() > 0:
+            pivot_df = (
+                pd.DataFrame(table_data_qs)
+                .pivot(index="year", columns=["driver_race_comb"], values="stop_count")
+                .fillna(value=0)
+            )
+
+            pivot_df = pd.DataFrame(pivot_df).rename(
+                columns={
+                    "White": "white",
+                    "Black": "black",
+                    "Hispanic": "hispanic",
+                    "Asian": "asian",
+                    "Native American": "native_american",
+                    "Other": "other",
+                }
+            )
+            table_data = pivot_df.to_json(orient="table")
+
+        data = {"arrest_percentages": percentages, "table_data": table_data}
+
+        return Response(data=data, status=200)

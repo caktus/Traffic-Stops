@@ -67,7 +67,13 @@ function AgencyData(props) {
             </motion.div>
           )}
         </AnimatePresence>
-        {chartsOpen && <ChartRoutes agencyId={agencyId} showCompare={props.showCompare} />}
+        {chartsOpen && (
+          <ChartRoutes
+            agencyId={agencyId}
+            showCompare={props.showCompare}
+            agencyName={chartState.data[AGENCY_DETAILS].name}
+          />
+        )}
       </S.ContentWrapper>
     </S.AgencyData>
   );
