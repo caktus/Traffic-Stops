@@ -4,7 +4,7 @@ import math
 from functools import reduce
 from operator import concat
 
-import numpy
+import numpy as np
 import pandas as pd
 
 from dateutil import relativedelta
@@ -1535,7 +1535,7 @@ class AgencySearchRateView(APIView):
         def get_val(df, column, purpose):
             if column in df and purpose in df[column]:
                 val = df[column][purpose]
-                return float(0) if numpy.isnan(val) else float(val)
+                return float(0) if np.isnan(val) else float(val)
             return float(0)
 
         for col in columns:
@@ -1642,7 +1642,7 @@ class AgencyUseOfForceView(APIView):
         return Response(data=data, status=200)
 
 
-class AgencyArrestsByPercentageView(APIView):
+class AgencyArrestsPercentageOfStopsView(APIView):
     @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         year = request.GET.get("year", None)
@@ -1674,7 +1674,7 @@ class AgencyArrestsByPercentageView(APIView):
 
                 arrests_count = filtered_df["count"].sum()
                 stops_count = df[df["driver_race_comb"] == c]["count"].sum()
-                percentages[i] = arrests_count / stops_count
+                percentages[i] = np.nan_to_num(arrests_count / stops_count)
 
         # Build modal table data
         table_data_qs = (
@@ -1682,6 +1682,77 @@ class AgencyArrestsByPercentageView(APIView):
             .values("driver_race_comb")
             .annotate(stop_count=Sum("count"))
             .annotate(year=ExtractYear("date"))
+        )
+
+        table_data = []
+        if table_data_qs.count() > 0:
+            pivot_df = (
+                pd.DataFrame(table_data_qs)
+                .pivot(index="year", columns=["driver_race_comb"], values="stop_count")
+                .fillna(value=0)
+            )
+
+            pivot_df = pd.DataFrame(pivot_df).rename(
+                columns={
+                    "White": "white",
+                    "Black": "black",
+                    "Hispanic": "hispanic",
+                    "Asian": "asian",
+                    "Native American": "native_american",
+                    "Other": "other",
+                }
+            )
+            table_data = pivot_df.to_json(orient="table")
+
+        data = {"arrest_percentages": percentages, "table_data": table_data}
+
+        return Response(data=data, status=200)
+
+
+class AgencyArrestsPercentageOfSearchesView(APIView):
+    @method_decorator(cache_page(CACHE_TIMEOUT))
+    def get(self, request, agency_id):
+        year = request.GET.get("year", None)
+
+        qs = StopSummary.objects.all()
+
+        agency_id = int(agency_id)
+        if agency_id != -1:
+            qs = qs.filter(agency_id=agency_id)
+        officer = request.query_params.get("officer", None)
+        if officer:
+            qs = qs.filter(officer_id=officer)
+
+        arrest_qs = qs
+        if year:
+            arrest_qs = arrest_qs.annotate(year=ExtractYear("date")).filter(year=year)
+
+        arrest_qs = arrest_qs.values(
+            "driver_race_comb", "driver_arrest", "driver_searched", "count"
+        )
+
+        # Build charts data
+        df = pd.DataFrame(arrest_qs)
+        columns = ["White", "Black", "Hispanic", "Asian", "Native American", "Other"]
+        percentages = [0] * len(columns)
+
+        if arrest_qs.count() > 0:
+            for i, c in enumerate(columns):
+                arrest_cond = (df["driver_race_comb"] == c) & df["driver_arrest"]
+                arrests_count = df[arrest_cond]["count"].sum()
+
+                searched_cond = (df["driver_race_comb"] == c) & df["driver_searched"]
+                searches_count = df[searched_cond]["count"].sum()
+                percentages[i] = np.nan_to_num(arrests_count / searches_count)
+
+        # Build modal table data
+        table_data_qs = (
+            qs.filter(driver_arrest=True)
+            .values("driver_race_comb")
+            .annotate(
+                stop_count=Sum("count"),
+                year=ExtractYear("date"),
+            )
         )
 
         table_data = []

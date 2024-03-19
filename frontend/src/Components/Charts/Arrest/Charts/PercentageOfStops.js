@@ -9,8 +9,9 @@ import axios from '../../../../Services/Axios';
 import useOfficerId from '../../../../Hooks/useOfficerId';
 import { ChartWrapper } from '../Arrests.styles';
 import NewModal from '../../../NewCharts/NewModal';
+import { ARRESTS_TABLE_COLUMNS } from '../Arrests';
 
-function ArrestsByPercentage(props) {
+function PercentageOfStops(props) {
   const { agencyId, agencyName, showCompare, year } = props;
 
   const officerId = useOfficerId();
@@ -35,7 +36,7 @@ function ArrestsByPercentage(props) {
     }
 
     const urlParams = params.map((p) => `${p.param}=${p.val}`).join('&');
-    const url = `/api/agency/${agencyId}/arrests-by-percentage/?${urlParams}`;
+    const url = `/api/agency/${agencyId}/arrests-percentage-of-stops/?${urlParams}`;
     axios
       .get(url)
       .then((res) => {
@@ -140,39 +141,4 @@ function ArrestsByPercentage(props) {
   );
 }
 
-export default ArrestsByPercentage;
-
-const ARRESTS_TABLE_COLUMNS = [
-  {
-    Header: 'Year',
-    accessor: 'year', // accessor is the "key" in the data
-  },
-  {
-    Header: 'White*',
-    accessor: 'white',
-  },
-  {
-    Header: 'Black*',
-    accessor: 'black',
-  },
-  {
-    Header: 'Native American*',
-    accessor: 'native_american',
-  },
-  {
-    Header: 'Asian*',
-    accessor: 'asian',
-  },
-  {
-    Header: 'Other*',
-    accessor: 'other',
-  },
-  {
-    Header: 'Hispanic',
-    accessor: 'hispanic',
-  },
-  {
-    Header: 'Total',
-    accessor: 'total',
-  },
-];
+export default PercentageOfStops;

@@ -237,6 +237,7 @@ STOP_SUMMARY_VIEW_SQL = f"""
            END) as stop_purpose_group
         , "nc_stop"."driver_arrest"
         , "nc_stop"."engage_force"
+        , (nc_search.search_id IS NOT NULL) AS driver_searched
         , "nc_search"."type" AS "search_type"
         , (CASE
             WHEN nc_contraband.contraband_id IS NULL THEN false
@@ -261,7 +262,7 @@ STOP_SUMMARY_VIEW_SQL = f"""
     LEFT OUTER JOIN "nc_contraband"
         ON ("nc_stop"."stop_id" = "nc_contraband"."stop_id")
     GROUP BY
-        2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
+        2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
     ORDER BY "agency_id", "date" ASC;
 """  # noqa
 
@@ -280,6 +281,7 @@ class StopSummary(pg.ReadOnlyMaterializedView):
     stop_purpose_group = models.CharField(choices=StopPurposeGroup.choices, max_length=32)
     driver_arrest = models.BooleanField()
     engage_force = models.BooleanField()
+    driver_searched = models.BooleanField()
     search_type = models.PositiveSmallIntegerField(choices=SEARCH_TYPE_CHOICES)
     contraband_found = models.BooleanField()
     officer_id = models.CharField(max_length=15)
