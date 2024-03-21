@@ -2061,3 +2061,52 @@ class AgencyArrestsPercentageOfSearchesPerStopPurposeView(APIView):
         }
 
         return Response(data=data, status=200)
+
+
+class AgencyArrestsPercentageOfStopsPerContrabandTypeView(APIView):
+    @method_decorator(cache_page(CACHE_TIMEOUT))
+    def get(self, request, agency_id):
+        year = request.GET.get("year", None)
+
+        qs = ContrabandSummary.objects.all()
+
+        agency_id = int(agency_id)
+        if agency_id != -1:
+            qs = qs.filter(agency_id=agency_id)
+        officer = request.query_params.get("officer", None)
+        if officer:
+            qs = qs.filter(officer_id=officer)
+
+        arrests_qs = qs
+        if year:
+            arrests_qs = arrests_qs.annotate(year=ExtractYear("date")).filter(year=year)
+
+        arrests_qs = arrests_qs.values("contraband_type", "driver_arrest").annotate(
+            contraband_found_count=Count(
+                "contraband_id", distinct=True, filter=Q(contraband_found=True)
+            )
+        )
+
+        # Build charts data
+        arrest_percentages_df = pd.DataFrame(arrests_qs).fillna(value=0)
+        columns = ["Alcohol", "Drugs", "Money", "Other", "Weapons"]
+        arrest_percentages = [0] * len(columns)
+
+        if arrests_qs.count() > 0:
+            for i, contraband in enumerate(columns):
+                filtered_df = arrest_percentages_df[
+                    arrest_percentages_df["contraband_type"] == contraband
+                ]
+
+                arrest_found_count = filtered_df[filtered_df["driver_arrest"]][
+                    "contraband_found_count"
+                ].sum()
+                stop_count = filtered_df["contraband_found_count"].sum()
+                arrest_percentages[i] = np.nan_to_num(arrest_found_count / stop_count)
+
+        data = {
+            "arrest_percentages": arrest_percentages,
+            "table_data": [],
+        }
+
+        return Response(data=data, status=200)

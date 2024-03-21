@@ -18,6 +18,7 @@ import PercentageOfStopsForStopPurposeGroup from './Charts/PercentageOfStopsForP
 import PercentageOfStopsForStopPurpose from './Charts/PercentageOfStopsPerStopPurpose';
 import PercentageOfSearchesForStopPurposeGroup from './Charts/PercentageOfSearchesForPurposeGroup';
 import PercentageOfSearchesPerStopPurpose from './Charts/PercentageOfSearchesPerStopPurpose';
+import PercentageOfStopsPerContrabandType from './Charts/PercentageOfStopsPerContrabandType';
 
 function Arrests(props) {
   const [year, setYear] = useState(YEARS_DEFAULT);
@@ -57,6 +58,7 @@ function Arrests(props) {
       <PercentageOfStopsForStopPurpose {...props} year={year} />
       <PercentageOfSearchesForStopPurposeGroup {...props} year={year} />
       <PercentageOfSearchesPerStopPurpose {...props} year={year} />
+      <PercentageOfStopsPerContrabandType {...props} year={year} />
     </ArrestsStyled>
   );
 }

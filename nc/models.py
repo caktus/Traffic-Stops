@@ -360,6 +360,7 @@ CONTRABAND_SUMMARY_VIEW_SQL = f"""
                 WHEN nc_person.gender = 'F' THEN 'Female'
             END) as driver_gender
         , (nc_search.search_id IS NOT NULL) AS driver_searched
+        , nc_stop.driver_arrest AS driver_arrest
         , nc_search.search_id
         , contraband_found
         , contraband_id
@@ -392,6 +393,7 @@ class ContrabandSummary(pg.ReadOnlyMaterializedView):
     )
     driver_gender = models.CharField(max_length=8, choices=GENDER_CHOICES)
     driver_searched = models.BooleanField()
+    driver_arrest = models.BooleanField()
     search = models.ForeignKey("Search", on_delete=models.DO_NOTHING)
     contraband_found = models.BooleanField()
     contraband = models.ForeignKey("Contraband", on_delete=models.DO_NOTHING)
