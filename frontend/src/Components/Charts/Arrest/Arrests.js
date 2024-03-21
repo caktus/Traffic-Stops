@@ -15,6 +15,7 @@ import useYearSet from '../../../Hooks/useYearSet';
 import PercentageOfSearches from './Charts/PercentageOfSearches';
 import CountOfStopsAndArrests from './Charts/CountOfStopsAndArrests';
 import PercentageOfStopsForStopPurposeGroup from './Charts/PercentageOfStopsForPurposeGroup';
+import PercentageOfStopsForStopPurpose from './Charts/PercentageOfStopsPerStopPurpose';
 
 function Arrests(props) {
   const [year, setYear] = useState(YEARS_DEFAULT);
@@ -51,6 +52,7 @@ function Arrests(props) {
       <PercentageOfSearches {...props} year={year} />
       <CountOfStopsAndArrests {...props} year={year} />
       <PercentageOfStopsForStopPurposeGroup {...props} year={year} />
+      <PercentageOfStopsForStopPurpose {...props} year={year} />
     </ArrestsStyled>
   );
 }

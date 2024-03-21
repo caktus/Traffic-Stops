@@ -158,6 +158,7 @@ export default function HorizontalBarChart({
       position: 'top',
     };
     modalOptions.plugins.tooltip.enabled = true;
+    modalOptions.plugins.tooltip.callbacks.label = tooltipLabelCallback;
     modalOptions.plugins.title = {
       display: true,
       text: modalConfig.chartTitle,
