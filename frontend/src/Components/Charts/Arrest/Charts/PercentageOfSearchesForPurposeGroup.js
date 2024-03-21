@@ -11,7 +11,7 @@ import { ChartWrapper } from '../Arrests.styles';
 import NewModal from '../../../NewCharts/NewModal';
 import { ARRESTS_TABLE_COLUMNS } from '../Arrests';
 
-function PercentageOfStopsForStopPurposeGroup(props) {
+function PercentageOfSearchesForStopPurposeGroup(props) {
   const { agencyId, agencyName, showCompare, year } = props;
 
   const officerId = useOfficerId();
@@ -36,7 +36,7 @@ function PercentageOfStopsForStopPurposeGroup(props) {
     }
 
     const urlParams = params.map((p) => `${p.param}=${p.val}`).join('&');
-    const url = `/api/agency/${agencyId}/arrests-percentage-of-stops-by-purpose-group/?${urlParams}`;
+    const url = `/api/agency/${agencyId}/arrests-percentage-of-searches-by-purpose-group/?${urlParams}`;
     axios
       .get(url)
       .then((res) => {
@@ -107,14 +107,14 @@ function PercentageOfStopsForStopPurposeGroup(props) {
   return (
     <S.ChartSection>
       <ChartHeader
-        chartTitle="Percentage of Stops With Arrests For Stop Purpose Group"
+        chartTitle="Percentage of Searches With Arrests For Stop Purpose Group"
         handleViewData={() => setArrestData((state) => ({ ...state, isOpen: true }))}
       />
       <S.ChartDescription>
         <P>Percentage of stops that led to an arrest for a given stop purpose group.</P>
         <NewModal
-          tableHeader="Percentage of Stops With Arrests Per Stop Purpose Group"
-          tableSubheader="Shows what percentage of stops led to an arrest for a given stop purpose group."
+          tableHeader="Percentage of Searches With Arrests Per Stop Purpose Group"
+          tableSubheader="Shows what percentage of searches led to an arrest for a given stop purpose group."
           agencyName={agencyName}
           tableData={arrestData.tableData}
           csvData={arrestData.csvData}
@@ -127,18 +127,18 @@ function PercentageOfStopsForStopPurposeGroup(props) {
       <S.ChartSubsection showCompare={showCompare}>
         <ChartWrapper>
           <HorizontalBarChart
-            title="Percentage of Stops With Arrests Per Stop Purpose Group"
+            title="Percentage of Searches With Arrests Per Stop Purpose Group"
             data={arrestData}
             displayLegend={false}
             tooltipLabelCallback={formatTooltipValue}
             modalConfig={{
-              tableHeader: 'Percentage of Stops With Arrests Per Stop Purpose Group',
+              tableHeader: 'Percentage of Searches With Arrests Per Stop Purpose Group',
               tableSubheader: getBarChartModalSubHeading(
-                'Shows what percentage of stops led to an arrest for a given stop purpose group.'
+                'Shows what percentage of searches led to an arrest for a given stop purpose group.'
               ),
               agencyName,
               chartTitle: getBarChartModalSubHeading(
-                'Percentage of Stops With Arrests Per Stop Purpose Group'
+                'Percentage of Searches With Arrests Per Stop Purpose Group'
               ),
             }}
           />
@@ -148,4 +148,4 @@ function PercentageOfStopsForStopPurposeGroup(props) {
   );
 }
 
-export default PercentageOfStopsForStopPurposeGroup;
+export default PercentageOfSearchesForStopPurposeGroup;
