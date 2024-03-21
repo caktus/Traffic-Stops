@@ -32,6 +32,7 @@ API_ENDPOINT_NAMES = (
     "nc:use-of-force",
     "nc:arrests-percentage-of-stops",
     "nc:arrests-percentage-of-searches",
+    "nc:arrests-stops-driver-arrested",
 )
 DEFAULT_CUTOFF_SECS = 4
 

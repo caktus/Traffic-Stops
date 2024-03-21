@@ -13,6 +13,7 @@ import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker
 import PercentageOfStops from './Charts/PercentageOfStops';
 import useYearSet from '../../../Hooks/useYearSet';
 import PercentageOfSearches from './Charts/PercentageOfSearches';
+import CountOfStopsAndArrests from './Charts/CountOfStopsAndArrests';
 
 function Arrests(props) {
   const [year, setYear] = useState(YEARS_DEFAULT);
@@ -47,6 +48,7 @@ function Arrests(props) {
       </div>
       <PercentageOfStops {...props} year={year} />
       <PercentageOfSearches {...props} year={year} />
+      <CountOfStopsAndArrests {...props} year={year} />
     </ArrestsStyled>
   );
 }
