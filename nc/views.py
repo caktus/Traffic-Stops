@@ -1852,3 +1852,58 @@ class AgencyCountOfStopsAndArrests(APIView):
         data = {"arrest_counts": chart_data, "table_data": table_data}
 
         return Response(data=data, status=200)
+
+
+class AgencyArrestsPercentageOfStopsByGroupPurposeView(APIView):
+    @method_decorator(cache_page(CACHE_TIMEOUT))
+    def get(self, request, agency_id):
+        year = request.GET.get("year", None)
+
+        qs = StopSummary.objects.all()
+
+        agency_id = int(agency_id)
+        if agency_id != -1:
+            qs = qs.filter(agency_id=agency_id)
+        officer = request.query_params.get("officer", None)
+        if officer:
+            qs = qs.filter(officer_id=officer)
+
+        arrests_qs = qs
+        if year:
+            arrests_qs = arrests_qs.annotate(year=ExtractYear("date")).filter(year=year)
+
+        arrests_qs = arrests_qs.values(
+            "driver_race_comb", "stop_purpose_group", "driver_arrest", "count"
+        )
+
+        # Build charts data
+        arrest_percentages_df = pd.DataFrame(arrests_qs).fillna(value=0)
+        arrest_percentages = []
+        stop_purpose_types = [
+            StopPurposeGroup.SAFETY_VIOLATION,
+            StopPurposeGroup.REGULATORY_EQUIPMENT,
+            StopPurposeGroup.OTHER,
+        ]
+
+        if arrests_qs.count() > 0:
+            for stop_purpose in stop_purpose_types:
+                group = {
+                    "stop_purpose": " ".join(
+                        [name.title() for name in stop_purpose.name.split("_")]
+                    ),
+                    "data": 0,
+                }
+                filtered_df = arrest_percentages_df[
+                    arrest_percentages_df["stop_purpose_group"] == stop_purpose.value
+                ]
+                stop_count = filtered_df["count"].sum()
+                arrest_found_count = filtered_df["driver_arrest"].sum()
+                group["data"] = np.nan_to_num(arrest_found_count / stop_count)
+
+                arrest_percentages.append(group)
+
+        data = {
+            "arrest_percentages": arrest_percentages,
+            "table_data": [],
+        }
+        return Response(data=data, status=200)
