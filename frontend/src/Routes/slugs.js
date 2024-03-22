@@ -17,3 +17,4 @@ export const SEARCHES_SLUG = '/searches';
 export const SEARCH_RATE_SLUG = '/search-rate';
 export const CONTRABAND_SLUG = '/contraband';
 export const USE_OF_FORCE_SLUG = '/use-of-force';
+export const ARREST_SLUG = '/arrests';

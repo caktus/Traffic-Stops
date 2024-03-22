@@ -15,6 +15,7 @@ import SearchRate from './SearchRate/SearchRate';
 import Contraband from './Contraband/Contraband';
 import UseOfForce from './UseOfForce/UseOfForce';
 import FJRoute from '../Containers/FJRoute';
+import Arrests from './Arrest/Arrests';
 
 function Charts(props) {
   const match = useRouteMatch();
@@ -62,6 +63,12 @@ function Charts(props) {
         importComponent={<UseOfForce {...props} />}
         renderLoading={() => <DataLoading />}
         renderError={() => <ChartError chartName="Use of Force" />}
+      />
+      <FJRoute
+        path={`${match.path}${slugs.ARREST_SLUG}`}
+        importComponent={<Arrests {...props} />}
+        renderLoading={() => <DataLoading />}
+        renderError={() => <ChartError chartName="Arrests" />}
       />
     </>
   );
