@@ -19,10 +19,14 @@ import PercentageOfStopsForStopPurpose from './Charts/PercentageOfStopsPerStopPu
 import PercentageOfSearchesForStopPurposeGroup from './Charts/PercentageOfSearchesForPurposeGroup';
 import PercentageOfSearchesPerStopPurpose from './Charts/PercentageOfSearchesPerStopPurpose';
 import PercentageOfStopsPerContrabandType from './Charts/PercentageOfStopsPerContrabandType';
+import Switch from 'react-switch';
+import { SwitchContainer } from '../TrafficStops/TrafficStops.styled';
 
 function Arrests(props) {
   const [year, setYear] = useState(YEARS_DEFAULT);
   const [yearRange] = useYearSet();
+  const [togglePercentageOfStops, setTogglePercentageOfStops] = useState(true);
+  const [togglePercentageOfSearches, setTogglePercentageOfSearches] = useState(true);
 
   const renderMetaTags = useMetaTags();
   const [renderTableModal] = useTableModal();
@@ -54,10 +58,41 @@ function Arrests(props) {
       <PercentageOfStops {...props} year={year} />
       <PercentageOfSearches {...props} year={year} />
       <CountOfStopsAndArrests {...props} year={year} />
-      <PercentageOfStopsForStopPurposeGroup {...props} year={year} />
-      <PercentageOfStopsForStopPurpose {...props} year={year} />
-      <PercentageOfSearchesForStopPurposeGroup {...props} year={year} />
-      <PercentageOfSearchesPerStopPurpose {...props} year={year} />
+
+      <SwitchContainer>
+        <span>
+          Switch to view {togglePercentageOfStops ? 'all stop purposes' : 'grouped stop purposes '}
+        </span>
+        <Switch
+          onChange={() => setTogglePercentageOfStops(!togglePercentageOfStops)}
+          checked={togglePercentageOfStops}
+          className="react-switch"
+        />
+      </SwitchContainer>
+      {togglePercentageOfStops ? (
+        <PercentageOfStopsForStopPurposeGroup {...props} year={year} />
+      ) : (
+        <PercentageOfStopsForStopPurpose {...props} year={year} />
+      )}
+
+      <SwitchContainer>
+        <span>
+          Switch to view{' '}
+          {togglePercentageOfSearches ? 'all stop purposes' : 'grouped stop purposes '}
+        </span>
+        <Switch
+          onChange={() => setTogglePercentageOfSearches(!togglePercentageOfSearches)}
+          checked={togglePercentageOfSearches}
+          className="react-switch"
+        />
+      </SwitchContainer>
+
+      {togglePercentageOfSearches ? (
+        <PercentageOfSearchesForStopPurposeGroup {...props} year={year} />
+      ) : (
+        <PercentageOfSearchesPerStopPurpose {...props} year={year} />
+      )}
+
       <PercentageOfStopsPerContrabandType {...props} year={year} />
     </ArrestsStyled>
   );

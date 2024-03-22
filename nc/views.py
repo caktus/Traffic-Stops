@@ -1817,7 +1817,7 @@ class AgencyCountOfStopsAndArrests(APIView):
                 arrest_cond = (df["driver_race_comb"] == c) & df["driver_arrest"]
                 arrested_group["data"][i] = df[arrest_cond]["count"].sum()
 
-        chart_data = [not_arrested_group, arrested_group]
+        chart_data = [arrested_group, not_arrested_group]
 
         # Build modal table data
         table_data_qs = (

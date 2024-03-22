@@ -59,8 +59,8 @@ function CountOfStopsAndArrests(props) {
             total: Object.values(dataCounts).reduce((a, b) => a + b, 0),
           });
         });
-        const labels = ['Stops Without Arrests', 'Stops With Arrests'];
-        const colors = ['#5364f4', '#f84b3a'];
+        const labels = ['Stops With Arrests', 'Stops Without Arrests'];
+        const colors = ['#96a0fa', '#5364f4'];
 
         const datasets = res.data.arrest_counts.map((dataset, i) => ({
           axis: 'y',
