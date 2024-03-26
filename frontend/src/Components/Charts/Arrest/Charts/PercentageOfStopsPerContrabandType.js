@@ -9,7 +9,7 @@ import axios from '../../../../Services/Axios';
 import useOfficerId from '../../../../Hooks/useOfficerId';
 import { ChartWrapper } from '../Arrests.styles';
 import NewModal from '../../../NewCharts/NewModal';
-import { ARRESTS_TABLE_COLUMNS } from '../Arrests';
+import { CONTRABAND_TYPES_TABLE_COLUMNS } from '../../chartUtils';
 
 function PercentageOfStopsPerContrabandType(props) {
   const { agencyId, agencyName, showCompare, year } = props;
@@ -50,16 +50,14 @@ function PercentageOfStopsPerContrabandType(props) {
           // Need to assign explicitly otherwise the download data orders columns by alphabet.
           tableData.unshift({
             year: e.year,
-            white: e.white,
-            black: e.black,
-            native_american: e.native_american,
-            asian: e.asian,
+            alcohol: e.alcohol,
+            drugs: e.drugs,
+            money: e.money,
             other: e.other,
-            hispanic: e.hispanic,
+            weapons: e.weapons,
             total: Object.values(dataCounts).reduce((a, b) => a + b, 0),
           });
         });
-
         const colors = ['#9FD356', '#3C91E6', '#EFCEFA', '#2F4858', '#A653F4'];
         const data = {
           labels: ['Alcohol', 'Drugs', 'Money', 'Other', 'Weapons'],
@@ -75,9 +73,9 @@ function PercentageOfStopsPerContrabandType(props) {
               borderWidth: 1,
             },
           ],
-          isModalOpen: false,
           tableData,
           csvData: tableData,
+          isModalOpen: false,
         };
         setArrestData(data);
       })
@@ -114,7 +112,7 @@ function PercentageOfStopsPerContrabandType(props) {
           agencyName={agencyName}
           tableData={arrestData.tableData}
           csvData={arrestData.csvData}
-          columns={ARRESTS_TABLE_COLUMNS}
+          columns={CONTRABAND_TYPES_TABLE_COLUMNS}
           tableDownloadName="Arrests_By_Percentage"
           isOpen={arrestData.isOpen}
           closeModal={() => setArrestData((state) => ({ ...state, isOpen: false }))}

@@ -99,38 +99,3 @@ function Arrests(props) {
 }
 
 export default Arrests;
-
-export const ARRESTS_TABLE_COLUMNS = [
-  {
-    Header: 'Year',
-    accessor: 'year', // accessor is the "key" in the data
-  },
-  {
-    Header: 'White*',
-    accessor: 'white',
-  },
-  {
-    Header: 'Black*',
-    accessor: 'black',
-  },
-  {
-    Header: 'Native American*',
-    accessor: 'native_american',
-  },
-  {
-    Header: 'Asian*',
-    accessor: 'asian',
-  },
-  {
-    Header: 'Other*',
-    accessor: 'other',
-  },
-  {
-    Header: 'Hispanic',
-    accessor: 'hispanic',
-  },
-  {
-    Header: 'Total',
-    accessor: 'total',
-  },
-];

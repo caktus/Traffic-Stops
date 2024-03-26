@@ -11,7 +11,7 @@ import useMetaTags from '../../../Hooks/useMetaTags';
 import useTableModal from '../../../Hooks/useTableModal';
 
 // Constants
-import { YEARS_DEFAULT } from '../chartUtils';
+import { STOP_REASON_TABLE_COLUMNS, YEARS_DEFAULT } from '../chartUtils';
 
 // Children
 import { P } from '../../../styles/StyledComponents/Typography';
@@ -60,7 +60,7 @@ function SearchRate(props) {
   };
 
   const handleViewData = () => {
-    openModal(LIKELIHOOD_OF_SEARCH, TABLE_COLUMNS);
+    openModal(LIKELIHOOD_OF_SEARCH, STOP_REASON_TABLE_COLUMNS);
   };
 
   const formatTooltipLabel = (ctx) => ctx[0].dataset.label;
@@ -150,42 +150,3 @@ function SearchRate(props) {
 }
 
 export default SearchRate;
-
-const TABLE_COLUMNS = [
-  {
-    Header: 'Year',
-    accessor: 'year',
-  },
-  {
-    Header: 'Stop-reason',
-    accessor: 'purpose',
-  },
-  {
-    Header: 'White*',
-    accessor: 'white',
-  },
-  {
-    Header: 'Black*',
-    accessor: 'black',
-  },
-  {
-    Header: 'Hispanic',
-    accessor: 'hispanic',
-  },
-  {
-    Header: 'Asian*',
-    accessor: 'asian',
-  },
-  {
-    Header: 'Native American*',
-    accessor: 'native_american',
-  },
-  {
-    Header: 'Other*',
-    accessor: 'other',
-  },
-  {
-    Header: 'Total',
-    accessor: 'total',
-  },
-];
