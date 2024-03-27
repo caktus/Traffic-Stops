@@ -113,7 +113,6 @@ function TrafficStops(props) {
     datasets: [],
     loading: true,
   });
-  const [groupedStopYear, setGroupedStopYear] = useState(YEARS_DEFAULT);
 
   const purposeGroupedPieLabels = ['Safety Violation', 'Regulatory and Equipment', 'Other'];
   const purposeGroupedPieColors = ['#5F0F40', '#E36414', '#0F4C5C'];
@@ -214,7 +213,6 @@ function TrafficStops(props) {
     selectedPurpose: 'Safety Violation',
     purposeTypes: ['Safety Violation', 'Regulatory and Equipment', 'Other'],
   });
-  const [yearForGroupedPieCharts, setYearForGroupedPieCharts] = useState('All');
   const [checked, setChecked] = useState(false);
 
   const [trafficStopsByCountRange, setTrafficStopsByCountRange] = useState(null);
@@ -364,9 +362,11 @@ function TrafficStops(props) {
 
   /* INTERACTIONS */
   // Handle year dropdown state
-  const handleYearSelect = (y) => {
+  const handleYearSelect = (y, idx) => {
     if (y === year) return;
     setYear(y);
+    handleYearSelectForGroupedPieCharts(y, idx);
+    handleGroupedStopPurposeYearSelect(y, idx);
   };
 
   const buildStopPurposeGroupedPieData = (ds, stopPurposeYear = null) => {
@@ -405,9 +405,8 @@ function TrafficStops(props) {
   };
 
   const handleGroupedStopPurposeYearSelect = (y, i) => {
-    if (y === groupedStopYear) return;
+    if (y === year) return;
 
-    setGroupedStopYear(y);
     if (y === YEARS_DEFAULT) {
       // eslint-disable-next-line no-param-reassign
       i = null;
@@ -550,7 +549,6 @@ function TrafficStops(props) {
   };
 
   const handleYearSelectForGroupedPieCharts = (selectedYear, idx) => {
-    setYearForGroupedPieCharts(selectedYear);
     // Get the reverse index of the year since it's now in descending order
     const idxForYear = stopsGroupedByPurposeData.labels.length - idx;
     updateStoppedPurposePieChart(
@@ -635,9 +633,7 @@ function TrafficStops(props) {
       subject = `Officer ${officerId}`;
     }
     return `Traffic Stops By Stop Purpose for ${subject} ${
-      groupedStopYear === YEARS_DEFAULT
-        ? `since ${stopsGroupedByPurposeData.labels[0]}`
-        : `in ${groupedStopYear}`
+      year === YEARS_DEFAULT ? `since ${stopsGroupedByPurposeData.labels[0]}` : `in ${year}`
     }`;
   };
 
@@ -647,9 +643,7 @@ function TrafficStops(props) {
       subject = `Officer ${officerId}`;
     }
     return `Traffic Stops By ${stopPurpose} and Race Count for ${subject} ${
-      yearForGroupedPieCharts === YEARS_DEFAULT
-        ? `since ${stopsGroupedByPurposeData.labels[0]}`
-        : `in ${yearForGroupedPieCharts}`
+      year === YEARS_DEFAULT ? `since ${stopsGroupedByPurposeData.labels[0]}` : `in ${year}`
     }`;
   };
 
@@ -689,19 +683,19 @@ function TrafficStops(props) {
     return `Traffic Stops by Percentage for ${subject} since ${stopsByPercentageData.labels[0]}`;
   };
 
-  const stopPurposeGroupedPieYears = () => {
-    if (stopPurposeGroupsData.labels) {
-      const years = [...stopPurposeGroupsData.labels].toReversed();
-      return [YEARS_DEFAULT].concat(years);
-    }
-    return [YEARS_DEFAULT];
-  };
-
   return (
     <TrafficStopsStyled>
       {/* Traffic Stops by Percentage */}
       {renderMetaTags()}
       {renderTableModal()}
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <DataSubsetPicker
+          label="Year"
+          value={year}
+          onChange={handleYearSelect}
+          options={[YEARS_DEFAULT].concat(stopsByPercentageData.labels.toReversed())}
+        />
+      </div>
       <S.ChartSection>
         <ChartHeader
           chartTitle="Traffic Stops By Percentage"
@@ -747,14 +741,6 @@ function TrafficStops(props) {
                 }}
               />
             </S.PieWrapper>
-            <S.PieActionsWrapper>
-              <DataSubsetPicker
-                label="Year"
-                value={year}
-                onChange={handleYearSelect}
-                options={[YEARS_DEFAULT].concat(stopsByPercentageData.labels.toReversed())}
-              />
-            </S.PieActionsWrapper>
           </S.PieSection>
         </S.ChartSubsection>
       </S.ChartSection>
@@ -856,21 +842,13 @@ function TrafficStops(props) {
                   tableHeader: 'Traffic Stops By Stop Purpose',
                   tableSubheader: getPieChartModalSubHeading(
                     'Shows the stop purpose and race/ethnic composition of drivers stopped',
-                    groupedStopYear
+                    year
                   ),
                   agencyName: stopsChartState.data[AGENCY_DETAILS].name,
                   chartTitle: stopPurposeGroupPieChartTitle(),
                 }}
               />
             </S.PieWrapper>
-            <S.PieActionsWrapper>
-              <DataSubsetPicker
-                label="Year"
-                value={groupedStopYear}
-                onChange={handleGroupedStopPurposeYearSelect}
-                options={stopPurposeGroupedPieYears()}
-              />
-            </S.PieActionsWrapper>
           </S.PieSection>
         </S.ChartSubsection>
       </S.ChartSection>
@@ -986,14 +964,6 @@ function TrafficStops(props) {
             />
           </GroupedStopsContainer>
         </LineWrapper>
-        {checked && (
-          <DataSubsetPicker
-            label="Year"
-            value={yearForGroupedPieCharts}
-            onChange={handleYearSelectForGroupedPieCharts}
-            options={[YEARS_DEFAULT].concat([...stopsGroupedByPurposeData.labels].reverse())}
-          />
-        )}
         <PieWrapper visible={checked === true}>
           <PieStopsContainer visible={visibleStopsGroupedByPurpose[0].visible}>
             <PieWrapper visible>
