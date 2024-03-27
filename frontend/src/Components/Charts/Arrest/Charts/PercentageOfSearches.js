@@ -11,6 +11,8 @@ import { ChartWrapper } from '../Arrests.styles';
 import NewModal from '../../../NewCharts/NewModal';
 import { ARRESTS_TABLE_COLUMNS } from '../Arrests';
 
+const graphTitle = 'Searches Leading to Arrest by Percentage ';
+
 function PercentageOfSearches(props) {
   const { agencyId, agencyName, showCompare, year } = props;
 
@@ -102,19 +104,19 @@ function PercentageOfSearches(props) {
   return (
     <S.ChartSection>
       <ChartHeader
-        chartTitle="Arrests By Percentage"
+        chartTitle={graphTitle}
         handleViewData={() => setArrestData((state) => ({ ...state, isOpen: true }))}
       />
       <S.ChartDescription>
         <P>Percentage of searches that led to an arrest for a given race / ethnic group.</P>
         <NewModal
-          tableHeader="Arrests By Percentage of Searches"
+          tableHeader={graphTitle}
           tableSubheader="Shows what number of searches led to an arrest for a given race / ethnic group."
           agencyName={agencyName}
           tableData={arrestData.tableData}
           csvData={arrestData.csvData}
           columns={ARRESTS_TABLE_COLUMNS}
-          tableDownloadName="Arrests_Percentage_Of_Searches"
+          tableDownloadName={graphTitle}
           isOpen={arrestData.isOpen}
           closeModal={() => setArrestData((state) => ({ ...state, isOpen: false }))}
         />
@@ -122,17 +124,17 @@ function PercentageOfSearches(props) {
       <S.ChartSubsection showCompare={showCompare}>
         <ChartWrapper>
           <HorizontalBarChart
-            title="Arrests By Percentage of Searches"
+            title={graphTitle}
             data={arrestData}
             displayLegend={false}
             tooltipLabelCallback={formatTooltipValue}
             modalConfig={{
-              tableHeader: 'Arrests By Percentage of Searches',
+              tableHeader: graphTitle,
               tableSubheader: getBarChartModalSubHeading(
                 'Shows what number of searches led to an arrest for a given race / ethnic group'
               ),
               agencyName,
-              chartTitle: getBarChartModalSubHeading('Arrests By Percentage of Searches'),
+              chartTitle: getBarChartModalSubHeading(graphTitle),
             }}
           />
         </ChartWrapper>

@@ -11,6 +11,8 @@ import { ChartWrapper } from '../Arrests.styles';
 import NewModal from '../../../NewCharts/NewModal';
 import { ARRESTS_TABLE_COLUMNS } from '../Arrests';
 
+const graphTitle = 'Percentage of Stops Leading to Arrest by Discovered Contraband Type';
+
 function PercentageOfStopsPerContrabandType(props) {
   const { agencyId, agencyName, showCompare, year } = props;
 
@@ -103,19 +105,19 @@ function PercentageOfStopsPerContrabandType(props) {
   return (
     <S.ChartSection>
       <ChartHeader
-        chartTitle="Percentage of Stops With Arrests Per Contraband Type"
+        chartTitle={graphTitle}
         handleViewData={() => setArrestData((state) => ({ ...state, isOpen: true }))}
       />
       <S.ChartDescription>
         <P>Percentage of stops that led to an arrest for a given contraband type.</P>
         <NewModal
-          tableHeader="Percentage of Stops With Arrests Per Contraband Type"
+          tableHeader={graphTitle}
           tableSubheader="Shows what percentage of stops led to an arrest for a given contraband type."
           agencyName={agencyName}
           tableData={arrestData.tableData}
           csvData={arrestData.csvData}
           columns={ARRESTS_TABLE_COLUMNS}
-          tableDownloadName="Arrests_By_Percentage"
+          tableDownloadName={graphTitle}
           isOpen={arrestData.isOpen}
           closeModal={() => setArrestData((state) => ({ ...state, isOpen: false }))}
         />
@@ -123,19 +125,17 @@ function PercentageOfStopsPerContrabandType(props) {
       <S.ChartSubsection showCompare={showCompare}>
         <ChartWrapper>
           <HorizontalBarChart
-            title="Percentage of Stops With Arrests Per Contraband Type"
+            title={graphTitle}
             data={arrestData}
             displayLegend={false}
             tooltipLabelCallback={formatTooltipValue}
             modalConfig={{
-              tableHeader: 'Percentage of Stops With Arrests Per Contraband Type',
+              tableHeader: graphTitle,
               tableSubheader: getBarChartModalSubHeading(
                 'Shows what percentage of stops led to an arrest for a given contraband type'
               ),
               agencyName,
-              chartTitle: getBarChartModalSubHeading(
-                'Percentage of Stops With Arrests Per Contraband Type'
-              ),
+              chartTitle: getBarChartModalSubHeading(graphTitle),
             }}
           />
         </ChartWrapper>

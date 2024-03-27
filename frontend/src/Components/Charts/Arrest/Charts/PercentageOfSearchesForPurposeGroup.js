@@ -11,6 +11,8 @@ import { ChartWrapper } from '../Arrests.styles';
 import NewModal from '../../../NewCharts/NewModal';
 import { ARRESTS_TABLE_COLUMNS } from '../Arrests';
 
+const graphTitle = 'Percentage of Searches Leading to Arrest by Stop Purpose Group ';
+
 function PercentageOfSearchesForStopPurposeGroup(props) {
   const { agencyId, agencyName, showCompare, year } = props;
 
@@ -107,19 +109,20 @@ function PercentageOfSearchesForStopPurposeGroup(props) {
   return (
     <S.ChartSection>
       <ChartHeader
-        chartTitle="Percentage of Searches With Arrests For Stop Purpose Group"
+        chartTitle={graphTitle}
         handleViewData={() => setArrestData((state) => ({ ...state, isOpen: true }))}
       />
+      {props.children}
       <S.ChartDescription>
-        <P>Percentage of stops that led to an arrest for a given stop purpose group.</P>
+        <P>Percentage of searches that led to an arrest for a given stop purpose group.</P>
         <NewModal
-          tableHeader="Percentage of Searches With Arrests Per Stop Purpose Group"
+          tableHeader={graphTitle}
           tableSubheader="Shows what percentage of searches led to an arrest for a given stop purpose group."
           agencyName={agencyName}
           tableData={arrestData.tableData}
           csvData={arrestData.csvData}
           columns={ARRESTS_TABLE_COLUMNS}
-          tableDownloadName="Arrests_By_Percentage"
+          tableDownloadName={graphTitle}
           isOpen={arrestData.isOpen}
           closeModal={() => setArrestData((state) => ({ ...state, isOpen: false }))}
         />
@@ -127,19 +130,17 @@ function PercentageOfSearchesForStopPurposeGroup(props) {
       <S.ChartSubsection showCompare={showCompare}>
         <ChartWrapper>
           <HorizontalBarChart
-            title="Percentage of Searches With Arrests Per Stop Purpose Group"
+            title={graphTitle}
             data={arrestData}
             displayLegend={false}
             tooltipLabelCallback={formatTooltipValue}
             modalConfig={{
-              tableHeader: 'Percentage of Searches With Arrests Per Stop Purpose Group',
+              tableHeader: graphTitle,
               tableSubheader: getBarChartModalSubHeading(
                 'Shows what percentage of searches led to an arrest for a given stop purpose group.'
               ),
               agencyName,
-              chartTitle: getBarChartModalSubHeading(
-                'Percentage of Searches With Arrests Per Stop Purpose Group'
-              ),
+              chartTitle: getBarChartModalSubHeading(graphTitle),
             }}
           />
         </ChartWrapper>

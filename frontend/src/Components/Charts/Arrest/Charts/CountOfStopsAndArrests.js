@@ -11,6 +11,8 @@ import { ChartWrapper } from '../Arrests.styles';
 import NewModal from '../../../NewCharts/NewModal';
 import { ARRESTS_TABLE_COLUMNS } from '../Arrests';
 
+const graphTitle = 'Traffic Stops Leading to Arrest by Count';
+
 function CountOfStopsAndArrests(props) {
   const { agencyId, agencyName, showCompare, year } = props;
 
@@ -104,19 +106,19 @@ function CountOfStopsAndArrests(props) {
   return (
     <S.ChartSection>
       <ChartHeader
-        chartTitle="Stop Counts With/Without Arrests"
+        chartTitle={graphTitle}
         handleViewData={() => setArrestData((state) => ({ ...state, isOpen: true }))}
       />
       <S.ChartDescription>
-        <P>Percentage of stops that led to an arrest for a given race / ethnic group.</P>
+        <P>Count of stops and corresponding arrests for a given race/ethnic group.</P>
         <NewModal
-          tableHeader="Stop Counts With/Without Arrests"
-          tableSubheader="Shows what numbers of stops led to an arrest for a given race / ethnic group."
+          tableHeader={graphTitle}
+          tableSubheader="Shows count of stops and corresponding arrests for a given race/ethnic group."
           agencyName={agencyName}
           tableData={arrestData.tableData}
           csvData={arrestData.csvData}
           columns={ARRESTS_TABLE_COLUMNS}
-          tableDownloadName="Arrests_By_Percentage"
+          tableDownloadName={graphTitle}
           isOpen={arrestData.isOpen}
           closeModal={() => setArrestData((state) => ({ ...state, isOpen: false }))}
         />
@@ -124,7 +126,7 @@ function CountOfStopsAndArrests(props) {
       <S.ChartSubsection showCompare={showCompare}>
         <ChartWrapper>
           <HorizontalBarChart
-            title="Stop Counts With/Without Arrests"
+            title={graphTitle}
             data={arrestData}
             pinMaxValue={false}
             xStacked
@@ -133,12 +135,12 @@ function CountOfStopsAndArrests(props) {
             stepSize={50000}
             tooltipLabelCallback={formatTooltipValue}
             modalConfig={{
-              tableHeader: 'Stop Counts With/Without Arrests',
+              tableHeader: graphTitle,
               tableSubheader: getBarChartModalSubHeading(
-                'Shows what number of stops led to an arrest for a given race / ethnic group'
+                'Shows count of stops and corresponding arrests for a given race/ethnic group'
               ),
               agencyName,
-              chartTitle: getBarChartModalSubHeading('Stop Counts With/Without Arrests'),
+              chartTitle: getBarChartModalSubHeading(graphTitle),
             }}
           />
         </ChartWrapper>

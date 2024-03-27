@@ -10,6 +10,9 @@ import useOfficerId from '../../../../Hooks/useOfficerId';
 import { ChartWrapper } from '../Arrests.styles';
 import NewModal from '../../../NewCharts/NewModal';
 import { ARRESTS_TABLE_COLUMNS } from '../Arrests';
+import { STOP_TYPE_COLORS } from '../../chartUtils';
+
+const graphTitle = 'Percentage of Searches Leading to Arrest by Stop Purpose Type';
 
 function PercentageOfStopsForStopPurpose(props) {
   const { agencyId, agencyName, showCompare, year } = props;
@@ -68,9 +71,9 @@ function PercentageOfStopsForStopPurpose(props) {
               label: 'All',
               data: res.data.arrest_percentages.map((d) => d.data),
               fill: false,
-              // backgroundColor: Object.values(colors),
-              // borderColor: Object.values(colors),
-              // hoverBackgroundColor: Object.values(colors),
+              backgroundColor: STOP_TYPE_COLORS,
+              borderColor: STOP_TYPE_COLORS,
+              hoverBackgroundColor: STOP_TYPE_COLORS,
               borderWidth: 1,
             },
           ],
@@ -102,19 +105,20 @@ function PercentageOfStopsForStopPurpose(props) {
   return (
     <S.ChartSection>
       <ChartHeader
-        chartTitle="Percentage of Searches With Arrests Per Stop Purpose"
+        chartTitle={graphTitle}
         handleViewData={() => setArrestData((state) => ({ ...state, isOpen: true }))}
       />
+      {props.children}
       <S.ChartDescription>
         <P>Percentage of searches that led to an arrest for a given stop purpose.</P>
         <NewModal
-          tableHeader="Percentage of Searches With Arrests Per Stop Purpose"
+          tableHeader={graphTitle}
           tableSubheader="Shows what percentage of searches led to an arrest for a given stop purpose."
           agencyName={agencyName}
           tableData={arrestData.tableData}
           csvData={arrestData.csvData}
           columns={ARRESTS_TABLE_COLUMNS}
-          tableDownloadName="Arrests_By_Percentage"
+          tableDownloadName={graphTitle}
           isOpen={arrestData.isOpen}
           closeModal={() => setArrestData((state) => ({ ...state, isOpen: false }))}
         />
@@ -122,20 +126,18 @@ function PercentageOfStopsForStopPurpose(props) {
       <S.ChartSubsection showCompare={showCompare}>
         <ChartWrapper>
           <HorizontalBarChart
-            title="Percentage of Searches With Arrests Per Stop Purpose"
+            title={graphTitle}
             data={arrestData}
             displayLegend={false}
             tooltipLabelCallback={formatTooltipValue}
             pinMaxValue={false}
             modalConfig={{
-              tableHeader: 'Percentage of Searches With Arrests Per Stop Purpose',
+              tableHeader: graphTitle,
               tableSubheader: getBarChartModalSubHeading(
                 'Shows what percentage of searches led to an arrest for a given stop purpose.'
               ),
               agencyName,
-              chartTitle: getBarChartModalSubHeading(
-                'Percentage of Searches With Arrests Per Stop Purpose'
-              ),
+              chartTitle: getBarChartModalSubHeading(graphTitle),
             }}
           />
         </ChartWrapper>
