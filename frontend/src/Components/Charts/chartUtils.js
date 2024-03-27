@@ -33,6 +33,18 @@ export const AVERAGE = {
   selected: true,
 };
 
+export const STOP_TYPE_COLORS = [
+  '#ff7da8',
+  '#c1d670',
+  '#f9c86e',
+  '#74bd5b',
+  '#74db9d',
+  '#ad8de0',
+  '#dba7ed',
+  '#ff916d',
+  '#4abdc4',
+];
+
 export const STATIC_LEGEND_KEYS = RACES.map((r) => ({
   value: r,
   label: toTitleCase(r),
