@@ -1,5 +1,5 @@
-SQLAlchemy==1.4.46
-pandas==1.5.3
+SQLAlchemy==2.0.25
+pandas==2.2.0
 jupyterlab==3.5.3
 jupyter-dash==0.4.2
 jupyter_server>=2.0.0
