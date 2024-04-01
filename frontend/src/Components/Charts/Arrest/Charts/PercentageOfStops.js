@@ -7,12 +7,12 @@ import ChartHeader from '../../ChartSections/ChartHeader';
 import HorizontalBarChart from '../../../NewCharts/HorizontalBarChart';
 import axios from '../../../../Services/Axios';
 import useOfficerId from '../../../../Hooks/useOfficerId';
-import { ChartWrapper } from '../Arrests.styles';
 import NewModal from '../../../NewCharts/NewModal';
 import { ARRESTS_TABLE_COLUMNS } from '../Arrests';
+import { ChartContainer } from '../../ChartSections/ChartsCommon.styled';
 
 function PercentageOfStops(props) {
-  const { agencyId, agencyName, showCompare, year } = props;
+  const { agencyId, agencyName, year } = props;
 
   const officerId = useOfficerId();
 
@@ -119,24 +119,22 @@ function PercentageOfStops(props) {
           closeModal={() => setArrestData((state) => ({ ...state, isOpen: false }))}
         />
       </S.ChartDescription>
-      <S.ChartSubsection showCompare={showCompare}>
-        <ChartWrapper>
-          <HorizontalBarChart
-            title="Arrests By Percentage"
-            data={arrestData}
-            displayLegend={false}
-            tooltipLabelCallback={formatTooltipValue}
-            modalConfig={{
-              tableHeader: 'Arrests By Percentage',
-              tableSubheader: getBarChartModalSubHeading(
-                'Shows what percentage of stops led to an arrest for a given race / ethnic group'
-              ),
-              agencyName,
-              chartTitle: getBarChartModalSubHeading('Arrests By Percentage'),
-            }}
-          />
-        </ChartWrapper>
-      </S.ChartSubsection>
+      <ChartContainer>
+        <HorizontalBarChart
+          title="Arrests By Percentage"
+          data={arrestData}
+          displayLegend={false}
+          tooltipLabelCallback={formatTooltipValue}
+          modalConfig={{
+            tableHeader: 'Arrests By Percentage',
+            tableSubheader: getBarChartModalSubHeading(
+              'Shows what percentage of stops led to an arrest for a given race / ethnic group'
+            ),
+            agencyName,
+            chartTitle: getBarChartModalSubHeading('Arrests By Percentage'),
+          }}
+        />
+      </ChartContainer>
     </S.ChartSection>
   );
 }

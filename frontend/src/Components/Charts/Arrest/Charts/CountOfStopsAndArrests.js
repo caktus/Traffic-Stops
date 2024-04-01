@@ -7,12 +7,12 @@ import ChartHeader from '../../ChartSections/ChartHeader';
 import HorizontalBarChart from '../../../NewCharts/HorizontalBarChart';
 import axios from '../../../../Services/Axios';
 import useOfficerId from '../../../../Hooks/useOfficerId';
-import { ChartWrapper } from '../Arrests.styles';
 import NewModal from '../../../NewCharts/NewModal';
 import { ARRESTS_TABLE_COLUMNS } from '../Arrests';
+import { ChartContainer } from '../../ChartSections/ChartsCommon.styled';
 
 function CountOfStopsAndArrests(props) {
-  const { agencyId, agencyName, showCompare, year } = props;
+  const { agencyId, agencyName, year } = props;
 
   const officerId = useOfficerId();
 
@@ -121,28 +121,26 @@ function CountOfStopsAndArrests(props) {
           closeModal={() => setArrestData((state) => ({ ...state, isOpen: false }))}
         />
       </S.ChartDescription>
-      <S.ChartSubsection showCompare={showCompare}>
-        <ChartWrapper>
-          <HorizontalBarChart
-            title="Stop Counts With/Without Arrests"
-            data={arrestData}
-            pinMaxValue={false}
-            xStacked
-            yStacked
-            tickStyle={null}
-            stepSize={50000}
-            tooltipLabelCallback={formatTooltipValue}
-            modalConfig={{
-              tableHeader: 'Stop Counts With/Without Arrests',
-              tableSubheader: getBarChartModalSubHeading(
-                'Shows what number of stops led to an arrest for a given race / ethnic group'
-              ),
-              agencyName,
-              chartTitle: getBarChartModalSubHeading('Stop Counts With/Without Arrests'),
-            }}
-          />
-        </ChartWrapper>
-      </S.ChartSubsection>
+      <ChartContainer>
+        <HorizontalBarChart
+          title="Stop Counts With/Without Arrests"
+          data={arrestData}
+          pinMaxValue={false}
+          xStacked
+          yStacked
+          tickStyle={null}
+          stepSize={50000}
+          tooltipLabelCallback={formatTooltipValue}
+          modalConfig={{
+            tableHeader: 'Stop Counts With/Without Arrests',
+            tableSubheader: getBarChartModalSubHeading(
+              'Shows what number of stops led to an arrest for a given race / ethnic group'
+            ),
+            agencyName,
+            chartTitle: getBarChartModalSubHeading('Stop Counts With/Without Arrests'),
+          }}
+        />
+      </ChartContainer>
     </S.ChartSection>
   );
 }

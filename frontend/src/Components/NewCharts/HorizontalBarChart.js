@@ -24,7 +24,7 @@ export const Tooltip = styled.div`
 export default function HorizontalBarChart({
   data,
   title,
-  maintainAspectRatio = true,
+  maintainAspectRatio = false,
   displayLegend = true,
   legendPosition = 'top',
   tooltipTitleCallback = null,

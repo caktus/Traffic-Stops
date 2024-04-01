@@ -7,12 +7,12 @@ import ChartHeader from '../../ChartSections/ChartHeader';
 import HorizontalBarChart from '../../../NewCharts/HorizontalBarChart';
 import axios from '../../../../Services/Axios';
 import useOfficerId from '../../../../Hooks/useOfficerId';
-import { ChartWrapper } from '../Arrests.styles';
 import NewModal from '../../../NewCharts/NewModal';
 import { ARRESTS_TABLE_COLUMNS } from '../Arrests';
+import { ChartContainer } from '../../ChartSections/ChartsCommon.styled';
 
 function PercentageOfStopsForStopPurpose(props) {
-  const { agencyId, agencyName, showCompare, year } = props;
+  const { agencyId, agencyName, year } = props;
 
   const officerId = useOfficerId();
 
@@ -119,26 +119,24 @@ function PercentageOfStopsForStopPurpose(props) {
           closeModal={() => setArrestData((state) => ({ ...state, isOpen: false }))}
         />
       </S.ChartDescription>
-      <S.ChartSubsection showCompare={showCompare}>
-        <ChartWrapper>
-          <HorizontalBarChart
-            title="Percentage of Stops With Arrests Per Stop Purpose"
-            data={arrestData}
-            displayLegend={false}
-            tooltipLabelCallback={formatTooltipValue}
-            modalConfig={{
-              tableHeader: 'Percentage of Stops With Arrests Per Stop Purpose',
-              tableSubheader: getBarChartModalSubHeading(
-                'Shows what percentage of stops led to an arrest for a given stop purpose.'
-              ),
-              agencyName,
-              chartTitle: getBarChartModalSubHeading(
-                'Percentage of Stops With Arrests Per Stop Purpose'
-              ),
-            }}
-          />
-        </ChartWrapper>
-      </S.ChartSubsection>
+      <ChartContainer>
+        <HorizontalBarChart
+          title="Percentage of Stops With Arrests Per Stop Purpose"
+          data={arrestData}
+          displayLegend={false}
+          tooltipLabelCallback={formatTooltipValue}
+          modalConfig={{
+            tableHeader: 'Percentage of Stops With Arrests Per Stop Purpose',
+            tableSubheader: getBarChartModalSubHeading(
+              'Shows what percentage of stops led to an arrest for a given stop purpose.'
+            ),
+            agencyName,
+            chartTitle: getBarChartModalSubHeading(
+              'Percentage of Stops With Arrests Per Stop Purpose'
+            ),
+          }}
+        />
+      </ChartContainer>
     </S.ChartSection>
   );
 }

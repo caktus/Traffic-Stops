@@ -4,11 +4,6 @@ import { smallerThanDesktop, smallerThanTabletLandscape } from '../../../styles/
 
 export default styled(ChartPageBase)``;
 
-export const ChartWrapper = styled.div`
-  width: 100%;
-  height: auto;
-`;
-
 export const HorizontalBarWrapper = styled.div`
   display: flex;
   flex-direction: row;

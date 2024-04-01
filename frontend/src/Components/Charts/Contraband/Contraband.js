@@ -1,9 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import ContrabandStyled, {
-  BarContainer,
-  ChartWrapper,
-  HorizontalBarWrapper,
-} from './Contraband.styled';
+import ContrabandStyled, { BarContainer, HorizontalBarWrapper } from './Contraband.styled';
 import * as S from '../ChartSections/ChartsCommon.styled';
 
 // Util
@@ -28,11 +24,12 @@ import cloneDeep from 'lodash.clonedeep';
 import Checkbox from '../../Elements/Inputs/Checkbox';
 import toTitleCase from '../../../util/toTitleCase';
 import useOfficerId from '../../../Hooks/useOfficerId';
+import { ChartContainer } from '../ChartSections/ChartsCommon.styled';
 
 const STOP_PURPOSE_TYPES = ['Safety Violation', 'Regulatory and Equipment', 'Other'];
 
 function Contraband(props) {
-  const { agencyId, showCompare } = props;
+  const { agencyId } = props;
 
   const officerId = useOfficerId();
   const [chartState] = useDataset(agencyId, CONTRABAND_HIT_RATE);
@@ -586,24 +583,22 @@ function Contraband(props) {
             closeModal={() => setContrabandData((state) => ({ ...state, isOpen: false }))}
           />
         </S.ChartDescription>
-        <S.ChartSubsection showCompare={showCompare}>
-          <ChartWrapper>
-            <HorizontalBarChart
-              title='Contraband "Hit Rate"'
-              data={contrabandData}
-              displayLegend={false}
-              tooltipLabelCallback={formatTooltipValue}
-              modalConfig={{
-                tableHeader: 'Contraband "Hit Rate"',
-                tableSubheader: getBarChartModalSubHeading(
-                  'Shows what percentage of searches led to the discovery of illegal items by race/ethnicity'
-                ),
-                agencyName: chartState.data[AGENCY_DETAILS].name,
-                chartTitle: getBarChartModalHeading('Contraband "Hit Rate"'),
-              }}
-            />
-          </ChartWrapper>
-        </S.ChartSubsection>
+        <ChartContainer>
+          <HorizontalBarChart
+            title='Contraband "Hit Rate"'
+            data={contrabandData}
+            displayLegend={false}
+            tooltipLabelCallback={formatTooltipValue}
+            modalConfig={{
+              tableHeader: 'Contraband "Hit Rate"',
+              tableSubheader: getBarChartModalSubHeading(
+                'Shows what percentage of searches led to the discovery of illegal items by race/ethnicity'
+              ),
+              agencyName: chartState.data[AGENCY_DETAILS].name,
+              chartTitle: getBarChartModalHeading('Contraband "Hit Rate"'),
+            }}
+          />
+        </ChartContainer>
       </S.ChartSection>
       <S.ChartSection id="hit_rate_by_stop_purpose">
         <ChartHeader
@@ -639,27 +634,23 @@ function Contraband(props) {
             options={STOP_PURPOSE_TYPES}
           />
         </NewModal>
-        <S.ChartSubsection showCompare={showCompare}>
-          <ChartWrapper>
-            <HorizontalBarChart
-              title='Contraband "Hit Rate" Grouped By Stop Purpose'
-              data={contrabandStopPurposeData}
-              tooltipTitleCallback={formatTooltipLabel}
-              tooltipLabelCallback={formatTooltipValue}
-              displayStopPurposeTooltips
-              modalConfig={{
-                tableHeader: 'Contraband "Hit Rate" Grouped By Stop Purpose',
-                tableSubheader: getBarChartModalSubHeading(
-                  'Shows what number of searches led to the discovery of illegal items by race/ethnicity and original stop purpose'
-                ),
-                agencyName: chartState.data[AGENCY_DETAILS].name,
-                chartTitle: getBarChartModalHeading(
-                  'Contraband "Hit Rate" Grouped By Stop Purpose'
-                ),
-              }}
-            />
-          </ChartWrapper>
-        </S.ChartSubsection>
+        <ChartContainer>
+          <HorizontalBarChart
+            title='Contraband "Hit Rate" Grouped By Stop Purpose'
+            data={contrabandStopPurposeData}
+            tooltipTitleCallback={formatTooltipLabel}
+            tooltipLabelCallback={formatTooltipValue}
+            displayStopPurposeTooltips
+            modalConfig={{
+              tableHeader: 'Contraband "Hit Rate" Grouped By Stop Purpose',
+              tableSubheader: getBarChartModalSubHeading(
+                'Shows what number of searches led to the discovery of illegal items by race/ethnicity and original stop purpose'
+              ),
+              agencyName: chartState.data[AGENCY_DETAILS].name,
+              chartTitle: getBarChartModalHeading('Contraband "Hit Rate" Grouped By Stop Purpose'),
+            }}
+          />
+        </ChartContainer>
       </S.ChartSection>
       <S.ChartSection id="hit_rate_by_type">
         <ChartHeader
@@ -683,25 +674,22 @@ function Contraband(props) {
             closeModal={() => setContrabandTypesData((state) => ({ ...state, isOpen: false }))}
           />
         </S.ChartDescription>
-        <S.ChartSubsection showCompare={showCompare}>
-          <ChartWrapper>
-            <HorizontalBarChart
-              title='Contraband "Hit Rate" by type'
-              data={contrabandTypesData}
-              displayLegend={false}
-              tooltipLabelCallback={formatTooltipValue}
-              modalConfig={{
-                tableHeader: 'Contraband "Hit Rate" by type',
-                tableSubheader: getBarChartModalSubHeading(
-                  'Shows what number of searches discovered specific types of illegal items'
-                ),
-                agencyName: chartState.data[AGENCY_DETAILS].name,
-                chartTitle: getBarChartModalHeading('Contraband "Hit Rate" by type'),
-              }}
-            />
-          </ChartWrapper>
-          <S.LegendSection />
-        </S.ChartSubsection>
+        <ChartContainer>
+          <HorizontalBarChart
+            title='Contraband "Hit Rate" by type'
+            data={contrabandTypesData}
+            displayLegend={false}
+            tooltipLabelCallback={formatTooltipValue}
+            modalConfig={{
+              tableHeader: 'Contraband "Hit Rate" by type',
+              tableSubheader: getBarChartModalSubHeading(
+                'Shows what number of searches discovered specific types of illegal items'
+              ),
+              agencyName: chartState.data[AGENCY_DETAILS].name,
+              chartTitle: getBarChartModalHeading('Contraband "Hit Rate" by type'),
+            }}
+          />
+        </ChartContainer>
       </S.ChartSection>
       <S.ChartSection marginTop={5} id="hit_rate_by_type_and_stop_purpose">
         <ChartHeader

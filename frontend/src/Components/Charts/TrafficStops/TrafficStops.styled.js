@@ -62,3 +62,18 @@ export const SwitchContainer = styled.div`
   margin-bottom: 10px;
   align-items: center;
 `;
+
+export const LineChartWithPieContainer = styled.div`
+  display: flex;
+  flex-direction: ${(props) => (props.showCompare ? 'column' : 'row')};
+  width: 100%;
+  flex-wrap: nowrap;
+
+  @media (${smallerThanDesktop}) {
+    flex-direction: column;
+  }
+`;
+
+export const PieContainer = styled.div`
+  width: 300px;
+`;
