@@ -43,6 +43,7 @@ export const STOP_TYPE_COLORS = [
   '#dba7ed',
   '#ff916d',
   '#4abdc4',
+  '#f1ed39',
 ];
 
 export const STATIC_LEGEND_KEYS = RACES.map((r) => ({
