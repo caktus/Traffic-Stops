@@ -15,6 +15,7 @@ import AgencyHeader from './AgencyHeader';
 import Sidebar from '../Sidebar/Sidebar';
 import ChartRoutes from '../Charts/ChartRoutes';
 import { CompareAlertBox } from '../Elements/Alert/Alert';
+import { YEARS_DEFAULT } from '../Charts/chartUtils';
 
 function AgencyData(props) {
   let { agencyId } = useParams();
@@ -26,6 +27,8 @@ function AgencyData(props) {
   const [agencyHeaderOpen, setAgencyHeaderOpen] = useState(false);
   const [chartsOpen, setChartsOpen] = useState(false);
   const [chartState] = useDataset(agencyId, AGENCY_DETAILS);
+  const [year, setYear] = useState(YEARS_DEFAULT);
+  const [yearIdx, setYearIdx] = useState(null);
 
   useEffect(() => {
     if (chartState.data[AGENCY_DETAILS]) setSidebarOpen(true);
@@ -39,6 +42,12 @@ function AgencyData(props) {
     if (chartState.data[AGENCY_DETAILS]) setChartsOpen(true);
   }, [chartState.data[AGENCY_DETAILS]]);
 
+  const handleYearSelect = (y, idx) => {
+    if (y === year) return;
+    setYear(y);
+    setYearIdx(idx); // Used for some pie chart graphs
+  };
+
   return (
     <S.AgencyData data-testid="AgencyData" {...props}>
       {props.showCompare && !props.agencyId && <CompareAlertBox />}
@@ -48,6 +57,8 @@ function AgencyData(props) {
         toggleShowCompare={props.toggleShowCompare}
         showCompareDepartments={props.showCompare}
         showCloseButton={!!props?.agencyId}
+        year={year}
+        handleYearSelect={handleYearSelect}
       />
       <S.ContentWrapper showCompare={props.showCompare}>
         <AnimatePresence>
@@ -72,6 +83,8 @@ function AgencyData(props) {
             agencyId={agencyId}
             showCompare={props.showCompare}
             agencyName={chartState.data[AGENCY_DETAILS].name}
+            year={year}
+            yearIdx={yearIdx}
           />
         )}
       </S.ContentWrapper>

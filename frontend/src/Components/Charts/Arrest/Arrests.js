@@ -1,17 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import ArrestsStyled from './Arrests.styles';
 
-// Util
-import { YEARS_DEFAULT } from '../chartUtils';
-
 // Hooks
 import useMetaTags from '../../../Hooks/useMetaTags';
 import useTableModal from '../../../Hooks/useTableModal';
 
 // Children
-import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
 import PercentageOfStops from './Charts/PercentageOfStops';
-import useYearSet from '../../../Hooks/useYearSet';
 import PercentageOfSearches from './Charts/PercentageOfSearches';
 import CountOfStopsAndArrests from './Charts/CountOfStopsAndArrests';
 import PercentageOfStopsForStopPurposeGroup from './Charts/PercentageOfStopsForPurposeGroup';
@@ -23,8 +18,7 @@ import Switch from 'react-switch';
 import { SwitchContainer } from '../TrafficStops/TrafficStops.styled';
 
 function Arrests(props) {
-  const [year, setYear] = useState(YEARS_DEFAULT);
-  const [yearRange] = useYearSet();
+  const { year } = props;
   const [togglePercentageOfStops, setTogglePercentageOfStops] = useState(true);
   const [togglePercentageOfSearches, setTogglePercentageOfSearches] = useState(true);
 
@@ -37,24 +31,10 @@ function Arrests(props) {
     }
   }, []);
 
-  const handleYearSelect = (y) => {
-    if (y === year) return;
-    setYear(y);
-  };
-
   return (
     <ArrestsStyled>
       {renderMetaTags()}
       {renderTableModal()}
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <DataSubsetPicker
-          label="Year"
-          value={year}
-          onChange={handleYearSelect}
-          options={[YEARS_DEFAULT].concat(yearRange)}
-          dropDown
-        />
-      </div>
       <PercentageOfStops {...props} year={year} />
       <PercentageOfSearches {...props} year={year} />
       <CountOfStopsAndArrests {...props} year={year} />

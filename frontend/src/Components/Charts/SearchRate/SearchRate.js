@@ -10,23 +10,17 @@ import useOfficerId from '../../../Hooks/useOfficerId';
 import useMetaTags from '../../../Hooks/useMetaTags';
 import useTableModal from '../../../Hooks/useTableModal';
 
-// Constants
-import { YEARS_DEFAULT } from '../chartUtils';
-
 // Children
 import { P } from '../../../styles/StyledComponents/Typography';
 import ChartHeader from '../ChartSections/ChartHeader';
-import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
 import axios from '../../../Services/Axios';
 import HorizontalBarChart from '../../NewCharts/HorizontalBarChart';
 
 function SearchRate(props) {
-  const { agencyId, showCompare } = props;
+  const { agencyId, showCompare, year } = props;
   const officerId = useOfficerId();
 
   const [chartState] = useDataset(agencyId, LIKELIHOOD_OF_SEARCH);
-
-  const [year, setYear] = useState(YEARS_DEFAULT);
 
   const initData = { labels: [], datasets: [], loading: true };
   const [searchRateData, setSearchRateData] = useState(initData);
@@ -53,11 +47,6 @@ function SearchRate(props) {
       })
       .catch((err) => console.log(err));
   }, [year]);
-
-  const handleYearSelected = (y) => {
-    if (y === year) return;
-    setYear(y);
-  };
 
   const handleViewData = () => {
     openModal(LIKELIHOOD_OF_SEARCH, TABLE_COLUMNS);
@@ -132,17 +121,6 @@ function SearchRate(props) {
               />
             </div>
           </S.LineWrapper>
-          <S.LegendBelow>
-            <S.Spacing>
-              <DataSubsetPicker
-                label="Year"
-                value={year}
-                onChange={handleYearSelected}
-                options={[YEARS_DEFAULT].concat(chartState.yearRange)}
-                dropUp={!!showCompare}
-              />
-            </S.Spacing>
-          </S.LegendBelow>
         </S.ChartSubsection>
       </S.ChartSection>
     </SearchRateStyled>

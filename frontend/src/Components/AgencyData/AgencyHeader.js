@@ -18,6 +18,9 @@ import BackButton from '../Elements/BackButton';
 import Button from '../Elements/Button';
 import * as ChartHeaderStyles from '../Charts/ChartSections/ChartHeader.styled';
 import CensusData from './CensusData';
+import { YEARS_DEFAULT } from '../Charts/chartUtils';
+import DataSubsetPicker from '../Charts/ChartSections/DataSubsetPicker/DataSubsetPicker';
+import useYearSet from '../../Hooks/useYearSet';
 
 function AgencyHeader({
   agencyHeaderOpen,
@@ -25,11 +28,15 @@ function AgencyHeader({
   toggleShowCompare,
   showCompareDepartments,
   showCloseButton,
+  year,
+  handleYearSelect,
 }) {
   const history = useHistory();
   const { agencyId } = useParams();
   const theme = useTheme();
   const officerId = useOfficerId();
+
+  const [yearRange] = useYearSet();
 
   const handleGoToAgency = () => {
     history.push(`${AGENCY_LIST_SLUG}/${agencyId}`);
@@ -92,6 +99,13 @@ function AgencyHeader({
               showCompareDepartments={showCompareDepartments}
             />
           </S.SubHeaderContentRow>
+          <DataSubsetPicker
+            label="Year"
+            value={year}
+            onChange={handleYearSelect}
+            options={[YEARS_DEFAULT].concat(yearRange)}
+            dropDown
+          />
           {!showCloseButton && (
             <S.AgencyHeaderButton>
               <Button
