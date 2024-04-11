@@ -5,7 +5,6 @@ import ArrestsStyled from './Arrests.styles';
 import { YEARS_DEFAULT } from '../chartUtils';
 
 // Hooks
-import useMetaTags from '../../../Hooks/useMetaTags';
 import useTableModal from '../../../Hooks/useTableModal';
 
 // Children
@@ -28,7 +27,6 @@ function Arrests(props) {
   const [togglePercentageOfStops, setTogglePercentageOfStops] = useState(true);
   const [togglePercentageOfSearches, setTogglePercentageOfSearches] = useState(true);
 
-  const renderMetaTags = useMetaTags();
   const [renderTableModal] = useTableModal();
 
   useEffect(() => {
@@ -44,7 +42,6 @@ function Arrests(props) {
 
   return (
     <ArrestsStyled>
-      {renderMetaTags()}
       {renderTableModal()}
       <div style={{ display: 'flex', justifyContent: 'center' }}>
         <DataSubsetPicker

@@ -30,7 +30,6 @@ import useDataset, { STOPS_BY_REASON, STOPS, AGENCY_DETAILS } from '../../../Hoo
 import { P, WEIGHTS } from '../../../styles/StyledComponents/Typography';
 
 // Hooks
-import useMetaTags from '../../../Hooks/useMetaTags';
 import useTableModal from '../../../Hooks/useTableModal';
 
 // Children
@@ -105,7 +104,6 @@ function TrafficStops(props) {
     ],
   });
 
-  const renderMetaTags = useMetaTags();
   const [renderTableModal, { openModal }] = useTableModal();
 
   const [stopPurposeGroupsData, setStopPurposeGroups] = useState({
@@ -700,7 +698,6 @@ function TrafficStops(props) {
   return (
     <TrafficStopsStyled>
       {/* Traffic Stops by Percentage */}
-      {renderMetaTags()}
       {renderTableModal()}
       <S.ChartSection>
         <ChartHeader
