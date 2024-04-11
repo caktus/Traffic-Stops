@@ -33,7 +33,7 @@ import PieChart from '../../NewCharts/PieChart';
 import { pieChartConfig, pieChartLabels } from '../../../util/setChartColors';
 
 function Overview(props) {
-  const { agencyId, year } = props;
+  const { agencyId, yearRange, year } = props;
 
   const history = useHistory();
   const match = useRouteMatch();
@@ -134,7 +134,7 @@ function Overview(props) {
     let title = `${chartTitle} for ${subject}`;
     if (chartTitle !== 'Census Demographics') {
       title = `${title} ${
-        year === YEARS_DEFAULT ? `since ${chartState.yearRange.reverse()[0]}` : `in ${year}`
+        year === YEARS_DEFAULT ? `since ${yearRange[yearRange.length - 1]}` : `in ${year}`
       }`;
     }
     return title;

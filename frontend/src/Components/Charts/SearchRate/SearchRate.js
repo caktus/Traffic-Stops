@@ -17,7 +17,7 @@ import axios from '../../../Services/Axios';
 import HorizontalBarChart from '../../NewCharts/HorizontalBarChart';
 
 function SearchRate(props) {
-  const { agencyId, showCompare, year } = props;
+  const { agencyId, showCompare, yearRange, year } = props;
   const officerId = useOfficerId();
 
   const [chartState] = useDataset(agencyId, LIKELIHOOD_OF_SEARCH);
@@ -76,7 +76,7 @@ function SearchRate(props) {
     if (officerId) {
       subject = `Officer ${officerId}`;
     }
-    let fromYear = ` since ${chartState.yearRange[chartState.yearRange.length - 1]}`;
+    let fromYear = ` since ${yearRange[yearRange.length - 1]}`;
     if (year && year !== 'All') {
       fromYear = ` in ${year}`;
     }

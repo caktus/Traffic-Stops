@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useTheme } from 'styled-components';
 import { AnimatePresence } from 'framer-motion';
 import * as S from './AgencyHeader.styled';
@@ -18,9 +18,7 @@ import BackButton from '../Elements/BackButton';
 import Button from '../Elements/Button';
 import * as ChartHeaderStyles from '../Charts/ChartSections/ChartHeader.styled';
 import CensusData from './CensusData';
-import { YEARS_DEFAULT } from '../Charts/chartUtils';
 import DataSubsetPicker from '../Charts/ChartSections/DataSubsetPicker/DataSubsetPicker';
-import axios from '../../Services/Axios';
 
 function AgencyHeader({
   agencyHeaderOpen,
@@ -28,6 +26,7 @@ function AgencyHeader({
   toggleShowCompare,
   showCompareDepartments,
   showCloseButton,
+  yearRange,
   year,
   handleYearSelect,
 }) {
@@ -35,14 +34,6 @@ function AgencyHeader({
   const { agencyId } = useParams();
   const theme = useTheme();
   const officerId = useOfficerId();
-
-  const [yearRange, setYearRange] = useState([YEARS_DEFAULT]);
-
-  useEffect(() => {
-    axios.get(`/api/agency/${agencyId}/year-range/`).then((res) => {
-      setYearRange([YEARS_DEFAULT].concat(res.data.year_range));
-    });
-  }, [agencyId]);
 
   const handleGoToAgency = () => {
     history.push(`${AGENCY_LIST_SLUG}/${agencyId}`);

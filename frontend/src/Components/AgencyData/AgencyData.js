@@ -16,6 +16,7 @@ import Sidebar from '../Sidebar/Sidebar';
 import ChartRoutes from '../Charts/ChartRoutes';
 import { CompareAlertBox } from '../Elements/Alert/Alert';
 import { YEARS_DEFAULT } from '../Charts/chartUtils';
+import axios from '../../Services/Axios';
 
 function AgencyData(props) {
   let { agencyId } = useParams();
@@ -27,6 +28,8 @@ function AgencyData(props) {
   const [agencyHeaderOpen, setAgencyHeaderOpen] = useState(false);
   const [chartsOpen, setChartsOpen] = useState(false);
   const [chartState] = useDataset(agencyId, AGENCY_DETAILS);
+
+  const [yearRange, setYearRange] = useState([YEARS_DEFAULT]);
   const [year, setYear] = useState(YEARS_DEFAULT);
   const [yearIdx, setYearIdx] = useState(null);
 
@@ -41,6 +44,12 @@ function AgencyData(props) {
   useEffect(() => {
     if (chartState.data[AGENCY_DETAILS]) setChartsOpen(true);
   }, [chartState.data[AGENCY_DETAILS]]);
+
+  useEffect(() => {
+    axios.get(`/api/agency/${agencyId}/year-range/`).then((res) => {
+      setYearRange([YEARS_DEFAULT].concat(res.data.year_range));
+    });
+  }, [agencyId]);
 
   const handleYearSelect = (y, idx) => {
     if (y === year) return;
@@ -57,6 +66,7 @@ function AgencyData(props) {
         toggleShowCompare={props.toggleShowCompare}
         showCompareDepartments={props.showCompare}
         showCloseButton={!!props?.agencyId}
+        yearRange={yearRange}
         year={year}
         handleYearSelect={handleYearSelect}
       />
@@ -83,6 +93,7 @@ function AgencyData(props) {
             agencyId={agencyId}
             showCompare={props.showCompare}
             agencyName={chartState.data[AGENCY_DETAILS].name}
+            yearRange={yearRange}
             year={year}
             yearIdx={yearIdx}
           />

@@ -32,7 +32,7 @@ import useOfficerId from '../../../Hooks/useOfficerId';
 const STOP_PURPOSE_TYPES = ['Safety Violation', 'Regulatory and Equipment', 'Other'];
 
 function Contraband(props) {
-  const { agencyId, showCompare, year } = props;
+  const { agencyId, showCompare, yearRange, year } = props;
 
   const officerId = useOfficerId();
   const [chartState] = useDataset(agencyId, CONTRABAND_HIT_RATE);
@@ -510,7 +510,7 @@ function Contraband(props) {
     if (officerId) {
       subject = `Officer ${officerId}`;
     }
-    let fromYear = ` since ${chartState.yearRange[chartState.yearRange.length - 1]}`;
+    let fromYear = ` since ${yearRange[yearRange.length - 1]}`;
     if (year && year !== 'All') {
       fromYear = ` in ${year}`;
     }

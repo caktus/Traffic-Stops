@@ -50,7 +50,7 @@ import { pieChartConfig, pieChartLabels, pieColors } from '../../../util/setChar
 import VerticalBarChart from '../../NewCharts/VerticalBarChart';
 
 function TrafficStops(props) {
-  const { agencyId, year, yearIdx } = props;
+  const { agencyId, yearRange, year, yearIdx } = props;
 
   const theme = useTheme();
   const officerId = useOfficerId();
@@ -600,7 +600,7 @@ function TrafficStops(props) {
       subject = `Officer ${officerId}`;
     }
     return `Traffic Stops By Percentage for ${subject} ${
-      year === YEARS_DEFAULT ? `since ${stopsChartState.yearRange.toReversed()[0]}` : `in ${year}`
+      year === YEARS_DEFAULT ? `since ${yearRange[yearRange.length - 1]}` : `in ${year}`
     }`;
   };
 
