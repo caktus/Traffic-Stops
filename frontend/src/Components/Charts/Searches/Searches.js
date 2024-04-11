@@ -14,7 +14,6 @@ import useDataset, {
 } from '../../../Hooks/useDataset';
 
 // Hooks
-import useMetaTags from '../../../Hooks/useMetaTags';
 import useTableModal from '../../../Hooks/useTableModal';
 
 // Elements
@@ -59,7 +58,6 @@ function Searches(props) {
   };
   const [searchCountData, setSearchCountData] = useState(initCountData);
   const [searchCountType, setSearchCountType] = useState(0);
-  const renderMetaTags = useMetaTags();
   const [renderTableModal, { openModal }] = useTableModal();
 
   // Build Searches By Percentage
@@ -167,7 +165,6 @@ function Searches(props) {
   return (
     <SearchesStyled>
       {/* Search Rate */}
-      {renderMetaTags()}
       {renderTableModal()}
       <S.ChartSection id="searches_by_percentage">
         <ChartHeader

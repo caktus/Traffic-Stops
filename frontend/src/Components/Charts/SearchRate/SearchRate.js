@@ -7,7 +7,6 @@ import useDataset, { AGENCY_DETAILS, LIKELIHOOD_OF_SEARCH } from '../../../Hooks
 
 // Hooks
 import useOfficerId from '../../../Hooks/useOfficerId';
-import useMetaTags from '../../../Hooks/useMetaTags';
 import useTableModal from '../../../Hooks/useTableModal';
 
 // Constants
@@ -31,7 +30,6 @@ function SearchRate(props) {
   const initData = { labels: [], datasets: [], loading: true };
   const [searchRateData, setSearchRateData] = useState(initData);
 
-  const renderMetaTags = useMetaTags();
   const [renderTableModal, { openModal }] = useTableModal();
 
   useEffect(() => {
@@ -96,7 +94,6 @@ function SearchRate(props) {
 
   return (
     <SearchRateStyled>
-      {renderMetaTags()}
       {renderTableModal()}
       <S.ChartSection>
         <ChartHeader chartTitle="Likelihood of Search" handleViewData={handleViewData} />

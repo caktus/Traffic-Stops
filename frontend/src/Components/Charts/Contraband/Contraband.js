@@ -10,7 +10,6 @@ import * as S from '../ChartSections/ChartsCommon.styled';
 import { CONTRABAND_TYPES, STATIC_CONTRABAND_KEYS, YEARS_DEFAULT } from '../chartUtils';
 
 // Hooks
-import useMetaTags from '../../../Hooks/useMetaTags';
 import useTableModal from '../../../Hooks/useTableModal';
 
 // State
@@ -45,7 +44,6 @@ function Contraband(props) {
 
   const [year, setYear] = useState(YEARS_DEFAULT);
 
-  const renderMetaTags = useMetaTags();
   const [renderTableModal] = useTableModal();
 
   const initContrabandData = {
@@ -523,7 +521,6 @@ function Contraband(props) {
 
   return (
     <ContrabandStyled>
-      {renderMetaTags()}
       {renderTableModal()}
       <details>
         <summary style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
