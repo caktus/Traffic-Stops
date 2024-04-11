@@ -3,7 +3,7 @@ import SearchRateStyled from './SearchRate.styled';
 import * as S from '../ChartSections/ChartsCommon.styled';
 
 // Data
-import useDataset, { AGENCY_DETAILS, LIKELIHOOD_OF_SEARCH } from '../../../Hooks/useDataset';
+import useDataset, { LIKELIHOOD_OF_SEARCH } from '../../../Hooks/useDataset';
 
 // Hooks
 import useOfficerId from '../../../Hooks/useOfficerId';
@@ -21,7 +21,7 @@ import axios from '../../../Services/Axios';
 import HorizontalBarChart from '../../NewCharts/HorizontalBarChart';
 
 function SearchRate(props) {
-  const { agencyId, showCompare } = props;
+  const { agencyId, agencyName, showCompare } = props;
   const officerId = useOfficerId();
 
   const [chartState] = useDataset(agencyId, LIKELIHOOD_OF_SEARCH);
@@ -83,7 +83,7 @@ function SearchRate(props) {
                       purposes ${subjectObserving()}.`;
 
   const getBarChartModalHeading = (title) => {
-    let subject = chartState.data[AGENCY_DETAILS].name;
+    let subject = agencyName;
     if (officerId) {
       subject = `Officer ${officerId}`;
     }
@@ -126,7 +126,7 @@ function SearchRate(props) {
                 modalConfig={{
                   tableHeader: 'Likelihood of Search',
                   tableSubheader: getBarChartModalSubHeading(),
-                  agencyName: chartState.data[AGENCY_DETAILS].name,
+                  agencyName,
                   chartTitle: getBarChartModalHeading('Likelihood of Search'),
                 }}
               />

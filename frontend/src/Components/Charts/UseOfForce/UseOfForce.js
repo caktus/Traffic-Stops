@@ -12,7 +12,7 @@ import {
 } from '../chartUtils';
 
 // State
-import useDataset, { AGENCY_DETAILS, USE_OF_FORCE } from '../../../Hooks/useDataset';
+import useDataset, { USE_OF_FORCE } from '../../../Hooks/useDataset';
 
 // Hooks
 import useMetaTags from '../../../Hooks/useMetaTags';
@@ -29,7 +29,7 @@ import VerticalBarChart from '../../NewCharts/VerticalBarChart';
 import axios from '../../../Services/Axios';
 
 function UseOfForce(props) {
-  const { agencyId, showCompare } = props;
+  const { agencyId, agencyName, showCompare } = props;
   const officerId = useOfficerId();
 
   const [chartState] = useDataset(agencyId, USE_OF_FORCE);
@@ -122,7 +122,7 @@ function UseOfForce(props) {
   };
 
   const chartModalTitle = (displayYear = true) => {
-    let subject = chartState.data[AGENCY_DETAILS].name;
+    let subject = agencyName;
     if (officerId) {
       subject = `Officer ${officerId}`;
     }
@@ -160,7 +160,7 @@ function UseOfForce(props) {
             modalConfig={{
               tableHeader: 'Use of Force',
               tableSubheader: getChartModalSubHeading(false),
-              agencyName: chartState.data[AGENCY_DETAILS].name,
+              agencyName,
               chartTitle: chartModalTitle(false),
             }}
           />
@@ -174,7 +174,7 @@ function UseOfForce(props) {
               modalConfig={{
                 tableHeader: 'Use of Force',
                 tableSubheader: getChartModalSubHeading(),
-                agencyName: chartState.data[AGENCY_DETAILS].name,
+                agencyName,
                 chartTitle: chartModalTitle(),
               }}
             />
