@@ -163,7 +163,7 @@ function UseOfForce(props) {
           <PieChart
             data={useOfForcePieData}
             displayLegend={false}
-            maintainAspectRatio
+            maintainAspectRatio={false}
             modalConfig={{
               tableHeader: 'Use of Force',
               tableSubheader: getChartModalSubHeading(),
