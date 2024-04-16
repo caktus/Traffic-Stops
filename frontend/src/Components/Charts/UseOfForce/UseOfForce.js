@@ -27,9 +27,10 @@ import PieChart from '../../NewCharts/PieChart';
 import { pieChartConfig, pieChartLabels } from '../../../util/setChartColors';
 import VerticalBarChart from '../../NewCharts/VerticalBarChart';
 import axios from '../../../Services/Axios';
+import { ChartContainer } from '../ChartSections/ChartsCommon.styled';
 
 function UseOfForce(props) {
-  const { agencyId, showCompare, year } = props;
+  const { agencyId, year } = props;
   const officerId = useOfficerId();
 
   const [chartState] = useDataset(agencyId, USE_OF_FORCE);
@@ -145,8 +146,9 @@ function UseOfForce(props) {
             against.
           </P>
         </S.ChartDescription>
-        <S.ChartSubsection showCompare={showCompare}>
+        <ChartContainer>
           <VerticalBarChart
+            maintainAspectRatio={false}
             title="Use Of Force"
             data={useOfForceBarData}
             modalConfig={{
@@ -156,22 +158,20 @@ function UseOfForce(props) {
               chartTitle: chartModalTitle(false),
             }}
           />
-        </S.ChartSubsection>
-        <S.ChartSubsection>
-          <S.PieWrapper>
-            <PieChart
-              data={useOfForcePieData}
-              displayLegend={false}
-              maintainAspectRatio
-              modalConfig={{
-                tableHeader: 'Use of Force',
-                tableSubheader: getChartModalSubHeading(),
-                agencyName: chartState.data[AGENCY_DETAILS].name,
-                chartTitle: chartModalTitle(),
-              }}
-            />
-          </S.PieWrapper>
-        </S.ChartSubsection>
+        </ChartContainer>
+        <div>
+          <PieChart
+            data={useOfForcePieData}
+            displayLegend={false}
+            maintainAspectRatio
+            modalConfig={{
+              tableHeader: 'Use of Force',
+              tableSubheader: getChartModalSubHeading(),
+              agencyName: chartState.data[AGENCY_DETAILS].name,
+              chartTitle: chartModalTitle(),
+            }}
+          />
+        </div>
       </S.ChartSection>
     </UseOfForceStyled>
   );

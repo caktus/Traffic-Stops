@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import TrafficStopsStyled, {
   GroupedStopsContainer,
+  LineChartWithPieContainer,
   LineWrapper,
+  PieContainer,
   PieStopsContainer,
   PieWrapper,
   StopGroupsContainer,
@@ -50,9 +52,10 @@ import Switch from 'react-switch';
 import Checkbox from '../../Elements/Inputs/Checkbox';
 import { pieChartConfig, pieChartLabels, pieColors } from '../../../util/setChartColors';
 import VerticalBarChart from '../../NewCharts/VerticalBarChart';
+import { ChartContainer } from '../ChartSections/ChartsCommon.styled';
 
 function TrafficStops(props) {
-  const { agencyId, yearRange, year, yearIdx } = props;
+  const { agencyId, showCompare, yearRange, year, yearIdx } = props;
 
   const theme = useTheme();
   const officerId = useOfficerId();
@@ -695,11 +698,12 @@ function TrafficStops(props) {
           </P>
           <P>{getChartDetailedBreakdown()}</P>
         </S.ChartDescription>
-        <S.ChartSubsection showCompare={props.showCompare}>
-          <S.LineSection>
+        <LineChartWithPieContainer showCompare={showCompare}>
+          <ChartContainer override={{ width: '100%' }}>
             <VerticalBarChart
               title="Traffic Stops By Percentage"
               data={stopsByPercentageData}
+              maintainAspectRatio={false}
               stacked
               disableLegend
               tooltipLabelCallback={formatTooltipValue}
@@ -710,27 +714,25 @@ function TrafficStops(props) {
                 chartTitle: stopsByPercentageModalTitle(),
               }}
             />
-          </S.LineSection>
+          </ChartContainer>
 
-          <S.PieSection alignItems="start">
-            <S.PieWrapper>
-              <PieChart
-                data={byPercentagePieData}
-                displayLegend={false}
-                maintainAspectRatio
-                modalConfig={{
-                  tableHeader: 'Traffic Stops By Percentage',
-                  tableSubheader: getPieChartModalSubHeading(
-                    'Shows the race/ethnic composition of drivers stopped',
-                    year
-                  ),
-                  agencyName: stopsChartState.data[AGENCY_DETAILS].name,
-                  chartTitle: pieChartTitle(),
-                }}
-              />
-            </S.PieWrapper>
-          </S.PieSection>
-        </S.ChartSubsection>
+          <PieContainer>
+            <PieChart
+              data={byPercentagePieData}
+              displayLegend={false}
+              maintainAspectRatio
+              modalConfig={{
+                tableHeader: 'Traffic Stops By Percentage',
+                tableSubheader: getPieChartModalSubHeading(
+                  'Shows the race/ethnic composition of drivers stopped',
+                  year
+                ),
+                agencyName: stopsChartState.data[AGENCY_DETAILS].name,
+                chartTitle: pieChartTitle(),
+              }}
+            />
+          </PieContainer>
+        </LineChartWithPieContainer>
       </S.ChartSection>
       {/* Traffic Stops by Count */}
       <S.ChartSection id="stops_by_count">
@@ -774,7 +776,7 @@ function TrafficStops(props) {
           </S.LegendBeside>
         </S.ChartSubsection>
       </S.ChartSection>
-      <S.ChartSection marginTop={5} id="stops_by_purpose">
+      <S.ChartSection id="stops_by_purpose">
         <ChartHeader
           chartTitle="Traffic Stops By Stop Purpose"
           handleViewData={showStopPurposeModal}
@@ -794,8 +796,8 @@ function TrafficStops(props) {
           isOpen={stopPurposeModalData.isOpen}
           closeModal={() => setStopPurposeModalData((state) => ({ ...state, isOpen: false }))}
         />
-        <S.ChartSubsection showCompare={props.showCompare}>
-          <S.LineSection>
+        <LineChartWithPieContainer showCompare={showCompare}>
+          <ChartContainer override={{ width: '100%' }}>
             <LineChart
               data={stopPurposeGroupsData}
               title="Stop Purposes By Group"
@@ -811,26 +813,24 @@ function TrafficStops(props) {
                 chartTitle: getLineChartModalHeading('Traffic Stops By Group'),
               }}
             />
-          </S.LineSection>
-          <S.PieSection alignItems="start">
-            <S.PieWrapper>
-              <PieChart
-                data={stopPurposeGroupedPieData}
-                displayLegend={false}
-                maintainAspectRatio
-                modalConfig={{
-                  tableHeader: 'Traffic Stops By Stop Purpose',
-                  tableSubheader: getPieChartModalSubHeading(
-                    'Shows the stop purpose and race/ethnic composition of drivers stopped',
-                    year
-                  ),
-                  agencyName: stopsChartState.data[AGENCY_DETAILS].name,
-                  chartTitle: stopPurposeGroupPieChartTitle(),
-                }}
-              />
-            </S.PieWrapper>
-          </S.PieSection>
-        </S.ChartSubsection>
+          </ChartContainer>
+          <PieContainer>
+            <PieChart
+              data={stopPurposeGroupedPieData}
+              displayLegend={false}
+              maintainAspectRatio
+              modalConfig={{
+                tableHeader: 'Traffic Stops By Stop Purpose',
+                tableSubheader: getPieChartModalSubHeading(
+                  'Shows the stop purpose and race/ethnic composition of drivers stopped',
+                  year
+                ),
+                agencyName: stopsChartState.data[AGENCY_DETAILS].name,
+                chartTitle: stopPurposeGroupPieChartTitle(),
+              }}
+            />
+          </PieContainer>
+        </LineChartWithPieContainer>
       </S.ChartSection>
       <S.ChartSection marginTop={5} id="stops_by_purpose_and_count">
         <ChartHeader

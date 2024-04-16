@@ -7,8 +7,8 @@ import ChartHeader from '../../ChartSections/ChartHeader';
 import HorizontalBarChart from '../../../NewCharts/HorizontalBarChart';
 import axios from '../../../../Services/Axios';
 import useOfficerId from '../../../../Hooks/useOfficerId';
-import { ChartWrapper } from '../Arrests.styles';
 import NewModal from '../../../NewCharts/NewModal';
+import { ChartContainer } from '../../ChartSections/ChartsCommon.styled';
 
 import createTableData from '../../../../util/createTableData';
 import DataSubsetPicker from '../../ChartSections/DataSubsetPicker/DataSubsetPicker';
@@ -17,7 +17,7 @@ import { RACE_TABLE_COLUMNS, STOP_PURPOSE_TYPES, STOP_TYPE_COLORS } from '../../
 const graphTitle = 'Percentage of Searches Leading to Arrest by Stop Purpose Type';
 
 function PercentageOfStopsForStopPurpose(props) {
-  const { agencyId, agencyName, showCompare, year } = props;
+  const { agencyId, agencyName, year } = props;
 
   const officerId = useOfficerId();
 
@@ -135,25 +135,23 @@ function PercentageOfStopsForStopPurpose(props) {
           />
         </NewModal>
       </S.ChartDescription>
-      <S.ChartSubsection showCompare={showCompare}>
-        <ChartWrapper>
-          <HorizontalBarChart
-            title={graphTitle}
-            data={arrestData}
-            displayLegend={false}
-            tooltipLabelCallback={formatTooltipValue}
-            pinMaxValue={false}
-            modalConfig={{
-              tableHeader: graphTitle,
-              tableSubheader: getBarChartModalSubHeading(
-                'Shows what percentage of searches led to an arrest for a given stop purpose.'
-              ),
-              agencyName,
-              chartTitle: getBarChartModalSubHeading(graphTitle),
-            }}
-          />
-        </ChartWrapper>
-      </S.ChartSubsection>
+      <ChartContainer>
+        <HorizontalBarChart
+          title={graphTitle}
+          data={arrestData}
+          displayLegend={false}
+          tooltipLabelCallback={formatTooltipValue}
+          pinMaxValue={false}
+          modalConfig={{
+            tableHeader: graphTitle,
+            tableSubheader: getBarChartModalSubHeading(
+              'Shows what percentage of searches led to an arrest for a given stop purpose.'
+            ),
+            agencyName,
+            chartTitle: getBarChartModalSubHeading(graphTitle),
+          }}
+        />
+      </ChartContainer>
     </S.ChartSection>
   );
 }

@@ -7,14 +7,14 @@ import ChartHeader from '../../ChartSections/ChartHeader';
 import HorizontalBarChart from '../../../NewCharts/HorizontalBarChart';
 import axios from '../../../../Services/Axios';
 import useOfficerId from '../../../../Hooks/useOfficerId';
-import { ChartWrapper } from '../Arrests.styles';
 import NewModal from '../../../NewCharts/NewModal';
+import { ChartContainer } from '../../ChartSections/ChartsCommon.styled';
 import { CONTRABAND_TYPES_TABLE_COLUMNS } from '../../chartUtils';
 
 const graphTitle = 'Percentage of Stops Leading to Arrest by Discovered Contraband Type';
 
 function PercentageOfStopsPerContrabandType(props) {
-  const { agencyId, agencyName, showCompare, year } = props;
+  const { agencyId, agencyName, year } = props;
 
   const officerId = useOfficerId();
 
@@ -120,24 +120,22 @@ function PercentageOfStopsPerContrabandType(props) {
           closeModal={() => setArrestData((state) => ({ ...state, isOpen: false }))}
         />
       </S.ChartDescription>
-      <S.ChartSubsection showCompare={showCompare}>
-        <ChartWrapper>
-          <HorizontalBarChart
-            title={graphTitle}
-            data={arrestData}
-            displayLegend={false}
-            tooltipLabelCallback={formatTooltipValue}
-            modalConfig={{
-              tableHeader: graphTitle,
-              tableSubheader: getBarChartModalSubHeading(
-                'Shows what percentage of stops led to an arrest for a given contraband type'
-              ),
-              agencyName,
-              chartTitle: getBarChartModalSubHeading(graphTitle),
-            }}
-          />
-        </ChartWrapper>
-      </S.ChartSubsection>
+      <ChartContainer>
+        <HorizontalBarChart
+          title={graphTitle}
+          data={arrestData}
+          displayLegend={false}
+          tooltipLabelCallback={formatTooltipValue}
+          modalConfig={{
+            tableHeader: graphTitle,
+            tableSubheader: getBarChartModalSubHeading(
+              'Shows what percentage of stops led to an arrest for a given contraband type'
+            ),
+            agencyName,
+            chartTitle: getBarChartModalSubHeading(graphTitle),
+          }}
+        />
+      </ChartContainer>
     </S.ChartSection>
   );
 }

@@ -7,15 +7,15 @@ import ChartHeader from '../../ChartSections/ChartHeader';
 import HorizontalBarChart from '../../../NewCharts/HorizontalBarChart';
 import axios from '../../../../Services/Axios';
 import useOfficerId from '../../../../Hooks/useOfficerId';
-import { ChartWrapper } from '../Arrests.styles';
 import NewModal from '../../../NewCharts/NewModal';
+import { ChartContainer } from '../../ChartSections/ChartsCommon.styled';
 import createTableData from '../../../../util/createTableData';
 import { RACE_TABLE_COLUMNS } from '../../chartUtils';
 
 const graphTitle = 'Traffic Stops Leading to Arrest by Count';
 
 function CountOfStopsAndArrests(props) {
-  const { agencyId, agencyName, showCompare, year } = props;
+  const { agencyId, agencyName, year } = props;
 
   const officerId = useOfficerId();
 
@@ -106,28 +106,26 @@ function CountOfStopsAndArrests(props) {
           closeModal={() => setArrestData((state) => ({ ...state, isOpen: false }))}
         />
       </S.ChartDescription>
-      <S.ChartSubsection showCompare={showCompare}>
-        <ChartWrapper>
-          <HorizontalBarChart
-            title={graphTitle}
-            data={arrestData}
-            pinMaxValue={false}
-            xStacked
-            yStacked
-            tickStyle={null}
-            stepSize={50000}
-            tooltipLabelCallback={formatTooltipValue}
-            modalConfig={{
-              tableHeader: graphTitle,
-              tableSubheader: getBarChartModalSubHeading(
-                'Shows count of stops and corresponding arrests for a given race/ethnic group'
-              ),
-              agencyName,
-              chartTitle: getBarChartModalSubHeading(graphTitle),
-            }}
-          />
-        </ChartWrapper>
-      </S.ChartSubsection>
+      <ChartContainer>
+        <HorizontalBarChart
+          title={graphTitle}
+          data={arrestData}
+          pinMaxValue={false}
+          xStacked
+          yStacked
+          tickStyle={null}
+          stepSize={50000}
+          tooltipLabelCallback={formatTooltipValue}
+          modalConfig={{
+            tableHeader: graphTitle,
+            tableSubheader: getBarChartModalSubHeading(
+              'Shows count of stops and corresponding arrests for a given race/ethnic group'
+            ),
+            agencyName,
+            chartTitle: getBarChartModalSubHeading(graphTitle),
+          }}
+        />
+      </ChartContainer>
     </S.ChartSection>
   );
 }

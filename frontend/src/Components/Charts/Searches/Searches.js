@@ -25,9 +25,9 @@ import ChartHeader from '../ChartSections/ChartHeader';
 import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
 import useOfficerId from '../../../Hooks/useOfficerId';
 import displayDefinition from '../../../util/displayDefinition';
-import { LineWrapper, StopGroupsContainer } from '../TrafficStops/TrafficStops.styled';
 import LineChart from '../../NewCharts/LineChart';
 import axios from '../../../Services/Axios';
+import { ChartContainer } from '../ChartSections/ChartsCommon.styled';
 
 function Searches(props) {
   const { agencyId } = props;
@@ -178,29 +178,25 @@ function Searches(props) {
           }}
         />
         <P>Shows the percent of stops that led to searches, broken down by race/ethnicity.</P>
-        <S.ChartSubsection showCompare={props.showCompare}>
-          <LineWrapper visible>
-            <StopGroupsContainer>
-              <LineChart
-                data={searchPercentageData}
-                title="Searches By Percentage"
-                maintainAspectRatio={false}
-                showLegendOnBottom
-                yScaleFormat="percent"
-                tooltipTitleCallback={formatTooltipLabel}
-                tooltipLabelCallback={formatTooltipValue}
-                modalConfig={{
-                  tableHeader: 'Searches By Percentage',
-                  tableSubheader: getLineChartModalSubHeading(
-                    'Shows the percent of stops that led to searches, broken down by race/ethnicity'
-                  ),
-                  agencyName: chartState.data[AGENCY_DETAILS].name,
-                  chartTitle: getLineChartModalHeading('Searches By Percentage', false),
-                }}
-              />
-            </StopGroupsContainer>
-          </LineWrapper>
-        </S.ChartSubsection>
+        <ChartContainer>
+          <LineChart
+            data={searchPercentageData}
+            title="Searches By Percentage"
+            maintainAspectRatio={false}
+            showLegendOnBottom
+            yScaleFormat="percent"
+            tooltipTitleCallback={formatTooltipLabel}
+            tooltipLabelCallback={formatTooltipValue}
+            modalConfig={{
+              tableHeader: 'Searches By Percentage',
+              tableSubheader: getLineChartModalSubHeading(
+                'Shows the percent of stops that led to searches, broken down by race/ethnicity'
+              ),
+              agencyName: chartState.data[AGENCY_DETAILS].name,
+              chartTitle: getLineChartModalHeading('Searches By Percentage', false),
+            }}
+          />
+        </ChartContainer>
       </S.ChartSection>
       {/* Searches by Count */}
       <S.ChartSection id="searches_by_count">
@@ -215,35 +211,37 @@ function Searches(props) {
           Shows the number of searches performed {subjectObserving()}, broken down by search type
           and race / ethnicity.
         </P>
-        <S.ChartSubsection showCompare={props.showCompare}>
-          <LineWrapper visible>
-            <StopGroupsContainer>
-              <LineChart
-                data={searchCountData}
-                title="Searches By Count"
-                maintainAspectRatio={false}
-                showLegendOnBottom
-                modalConfig={{
-                  tableHeader: 'Searches By Count',
-                  tableSubheader: getLineChartModalSubHeading(
-                    `Shows the number of searches performed ${subjectObserving()}, broken down by search type and race / ethnicity`
-                  ),
-                  agencyName: chartState.data[AGENCY_DETAILS].name,
-                  chartTitle: getLineChartModalHeading('Searches By Count', true),
-                }}
-              />
-            </StopGroupsContainer>
-          </LineWrapper>
-          <S.LegendBeside>
-            <DataSubsetPicker
-              label="Search Type"
-              value={searchType}
-              onChange={handleStopPurposeSelect}
-              options={[SEARCH_TYPE_DEFAULT].concat(SEARCH_TYPES)}
-            />
-            <p style={{ marginTop: '10px' }}>{displayDefinition(searchType)}</p>
-          </S.LegendBeside>
-        </S.ChartSubsection>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '10px',
+          }}
+        >
+          <DataSubsetPicker
+            label="Search Type"
+            value={searchType}
+            onChange={handleStopPurposeSelect}
+            options={[SEARCH_TYPE_DEFAULT].concat(SEARCH_TYPES)}
+          />
+          <p>{displayDefinition(searchType)}</p>
+        </div>
+        <ChartContainer>
+          <LineChart
+            data={searchCountData}
+            title="Searches By Count"
+            maintainAspectRatio={false}
+            showLegendOnBottom
+            modalConfig={{
+              tableHeader: 'Searches By Count',
+              tableSubheader: getLineChartModalSubHeading(
+                `Shows the number of searches performed ${subjectObserving()}, broken down by search type and race / ethnicity`
+              ),
+              agencyName: chartState.data[AGENCY_DETAILS].name,
+              chartTitle: getLineChartModalHeading('Searches By Count', true),
+            }}
+          />
+        </ChartContainer>
       </S.ChartSection>
     </SearchesStyled>
   );

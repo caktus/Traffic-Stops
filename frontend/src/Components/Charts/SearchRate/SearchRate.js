@@ -18,9 +18,10 @@ import { P } from '../../../styles/StyledComponents/Typography';
 import ChartHeader from '../ChartSections/ChartHeader';
 import axios from '../../../Services/Axios';
 import HorizontalBarChart from '../../NewCharts/HorizontalBarChart';
+import { ChartContainer } from '../ChartSections/ChartsCommon.styled';
 
 function SearchRate(props) {
-  const { agencyId, showCompare, yearRange, year } = props;
+  const { agencyId, yearRange, year } = props;
   const officerId = useOfficerId();
 
   const [chartState] = useDataset(agencyId, LIKELIHOOD_OF_SEARCH);
@@ -104,27 +105,24 @@ function SearchRate(props) {
             incidents. Use “View Data” to see the numbers underlying the calculations.
           </P>
         </S.ChartDescription>
-        <S.ChartSubsection showCompare={showCompare}>
-          <S.LineWrapper>
-            <div style={{ height: '200vh' }}>
-              <HorizontalBarChart
-                title="Likelihood of Search"
-                data={searchRateData}
-                maintainAspectRatio={false}
-                tooltipTitleCallback={formatTooltipLabel}
-                tooltipLabelCallback={formatTooltipValue}
-                legendPosition="bottom"
-                pinMaxValue={false}
-                modalConfig={{
-                  tableHeader: 'Likelihood of Search',
-                  tableSubheader: getBarChartModalSubHeading(),
-                  agencyName: chartState.data[AGENCY_DETAILS].name,
-                  chartTitle: getBarChartModalHeading('Likelihood of Search'),
-                }}
-              />
-            </div>
-          </S.LineWrapper>
-        </S.ChartSubsection>
+
+        <ChartContainer override={{ height: '200vh' }}>
+          <HorizontalBarChart
+            title="Likelihood of Search"
+            data={searchRateData}
+            maintainAspectRatio={false}
+            tooltipTitleCallback={formatTooltipLabel}
+            tooltipLabelCallback={formatTooltipValue}
+            legendPosition="bottom"
+            pinMaxValue={false}
+            modalConfig={{
+              tableHeader: 'Likelihood of Search',
+              tableSubheader: getBarChartModalSubHeading(),
+              agencyName: chartState.data[AGENCY_DETAILS].name,
+              chartTitle: getBarChartModalHeading('Likelihood of Search'),
+            }}
+          />
+        </ChartContainer>
       </S.ChartSection>
     </SearchRateStyled>
   );
