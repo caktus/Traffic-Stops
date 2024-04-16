@@ -7,7 +7,12 @@ import ContrabandStyled, {
 import * as S from '../ChartSections/ChartsCommon.styled';
 
 // Util
-import { CONTRABAND_TYPES, STATIC_CONTRABAND_KEYS } from '../chartUtils';
+import {
+  CONTRABAND_TYPES,
+  CONTRABAND_TYPES_TABLE_COLUMNS,
+  RACE_TABLE_COLUMNS,
+  STATIC_CONTRABAND_KEYS,
+} from '../chartUtils';
 
 // Hooks
 import useMetaTags from '../../../Hooks/useMetaTags';
@@ -567,7 +572,7 @@ function Contraband(props) {
             agencyName={chartState.data[AGENCY_DETAILS].name}
             tableData={contrabandData.tableData}
             csvData={contrabandData.csvData}
-            columns={CONTRABAND_TABLE_COLUMNS}
+            columns={RACE_TABLE_COLUMNS}
             tableDownloadName='Contraband "Hit Rate"'
             isOpen={contrabandData.isOpen}
             closeModal={() => setContrabandData((state) => ({ ...state, isOpen: false }))}
@@ -612,7 +617,7 @@ function Contraband(props) {
           agencyName={chartState.data[AGENCY_DETAILS].name}
           tableData={contrabandStopPurposeModalData.tableData}
           csvData={contrabandStopPurposeModalData.csvData}
-          columns={CONTRABAND_TABLE_COLUMNS}
+          columns={RACE_TABLE_COLUMNS}
           tableDownloadName='Contraband "Hit Rate" Grouped By Stop Purpose'
           isOpen={contrabandStopPurposeModalData.isOpen}
           closeModal={() =>
@@ -712,7 +717,7 @@ function Contraband(props) {
           agencyName={chartState.data[AGENCY_DETAILS].name}
           tableData={groupedContrabandStopPurposeModalData.tableData}
           csvData={groupedContrabandStopPurposeModalData.csvData}
-          columns={CONTRABAND_TABLE_COLUMNS}
+          columns={RACE_TABLE_COLUMNS}
           tableDownloadName='Contraband "Hit Rate" by Type grouped by Stop Purpose'
           isOpen={groupedContrabandStopPurposeModalData.isOpen}
           closeModal={() =>
@@ -838,69 +843,3 @@ function Contraband(props) {
 }
 
 export default Contraband;
-
-const CONTRABAND_TABLE_COLUMNS = [
-  {
-    Header: 'Year',
-    accessor: 'year', // accessor is the "key" in the data
-  },
-  {
-    Header: 'White*',
-    accessor: 'white',
-  },
-  {
-    Header: 'Black*',
-    accessor: 'black',
-  },
-  {
-    Header: 'Native American*',
-    accessor: 'native_american',
-  },
-  {
-    Header: 'Asian*',
-    accessor: 'asian',
-  },
-  {
-    Header: 'Other*',
-    accessor: 'other',
-  },
-  {
-    Header: 'Hispanic',
-    accessor: 'hispanic',
-  },
-  {
-    Header: 'Total',
-    accessor: 'total',
-  },
-];
-
-const CONTRABAND_TYPES_TABLE_COLUMNS = [
-  {
-    Header: 'Year',
-    accessor: 'year', // accessor is the "key" in the data
-  },
-  {
-    Header: 'Alcohol*',
-    accessor: 'alcohol',
-  },
-  {
-    Header: 'Drugs*',
-    accessor: 'drugs',
-  },
-  {
-    Header: 'Money*',
-    accessor: 'money',
-  },
-  {
-    Header: 'Other*',
-    accessor: 'other',
-  },
-  {
-    Header: 'Weapons*',
-    accessor: 'weapons',
-  },
-  {
-    Header: 'Total',
-    accessor: 'total',
-  },
-];
