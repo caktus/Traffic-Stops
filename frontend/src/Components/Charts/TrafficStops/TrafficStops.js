@@ -231,9 +231,7 @@ function TrafficStops(props) {
   const createDateForRange = (yr) =>
     Number.isInteger(yr) ? new Date(`${yr}-01-01`) : new Date(yr);
 
-  // Build Stops By Count
-  useEffect(() => {
-    setTrafficStopsByCount(initStopsByCount);
+  const generateUrlParams = () => {
     const params = [];
     if (trafficStopsByCountRange !== null) {
       const _from = `${trafficStopsByCountRange.from.year}-${trafficStopsByCountRange.from.month
@@ -245,11 +243,18 @@ function TrafficStops(props) {
       params.push({ param: 'from', val: _from });
       params.push({ param: 'to', val: _to });
     }
-    if (trafficStopsByCountPurpose !== 0) {
-      params.push({ param: 'purpose', val: trafficStopsByCountPurpose });
-    }
     if (officerId !== null) {
       params.push({ param: 'officer', val: officerId });
+    }
+    return params;
+  };
+
+  // Build Stops By Count
+  useEffect(() => {
+    setTrafficStopsByCount(initStopsByCount);
+    const params = generateUrlParams();
+    if (trafficStopsByCountPurpose !== 0) {
+      params.push({ param: 'purpose', val: trafficStopsByCountPurpose });
     }
 
     const urlParams = params.map((p) => `${p.param}=${p.val}`).join('&');
@@ -273,10 +278,9 @@ function TrafficStops(props) {
 
   // Build Stop Purpose Groups
   useEffect(() => {
-    let url = `/api/agency/${agencyId}/stop-purpose-groups/`;
-    if (officerId !== null) {
-      url = `${url}?officer=${officerId}`;
-    }
+    const params = generateUrlParams();
+    const urlParams = params.map((p) => `${p.param}=${p.val}`).join('&');
+    const url = `/api/agency/${agencyId}/stop-purpose-groups/?${urlParams}`;
     axios
       .get(url)
       .then((res) => {
@@ -284,7 +288,7 @@ function TrafficStops(props) {
         buildStopPurposeGroupedPieData(res.data);
       })
       .catch((err) => console.log(err));
-  }, []);
+  }, [trafficStopsByCountRange]);
 
   const buildEthnicPercentages = (data, ds) => {
     if (!data.hasOwnProperty(ds)) return [0, 0, 0, 0, 0, 0];
@@ -298,17 +302,16 @@ function TrafficStops(props) {
 
   // Build Stops Grouped by Purpose
   useEffect(() => {
-    let url = `/api/agency/${agencyId}/stops-grouped-by-purpose/`;
-    if (officerId !== null) {
-      url = `${url}?officer=${officerId}`;
-    }
+    const params = generateUrlParams();
+    const urlParams = params.map((p) => `${p.param}=${p.val}`).join('&');
+    const url = `/api/agency/${agencyId}/stops-grouped-by-purpose/?${urlParams}`;
     axios
       .get(url)
       .then((res) => {
         setStopsGroupedByPurpose(res.data);
       })
       .catch((err) => console.log(err));
-  }, []);
+  }, [trafficStopsByCountRange]);
 
   const [stopsByPercentageData, setStopsByPercentageData] = useState({
     labels: [],
@@ -672,6 +675,15 @@ function TrafficStops(props) {
       {/* Traffic Stops by Percentage */}
       {renderMetaTags()}
       {renderTableModal()}
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <MonthRangePicker
+          deactivatePicker={pickerActive === null}
+          onChange={updateStopsByCount}
+          onClosePicker={closeStopsByCountRange}
+          minY={trafficStopsByCountMinMaxYears[0]}
+          maxY={trafficStopsByCountMinMaxYears[1]}
+        />
+      </div>
       <S.ChartSection>
         <ChartHeader
           chartTitle="Traffic Stops By Percentage"
@@ -759,14 +771,6 @@ function TrafficStops(props) {
             {purpose !== PURPOSE_DEFAULT && (
               <p style={{ marginTop: '10px' }}>{displayDefinition(purpose)}</p>
             )}
-
-            <MonthRangePicker
-              deactivatePicker={pickerActive === null}
-              onChange={updateStopsByCount}
-              onClosePicker={closeStopsByCountRange}
-              minY={trafficStopsByCountMinMaxYears[0]}
-              maxY={trafficStopsByCountMinMaxYears[1]}
-            />
           </S.LegendBeside>
         </S.ChartSubsection>
       </S.ChartSection>

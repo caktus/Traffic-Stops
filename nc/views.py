@@ -619,33 +619,41 @@ class AgencyStopPurposeGroupView(APIView):
 
     @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
+        date_precision, date_range = get_date_range(request)
         qs = StopSummary.objects.all()
         agency_id = int(agency_id)
         if agency_id != -1:
             qs = qs.filter(agency_id=agency_id)
 
+        qs = qs.filter(date_range)
+
         officer = request.query_params.get("officer", None)
         if officer:
             qs = qs.filter(officer_id=officer)
 
-        qs = (
-            qs.annotate(year=ExtractYear("date"))
-            .values("year", "stop_purpose_group")
-            .annotate(count=Sum("count"))
-            .order_by("year")
-        )
         if qs.count() == 0:
             return Response(data={"labels": [], "datasets": []}, status=200)
 
-        df = pd.DataFrame(qs)
-        unique_years = df.year.unique()
-        pivot_df = df.pivot(index="year", columns="stop_purpose_group", values="count").fillna(
-            value=0
+        if date_precision == "year":
+            qs = qs.annotate(year=ExtractYear("date"))
+        else:
+            date_precision = "date"
+
+        qs = (
+            qs.values(date_precision, "stop_purpose_group")
+            .annotate(count=Sum("count"))
+            .order_by(date_precision)
         )
+
+        df = pd.DataFrame(qs)
+        unique_x_range = df[date_precision].unique()
+        pivot_df = df.pivot(
+            index=date_precision, columns="stop_purpose_group", values="count"
+        ).fillna(value=0)
         df = pd.DataFrame(pivot_df)
-        years_len = len(unique_years)
+        years_len = len(unique_x_range)
         data = {
-            "labels": unique_years,
+            "labels": unique_x_range,
             "datasets": [
                 {
                     "label": StopPurposeGroup.SAFETY_VIOLATION,
@@ -721,19 +729,19 @@ class AgencyStopGroupByPurposeView(APIView):
 
     @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
+        date_precision, date_range = get_date_range(request)
         qs = StopSummary.objects.all()
+
         agency_id = int(agency_id)
         if agency_id != -1:
             qs = qs.filter(agency_id=agency_id)
+
+        qs = qs.filter(date_range)
+
         officer = request.query_params.get("officer", None)
         if officer:
             qs = qs.filter(officer_id=officer)
-        qs = (
-            qs.annotate(year=ExtractYear("date"))
-            .values("year", "driver_race_comb", "stop_purpose_group")
-            .annotate(count=Sum("count"))
-            .order_by("year")
-        )
+
         if qs.count() == 0:
             return Response(
                 data={
@@ -745,20 +753,34 @@ class AgencyStopGroupByPurposeView(APIView):
                 },
                 status=200,
             )
-        df = pd.DataFrame(qs)
-        unique_years = df.year.unique()
-        pivot_table = pd.pivot_table(
-            df, index="year", columns=["stop_purpose_group", "driver_race_comb"], values="count"
-        ).fillna(value=0)
-        pivot_df = pd.DataFrame(pivot_table)
 
+        if date_precision == "year":
+            qs = qs.annotate(year=ExtractYear("date"))
+        else:
+            date_precision = "date"
+
+        qs = (
+            qs.values(date_precision, "driver_race_comb", "stop_purpose_group")
+            .annotate(count=Sum("count"))
+            .order_by(date_precision)
+        )
+        df = pd.DataFrame(qs)
+        unique_x_range = df[date_precision].unique()
+        pivot_table = pd.pivot_table(
+            df,
+            index=date_precision,
+            columns=["stop_purpose_group", "driver_race_comb"],
+            values="count",
+        ).fillna(value=0)
+
+        pivot_df = pd.DataFrame(pivot_table)
         safety_data = self.group_by_purpose(
-            pivot_df, StopPurposeGroup.SAFETY_VIOLATION, unique_years
+            pivot_df, StopPurposeGroup.SAFETY_VIOLATION, unique_x_range
         )
         regulatory_data = self.group_by_purpose(
-            pivot_df, StopPurposeGroup.REGULATORY_EQUIPMENT, unique_years
+            pivot_df, StopPurposeGroup.REGULATORY_EQUIPMENT, unique_x_range
         )
-        other_data = self.group_by_purpose(pivot_df, StopPurposeGroup.OTHER, unique_years)
+        other_data = self.group_by_purpose(pivot_df, StopPurposeGroup.OTHER, unique_x_range)
 
         # Get the max value to keep the graphs consistent when
         # next to each other by setting the max y value
@@ -772,7 +794,7 @@ class AgencyStopGroupByPurposeView(APIView):
         )
 
         data = {
-            "labels": unique_years,
+            "labels": unique_x_range,
             "safety": safety_data,
             "regulatory": regulatory_data,
             "other": other_data,
