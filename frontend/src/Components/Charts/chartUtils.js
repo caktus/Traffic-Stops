@@ -32,6 +32,20 @@ export const AVERAGE = {
   label: 'Average for all drivers',
   selected: true,
 };
+export const STOP_PURPOSE_GROUPS = ['Safety Violation', 'Regulatory and Equipment', 'Other'];
+
+export const STOP_PURPOSE_TYPES = [
+  'Speed Limit Violation',
+  'Stop Light/Sign Violation',
+  'Driving While Impaired',
+  'Safe Movement Violation',
+  'Vehicle Equipment Violation',
+  'Vehicle Regulatory Violation',
+  'Other Motor Vehicle Violation',
+  'Seat Belt Violation',
+  'Investigation',
+  'Checkpoint',
+];
 
 export const STOP_TYPE_COLORS = [
   '#ff7da8',
@@ -143,3 +157,108 @@ export const reduceEthnicityByYears = (data, yearsSet, ethnicGroups = RACES) => 
   });
   return yearData;
 };
+
+export const RACE_TABLE_COLUMNS = [
+  {
+    Header: 'Year',
+    accessor: 'year', // accessor is the "key" in the data
+  },
+  {
+    Header: 'White*',
+    accessor: 'white',
+  },
+  {
+    Header: 'Black*',
+    accessor: 'black',
+  },
+  {
+    Header: 'Native American*',
+    accessor: 'native_american',
+  },
+  {
+    Header: 'Asian*',
+    accessor: 'asian',
+  },
+  {
+    Header: 'Other*',
+    accessor: 'other',
+  },
+  {
+    Header: 'Hispanic',
+    accessor: 'hispanic',
+  },
+  {
+    Header: 'Total',
+    accessor: 'total',
+  },
+];
+
+export const CONTRABAND_TYPES_TABLE_COLUMNS = [
+  {
+    Header: 'Year',
+    accessor: 'year', // accessor is the "key" in the data
+  },
+  {
+    Header: 'Alcohol*',
+    accessor: 'alcohol',
+  },
+  {
+    Header: 'Drugs*',
+    accessor: 'drugs',
+  },
+  {
+    Header: 'Money*',
+    accessor: 'money',
+  },
+  {
+    Header: 'Other*',
+    accessor: 'other',
+  },
+  {
+    Header: 'Weapons*',
+    accessor: 'weapons',
+  },
+  {
+    Header: 'Total',
+    accessor: 'total',
+  },
+];
+
+export const STOP_REASON_TABLE_COLUMNS = [
+  {
+    Header: 'Year',
+    accessor: 'year',
+  },
+  {
+    Header: 'Stop-reason',
+    accessor: 'purpose',
+  },
+  {
+    Header: 'White*',
+    accessor: 'white',
+  },
+  {
+    Header: 'Black*',
+    accessor: 'black',
+  },
+  {
+    Header: 'Hispanic',
+    accessor: 'hispanic',
+  },
+  {
+    Header: 'Asian*',
+    accessor: 'asian',
+  },
+  {
+    Header: 'Native American*',
+    accessor: 'native_american',
+  },
+  {
+    Header: 'Other*',
+    accessor: 'other',
+  },
+  {
+    Header: 'Total',
+    accessor: 'total',
+  },
+];

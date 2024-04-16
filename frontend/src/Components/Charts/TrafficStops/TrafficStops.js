@@ -21,6 +21,8 @@ import {
   PURPOSE_DEFAULT,
   RACES,
   STOP_TYPES,
+  RACE_TABLE_COLUMNS,
+  STOP_REASON_TABLE_COLUMNS,
 } from '../chartUtils';
 
 // State
@@ -50,7 +52,7 @@ import { pieChartConfig, pieChartLabels, pieColors } from '../../../util/setChar
 import VerticalBarChart from '../../NewCharts/VerticalBarChart';
 
 function TrafficStops(props) {
-  const { agencyId } = props;
+  const { agencyId, yearRange, year, yearIdx } = props;
 
   const theme = useTheme();
   const officerId = useOfficerId();
@@ -67,8 +69,6 @@ function TrafficStops(props) {
   }, []);
 
   const [pickerActive, setPickerActive] = useState(null);
-
-  const [year, setYear] = useState(YEARS_DEFAULT);
 
   const [purpose, setPurpose] = useState(PURPOSE_DEFAULT);
 
@@ -113,7 +113,6 @@ function TrafficStops(props) {
     datasets: [],
     loading: true,
   });
-  const [groupedStopYear, setGroupedStopYear] = useState(YEARS_DEFAULT);
 
   const purposeGroupedPieLabels = ['Safety Violation', 'Regulatory and Equipment', 'Other'];
   const purposeGroupedPieColors = ['#5F0F40', '#E36414', '#0F4C5C'];
@@ -214,7 +213,6 @@ function TrafficStops(props) {
     selectedPurpose: 'Safety Violation',
     purposeTypes: ['Safety Violation', 'Regulatory and Equipment', 'Other'],
   });
-  const [yearForGroupedPieCharts, setYearForGroupedPieCharts] = useState('All');
   const [checked, setChecked] = useState(false);
 
   const [trafficStopsByCountRange, setTrafficStopsByCountRange] = useState(null);
@@ -308,11 +306,6 @@ function TrafficStops(props) {
       .get(url)
       .then((res) => {
         setStopsGroupedByPurpose(res.data);
-        updateStoppedPurposePieChart(
-          buildEthnicPercentages(res.data, 'safety'),
-          buildEthnicPercentages(res.data, 'regulatory'),
-          buildEthnicPercentages(res.data, 'other')
-        );
       })
       .catch((err) => console.log(err));
   }, []);
@@ -362,24 +355,22 @@ function TrafficStops(props) {
     }
   }, [stopsChartState.data[STOPS], year]);
 
-  /* INTERACTIONS */
-  // Handle year dropdown state
-  const handleYearSelect = (y) => {
-    if (y === year) return;
-    setYear(y);
-  };
+  useEffect(() => {
+    handleYearSelectForGroupedPieCharts();
+    buildStopPurposeGroupedPieData(stopPurposeGroupsData);
+  }, [stopsGroupedByPurposeData, year, yearIdx]);
 
-  const buildStopPurposeGroupedPieData = (ds, stopPurposeYear = null) => {
+  const buildStopPurposeGroupedPieData = (ds) => {
     const getValues = (arr) => {
-      if (!stopPurposeYear) {
+      if (!yearIdx) {
         return arr.reduce((a, b) => a + b, 0);
       }
       // Reverse to match dropdown descending years
-      return arr.toReversed()[stopPurposeYear - 1] || 0;
+      return arr.toReversed()[yearIdx - 1] || 0;
     };
 
     const data = [];
-    if (ds) {
+    if (ds.labels && ds.labels.length) {
       const safety = getValues(ds.datasets[0].data);
       const regulatory = getValues(ds.datasets[1].data);
       const other = getValues(ds.datasets[2].data);
@@ -402,17 +393,6 @@ function TrafficStops(props) {
         },
       ],
     });
-  };
-
-  const handleGroupedStopPurposeYearSelect = (y, i) => {
-    if (y === groupedStopYear) return;
-
-    setGroupedStopYear(y);
-    if (y === YEARS_DEFAULT) {
-      // eslint-disable-next-line no-param-reassign
-      i = null;
-    }
-    buildStopPurposeGroupedPieData(stopPurposeGroupsData, i);
   };
 
   // Handle stop purpose dropdown state
@@ -449,11 +429,11 @@ function TrafficStops(props) {
 
   const handleViewPercentageData = () => {
     setPurpose(PURPOSE_DEFAULT);
-    openModal(STOPS, STOPS_TABLE_COLUMNS);
+    openModal(STOPS, RACE_TABLE_COLUMNS);
   };
 
   const handleViewCountData = () => {
-    openModal(STOPS_BY_REASON, BY_REASON_TABLE_COLUMNS);
+    openModal(STOPS_BY_REASON, STOP_REASON_TABLE_COLUMNS);
   };
 
   const showStopPurposeModal = () => {
@@ -549,18 +529,20 @@ function TrafficStops(props) {
     return data[ds].datasets.map((s) => ((s.data[idx] / dsTotal) * 100 || 0).toFixed(2));
   };
 
-  const handleYearSelectForGroupedPieCharts = (selectedYear, idx) => {
-    setYearForGroupedPieCharts(selectedYear);
+  const handleYearSelectForGroupedPieCharts = () => {
     // Get the reverse index of the year since it's now in descending order
-    const idxForYear = stopsGroupedByPurposeData.labels.length - idx;
+    let idxForYear = stopsGroupedByPurposeData.labels.length - yearIdx;
+    if (idxForYear < 0) {
+      idxForYear = null;
+    }
     updateStoppedPurposePieChart(
-      selectedYear === YEARS_DEFAULT
+      year === YEARS_DEFAULT
         ? buildEthnicPercentages(stopsGroupedByPurposeData, 'safety')
         : buildEthnicPercentagesForYear(stopsGroupedByPurposeData, 'safety', idxForYear),
-      selectedYear === YEARS_DEFAULT
+      year === YEARS_DEFAULT
         ? buildEthnicPercentages(stopsGroupedByPurposeData, 'regulatory')
         : buildEthnicPercentagesForYear(stopsGroupedByPurposeData, 'regulatory', idxForYear),
-      selectedYear === YEARS_DEFAULT
+      year === YEARS_DEFAULT
         ? buildEthnicPercentages(stopsGroupedByPurposeData, 'other')
         : buildEthnicPercentagesForYear(stopsGroupedByPurposeData, 'other', idxForYear)
     );
@@ -620,7 +602,7 @@ function TrafficStops(props) {
       subject = `Officer ${officerId}`;
     }
     return `Traffic Stops By Percentage for ${subject} ${
-      year === YEARS_DEFAULT ? `since ${stopsChartState.yearRange.toReversed()[0]}` : `in ${year}`
+      year === YEARS_DEFAULT ? `since ${yearRange[yearRange.length - 1]}` : `in ${year}`
     }`;
   };
 
@@ -635,9 +617,7 @@ function TrafficStops(props) {
       subject = `Officer ${officerId}`;
     }
     return `Traffic Stops By Stop Purpose for ${subject} ${
-      groupedStopYear === YEARS_DEFAULT
-        ? `since ${stopsGroupedByPurposeData.labels[0]}`
-        : `in ${groupedStopYear}`
+      year === YEARS_DEFAULT ? `since ${stopsGroupedByPurposeData.labels[0]}` : `in ${year}`
     }`;
   };
 
@@ -647,9 +627,7 @@ function TrafficStops(props) {
       subject = `Officer ${officerId}`;
     }
     return `Traffic Stops By ${stopPurpose} and Race Count for ${subject} ${
-      yearForGroupedPieCharts === YEARS_DEFAULT
-        ? `since ${stopsGroupedByPurposeData.labels[0]}`
-        : `in ${yearForGroupedPieCharts}`
+      year === YEARS_DEFAULT ? `since ${stopsGroupedByPurposeData.labels[0]}` : `in ${year}`
     }`;
   };
 
@@ -687,14 +665,6 @@ function TrafficStops(props) {
       subject = `Officer ${officerId}`;
     }
     return `Traffic Stops by Percentage for ${subject} since ${stopsByPercentageData.labels[0]}`;
-  };
-
-  const stopPurposeGroupedPieYears = () => {
-    if (stopPurposeGroupsData.labels) {
-      const years = [...stopPurposeGroupsData.labels].toReversed();
-      return [YEARS_DEFAULT].concat(years);
-    }
-    return [YEARS_DEFAULT];
   };
 
   return (
@@ -747,14 +717,6 @@ function TrafficStops(props) {
                 }}
               />
             </S.PieWrapper>
-            <S.PieActionsWrapper>
-              <DataSubsetPicker
-                label="Year"
-                value={year}
-                onChange={handleYearSelect}
-                options={[YEARS_DEFAULT].concat(stopsByPercentageData.labels.toReversed())}
-              />
-            </S.PieActionsWrapper>
           </S.PieSection>
         </S.ChartSubsection>
       </S.ChartSection>
@@ -856,21 +818,13 @@ function TrafficStops(props) {
                   tableHeader: 'Traffic Stops By Stop Purpose',
                   tableSubheader: getPieChartModalSubHeading(
                     'Shows the stop purpose and race/ethnic composition of drivers stopped',
-                    groupedStopYear
+                    year
                   ),
                   agencyName: stopsChartState.data[AGENCY_DETAILS].name,
                   chartTitle: stopPurposeGroupPieChartTitle(),
                 }}
               />
             </S.PieWrapper>
-            <S.PieActionsWrapper>
-              <DataSubsetPicker
-                label="Year"
-                value={groupedStopYear}
-                onChange={handleGroupedStopPurposeYearSelect}
-                options={stopPurposeGroupedPieYears()}
-              />
-            </S.PieActionsWrapper>
           </S.PieSection>
         </S.ChartSubsection>
       </S.ChartSection>
@@ -890,7 +844,7 @@ function TrafficStops(props) {
           agencyName={stopsChartState.data[AGENCY_DETAILS].name}
           tableData={groupedStopPurposeModalData.tableData}
           csvData={groupedStopPurposeModalData.csvData}
-          columns={GROUPED_STOP_PURPOSE_TABLE_COLUMNS}
+          columns={RACE_TABLE_COLUMNS}
           tableDownloadName={`Traffic Stops By Stop Purpose and Race Count - ${groupedStopPurposeModalData.selectedPurpose}`}
           isOpen={groupedStopPurposeModalData.isOpen}
           closeModal={() =>
@@ -986,14 +940,6 @@ function TrafficStops(props) {
             />
           </GroupedStopsContainer>
         </LineWrapper>
-        {checked && (
-          <DataSubsetPicker
-            label="Year"
-            value={yearForGroupedPieCharts}
-            onChange={handleYearSelectForGroupedPieCharts}
-            options={[YEARS_DEFAULT].concat([...stopsGroupedByPurposeData.labels].reverse())}
-          />
-        )}
         <PieWrapper visible={checked === true}>
           <PieStopsContainer visible={visibleStopsGroupedByPurpose[0].visible}>
             <PieWrapper visible>
@@ -1065,80 +1011,6 @@ function TrafficStops(props) {
 
 export default TrafficStops;
 
-const STOPS_TABLE_COLUMNS = [
-  {
-    Header: 'Year',
-    accessor: 'year',
-  },
-  {
-    Header: 'White*',
-    accessor: 'white',
-  },
-  {
-    Header: 'Black*',
-    accessor: 'black',
-  },
-  {
-    Header: 'Hispanic',
-    accessor: 'hispanic',
-  },
-  {
-    Header: 'Asian*',
-    accessor: 'asian',
-  },
-  {
-    Header: 'Native American*',
-    accessor: 'native_american',
-  },
-  {
-    Header: 'Other*',
-    accessor: 'other',
-  },
-  {
-    Header: 'Total',
-    accessor: 'total',
-  },
-];
-
-const BY_REASON_TABLE_COLUMNS = [
-  {
-    Header: 'Year',
-    accessor: 'year',
-  },
-  {
-    Header: 'Stop-reason',
-    accessor: 'purpose',
-  },
-  {
-    Header: 'White*',
-    accessor: 'white',
-  },
-  {
-    Header: 'Black*',
-    accessor: 'black',
-  },
-  {
-    Header: 'Hispanic',
-    accessor: 'hispanic',
-  },
-  {
-    Header: 'Asian*',
-    accessor: 'asian',
-  },
-  {
-    Header: 'Native American*',
-    accessor: 'native_american',
-  },
-  {
-    Header: 'Other*',
-    accessor: 'other',
-  },
-  {
-    Header: 'Total',
-    accessor: 'total',
-  },
-];
-
 const STOP_PURPOSE_TABLE_COLUMNS = [
   {
     Header: 'Year',
@@ -1151,41 +1023,6 @@ const STOP_PURPOSE_TABLE_COLUMNS = [
   {
     Header: 'Regulatory and Equipment',
     accessor: 'regulatory',
-  },
-  {
-    Header: 'Other',
-    accessor: 'other',
-  },
-  {
-    Header: 'Total',
-    accessor: 'total',
-  },
-];
-
-const GROUPED_STOP_PURPOSE_TABLE_COLUMNS = [
-  {
-    Header: 'Year',
-    accessor: 'year',
-  },
-  {
-    Header: 'White',
-    accessor: 'white',
-  },
-  {
-    Header: 'Black',
-    accessor: 'black',
-  },
-  {
-    Header: 'Hispanic',
-    accessor: 'hispanic',
-  },
-  {
-    Header: 'Asian',
-    accessor: 'asian',
-  },
-  {
-    Header: 'Native American',
-    accessor: 'native_american',
   },
   {
     Header: 'Other',

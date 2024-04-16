@@ -9,7 +9,8 @@ import axios from '../../../../Services/Axios';
 import useOfficerId from '../../../../Hooks/useOfficerId';
 import { ChartWrapper } from '../Arrests.styles';
 import NewModal from '../../../NewCharts/NewModal';
-import { ARRESTS_TABLE_COLUMNS } from '../Arrests';
+import createTableData from '../../../../util/createTableData';
+import { RACE_TABLE_COLUMNS } from '../../chartUtils';
 
 const graphTitle = 'Traffic Stops Leading to Arrest by Percentage';
 
@@ -42,25 +43,7 @@ function PercentageOfStops(props) {
     axios
       .get(url)
       .then((res) => {
-        const tableData = [];
-        const resTableData = res.data.table_data.length
-          ? JSON.parse(res.data.table_data)
-          : { data: [] };
-        resTableData.data.forEach((e) => {
-          const dataCounts = { ...e };
-          delete dataCounts.year;
-          // Need to assign explicitly otherwise the download data orders columns by alphabet.
-          tableData.unshift({
-            year: e.year,
-            white: e.white,
-            black: e.black,
-            native_american: e.native_american,
-            asian: e.asian,
-            other: e.other,
-            hispanic: e.hispanic,
-            total: Object.values(dataCounts).reduce((a, b) => a + b, 0),
-          });
-        });
+        const tableData = createTableData(res.data);
         const colors = ['#02bcbb', '#8879fc', '#9c0f2e', '#ffe066', '#0c3a66', '#9e7b9b'];
         const data = {
           labels: ['White', 'Black', 'Hispanic', 'Asian', 'Native American', 'Other'],
@@ -115,7 +98,7 @@ function PercentageOfStops(props) {
           agencyName={agencyName}
           tableData={arrestData.tableData}
           csvData={arrestData.csvData}
-          columns={ARRESTS_TABLE_COLUMNS}
+          columns={RACE_TABLE_COLUMNS}
           tableDownloadName={graphTitle}
           isOpen={arrestData.isOpen}
           closeModal={() => setArrestData((state) => ({ ...state, isOpen: false }))}
