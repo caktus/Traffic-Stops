@@ -9,7 +9,10 @@ import axios from '../../../../Services/Axios';
 import useOfficerId from '../../../../Hooks/useOfficerId';
 import { ChartWrapper } from '../Arrests.styles';
 import NewModal from '../../../NewCharts/NewModal';
-import { ARRESTS_TABLE_COLUMNS } from '../Arrests';
+import createTableData from '../../../../util/createTableData';
+import { RACE_TABLE_COLUMNS } from '../../chartUtils';
+
+const graphTitle = 'Traffic Stops Leading to Arrest by Count';
 
 function CountOfStopsAndArrests(props) {
   const { agencyId, agencyName, showCompare, year } = props;
@@ -40,25 +43,7 @@ function CountOfStopsAndArrests(props) {
     axios
       .get(url)
       .then((res) => {
-        const tableData = [];
-        const resTableData = res.data.table_data.length
-          ? JSON.parse(res.data.table_data)
-          : { data: [] };
-        resTableData.data.forEach((e) => {
-          const dataCounts = { ...e };
-          delete dataCounts.year;
-          // Need to assign explicitly otherwise the download data orders columns by alphabet.
-          tableData.unshift({
-            year: e.year,
-            white: e.white,
-            black: e.black,
-            native_american: e.native_american,
-            asian: e.asian,
-            other: e.other,
-            hispanic: e.hispanic,
-            total: Object.values(dataCounts).reduce((a, b) => a + b, 0),
-          });
-        });
+        const tableData = createTableData(res.data);
         const labels = ['Stops With Arrests', 'Stops Without Arrests'];
         const colors = ['#96a0fa', '#5364f4'];
 
@@ -104,19 +89,19 @@ function CountOfStopsAndArrests(props) {
   return (
     <S.ChartSection>
       <ChartHeader
-        chartTitle="Stop Counts With/Without Arrests"
+        chartTitle={graphTitle}
         handleViewData={() => setArrestData((state) => ({ ...state, isOpen: true }))}
       />
       <S.ChartDescription>
-        <P>Percentage of stops that led to an arrest for a given race / ethnic group.</P>
+        <P>Count of stops and corresponding arrests for a given race/ethnic group.</P>
         <NewModal
-          tableHeader="Stop Counts With/Without Arrests"
-          tableSubheader="Shows what numbers of stops led to an arrest for a given race / ethnic group."
+          tableHeader={graphTitle}
+          tableSubheader="Shows count of stops and corresponding arrests for a given race/ethnic group."
           agencyName={agencyName}
           tableData={arrestData.tableData}
           csvData={arrestData.csvData}
-          columns={ARRESTS_TABLE_COLUMNS}
-          tableDownloadName="Arrests_By_Percentage"
+          columns={RACE_TABLE_COLUMNS}
+          tableDownloadName={graphTitle}
           isOpen={arrestData.isOpen}
           closeModal={() => setArrestData((state) => ({ ...state, isOpen: false }))}
         />
@@ -124,7 +109,7 @@ function CountOfStopsAndArrests(props) {
       <S.ChartSubsection showCompare={showCompare}>
         <ChartWrapper>
           <HorizontalBarChart
-            title="Stop Counts With/Without Arrests"
+            title={graphTitle}
             data={arrestData}
             pinMaxValue={false}
             xStacked
@@ -133,12 +118,12 @@ function CountOfStopsAndArrests(props) {
             stepSize={50000}
             tooltipLabelCallback={formatTooltipValue}
             modalConfig={{
-              tableHeader: 'Stop Counts With/Without Arrests',
+              tableHeader: graphTitle,
               tableSubheader: getBarChartModalSubHeading(
-                'Shows what number of stops led to an arrest for a given race / ethnic group'
+                'Shows count of stops and corresponding arrests for a given race/ethnic group'
               ),
               agencyName,
-              chartTitle: getBarChartModalSubHeading('Stop Counts With/Without Arrests'),
+              chartTitle: getBarChartModalSubHeading(graphTitle),
             }}
           />
         </ChartWrapper>
