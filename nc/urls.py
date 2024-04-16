@@ -16,6 +16,11 @@ urlpatterns = [  # noqa
     re_path(r"^api/", include(router.urls)),
     path("api/about/contact/", csrf_exempt(views.ContactView.as_view()), name="contact-form"),
     path(
+        "api/agency/<agency_id>/year-range/",
+        views.AgencyStopsYearRange.as_view(),
+        name="year-range",
+    ),
+    path(
         "api/agency/<agency_id>/stops-by-percentage/",
         views.AgencyTrafficStopsByPercentageView.as_view(),
         name="stops-by-percentage",

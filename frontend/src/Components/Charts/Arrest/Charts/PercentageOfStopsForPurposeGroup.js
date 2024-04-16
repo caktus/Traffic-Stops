@@ -8,8 +8,12 @@ import HorizontalBarChart from '../../../NewCharts/HorizontalBarChart';
 import axios from '../../../../Services/Axios';
 import useOfficerId from '../../../../Hooks/useOfficerId';
 import NewModal from '../../../NewCharts/NewModal';
-import { ARRESTS_TABLE_COLUMNS } from '../Arrests';
 import { ChartContainer } from '../../ChartSections/ChartsCommon.styled';
+import DataSubsetPicker from '../../ChartSections/DataSubsetPicker/DataSubsetPicker';
+import createTableData from '../../../../util/createTableData';
+import { RACE_TABLE_COLUMNS, STOP_PURPOSE_GROUPS } from '../../chartUtils';
+
+const graphTitle = 'Percentage of Stops Leading to Arrest by Stop Purpose Group';
 
 function PercentageOfStopsForStopPurposeGroup(props) {
   const { agencyId, agencyName, year } = props;
@@ -19,12 +23,15 @@ function PercentageOfStopsForStopPurposeGroup(props) {
   const initArrestData = {
     labels: [],
     datasets: [],
-    isModalOpen: false,
-    tableData: [],
-    csvData: [],
     loading: true,
   };
   const [arrestData, setArrestData] = useState(initArrestData);
+  const [arrestTableData, setArrestTableData] = useState({
+    isOpen: false,
+    tableData: [],
+    csvData: [],
+  });
+  const [selectedStopPurpose, setSelectedStopPurpose] = useState(STOP_PURPOSE_GROUPS[0]);
 
   useEffect(() => {
     const params = [];
@@ -40,26 +47,6 @@ function PercentageOfStopsForStopPurposeGroup(props) {
     axios
       .get(url)
       .then((res) => {
-        const tableData = [];
-        const resTableData = res.data.table_data.length
-          ? JSON.parse(res.data.table_data)
-          : { data: [] };
-        resTableData.data.forEach((e) => {
-          const dataCounts = { ...e };
-          delete dataCounts.year;
-          // Need to assign explicitly otherwise the download data orders columns by alphabet.
-          tableData.unshift({
-            year: e.year,
-            white: e.white,
-            black: e.black,
-            native_american: e.native_american,
-            asian: e.asian,
-            other: e.other,
-            hispanic: e.hispanic,
-            total: Object.values(dataCounts).reduce((a, b) => a + b, 0),
-          });
-        });
-
         const colors = {
           'Safety Violation': '#5F0F40',
           'Regulatory Equipment': '#E36414',
@@ -79,14 +66,29 @@ function PercentageOfStopsForStopPurposeGroup(props) {
               borderWidth: 1,
             },
           ],
-          isModalOpen: false,
-          tableData,
-          csvData: tableData,
         };
         setArrestData(data);
       })
       .catch((err) => console.log(err));
   }, [year]);
+
+  useEffect(() => {
+    const params = [];
+    params.push({
+      param: 'grouped_stop_purpose',
+      val: selectedStopPurpose,
+    });
+    if (officerId) {
+      params.push({ param: 'officer', val: officerId });
+    }
+
+    const urlParams = params.map((p) => `${p.param}=${encodeURI(p.val)}`).join('&');
+    const url = `/api/agency/${agencyId}/arrests-percentage-of-stops-by-purpose-group/?modal=true&${urlParams}`;
+    axios.get(url).then((res) => {
+      const tableData = createTableData(res.data);
+      setArrestTableData((state) => ({ ...state, tableData, csvData: tableData }));
+    });
+  }, [selectedStopPurpose]);
 
   const formatTooltipValue = (ctx) => `${(ctx.raw * 100).toFixed(2)}%`;
 
@@ -107,38 +109,44 @@ function PercentageOfStopsForStopPurposeGroup(props) {
   return (
     <S.ChartSection>
       <ChartHeader
-        chartTitle="Percentage of Stops With Arrests For Stop Purpose Group"
-        handleViewData={() => setArrestData((state) => ({ ...state, isOpen: true }))}
+        chartTitle={graphTitle}
+        handleViewData={() => setArrestTableData((state) => ({ ...state, isOpen: true }))}
       />
+      {props.children}
       <S.ChartDescription>
         <P>Percentage of stops that led to an arrest for a given stop purpose group.</P>
         <NewModal
-          tableHeader="Percentage of Stops With Arrests Per Stop Purpose Group"
+          tableHeader={graphTitle}
           tableSubheader="Shows what percentage of stops led to an arrest for a given stop purpose group."
           agencyName={agencyName}
-          tableData={arrestData.tableData}
-          csvData={arrestData.csvData}
-          columns={ARRESTS_TABLE_COLUMNS}
-          tableDownloadName="Arrests_By_Percentage"
-          isOpen={arrestData.isOpen}
-          closeModal={() => setArrestData((state) => ({ ...state, isOpen: false }))}
-        />
+          tableData={arrestTableData.tableData}
+          csvData={arrestTableData.csvData}
+          columns={RACE_TABLE_COLUMNS}
+          tableDownloadName={graphTitle}
+          isOpen={arrestTableData.isOpen}
+          closeModal={() => setArrestTableData((state) => ({ ...state, isOpen: false }))}
+        >
+          <DataSubsetPicker
+            label="Stop Purpose"
+            value={selectedStopPurpose}
+            onChange={(stopPurpose) => setSelectedStopPurpose(stopPurpose)}
+            options={STOP_PURPOSE_GROUPS}
+          />
+        </NewModal>
       </S.ChartDescription>
       <ChartContainer>
         <HorizontalBarChart
-          title="Percentage of Stops With Arrests Per Stop Purpose Group"
+          title={graphTitle}
           data={arrestData}
           displayLegend={false}
           tooltipLabelCallback={formatTooltipValue}
           modalConfig={{
-            tableHeader: 'Percentage of Stops With Arrests Per Stop Purpose Group',
+            tableHeader: graphTitle,
             tableSubheader: getBarChartModalSubHeading(
               'Shows what percentage of stops led to an arrest for a given stop purpose group.'
             ),
             agencyName,
-            chartTitle: getBarChartModalSubHeading(
-              'Percentage of Stops With Arrests Per Stop Purpose Group'
-            ),
+            chartTitle: getBarChartModalSubHeading(graphTitle),
           }}
         />
       </ChartContainer>

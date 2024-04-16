@@ -8,8 +8,13 @@ import HorizontalBarChart from '../../../NewCharts/HorizontalBarChart';
 import axios from '../../../../Services/Axios';
 import useOfficerId from '../../../../Hooks/useOfficerId';
 import NewModal from '../../../NewCharts/NewModal';
-import { ARRESTS_TABLE_COLUMNS } from '../Arrests';
 import { ChartContainer } from '../../ChartSections/ChartsCommon.styled';
+
+import createTableData from '../../../../util/createTableData';
+import DataSubsetPicker from '../../ChartSections/DataSubsetPicker/DataSubsetPicker';
+import { RACE_TABLE_COLUMNS, STOP_PURPOSE_TYPES, STOP_TYPE_COLORS } from '../../chartUtils';
+
+const graphTitle = 'Percentage of Searches Leading to Arrest by Stop Purpose Type';
 
 function PercentageOfStopsForStopPurpose(props) {
   const { agencyId, agencyName, year } = props;
@@ -26,6 +31,14 @@ function PercentageOfStopsForStopPurpose(props) {
   };
   const [arrestData, setArrestData] = useState(initArrestData);
 
+  const [arrestTableData, setArrestTableData] = useState({
+    isOpen: false,
+    tableData: [],
+    csvData: [],
+  });
+
+  const [selectedStopPurpose, setSelectedStopPurpose] = useState(STOP_PURPOSE_TYPES[0]);
+
   useEffect(() => {
     const params = [];
     if (year && year !== 'All') {
@@ -40,26 +53,6 @@ function PercentageOfStopsForStopPurpose(props) {
     axios
       .get(url)
       .then((res) => {
-        const tableData = [];
-        const resTableData = res.data.table_data.length
-          ? JSON.parse(res.data.table_data)
-          : { data: [] };
-        resTableData.data.forEach((e) => {
-          const dataCounts = { ...e };
-          delete dataCounts.year;
-          // Need to assign explicitly otherwise the download data orders columns by alphabet.
-          tableData.unshift({
-            year: e.year,
-            white: e.white,
-            black: e.black,
-            native_american: e.native_american,
-            asian: e.asian,
-            other: e.other,
-            hispanic: e.hispanic,
-            total: Object.values(dataCounts).reduce((a, b) => a + b, 0),
-          });
-        });
-
         const data = {
           labels: res.data.labels,
           datasets: [
@@ -68,20 +61,35 @@ function PercentageOfStopsForStopPurpose(props) {
               label: 'All',
               data: res.data.arrest_percentages.map((d) => d.data),
               fill: false,
-              // backgroundColor: Object.values(colors),
-              // borderColor: Object.values(colors),
-              // hoverBackgroundColor: Object.values(colors),
+              backgroundColor: STOP_TYPE_COLORS,
+              borderColor: STOP_TYPE_COLORS,
+              hoverBackgroundColor: STOP_TYPE_COLORS,
               borderWidth: 1,
             },
           ],
-          isModalOpen: false,
-          tableData,
-          csvData: tableData,
         };
         setArrestData(data);
       })
       .catch((err) => console.log(err));
   }, [year]);
+
+  useEffect(() => {
+    const params = [];
+    params.push({
+      param: 'stop_purpose_type',
+      val: selectedStopPurpose,
+    });
+    if (officerId) {
+      params.push({ param: 'officer', val: officerId });
+    }
+
+    const urlParams = params.map((p) => `${p.param}=${encodeURI(p.val)}`).join('&');
+    const url = `/api/agency/${agencyId}/arrests-percentage-of-searches-per-stop-purpose/?modal=true&${urlParams}`;
+    axios.get(url).then((res) => {
+      const tableData = createTableData(res.data);
+      setArrestTableData((state) => ({ ...state, tableData, csvData: tableData }));
+    });
+  }, [selectedStopPurpose]);
 
   const formatTooltipValue = (ctx) => `${(ctx.raw * 100).toFixed(2)}%`;
 
@@ -102,39 +110,45 @@ function PercentageOfStopsForStopPurpose(props) {
   return (
     <S.ChartSection>
       <ChartHeader
-        chartTitle="Percentage of Searches With Arrests Per Stop Purpose"
-        handleViewData={() => setArrestData((state) => ({ ...state, isOpen: true }))}
+        chartTitle={graphTitle}
+        handleViewData={() => setArrestTableData((state) => ({ ...state, isOpen: true }))}
       />
+      {props.children}
       <S.ChartDescription>
         <P>Percentage of searches that led to an arrest for a given stop purpose.</P>
         <NewModal
-          tableHeader="Percentage of Searches With Arrests Per Stop Purpose"
+          tableHeader={graphTitle}
           tableSubheader="Shows what percentage of searches led to an arrest for a given stop purpose."
           agencyName={agencyName}
-          tableData={arrestData.tableData}
-          csvData={arrestData.csvData}
-          columns={ARRESTS_TABLE_COLUMNS}
-          tableDownloadName="Arrests_By_Percentage"
-          isOpen={arrestData.isOpen}
-          closeModal={() => setArrestData((state) => ({ ...state, isOpen: false }))}
-        />
+          tableData={arrestTableData.tableData}
+          csvData={arrestTableData.csvData}
+          columns={RACE_TABLE_COLUMNS}
+          tableDownloadName={graphTitle}
+          isOpen={arrestTableData.isOpen}
+          closeModal={() => setArrestTableData((state) => ({ ...state, isOpen: false }))}
+        >
+          <DataSubsetPicker
+            label="Stop Purpose"
+            value={selectedStopPurpose}
+            onChange={(stopPurpose) => setSelectedStopPurpose(stopPurpose)}
+            options={STOP_PURPOSE_TYPES}
+          />
+        </NewModal>
       </S.ChartDescription>
       <ChartContainer>
         <HorizontalBarChart
-          title="Percentage of Searches With Arrests Per Stop Purpose"
+          title={graphTitle}
           data={arrestData}
           displayLegend={false}
           tooltipLabelCallback={formatTooltipValue}
           pinMaxValue={false}
           modalConfig={{
-            tableHeader: 'Percentage of Searches With Arrests Per Stop Purpose',
+            tableHeader: graphTitle,
             tableSubheader: getBarChartModalSubHeading(
               'Shows what percentage of searches led to an arrest for a given stop purpose.'
             ),
             agencyName,
-            chartTitle: getBarChartModalSubHeading(
-              'Percentage of Searches With Arrests Per Stop Purpose'
-            ),
+            chartTitle: getBarChartModalSubHeading(graphTitle),
           }}
         />
       </ChartContainer>

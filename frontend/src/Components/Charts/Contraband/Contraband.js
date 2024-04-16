@@ -3,7 +3,12 @@ import ContrabandStyled, { BarContainer, HorizontalBarWrapper } from './Contraba
 import * as S from '../ChartSections/ChartsCommon.styled';
 
 // Util
-import { CONTRABAND_TYPES, STATIC_CONTRABAND_KEYS, YEARS_DEFAULT } from '../chartUtils';
+import {
+  CONTRABAND_TYPES,
+  CONTRABAND_TYPES_TABLE_COLUMNS,
+  RACE_TABLE_COLUMNS,
+  STATIC_CONTRABAND_KEYS,
+} from '../chartUtils';
 
 // Hooks
 import useMetaTags from '../../../Hooks/useMetaTags';
@@ -29,7 +34,7 @@ import { ChartContainer } from '../ChartSections/ChartsCommon.styled';
 const STOP_PURPOSE_TYPES = ['Safety Violation', 'Regulatory and Equipment', 'Other'];
 
 function Contraband(props) {
-  const { agencyId } = props;
+  const { agencyId, yearRange, year } = props;
 
   const officerId = useOfficerId();
   const [chartState] = useDataset(agencyId, CONTRABAND_HIT_RATE);
@@ -39,8 +44,6 @@ function Contraband(props) {
       document.querySelector(`${window.location.hash}`).scrollIntoView();
     }
   }, []);
-
-  const [year, setYear] = useState(YEARS_DEFAULT);
 
   const renderMetaTags = useMetaTags();
   const [renderTableModal] = useTableModal();
@@ -146,15 +149,13 @@ function Contraband(props) {
 
   /* INTERACTIONS */
   // Handle year dropdown state
-  const handleYearSelect = (y) => {
-    if (y === year) return;
-    setYear(y);
+  useEffect(() => {
     setContrabandData(initContrabandData);
     setContrabandTypesData(initContrabandTypesData);
     setContrabandStopPurposeData(initContrabandStopPurposeData);
     setContrabandGroupedStopPurposeData(initContrabandGroupedStopPurposeData);
-    fetchHitRateByStopPurpose(y);
-  };
+    fetchHitRateByStopPurpose();
+  }, [year]);
 
   // Build New Contraband Data
   useEffect(() => {
@@ -315,10 +316,10 @@ function Contraband(props) {
     fetchHitRateByStopPurpose('All');
   }, []);
 
-  const fetchHitRateByStopPurpose = (yr) => {
+  const fetchHitRateByStopPurpose = () => {
     const params = [];
-    if (yr && yr !== 'All') {
-      params.push({ param: 'year', val: yr });
+    if (year && year !== 'All') {
+      params.push({ param: 'year', val: year });
     }
     if (officerId) {
       params.push({ param: 'officer', val: officerId });
@@ -511,7 +512,7 @@ function Contraband(props) {
     if (officerId) {
       subject = `Officer ${officerId}`;
     }
-    let fromYear = ` since ${chartState.yearRange[chartState.yearRange.length - 1]}`;
+    let fromYear = ` since ${yearRange[yearRange.length - 1]}`;
     if (year && year !== 'All') {
       fromYear = ` in ${year}`;
     }
@@ -552,15 +553,6 @@ function Contraband(props) {
           a tiny fraction of the illegal substance
         </span>
       </details>
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <DataSubsetPicker
-          label="Year"
-          value={year}
-          onChange={handleYearSelect}
-          options={[YEARS_DEFAULT].concat(chartState.yearRange)}
-          dropDown
-        />
-      </div>
       <S.ChartSection>
         <ChartHeader
           chartTitle='Contraband "Hit Rate"'
@@ -577,7 +569,7 @@ function Contraband(props) {
             agencyName={chartState.data[AGENCY_DETAILS].name}
             tableData={contrabandData.tableData}
             csvData={contrabandData.csvData}
-            columns={CONTRABAND_TABLE_COLUMNS}
+            columns={RACE_TABLE_COLUMNS}
             tableDownloadName='Contraband "Hit Rate"'
             isOpen={contrabandData.isOpen}
             closeModal={() => setContrabandData((state) => ({ ...state, isOpen: false }))}
@@ -620,7 +612,7 @@ function Contraband(props) {
           agencyName={chartState.data[AGENCY_DETAILS].name}
           tableData={contrabandStopPurposeModalData.tableData}
           csvData={contrabandStopPurposeModalData.csvData}
-          columns={CONTRABAND_TABLE_COLUMNS}
+          columns={RACE_TABLE_COLUMNS}
           tableDownloadName='Contraband "Hit Rate" Grouped By Stop Purpose'
           isOpen={contrabandStopPurposeModalData.isOpen}
           closeModal={() =>
@@ -713,7 +705,7 @@ function Contraband(props) {
           agencyName={chartState.data[AGENCY_DETAILS].name}
           tableData={groupedContrabandStopPurposeModalData.tableData}
           csvData={groupedContrabandStopPurposeModalData.csvData}
-          columns={CONTRABAND_TABLE_COLUMNS}
+          columns={RACE_TABLE_COLUMNS}
           tableDownloadName='Contraband "Hit Rate" by Type grouped by Stop Purpose'
           isOpen={groupedContrabandStopPurposeModalData.isOpen}
           closeModal={() =>
@@ -839,69 +831,3 @@ function Contraband(props) {
 }
 
 export default Contraband;
-
-const CONTRABAND_TABLE_COLUMNS = [
-  {
-    Header: 'Year',
-    accessor: 'year', // accessor is the "key" in the data
-  },
-  {
-    Header: 'White*',
-    accessor: 'white',
-  },
-  {
-    Header: 'Black*',
-    accessor: 'black',
-  },
-  {
-    Header: 'Native American*',
-    accessor: 'native_american',
-  },
-  {
-    Header: 'Asian*',
-    accessor: 'asian',
-  },
-  {
-    Header: 'Other*',
-    accessor: 'other',
-  },
-  {
-    Header: 'Hispanic',
-    accessor: 'hispanic',
-  },
-  {
-    Header: 'Total',
-    accessor: 'total',
-  },
-];
-
-const CONTRABAND_TYPES_TABLE_COLUMNS = [
-  {
-    Header: 'Year',
-    accessor: 'year', // accessor is the "key" in the data
-  },
-  {
-    Header: 'Alcohol*',
-    accessor: 'alcohol',
-  },
-  {
-    Header: 'Drugs*',
-    accessor: 'drugs',
-  },
-  {
-    Header: 'Money*',
-    accessor: 'money',
-  },
-  {
-    Header: 'Other*',
-    accessor: 'other',
-  },
-  {
-    Header: 'Weapons*',
-    accessor: 'weapons',
-  },
-  {
-    Header: 'Total',
-    accessor: 'total',
-  },
-];

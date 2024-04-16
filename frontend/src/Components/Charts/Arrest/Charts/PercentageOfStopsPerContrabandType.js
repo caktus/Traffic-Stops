@@ -8,8 +8,10 @@ import HorizontalBarChart from '../../../NewCharts/HorizontalBarChart';
 import axios from '../../../../Services/Axios';
 import useOfficerId from '../../../../Hooks/useOfficerId';
 import NewModal from '../../../NewCharts/NewModal';
-import { ARRESTS_TABLE_COLUMNS } from '../Arrests';
 import { ChartContainer } from '../../ChartSections/ChartsCommon.styled';
+import { CONTRABAND_TYPES_TABLE_COLUMNS } from '../../chartUtils';
+
+const graphTitle = 'Percentage of Stops Leading to Arrest by Discovered Contraband Type';
 
 function PercentageOfStopsPerContrabandType(props) {
   const { agencyId, agencyName, year } = props;
@@ -50,16 +52,14 @@ function PercentageOfStopsPerContrabandType(props) {
           // Need to assign explicitly otherwise the download data orders columns by alphabet.
           tableData.unshift({
             year: e.year,
-            white: e.white,
-            black: e.black,
-            native_american: e.native_american,
-            asian: e.asian,
+            alcohol: e.alcohol,
+            drugs: e.drugs,
+            money: e.money,
             other: e.other,
-            hispanic: e.hispanic,
+            weapons: e.weapons,
             total: Object.values(dataCounts).reduce((a, b) => a + b, 0),
           });
         });
-
         const colors = ['#9FD356', '#3C91E6', '#EFCEFA', '#2F4858', '#A653F4'];
         const data = {
           labels: ['Alcohol', 'Drugs', 'Money', 'Other', 'Weapons'],
@@ -75,9 +75,9 @@ function PercentageOfStopsPerContrabandType(props) {
               borderWidth: 1,
             },
           ],
-          isModalOpen: false,
           tableData,
           csvData: tableData,
+          isModalOpen: false,
         };
         setArrestData(data);
       })
@@ -103,38 +103,36 @@ function PercentageOfStopsPerContrabandType(props) {
   return (
     <S.ChartSection>
       <ChartHeader
-        chartTitle="Percentage of Stops With Arrests Per Contraband Type"
+        chartTitle={graphTitle}
         handleViewData={() => setArrestData((state) => ({ ...state, isOpen: true }))}
       />
       <S.ChartDescription>
         <P>Percentage of stops that led to an arrest for a given contraband type.</P>
         <NewModal
-          tableHeader="Percentage of Stops With Arrests Per Contraband Type"
+          tableHeader={graphTitle}
           tableSubheader="Shows what percentage of stops led to an arrest for a given contraband type."
           agencyName={agencyName}
           tableData={arrestData.tableData}
           csvData={arrestData.csvData}
-          columns={ARRESTS_TABLE_COLUMNS}
-          tableDownloadName="Arrests_By_Percentage"
+          columns={CONTRABAND_TYPES_TABLE_COLUMNS}
+          tableDownloadName={graphTitle}
           isOpen={arrestData.isOpen}
           closeModal={() => setArrestData((state) => ({ ...state, isOpen: false }))}
         />
       </S.ChartDescription>
       <ChartContainer>
         <HorizontalBarChart
-          title="Percentage of Stops With Arrests Per Contraband Type"
+          title={graphTitle}
           data={arrestData}
           displayLegend={false}
           tooltipLabelCallback={formatTooltipValue}
           modalConfig={{
-            tableHeader: 'Percentage of Stops With Arrests Per Contraband Type',
+            tableHeader: graphTitle,
             tableSubheader: getBarChartModalSubHeading(
               'Shows what percentage of stops led to an arrest for a given contraband type'
             ),
             agencyName,
-            chartTitle: getBarChartModalSubHeading(
-              'Percentage of Stops With Arrests Per Contraband Type'
-            ),
+            chartTitle: getBarChartModalSubHeading(graphTitle),
           }}
         />
       </ChartContainer>

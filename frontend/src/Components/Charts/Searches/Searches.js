@@ -3,7 +3,7 @@ import SearchesStyled from './Searches.styled';
 import * as S from '../ChartSections/ChartsCommon.styled';
 
 // Util
-import { SEARCH_TYPE_DEFAULT, SEARCH_TYPES } from '../chartUtils';
+import { RACE_TABLE_COLUMNS, SEARCH_TYPE_DEFAULT, SEARCH_TYPES } from '../chartUtils';
 
 // State
 import useDataset, {
@@ -111,7 +111,7 @@ function Searches(props) {
   };
 
   const handleViewPercentageData = () => {
-    openModal([STOPS, SEARCHES], PERCENTAGE_COLUMNS);
+    openModal([STOPS, SEARCHES], RACE_TABLE_COLUMNS);
   };
 
   const handleViewCountData = () => {
@@ -248,41 +248,6 @@ function Searches(props) {
 }
 
 export default Searches;
-
-const PERCENTAGE_COLUMNS = [
-  {
-    Header: 'Year',
-    accessor: 'year',
-  },
-  {
-    Header: 'White*',
-    accessor: 'white',
-  },
-  {
-    Header: 'Black*',
-    accessor: 'black',
-  },
-  {
-    Header: 'Hispanic',
-    accessor: 'hispanic',
-  },
-  {
-    Header: 'Asian*',
-    accessor: 'asian',
-  },
-  {
-    Header: 'Native American*',
-    accessor: 'native_american',
-  },
-  {
-    Header: 'Other*',
-    accessor: 'other',
-  },
-  {
-    Header: 'Total',
-    accessor: 'total',
-  },
-];
 
 const COUNT_COLUMNS = [
   {
