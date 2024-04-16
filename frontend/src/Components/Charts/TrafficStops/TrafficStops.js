@@ -52,7 +52,7 @@ import { pieChartConfig, pieChartLabels, pieColors } from '../../../util/setChar
 import VerticalBarChart from '../../NewCharts/VerticalBarChart';
 
 function TrafficStops(props) {
-  const { agencyId } = props;
+  const { agencyId, yearRange, year, yearIdx } = props;
 
   const theme = useTheme();
   const officerId = useOfficerId();
@@ -69,8 +69,6 @@ function TrafficStops(props) {
   }, []);
 
   const [pickerActive, setPickerActive] = useState(null);
-
-  const [year, setYear] = useState(YEARS_DEFAULT);
 
   const [purpose, setPurpose] = useState(PURPOSE_DEFAULT);
 
@@ -308,11 +306,6 @@ function TrafficStops(props) {
       .get(url)
       .then((res) => {
         setStopsGroupedByPurpose(res.data);
-        updateStoppedPurposePieChart(
-          buildEthnicPercentages(res.data, 'safety'),
-          buildEthnicPercentages(res.data, 'regulatory'),
-          buildEthnicPercentages(res.data, 'other')
-        );
       })
       .catch((err) => console.log(err));
   }, []);
@@ -362,26 +355,22 @@ function TrafficStops(props) {
     }
   }, [stopsChartState.data[STOPS], year]);
 
-  /* INTERACTIONS */
-  // Handle year dropdown state
-  const handleYearSelect = (y, idx) => {
-    if (y === year) return;
-    setYear(y);
-    handleYearSelectForGroupedPieCharts(y, idx);
-    handleGroupedStopPurposeYearSelect(y, idx);
-  };
+  useEffect(() => {
+    handleYearSelectForGroupedPieCharts();
+    buildStopPurposeGroupedPieData(stopPurposeGroupsData);
+  }, [stopsGroupedByPurposeData, year, yearIdx]);
 
-  const buildStopPurposeGroupedPieData = (ds, stopPurposeYear = null) => {
+  const buildStopPurposeGroupedPieData = (ds) => {
     const getValues = (arr) => {
-      if (!stopPurposeYear) {
+      if (!yearIdx) {
         return arr.reduce((a, b) => a + b, 0);
       }
       // Reverse to match dropdown descending years
-      return arr.toReversed()[stopPurposeYear - 1] || 0;
+      return arr.toReversed()[yearIdx - 1] || 0;
     };
 
     const data = [];
-    if (ds) {
+    if (ds.labels && ds.labels.length) {
       const safety = getValues(ds.datasets[0].data);
       const regulatory = getValues(ds.datasets[1].data);
       const other = getValues(ds.datasets[2].data);
@@ -404,16 +393,6 @@ function TrafficStops(props) {
         },
       ],
     });
-  };
-
-  const handleGroupedStopPurposeYearSelect = (y, i) => {
-    if (y === year) return;
-
-    if (y === YEARS_DEFAULT) {
-      // eslint-disable-next-line no-param-reassign
-      i = null;
-    }
-    buildStopPurposeGroupedPieData(stopPurposeGroupsData, i);
   };
 
   // Handle stop purpose dropdown state
@@ -550,17 +529,20 @@ function TrafficStops(props) {
     return data[ds].datasets.map((s) => ((s.data[idx] / dsTotal) * 100 || 0).toFixed(2));
   };
 
-  const handleYearSelectForGroupedPieCharts = (selectedYear, idx) => {
+  const handleYearSelectForGroupedPieCharts = () => {
     // Get the reverse index of the year since it's now in descending order
-    const idxForYear = stopsGroupedByPurposeData.labels.length - idx;
+    let idxForYear = stopsGroupedByPurposeData.labels.length - yearIdx;
+    if (idxForYear < 0) {
+      idxForYear = null;
+    }
     updateStoppedPurposePieChart(
-      selectedYear === YEARS_DEFAULT
+      year === YEARS_DEFAULT
         ? buildEthnicPercentages(stopsGroupedByPurposeData, 'safety')
         : buildEthnicPercentagesForYear(stopsGroupedByPurposeData, 'safety', idxForYear),
-      selectedYear === YEARS_DEFAULT
+      year === YEARS_DEFAULT
         ? buildEthnicPercentages(stopsGroupedByPurposeData, 'regulatory')
         : buildEthnicPercentagesForYear(stopsGroupedByPurposeData, 'regulatory', idxForYear),
-      selectedYear === YEARS_DEFAULT
+      year === YEARS_DEFAULT
         ? buildEthnicPercentages(stopsGroupedByPurposeData, 'other')
         : buildEthnicPercentagesForYear(stopsGroupedByPurposeData, 'other', idxForYear)
     );
@@ -620,7 +602,7 @@ function TrafficStops(props) {
       subject = `Officer ${officerId}`;
     }
     return `Traffic Stops By Percentage for ${subject} ${
-      year === YEARS_DEFAULT ? `since ${stopsChartState.yearRange.toReversed()[0]}` : `in ${year}`
+      year === YEARS_DEFAULT ? `since ${yearRange[yearRange.length - 1]}` : `in ${year}`
     }`;
   };
 
@@ -690,14 +672,6 @@ function TrafficStops(props) {
       {/* Traffic Stops by Percentage */}
       {renderMetaTags()}
       {renderTableModal()}
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <DataSubsetPicker
-          label="Year"
-          value={year}
-          onChange={handleYearSelect}
-          options={[YEARS_DEFAULT].concat(stopsByPercentageData.labels.toReversed())}
-        />
-      </div>
       <S.ChartSection>
         <ChartHeader
           chartTitle="Traffic Stops By Percentage"

@@ -2097,3 +2097,19 @@ class AgencyArrestsPercentageOfStopsPerContrabandTypeView(APIView):
         }
 
         return Response(data=data, status=200)
+
+
+class AgencyStopsYearRange(APIView):
+    def get(self, request, agency_id):
+        qs = StopSummary.objects.annotate(year=ExtractYear("date"))
+
+        agency_id = int(agency_id)
+        if agency_id != -1:
+            qs = qs.filter(agency_id=agency_id)
+        officer = request.query_params.get("officer", None)
+        if officer:
+            qs = qs.filter(officer_id=officer)
+
+        year_range = qs.order_by("-year").values_list("year", flat=True).distinct("year")
+        data = {"year_range": year_range}
+        return Response(data=data, status=200)

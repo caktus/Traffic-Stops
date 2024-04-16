@@ -12,7 +12,6 @@ import {
   CONTRABAND_TYPES_TABLE_COLUMNS,
   RACE_TABLE_COLUMNS,
   STATIC_CONTRABAND_KEYS,
-  YEARS_DEFAULT,
 } from '../chartUtils';
 
 // Hooks
@@ -38,7 +37,7 @@ import useOfficerId from '../../../Hooks/useOfficerId';
 const STOP_PURPOSE_TYPES = ['Safety Violation', 'Regulatory and Equipment', 'Other'];
 
 function Contraband(props) {
-  const { agencyId, showCompare } = props;
+  const { agencyId, showCompare, yearRange, year } = props;
 
   const officerId = useOfficerId();
   const [chartState] = useDataset(agencyId, CONTRABAND_HIT_RATE);
@@ -48,8 +47,6 @@ function Contraband(props) {
       document.querySelector(`${window.location.hash}`).scrollIntoView();
     }
   }, []);
-
-  const [year, setYear] = useState(YEARS_DEFAULT);
 
   const renderMetaTags = useMetaTags();
   const [renderTableModal] = useTableModal();
@@ -155,15 +152,13 @@ function Contraband(props) {
 
   /* INTERACTIONS */
   // Handle year dropdown state
-  const handleYearSelect = (y) => {
-    if (y === year) return;
-    setYear(y);
+  useEffect(() => {
     setContrabandData(initContrabandData);
     setContrabandTypesData(initContrabandTypesData);
     setContrabandStopPurposeData(initContrabandStopPurposeData);
     setContrabandGroupedStopPurposeData(initContrabandGroupedStopPurposeData);
-    fetchHitRateByStopPurpose(y);
-  };
+    fetchHitRateByStopPurpose();
+  }, [year]);
 
   // Build New Contraband Data
   useEffect(() => {
@@ -324,10 +319,10 @@ function Contraband(props) {
     fetchHitRateByStopPurpose('All');
   }, []);
 
-  const fetchHitRateByStopPurpose = (yr) => {
+  const fetchHitRateByStopPurpose = () => {
     const params = [];
-    if (yr && yr !== 'All') {
-      params.push({ param: 'year', val: yr });
+    if (year && year !== 'All') {
+      params.push({ param: 'year', val: year });
     }
     if (officerId) {
       params.push({ param: 'officer', val: officerId });
@@ -520,7 +515,7 @@ function Contraband(props) {
     if (officerId) {
       subject = `Officer ${officerId}`;
     }
-    let fromYear = ` since ${chartState.yearRange[chartState.yearRange.length - 1]}`;
+    let fromYear = ` since ${yearRange[yearRange.length - 1]}`;
     if (year && year !== 'All') {
       fromYear = ` in ${year}`;
     }
@@ -561,15 +556,6 @@ function Contraband(props) {
           a tiny fraction of the illegal substance
         </span>
       </details>
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <DataSubsetPicker
-          label="Year"
-          value={year}
-          onChange={handleYearSelect}
-          options={[YEARS_DEFAULT].concat(chartState.yearRange)}
-          dropDown
-        />
-      </div>
       <S.ChartSection>
         <ChartHeader
           chartTitle='Contraband "Hit Rate"'

@@ -22,7 +22,6 @@ import useTableModal from '../../../Hooks/useTableModal';
 // Children
 import { P } from '../../../styles/StyledComponents/Typography';
 import ChartHeader from '../ChartSections/ChartHeader';
-import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
 import useOfficerId from '../../../Hooks/useOfficerId';
 import PieChart from '../../NewCharts/PieChart';
 import { pieChartConfig, pieChartLabels } from '../../../util/setChartColors';
@@ -30,12 +29,10 @@ import VerticalBarChart from '../../NewCharts/VerticalBarChart';
 import axios from '../../../Services/Axios';
 
 function UseOfForce(props) {
-  const { agencyId, showCompare } = props;
+  const { agencyId, showCompare, year } = props;
   const officerId = useOfficerId();
 
   const [chartState] = useDataset(agencyId, USE_OF_FORCE);
-
-  const [year, setYear] = useState(YEARS_DEFAULT);
 
   const [useOfForceBarData, setUseOfForceBarData] = useState({
     labels: [],
@@ -111,12 +108,6 @@ function UseOfForce(props) {
     }
   }, [chartState.data[USE_OF_FORCE], year]);
 
-  /* INTERACTIONS */
-  // Handle year dropdown state
-  const handleYearSelected = (y) => {
-    if (y === year) return;
-    setYear(y);
-  };
   // Handle stops by percentage legend interactions
   const handleViewData = () => {
     openModal(USE_OF_FORCE, RACE_TABLE_COLUMNS);
@@ -180,13 +171,6 @@ function UseOfForce(props) {
               }}
             />
           </S.PieWrapper>
-          <DataSubsetPicker
-            label="Year"
-            value={year}
-            onChange={handleYearSelected}
-            options={[YEARS_DEFAULT].concat(chartState.yearRange)}
-            dropUp
-          />
         </S.ChartSubsection>
       </S.ChartSection>
     </UseOfForceStyled>
