@@ -9,6 +9,7 @@ import {
   calculatePercentage,
   calculateYearTotal,
   reduceYearsToTotal,
+  RACE_TABLE_COLUMNS,
 } from '../chartUtils';
 
 // State
@@ -118,7 +119,7 @@ function UseOfForce(props) {
   };
   // Handle stops by percentage legend interactions
   const handleViewData = () => {
-    openModal(USE_OF_FORCE, TABLE_COLUMNS);
+    openModal(USE_OF_FORCE, RACE_TABLE_COLUMNS);
   };
 
   const chartModalTitle = (displayYear = true) => {
@@ -193,38 +194,3 @@ function UseOfForce(props) {
 }
 
 export default UseOfForce;
-
-const TABLE_COLUMNS = [
-  {
-    Header: 'Year',
-    accessor: 'year',
-  },
-  {
-    Header: 'White*',
-    accessor: 'white',
-  },
-  {
-    Header: 'Black*',
-    accessor: 'black',
-  },
-  {
-    Header: 'Native American*',
-    accessor: 'native_american',
-  },
-  {
-    Header: 'Asian*',
-    accessor: 'asian',
-  },
-  {
-    Header: 'Other*',
-    accessor: 'other',
-  },
-  {
-    Header: 'Hispanic',
-    accessor: 'hispanic',
-  },
-  {
-    Header: 'Total',
-    accessor: 'total',
-  },
-];

@@ -21,6 +21,8 @@ import {
   PURPOSE_DEFAULT,
   RACES,
   STOP_TYPES,
+  RACE_TABLE_COLUMNS,
+  STOP_REASON_TABLE_COLUMNS,
 } from '../chartUtils';
 
 // State
@@ -448,11 +450,11 @@ function TrafficStops(props) {
 
   const handleViewPercentageData = () => {
     setPurpose(PURPOSE_DEFAULT);
-    openModal(STOPS, STOPS_TABLE_COLUMNS);
+    openModal(STOPS, RACE_TABLE_COLUMNS);
   };
 
   const handleViewCountData = () => {
-    openModal(STOPS_BY_REASON, BY_REASON_TABLE_COLUMNS);
+    openModal(STOPS_BY_REASON, STOP_REASON_TABLE_COLUMNS);
   };
 
   const showStopPurposeModal = () => {
@@ -868,7 +870,7 @@ function TrafficStops(props) {
           agencyName={stopsChartState.data[AGENCY_DETAILS].name}
           tableData={groupedStopPurposeModalData.tableData}
           csvData={groupedStopPurposeModalData.csvData}
-          columns={GROUPED_STOP_PURPOSE_TABLE_COLUMNS}
+          columns={RACE_TABLE_COLUMNS}
           tableDownloadName={`Traffic Stops By Stop Purpose and Race Count - ${groupedStopPurposeModalData.selectedPurpose}`}
           isOpen={groupedStopPurposeModalData.isOpen}
           closeModal={() =>
@@ -1035,80 +1037,6 @@ function TrafficStops(props) {
 
 export default TrafficStops;
 
-const STOPS_TABLE_COLUMNS = [
-  {
-    Header: 'Year',
-    accessor: 'year',
-  },
-  {
-    Header: 'White*',
-    accessor: 'white',
-  },
-  {
-    Header: 'Black*',
-    accessor: 'black',
-  },
-  {
-    Header: 'Hispanic',
-    accessor: 'hispanic',
-  },
-  {
-    Header: 'Asian*',
-    accessor: 'asian',
-  },
-  {
-    Header: 'Native American*',
-    accessor: 'native_american',
-  },
-  {
-    Header: 'Other*',
-    accessor: 'other',
-  },
-  {
-    Header: 'Total',
-    accessor: 'total',
-  },
-];
-
-const BY_REASON_TABLE_COLUMNS = [
-  {
-    Header: 'Year',
-    accessor: 'year',
-  },
-  {
-    Header: 'Stop-reason',
-    accessor: 'purpose',
-  },
-  {
-    Header: 'White*',
-    accessor: 'white',
-  },
-  {
-    Header: 'Black*',
-    accessor: 'black',
-  },
-  {
-    Header: 'Hispanic',
-    accessor: 'hispanic',
-  },
-  {
-    Header: 'Asian*',
-    accessor: 'asian',
-  },
-  {
-    Header: 'Native American*',
-    accessor: 'native_american',
-  },
-  {
-    Header: 'Other*',
-    accessor: 'other',
-  },
-  {
-    Header: 'Total',
-    accessor: 'total',
-  },
-];
-
 const STOP_PURPOSE_TABLE_COLUMNS = [
   {
     Header: 'Year',
@@ -1121,41 +1049,6 @@ const STOP_PURPOSE_TABLE_COLUMNS = [
   {
     Header: 'Regulatory and Equipment',
     accessor: 'regulatory',
-  },
-  {
-    Header: 'Other',
-    accessor: 'other',
-  },
-  {
-    Header: 'Total',
-    accessor: 'total',
-  },
-];
-
-const GROUPED_STOP_PURPOSE_TABLE_COLUMNS = [
-  {
-    Header: 'Year',
-    accessor: 'year',
-  },
-  {
-    Header: 'White',
-    accessor: 'white',
-  },
-  {
-    Header: 'Black',
-    accessor: 'black',
-  },
-  {
-    Header: 'Hispanic',
-    accessor: 'hispanic',
-  },
-  {
-    Header: 'Asian',
-    accessor: 'asian',
-  },
-  {
-    Header: 'Native American',
-    accessor: 'native_american',
   },
   {
     Header: 'Other',
