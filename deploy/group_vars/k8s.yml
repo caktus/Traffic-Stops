@@ -51,6 +51,15 @@ k8s_worker_command:
   - worker
   - --loglevel=info
 k8s_worker_beat_enabled: true
+k8s_worker_beat_command:
+  - celery
+  - --app={{ k8s_worker_celery_app }}
+  - --workdir=/code
+  - beat
+  - --loglevel=info
+  # Avoid setting PID file that might get stale in case of a hard crash (StatefulSet will ensure only 1 copy is ever running)
+  - --pidfile=
+  - --schedule=/data/schedulefile.db
 k8s_memcached_enabled: false
 k8s_redis_enabled: true
 
