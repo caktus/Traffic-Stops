@@ -3,7 +3,7 @@ import SearchRateStyled from './SearchRate.styled';
 import * as S from '../ChartSections/ChartsCommon.styled';
 
 // Data
-import useDataset, { LIKELIHOOD_OF_SEARCH } from '../../../Hooks/useDataset';
+import { LIKELIHOOD_OF_SEARCH } from '../../../Hooks/useDataset';
 
 // Hooks
 import useOfficerId from '../../../Hooks/useOfficerId';
@@ -11,22 +11,18 @@ import useMetaTags from '../../../Hooks/useMetaTags';
 import useTableModal from '../../../Hooks/useTableModal';
 
 // Constants
-import { YEARS_DEFAULT } from '../chartUtils';
+import { STOP_REASON_TABLE_COLUMNS } from '../chartUtils';
 
 // Children
 import { P } from '../../../styles/StyledComponents/Typography';
 import ChartHeader from '../ChartSections/ChartHeader';
-import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
 import axios from '../../../Services/Axios';
 import HorizontalBarChart from '../../NewCharts/HorizontalBarChart';
+import { ChartContainer } from '../ChartSections/ChartsCommon.styled';
 
 function SearchRate(props) {
-  const { agencyId, agencyName, showCompare } = props;
+  const { agencyId, agencyName, yearRange, year } = props;
   const officerId = useOfficerId();
-
-  const [chartState] = useDataset(agencyId, LIKELIHOOD_OF_SEARCH);
-
-  const [year, setYear] = useState(YEARS_DEFAULT);
 
   const initData = { labels: [], datasets: [], loading: true };
   const [searchRateData, setSearchRateData] = useState(initData);
@@ -54,13 +50,8 @@ function SearchRate(props) {
       .catch((err) => console.log(err));
   }, [year]);
 
-  const handleYearSelected = (y) => {
-    if (y === year) return;
-    setYear(y);
-  };
-
   const handleViewData = () => {
-    openModal(LIKELIHOOD_OF_SEARCH, TABLE_COLUMNS);
+    openModal(LIKELIHOOD_OF_SEARCH, STOP_REASON_TABLE_COLUMNS);
   };
 
   const formatTooltipLabel = (ctx) => ctx[0].dataset.label;
@@ -87,7 +78,7 @@ function SearchRate(props) {
     if (officerId) {
       subject = `Officer ${officerId}`;
     }
-    let fromYear = ` since ${chartState.yearRange[chartState.yearRange.length - 1]}`;
+    let fromYear = ` since ${yearRange[yearRange.length - 1]}`;
     if (year && year !== 'All') {
       fromYear = ` in ${year}`;
     }
@@ -112,80 +103,26 @@ function SearchRate(props) {
             incidents. Use “View Data” to see the numbers underlying the calculations.
           </P>
         </S.ChartDescription>
-        <S.ChartSubsection showCompare={showCompare}>
-          <S.LineWrapper>
-            <div style={{ height: '200vh' }}>
-              <HorizontalBarChart
-                title="Likelihood of Search"
-                data={searchRateData}
-                maintainAspectRatio={false}
-                tooltipTitleCallback={formatTooltipLabel}
-                tooltipLabelCallback={formatTooltipValue}
-                legendPosition="bottom"
-                pinMaxValue={false}
-                modalConfig={{
-                  tableHeader: 'Likelihood of Search',
-                  tableSubheader: getBarChartModalSubHeading(),
-                  agencyName,
-                  chartTitle: getBarChartModalHeading('Likelihood of Search'),
-                }}
-              />
-            </div>
-          </S.LineWrapper>
-          <S.LegendBelow>
-            <S.Spacing>
-              <DataSubsetPicker
-                label="Year"
-                value={year}
-                onChange={handleYearSelected}
-                options={[YEARS_DEFAULT].concat(chartState.yearRange)}
-                dropUp={!!showCompare}
-              />
-            </S.Spacing>
-          </S.LegendBelow>
-        </S.ChartSubsection>
+        <ChartContainer override={{ height: '200vh' }}>
+          <HorizontalBarChart
+            title="Likelihood of Search"
+            data={searchRateData}
+            maintainAspectRatio={false}
+            tooltipTitleCallback={formatTooltipLabel}
+            tooltipLabelCallback={formatTooltipValue}
+            legendPosition="bottom"
+            pinMaxValue={false}
+            modalConfig={{
+              tableHeader: 'Likelihood of Search',
+              tableSubheader: getBarChartModalSubHeading(),
+              agencyName,
+              chartTitle: getBarChartModalHeading('Likelihood of Search'),
+            }}
+          />
+        </ChartContainer>
       </S.ChartSection>
     </SearchRateStyled>
   );
 }
 
 export default SearchRate;
-
-const TABLE_COLUMNS = [
-  {
-    Header: 'Year',
-    accessor: 'year',
-  },
-  {
-    Header: 'Stop-reason',
-    accessor: 'purpose',
-  },
-  {
-    Header: 'White*',
-    accessor: 'white',
-  },
-  {
-    Header: 'Black*',
-    accessor: 'black',
-  },
-  {
-    Header: 'Hispanic',
-    accessor: 'hispanic',
-  },
-  {
-    Header: 'Asian*',
-    accessor: 'asian',
-  },
-  {
-    Header: 'Native American*',
-    accessor: 'native_american',
-  },
-  {
-    Header: 'Other*',
-    accessor: 'other',
-  },
-  {
-    Header: 'Total',
-    accessor: 'total',
-  },
-];

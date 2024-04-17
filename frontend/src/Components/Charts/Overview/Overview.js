@@ -29,23 +29,18 @@ import useDataset, {
 // Children
 import ChartHeader from '../ChartSections/ChartHeader';
 import useOfficerId from '../../../Hooks/useOfficerId';
-import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
 import PieChart from '../../NewCharts/PieChart';
 import { pieChartConfig, pieChartLabels } from '../../../util/setChartColors';
-import useYearSet from '../../../Hooks/useYearSet';
 
 function Overview(props) {
-  const { agencyId, agencyName } = props;
+  const { agencyId, agencyName, yearRange, year } = props;
   const history = useHistory();
   const match = useRouteMatch();
   const officerId = useOfficerId();
-  const [yearRange] = useYearSet();
 
   useDataset(agencyId, STOPS);
   useDataset(agencyId, SEARCHES);
   const [chartState] = useDataset(agencyId, USE_OF_FORCE);
-
-  const [year, setYear] = useState(YEARS_DEFAULT);
 
   const initChartData = {
     labels: pieChartLabels,
@@ -138,7 +133,7 @@ function Overview(props) {
     let title = `${chartTitle} for ${subject}`;
     if (chartTitle !== 'Census Demographics') {
       title = `${title} ${
-        year === YEARS_DEFAULT ? `since ${chartState.yearRange.reverse()[0]}` : `in ${year}`
+        year === YEARS_DEFAULT ? `since ${yearRange[yearRange.length - 1]}` : `in ${year}`
       }`;
     }
     return title;
@@ -165,13 +160,6 @@ function Overview(props) {
     }
   }, [chartState.data[USE_OF_FORCE], year]);
 
-  /* Methods */
-  // eslint-disable-next-line no-unused-vars
-  const handleYearSelect = (y) => {
-    if (y === year) return;
-    setYear(y);
-  };
-
   const getPageTitleForShare = () => `Traffic Stop statistics for ${agencyName}`;
 
   const useOfForcePieChartCopy = () => {
@@ -197,15 +185,6 @@ function Overview(props) {
           twitterTitle: getPageTitleForShare(),
         }}
       />
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <DataSubsetPicker
-          label="Year"
-          value={year}
-          onChange={handleYearSelect}
-          options={[YEARS_DEFAULT].concat(yearRange)}
-          dropDown
-        />
-      </div>
       <S.SectionWrapper />
       <S.ChartsWrapper>
         <S.PieContainer>

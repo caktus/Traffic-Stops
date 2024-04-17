@@ -109,10 +109,8 @@ export default function VerticalBarChart({
 
   return (
     <>
-      <div style={{ width: '100%' }}>
-        {!data.labels.length && <EmptyMessage />}
-        <Bar options={options} data={data} />
-      </div>
+      {!data.labels.length && <EmptyMessage />}
+      <Bar options={options} data={data} />
       <ChartModal
         isOpen={isChartOpen}
         closeModal={() => setIsChartOpen(false)}
