@@ -44,10 +44,10 @@ CONTRABAND Data,,,,,,
 ,SearchID,Unique Search ID,,,,12
 ,PersonID,Unique Person ID,,,,12
 ,StopID,Unique Stop ID,,,,12
-,Ounces,Ounces of Drugs,,,,41
-,Pounds,Pounds of Drugs,,,,41
+,Ounces,Ounces of Drugs,,,,67
+,Pounds,Pounds of,,,,41
 ,Pints,Pints of Alcohol,,,,41
-,Gallons,Gallons of Alcohol,,,,41
+,Gallons,Gallons of,,,,41
 ,Dosages,Dosages of Drugs,,,,41
 ,Grams,Grams of Drugs,,,,41
 ,Kilos,Kilos of Drugs,,,,41
