@@ -131,23 +131,6 @@ CONTRABAND_TYPE_COLS = {
 }
 
 
-def create_table_data_response(qs, pivot_columns=None, value_key=None, rename_columns=None):
-    rename_cols = rename_columns if rename_columns else DEFAULT_RENAME_COLUMNS
-    pivot_cols = pivot_columns if pivot_columns else ["driver_race_comb"]
-    table_data = []
-
-    if qs.count() > 0:
-        pivot_df = (
-            pd.DataFrame(qs)
-            .pivot(index="year", columns=pivot_cols, values=value_key)
-            .fillna(value=0)
-        )
-
-        pivot_df = pd.DataFrame(pivot_df).rename(columns=rename_cols)
-        table_data = pivot_df.to_json(orient="table")
-    return table_data
-
-
 class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Agency.objects.all()
     serializer_class = serializers.AgencySerializer
@@ -1645,154 +1628,113 @@ class AgencyUseOfForceView(APIView):
         return Response(data=data, status=200)
 
 
-class AgencyArrestsPercentageOfStopsView(APIView):
-    @method_decorator(cache_page(CACHE_TIMEOUT))
-    def get(self, request, agency_id):
-        year = request.GET.get("year", None)
+def create_table_data_response(qs, pivot_columns=None, value_key=None, rename_columns=None):
+    rename_cols = rename_columns if rename_columns else DEFAULT_RENAME_COLUMNS
+    pivot_cols = pivot_columns if pivot_columns else ["driver_race_comb"]
+    table_data = []
 
-        qs = StopSummary.objects.all()
-
-        agency_id = int(agency_id)
-        if agency_id != -1:
-            qs = qs.filter(agency_id=agency_id)
-        officer = request.query_params.get("officer", None)
-        if officer:
-            qs = qs.filter(officer_id=officer)
-
-        arrest_qs = qs
-        if year:
-            arrest_qs = arrest_qs.annotate(year=ExtractYear("date")).filter(year=year)
-
-        arrest_qs = arrest_qs.values("driver_race_comb", "driver_arrest", "count")
-
-        # Build charts data
-        df = pd.DataFrame(arrest_qs)
-        columns = ["White", "Black", "Hispanic", "Asian", "Native American", "Other"]
-        percentages = [0] * len(columns)
-
-        if arrest_qs.count() > 0:
-            for i, c in enumerate(columns):
-                driver_arrest_cond = (df["driver_race_comb"] == c) & df["driver_arrest"]
-                filtered_df = df[driver_arrest_cond]
-
-                arrests_count = filtered_df["count"].sum()
-                stops_count = df[df["driver_race_comb"] == c]["count"].sum()
-                percentages[i] = np.nan_to_num(arrests_count / stops_count)
-
-        # Build modal table data
-        table_data_qs = (
-            qs.filter(driver_arrest=True)
-            .values("driver_race_comb")
-            .annotate(stop_count=Sum("count"))
-            .annotate(year=ExtractYear("date"))
+    if qs.exists():
+        pivot_df = (
+            pd.DataFrame(qs)
+            .pivot(index="year", columns=pivot_cols, values=value_key)
+            .fillna(value=0)
         )
 
-        table_data = create_table_data_response(table_data_qs, value_key="stop_count")
-        data = {"arrest_percentages": percentages, "table_data": table_data}
+        pivot_df = pd.DataFrame(pivot_df).rename(columns=rename_cols)
+        table_data = pivot_df.to_json(orient="table")
+    return table_data
+
+
+def arrest_table(df, pivot_columns=None, value_key=None, rename_columns=None):
+    rename_cols = rename_columns if rename_columns else DEFAULT_RENAME_COLUMNS
+    pivot_cols = pivot_columns if pivot_columns else ["driver_race_comb"]
+    table_data = []
+
+    pivot_df = df.pivot(index="year", columns=pivot_cols, values=value_key).fillna(value=0)
+
+    pivot_df = pd.DataFrame(pivot_df).rename(columns=rename_cols)
+    table_data = pivot_df.to_json(orient="table")
+
+    return table_data
+
+
+def arrest_query(request, agency_id, group_by, debug=False):
+    """
+    # https://nccopwatch-share.s3.amazonaws.com/2023-10-contraband-type/durham-contraband-hit-rate-type.html
+    # https://nccopwatch-share.s3.amazonaws.com/2024-01-arrest-data/arrest-data-preview-v7.html
+    """
+    # Build query to filter down queryest
+    query = Q(agency_id=agency_id) if agency_id else Q()
+    officer_id = request.query_params.get("officer", None)
+    if officer_id:
+        query &= Q(officer_id=officer_id)
+    year = request.query_params.get("year", None)
+    if year:
+        query &= Q(year=year)
+    # Perform query with SQL aggregations
+    qs = (
+        StopSummary.objects.annotate(year=ExtractYear("date"))
+        .filter(query)
+        .values(*group_by)
+        .annotate(
+            stop_count=Sum("count"),
+            search_count=Sum("count", filter=Q(driver_searched=True)),
+            arrest_count=Sum("count", filter=Q(driver_arrest=True)),
+        )
+    )
+    df = pd.DataFrame(qs)
+    # Calculate rates
+    df["stop_arrest_rate"] = df.arrest_count / df.stop_count
+    df["search_arrest_rate"] = df.arrest_count / df.search_count
+    df["stop_without_arrest_count"] = df["stop_count"] - df["arrest_count"]
+    # Add custom sortable driver race column
+    columns = ["White", "Black", "Hispanic", "Asian", "Native American", "Other"]
+    df["driver_race_category"] = pd.Categorical(df["driver_race_comb"], columns)
+    if debug:
+        print(qs.explain(analyze=True, verbose=True))
+        print(df)
+    return df
+
+
+class AgencyArrestsPercentageOfStopsView(APIView):
+    # @method_decorator(cache_page(CACHE_TIMEOUT))
+    def get(self, request, agency_id):
+        # Build chart data
+        chart_df = arrest_query(request, agency_id, group_by=("driver_race_comb",))
+        chart_data = chart_df.sort_values("driver_race_category")["stop_arrest_rate"].to_list()
+        # Build table data
+        table_df = arrest_query(request, agency_id, group_by=("driver_race_comb", "year"))
+        table_data = arrest_table(table_df, value_key="arrest_count")
+        data = {"arrest_percentages": chart_data, "table_data": table_data}
         return Response(data=data, status=200)
 
 
 class AgencyArrestsPercentageOfSearchesView(APIView):
-    @method_decorator(cache_page(CACHE_TIMEOUT))
+    # @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
-        year = request.GET.get("year", None)
-
-        qs = StopSummary.objects.all()
-
-        agency_id = int(agency_id)
-        if agency_id != -1:
-            qs = qs.filter(agency_id=agency_id)
-        officer = request.query_params.get("officer", None)
-        if officer:
-            qs = qs.filter(officer_id=officer)
-
-        arrest_qs = qs
-        if year:
-            arrest_qs = arrest_qs.annotate(year=ExtractYear("date")).filter(year=year)
-
-        arrest_qs = arrest_qs.values(
-            "driver_race_comb", "driver_arrest", "driver_searched", "count"
-        )
-
-        # Build charts data
-        df = pd.DataFrame(arrest_qs)
-        columns = ["White", "Black", "Hispanic", "Asian", "Native American", "Other"]
-        percentages = [0] * len(columns)
-
-        if arrest_qs.count() > 0:
-            for i, c in enumerate(columns):
-                arrest_cond = (df["driver_race_comb"] == c) & df["driver_arrest"]
-                arrests_count = df[arrest_cond]["count"].sum()
-
-                searched_cond = (df["driver_race_comb"] == c) & df["driver_searched"]
-                searches_count = df[searched_cond]["count"].sum()
-                percentages[i] = np.nan_to_num(arrests_count / searches_count)
-
-        # Build modal table data
-        table_data_qs = (
-            qs.filter(driver_arrest=True)
-            .values("driver_race_comb")
-            .annotate(
-                stop_count=Sum("count"),
-                year=ExtractYear("date"),
-            )
-        )
-
-        table_data = create_table_data_response(table_data_qs, value_key="stop_count")
-        data = {"arrest_percentages": percentages, "table_data": table_data}
+        # Build chart data
+        chart_df = arrest_query(request, agency_id, group_by=("driver_race_comb",))
+        chart_data = chart_df.sort_values("driver_race_category")["search_arrest_rate"].to_list()
+        # Build table data
+        table_df = arrest_query(request, agency_id, group_by=("driver_race_comb", "year"))
+        table_data = arrest_table(table_df, value_key="arrest_count")
+        data = {"arrest_percentages": chart_data, "table_data": table_data}
         return Response(data=data, status=200)
 
 
 class AgencyCountOfStopsAndArrests(APIView):
-    @method_decorator(cache_page(CACHE_TIMEOUT))
+    # @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
-        year = request.GET.get("year", None)
-
-        qs = StopSummary.objects.all()
-
-        agency_id = int(agency_id)
-        if agency_id != -1:
-            qs = qs.filter(agency_id=agency_id)
-        officer = request.query_params.get("officer", None)
-        if officer:
-            qs = qs.filter(officer_id=officer)
-
-        arrest_qs = qs
-        if year:
-            arrest_qs = arrest_qs.annotate(year=ExtractYear("date")).filter(year=year)
-
-        arrest_qs = arrest_qs.values(
-            "driver_race_comb", "driver_arrest", "driver_searched", "count"
+        # Build chart data
+        chart_df = arrest_query(request, agency_id, group_by=("driver_race_comb",)).sort_values(
+            "driver_race_category"
         )
-
-        # Build charts data
-        df = pd.DataFrame(arrest_qs)
-        columns = ["White", "Black", "Hispanic", "Asian", "Native American", "Other"]
-        not_arrested_group = {"data": [0] * len(columns)}
-        arrested_group = {"data": [0] * len(columns)}
-
-        if arrest_qs.count() > 0:
-            for i, c in enumerate(columns):
-                not_arrest_cond = (df["driver_race_comb"] == c) & ~df["driver_arrest"]
-                not_arrested_group["data"][i] = df[not_arrest_cond]["count"].sum()
-
-            for i, c in enumerate(columns):
-                arrest_cond = (df["driver_race_comb"] == c) & df["driver_arrest"]
-                arrested_group["data"][i] = df[arrest_cond]["count"].sum()
-
+        not_arrested_group = {"data": chart_df["stop_without_arrest_count"].to_list()}
+        arrested_group = {"data": chart_df["arrest_count"].to_list()}
         chart_data = [arrested_group, not_arrested_group]
-
-        # Build modal table data
-        table_data_qs = (
-            qs.filter(driver_arrest=True)
-            .values("driver_race_comb")
-            .annotate(
-                stop_count=Sum("count"),
-                year=ExtractYear("date"),
-            )
-        )
-
-        table_data = create_table_data_response(table_data_qs, value_key="stop_count")
+        # Build table data
+        table_df = arrest_query(request, agency_id, group_by=("driver_race_comb", "year"))
+        table_data = arrest_table(table_df, value_key="arrest_count")
         data = {"arrest_counts": chart_data, "table_data": table_data}
         return Response(data=data, status=200)
 
