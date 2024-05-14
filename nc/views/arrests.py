@@ -66,10 +66,68 @@ def arrest_query(request, agency_id, group_by, limit_by=None, debug=False):
         )
     )
     df = pd.DataFrame(qs)
+    if df.empty:
+        df = pd.DataFrame(
+            qs, columns=list(qs.query.values_select) + list(qs.query.annotation_select)
+        )
     # Calculate rates
     df["stop_arrest_rate"] = df.arrest_count / df.stop_count
     df["search_arrest_rate"] = df.arrest_count / df.search_count
     df["stop_without_arrest_count"] = df["stop_count"] - df["arrest_count"]
+    df.fillna(0, inplace=True)
+    if "driver_race_comb" in group_by:
+        # Add custom sortable driver race column
+        columns = ["White", "Black", "Hispanic", "Asian", "Native American", "Other"]
+        df["driver_race_category"] = pd.Categorical(df["driver_race_comb"], columns)
+    if debug:
+        print(qs.explain(analyze=True, verbose=True))
+        print(df)
+    return df
+
+
+def contraband_query(request, agency_id, group_by, limit_by=None, debug=False):
+    """
+    # https://nccopwatch-share.s3.amazonaws.com/2023-10-contraband-type/durham-contraband-hit-rate-type.html
+    # https://nccopwatch-share.s3.amazonaws.com/2024-01-arrest-data/arrest-data-preview-v7.html
+    """
+    # Build query to filter down queryest
+    query = Q(agency_id=agency_id) if agency_id else Q()
+    officer_id = request.query_params.get("officer", None)
+    if officer_id:
+        query &= Q(officer_id=officer_id)
+    year = request.query_params.get("year", None)
+    if year:
+        query &= Q(year=year)
+    if limit_by:
+        query &= limit_by
+    query &= ~Q(contraband_type__isnull=True)
+    # Perform query with SQL aggregations
+    qs = (
+        ContrabandSummary.objects.annotate(year=ExtractYear("date"))
+        .filter(query)
+        .values(*group_by)
+        .annotate(
+            # stop_count=Sum("count"),
+            contraband_count=Count("stop", filter=Q(contraband_found=True)),
+            contraband_and_driver_arrest_count=Count(
+                "stop", filter=Q(contraband_found=True, driver_arrest=True)
+            ),
+        )
+        .order_by("contraband_type")
+    )
+    df = pd.DataFrame(qs)
+    if df.empty:
+        df = pd.DataFrame(
+            qs, columns=list(qs.query.values_select) + list(qs.query.annotation_select)
+        )
+    # Query stop counts
+    stop_df = arrest_query(request, agency_id, group_by=("agency_id",))
+    df["stop_count"] = stop_df.iloc[0]["stop_count"] if not stop_df.empty else 0
+    # Calculate rates
+    df["driver_contraband_arrest_rate"] = (
+        df.contraband_and_driver_arrest_count / df.contraband_count
+    )
+    df["driver_stop_arrest_rate"] = df.contraband_and_driver_arrest_count / df.stop_count
     if "driver_race_comb" in group_by:
         # Add custom sortable driver race column
         columns = ["White", "Black", "Hispanic", "Asian", "Native American", "Other"]
@@ -258,56 +316,6 @@ class AgencyArrestsPercentageOfSearchesPerStopPurposeView(APIView):
             return Response(
                 data={"labels": StopPurpose.labels, "arrest_percentages": chart_data}, status=200
             )
-
-
-def contraband_query(request, agency_id, group_by, limit_by=None, debug=False):
-    """
-    # https://nccopwatch-share.s3.amazonaws.com/2023-10-contraband-type/durham-contraband-hit-rate-type.html
-    # https://nccopwatch-share.s3.amazonaws.com/2024-01-arrest-data/arrest-data-preview-v7.html
-    """
-    # Build query to filter down queryest
-    query = Q(agency_id=agency_id) if agency_id else Q()
-    officer_id = request.query_params.get("officer", None)
-    if officer_id:
-        query &= Q(officer_id=officer_id)
-    year = request.query_params.get("year", None)
-    if year:
-        query &= Q(year=year)
-    if limit_by:
-        query &= limit_by
-    query &= ~Q(contraband_type__isnull=True)
-    # Perform query with SQL aggregations
-    qs = (
-        ContrabandSummary.objects.annotate(year=ExtractYear("date"))
-        .filter(query)
-        .values(*group_by)
-        .annotate(
-            # stop_count=Sum("count"),
-            contraband_count=Count("stop", filter=Q(contraband_found=True)),
-            contraband_and_driver_arrest_count=Count(
-                "stop", filter=Q(contraband_found=True, driver_arrest=True)
-            ),
-        )
-        .order_by("contraband_type")
-    )
-    df = pd.DataFrame(qs)
-    print(df)
-    # Query stop counts
-    stop_df = arrest_query(request, agency_id, group_by=("agency_id",))
-    df["stop_count"] = stop_df.iloc[0]["stop_count"]
-    # Calculate rates
-    df["driver_contraband_arrest_rate"] = (
-        df.contraband_and_driver_arrest_count / df.contraband_count
-    )
-    df["driver_stop_arrest_rate"] = df.contraband_and_driver_arrest_count / df.stop_count
-    if "driver_race_comb" in group_by:
-        # Add custom sortable driver race column
-        columns = ["White", "Black", "Hispanic", "Asian", "Native American", "Other"]
-        df["driver_race_category"] = pd.Categorical(df["driver_race_comb"], columns)
-    if debug:
-        print(qs.explain(analyze=True, verbose=True))
-        print(df)
-    return df
 
 
 class AgencyArrestsPercentageOfStopsPerContrabandTypeView(APIView):
