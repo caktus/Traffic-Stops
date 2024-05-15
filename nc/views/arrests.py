@@ -41,8 +41,11 @@ def arrest_table(df, pivot_columns=None, value_key=None, rename_columns=None):
 
 def arrest_query(request, agency_id, group_by, limit_by=None, debug=False):
     """
-    # https://nccopwatch-share.s3.amazonaws.com/2023-10-contraband-type/durham-contraband-hit-rate-type.html
-    # https://nccopwatch-share.s3.amazonaws.com/2024-01-arrest-data/arrest-data-preview-v7.html
+    Query StopSummary view for arrest-related counts.
+
+    Related notebooks:
+    - https://nccopwatch-share.s3.amazonaws.com/2023-10-contraband-type/durham-contraband-hit-rate-type.html
+    - https://nccopwatch-share.s3.amazonaws.com/2024-01-arrest-data/arrest-data-preview-v7.html
     """
     # Build query to filter down queryest
     query = Q(agency_id=agency_id) if agency_id else Q()
@@ -86,10 +89,7 @@ def arrest_query(request, agency_id, group_by, limit_by=None, debug=False):
 
 
 def contraband_query(request, agency_id, group_by, limit_by=None, debug=False):
-    """
-    # https://nccopwatch-share.s3.amazonaws.com/2023-10-contraband-type/durham-contraband-hit-rate-type.html
-    # https://nccopwatch-share.s3.amazonaws.com/2024-01-arrest-data/arrest-data-preview-v7.html
-    """
+    """Query ContrabandSummary for arrest-related counts."""
     # Build query to filter down queryest
     query = Q(agency_id=agency_id) if agency_id else Q()
     officer_id = request.query_params.get("officer", None)
@@ -128,6 +128,7 @@ def contraband_query(request, agency_id, group_by, limit_by=None, debug=False):
         df.contraband_and_driver_arrest_count / df.contraband_count
     )
     df["driver_stop_arrest_rate"] = df.contraband_and_driver_arrest_count / df.stop_count
+    df.fillna(0, inplace=True)
     if "driver_race_comb" in group_by:
         # Add custom sortable driver race column
         columns = ["White", "Black", "Hispanic", "Asian", "Native American", "Other"]
