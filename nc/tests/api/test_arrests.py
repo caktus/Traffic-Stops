@@ -1,12 +1,12 @@
-from django.urls import reverse
 import pandas as pd
-
-from django.test import TestCase
 import pytest
 
-from nc.models import StopPurpose, DriverRace, DriverEthnicity
-from nc.views.arrests import sort_by_stop_purpose
+from django.test import TestCase
+from django.urls import reverse
+
+from nc.models import DriverEthnicity, DriverRace, StopPurpose
 from nc.tests.factories import ContrabandFactory, PersonFactory, SearchFactory
+from nc.views.arrests import sort_by_stop_purpose
 
 
 class ArrestUtilityTests(TestCase):

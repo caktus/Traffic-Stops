@@ -46,7 +46,7 @@ def arrest_query(request, agency_id, group_by, limit_by=None, debug=False):
     Related notebooks:
     - https://nccopwatch-share.s3.amazonaws.com/2023-10-contraband-type/durham-contraband-hit-rate-type.html
     - https://nccopwatch-share.s3.amazonaws.com/2024-01-arrest-data/arrest-data-preview-v7.html
-    """
+    """  # noqa
     # Build query to filter down queryest
     query = Q(agency_id=agency_id) if agency_id else Q()
     officer_id = request.query_params.get("officer", None)
