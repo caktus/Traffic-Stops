@@ -4,6 +4,7 @@ import pytest
 from django.test import TestCase
 from django.urls import reverse
 
+from nc.constants import STATEWIDE
 from nc.models import DriverEthnicity, DriverRace, StopPurpose
 from nc.tests.factories import ContrabandFactory, PersonFactory, SearchFactory
 from nc.views.arrests import sort_by_stop_purpose
@@ -34,7 +35,7 @@ class ArrestUtilityTests(TestCase):
 @pytest.mark.django_db
 class TestArrests:
     def test_arrest_contraband_missing_race(self, client, durham):
-        # A single stop will result no data for other races
+        """A single stop will result no data for other races"""
         person = PersonFactory(
             race=DriverRace.BLACK, ethnicity=DriverEthnicity.NON_HISPANIC, stop__agency=durham
         )
@@ -43,3 +44,17 @@ class TestArrests:
         url = reverse("nc:arrests-percentage-of-stops-per-contraband-type", args=[durham.id])
         response = client.get(url, data={}, format="json")
         assert response.status_code == 200
+
+    def test_statewide(self, client, durham):
+        """Individual agency data should report statewide"""
+        person = PersonFactory(
+            race=DriverRace.BLACK,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=durham,
+            stop__driver_arrest=True,
+        )
+        SearchFactory(stop=person.stop, person=person)
+        url = reverse("nc:arrests-percentage-of-stops", args=[STATEWIDE])
+        response = client.get(url, data={}, format="json")
+        assert response.status_code == 200
+        assert response.json()["arrest_percentages"]

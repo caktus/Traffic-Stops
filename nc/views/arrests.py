@@ -68,7 +68,7 @@ class ArrestSummaryFilterSet(django_filters.FilterSet):
     def qs(self):
         self.queryset = StopSummary.objects.annotate(year=ExtractYear("date"))
         qs = super().qs
-        if self.agency_id != STATEWIDE:
+        if int(self.agency_id) != STATEWIDE:
             qs = qs.filter(agency_id=self.agency_id)
         return qs
 
@@ -130,7 +130,7 @@ class ArrestContrabandSummaryFilterSet(django_filters.FilterSet):
     def qs(self):
         self.queryset = ContrabandSummary.objects.annotate(year=ExtractYear("date"))
         qs = super().qs
-        if self.agency_id != STATEWIDE:
+        if int(self.agency_id) != STATEWIDE:
             qs = qs.filter(agency_id=self.agency_id)
         return qs
 
