@@ -89,3 +89,12 @@ class TestArrests:
         response = client.get(url, data={}, format="json")
         assert response.status_code == 200
         assert response.json()["arrest_percentages"] == []
+
+    def test_year_range(self, client, durham):
+        """Officer pages should only include stops from that officer"""
+        PersonFactory(stop__date="2020-01-15", stop__agency=durham)
+        PersonFactory(stop__date="2002-07-15", stop__agency=durham)
+        url = reverse("nc:year-range", args=[durham.id])
+        response = client.get(url, data={}, format="json")
+        assert response.status_code == 200
+        assert response.json()["year_range"] == [2020, 2002]
