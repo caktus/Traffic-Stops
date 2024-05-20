@@ -14,3 +14,5 @@ DEFAULT_RENAME_COLUMNS = {
     "Native American": "native_american",
     "Other": "other",
 }
+
+STATEWIDE = -1

@@ -1,3 +1,4 @@
+import django_filters
 import pandas as pd
 
 from django.db.models import Count, Q, Sum
@@ -5,7 +6,7 @@ from django.db.models.functions import ExtractYear
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from nc.constants import CONTRABAND_TYPE_COLS, DEFAULT_RENAME_COLUMNS
+from nc.constants import CONTRABAND_TYPE_COLS, DEFAULT_RENAME_COLUMNS, STATEWIDE
 from nc.models import ContrabandSummary, StopPurpose, StopPurposeGroup, StopSummary
 
 
@@ -39,7 +40,40 @@ def arrest_table(df, pivot_columns=None, value_key=None, rename_columns=None):
     return table_data
 
 
-def arrest_query(request, agency_id, group_by, limit_by=None, debug=False):
+class ArrestSummaryFilterSet(django_filters.FilterSet):
+    """FilterSet for StopSummary arrest and stop data"""
+
+    year = django_filters.NumberFilter(field_name="year")
+    grouped_stop_purpose = django_filters.ChoiceFilter(
+        choices=StopPurposeGroup.choices, field_name="stop_purpose_group"
+    )
+    stop_purpose_type = django_filters.CharFilter(method="filter_stop_purpose_type")
+
+    class Meta:
+        model = StopSummary
+        fields = ("stop_purpose",)
+
+    def __init__(self, *args, **kwargs):
+        self.agency_id = kwargs.pop("agency_id")
+        super().__init__(*args, **kwargs)
+
+    def filter_stop_purpose_type(self, queryset, name, value):
+        """Filter by StopPurpose label"""
+        stop_purpose = StopPurpose.get_by_label(value)
+        if stop_purpose:
+            return queryset.filter(stop_purpose=stop_purpose)
+        return queryset
+
+    @property
+    def qs(self):
+        self.queryset = StopSummary.objects.annotate(year=ExtractYear("date"))
+        qs = super().qs
+        if self.agency_id != STATEWIDE:
+            qs = qs.filter(agency_id=self.agency_id)
+        return qs
+
+
+def arrest_query(request, agency_id, group_by, debug=False):
     """
     Query StopSummary view for arrest-related counts.
 
@@ -48,28 +82,16 @@ def arrest_query(request, agency_id, group_by, limit_by=None, debug=False):
     - https://nccopwatch-share.s3.amazonaws.com/2024-01-arrest-data/arrest-data-preview-v7.html
     """  # noqa
     # Build query to filter down queryest
-    query = Q(agency_id=agency_id) if agency_id else Q()
-    officer_id = request.query_params.get("officer", None)
-    if officer_id:
-        query &= Q(officer_id=officer_id)
-    year = request.query_params.get("year", None)
-    if year:
-        query &= Q(year=year)
-    if limit_by:
-        query &= limit_by
+    filter_set = ArrestSummaryFilterSet(request.GET, agency_id=agency_id)
     # Perform query with SQL aggregations
-    qs = (
-        StopSummary.objects.annotate(year=ExtractYear("date"))
-        .filter(query)
-        .values(*group_by)
-        .annotate(
-            stop_count=Sum("count"),
-            search_count=Sum("count", filter=Q(driver_searched=True)),
-            arrest_count=Sum("count", filter=Q(driver_arrest=True)),
-        )
+    qs = filter_set.qs.values(*group_by).annotate(
+        stop_count=Sum("count"),
+        search_count=Sum("count", filter=Q(driver_searched=True)),
+        arrest_count=Sum("count", filter=Q(driver_arrest=True)),
     )
     df = pd.DataFrame(qs)
     if df.empty:
+        # Create empty DF with expected column names
         df = pd.DataFrame(
             qs, columns=list(qs.query.values_select) + list(qs.query.annotation_select)
         )
@@ -88,18 +110,16 @@ def arrest_query(request, agency_id, group_by, limit_by=None, debug=False):
     return df
 
 
-def contraband_query(request, agency_id, group_by, limit_by=None, debug=False):
+def contraband_query(request, agency_id, group_by, debug=False):
     """Query ContrabandSummary for arrest-related counts."""
     # Build query to filter down queryest
-    query = Q(agency_id=agency_id) if agency_id else Q()
+    query = Q(agency_id=agency_id) if agency_id != STATEWIDE else Q()
     officer_id = request.query_params.get("officer", None)
     if officer_id:
         query &= Q(officer_id=officer_id)
     year = request.query_params.get("year", None)
     if year:
         query &= Q(year=year)
-    if limit_by:
-        query &= limit_by
     query &= ~Q(contraband_type__isnull=True)
     # Perform query with SQL aggregations
     qs = (
@@ -198,29 +218,14 @@ class AgencyArrestsPercentageOfStopsByGroupPurposeView(APIView):
     # @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         # Conditionally build table data
-        grouped_stop_purpose = request.query_params.get("grouped_stop_purpose", None)
-        if request.query_params.get("modal") and grouped_stop_purpose:
-            table_df = arrest_query(
-                request,
-                agency_id,
-                group_by=("driver_race_comb", "year"),
-                limit_by=Q(stop_purpose_group=grouped_stop_purpose),
-            )
+        if request.query_params.get("modal"):
+            table_df = arrest_query(request, agency_id, group_by=("driver_race_comb", "year"))
             table_data = arrest_table(table_df, value_key="arrest_count")
             return Response(data={"table_data": table_data}, status=200)
         else:
             # Build chart data
             chart_df = arrest_query(request, agency_id, group_by=("stop_purpose_group",))
-            # Frontend appears to require specific order?
-            chart_df["spg_category"] = pd.Categorical(
-                chart_df["stop_purpose_group"],
-                [
-                    StopPurposeGroup.SAFETY_VIOLATION,
-                    StopPurposeGroup.REGULATORY_EQUIPMENT,
-                    StopPurposeGroup.OTHER,
-                ],
-            )
-            chart_df.sort_values("spg_category", inplace=True)
+            chart_df = sort_by_stop_purpose_group(chart_df)
             chart_data = [
                 {"stop_purpose": row.stop_purpose_group, "data": row.stop_arrest_rate}
                 for row in chart_df.itertuples()
@@ -236,15 +241,9 @@ class AgencyArrestsPercentageOfStopsPerStopPurposeView(APIView):
 
     # @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
-        stop_purpose = StopPurpose.get_by_label(request.query_params.get("stop_purpose_type"))
         # Conditionally build table data
-        if request.query_params.get("modal") and stop_purpose:
-            table_df = arrest_query(
-                request,
-                agency_id,
-                group_by=("driver_race_comb", "year"),
-                limit_by=Q(stop_purpose=stop_purpose),
-            )
+        if request.query_params.get("modal"):
+            table_df = arrest_query(request, agency_id, group_by=("driver_race_comb", "year"))
             table_data = arrest_table(table_df, value_key="arrest_count")
             return Response(data={"table_data": table_data}, status=200)
         else:
@@ -266,14 +265,8 @@ class AgencyArrestsPercentageOfSearchesByGroupPurposeView(APIView):
     # @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         # Conditionally build table data
-        grouped_stop_purpose = request.query_params.get("grouped_stop_purpose", None)
-        if request.query_params.get("modal") and grouped_stop_purpose:
-            table_df = arrest_query(
-                request,
-                agency_id,
-                group_by=("driver_race_comb", "year"),
-                limit_by=Q(stop_purpose_group=grouped_stop_purpose),
-            )
+        if request.query_params.get("modal"):
+            table_df = arrest_query(request, agency_id, group_by=("driver_race_comb", "year"))
             table_data = arrest_table(table_df, value_key="arrest_count")
             return Response(data={"table_data": table_data}, status=200)
         else:
@@ -292,15 +285,9 @@ class AgencyArrestsPercentageOfSearchesPerStopPurposeView(APIView):
 
     # @method_decorator(cache_page(settings.CACHE_COUNT_TIMEOUT))
     def get(self, request, agency_id):
-        stop_purpose = StopPurpose.get_by_label(request.query_params.get("stop_purpose_type"))
         # Conditionally build table data
-        if request.query_params.get("modal") and stop_purpose:
-            table_df = arrest_query(
-                request,
-                agency_id,
-                group_by=("driver_race_comb", "year"),
-                limit_by=Q(stop_purpose=stop_purpose),
-            )
+        if request.query_params.get("modal"):
+            table_df = arrest_query(request, agency_id, group_by=("driver_race_comb", "year"))
             table_data = arrest_table(table_df, value_key="arrest_count")
             return Response(data={"table_data": table_data}, status=200)
         else:
@@ -341,7 +328,7 @@ class AgencyStopsYearRange(APIView):
         qs = StopSummary.objects.annotate(year=ExtractYear("date"))
 
         agency_id = int(agency_id)
-        if agency_id != -1:
+        if agency_id != STATEWIDE:
             qs = qs.filter(agency_id=agency_id)
         officer = request.query_params.get("officer", None)
         if officer:
