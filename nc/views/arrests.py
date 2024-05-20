@@ -192,7 +192,7 @@ class AgencyArrestsPercentageOfStopsView(APIView):
     # @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         # Build chart data
-        chart_df = arrest_query(request, agency_id, group_by=("driver_race_comb",), debug=True)
+        chart_df = arrest_query(request, agency_id, group_by=("driver_race_comb",))
         chart_data = chart_df.sort_values("driver_race_category")["stop_arrest_rate"].to_list()
         # Build table data
         table_df = arrest_query(request, agency_id, group_by=("driver_race_comb", "year"))
