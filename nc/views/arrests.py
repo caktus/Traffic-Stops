@@ -110,24 +110,39 @@ def arrest_query(request, agency_id, group_by, debug=False):
     return df
 
 
+class ArrestContrabandSummaryFilterSet(django_filters.FilterSet):
+    """FilterSet for StopSummary arrest and stop data"""
+
+    year = django_filters.NumberFilter(field_name="year")
+    grouped_stop_purpose = django_filters.ChoiceFilter(
+        choices=StopPurposeGroup.choices, field_name="stop_purpose_group"
+    )
+
+    class Meta:
+        model = ContrabandSummary
+        fields = ("officer_id",)
+
+    def __init__(self, *args, **kwargs):
+        self.agency_id = kwargs.pop("agency_id")
+        super().__init__(*args, **kwargs)
+
+    @property
+    def qs(self):
+        self.queryset = ContrabandSummary.objects.annotate(year=ExtractYear("date"))
+        qs = super().qs
+        if self.agency_id != STATEWIDE:
+            qs = qs.filter(agency_id=self.agency_id)
+        return qs
+
+
 def contraband_query(request, agency_id, group_by, debug=False):
     """Query ContrabandSummary for arrest-related counts."""
     # Build query to filter down queryest
-    query = Q(agency_id=agency_id) if agency_id != STATEWIDE else Q()
-    officer_id = request.query_params.get("officer", None)
-    if officer_id:
-        query &= Q(officer_id=officer_id)
-    year = request.query_params.get("year", None)
-    if year:
-        query &= Q(year=year)
-    query &= ~Q(contraband_type__isnull=True)
+    filter_set = ArrestContrabandSummaryFilterSet(request.GET, agency_id=agency_id)
     # Perform query with SQL aggregations
     qs = (
-        ContrabandSummary.objects.annotate(year=ExtractYear("date"))
-        .filter(query)
-        .values(*group_by)
+        filter_set.qs.values(*group_by)
         .annotate(
-            # stop_count=Sum("count"),
             contraband_count=Count("stop", filter=Q(contraband_found=True)),
             contraband_and_driver_arrest_count=Count(
                 "stop", filter=Q(contraband_found=True, driver_arrest=True)
