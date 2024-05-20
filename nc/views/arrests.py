@@ -48,6 +48,7 @@ class ArrestSummaryFilterSet(django_filters.FilterSet):
         choices=StopPurposeGroup.choices, field_name="stop_purpose_group"
     )
     stop_purpose_type = django_filters.CharFilter(method="filter_stop_purpose_type")
+    officer = django_filters.CharFilter(field_name="officer_id")
 
     class Meta:
         model = StopSummary
@@ -117,10 +118,11 @@ class ArrestContrabandSummaryFilterSet(django_filters.FilterSet):
     grouped_stop_purpose = django_filters.ChoiceFilter(
         choices=StopPurposeGroup.choices, field_name="stop_purpose_group"
     )
+    officer = django_filters.CharFilter(field_name="officer_id")
 
     class Meta:
         model = ContrabandSummary
-        fields = ("officer_id",)
+        fields = ("agency",)
 
     def __init__(self, *args, **kwargs):
         self.agency_id = kwargs.pop("agency_id")
@@ -190,7 +192,7 @@ class AgencyArrestsPercentageOfStopsView(APIView):
     # @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         # Build chart data
-        chart_df = arrest_query(request, agency_id, group_by=("driver_race_comb",))
+        chart_df = arrest_query(request, agency_id, group_by=("driver_race_comb",), debug=True)
         chart_data = chart_df.sort_values("driver_race_category")["stop_arrest_rate"].to_list()
         # Build table data
         table_df = arrest_query(request, agency_id, group_by=("driver_race_comb", "year"))
