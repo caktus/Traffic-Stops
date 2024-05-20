@@ -1,13 +1,18 @@
 import django_filters
 import pandas as pd
 
+from django.conf import settings
 from django.db.models import Count, Q, Sum
 from django.db.models.functions import ExtractYear
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from nc.constants import CONTRABAND_TYPE_COLS, DEFAULT_RENAME_COLUMNS, STATEWIDE
 from nc.models import ContrabandSummary, StopPurpose, StopPurposeGroup, StopSummary
+
+CACHE_TIMEOUT = settings.CACHE_COUNT_TIMEOUT
 
 
 def create_table_data_response(qs, pivot_columns=None, value_key=None, rename_columns=None):
@@ -112,7 +117,7 @@ def arrest_query(request, agency_id, group_by, debug=False):
 
 
 class ArrestContrabandSummaryFilterSet(django_filters.FilterSet):
-    """FilterSet for StopSummary arrest and stop data"""
+    """FilterSet for ContrabandSummary arrest and stop data"""
 
     year = django_filters.NumberFilter(field_name="year")
     grouped_stop_purpose = django_filters.ChoiceFilter(
@@ -189,7 +194,9 @@ def sort_by_stop_purpose_group(df):
 
 
 class AgencyArrestsPercentageOfStopsView(APIView):
-    # @method_decorator(cache_page(CACHE_TIMEOUT))
+    """Traffic Stops Leading to Arrest by Percentage"""
+
+    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         # Build chart data
         chart_df = arrest_query(request, agency_id, group_by=("driver_race_comb",))
@@ -202,7 +209,9 @@ class AgencyArrestsPercentageOfStopsView(APIView):
 
 
 class AgencyArrestsPercentageOfSearchesView(APIView):
-    # @method_decorator(cache_page(CACHE_TIMEOUT))
+    """Searches Leading to Arrest by Percentage"""
+
+    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         # Build chart data
         chart_df = arrest_query(request, agency_id, group_by=("driver_race_comb",))
@@ -215,7 +224,9 @@ class AgencyArrestsPercentageOfSearchesView(APIView):
 
 
 class AgencyCountOfStopsAndArrests(APIView):
-    # @method_decorator(cache_page(CACHE_TIMEOUT))
+    """Traffic Stops Leading to Arrest by Count"""
+
+    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         # Build chart data
         chart_df = arrest_query(request, agency_id, group_by=("driver_race_comb",)).sort_values(
@@ -232,7 +243,9 @@ class AgencyCountOfStopsAndArrests(APIView):
 
 
 class AgencyArrestsPercentageOfStopsByGroupPurposeView(APIView):
-    # @method_decorator(cache_page(CACHE_TIMEOUT))
+    """Percentage of Stops Leading to Arrest by Stop Purpose Group"""
+
+    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         # Conditionally build table data
         if request.query_params.get("modal"):
@@ -256,7 +269,7 @@ class AgencyArrestsPercentageOfStopsByGroupPurposeView(APIView):
 class AgencyArrestsPercentageOfStopsPerStopPurposeView(APIView):
     """Percentage of Stops Leading to Arrest by Stop Purpose Type"""
 
-    # @method_decorator(cache_page(CACHE_TIMEOUT))
+    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         # Conditionally build table data
         if request.query_params.get("modal"):
@@ -279,7 +292,7 @@ class AgencyArrestsPercentageOfStopsPerStopPurposeView(APIView):
 class AgencyArrestsPercentageOfSearchesByGroupPurposeView(APIView):
     """Percentage of Searches Leading to Arrest by Stop Purpose Group"""
 
-    # @method_decorator(cache_page(CACHE_TIMEOUT))
+    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         # Conditionally build table data
         if request.query_params.get("modal"):
@@ -300,7 +313,7 @@ class AgencyArrestsPercentageOfSearchesByGroupPurposeView(APIView):
 class AgencyArrestsPercentageOfSearchesPerStopPurposeView(APIView):
     """Percentage of Searches Leading to Arrest by Stop Purpose Type"""
 
-    # @method_decorator(cache_page(settings.CACHE_COUNT_TIMEOUT))
+    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         # Conditionally build table data
         if request.query_params.get("modal"):
@@ -324,7 +337,9 @@ class AgencyArrestsPercentageOfSearchesPerStopPurposeView(APIView):
 
 
 class AgencyArrestsPercentageOfStopsPerContrabandTypeView(APIView):
-    # @method_decorator(cache_page(settings.CACHE_COUNT_TIMEOUT))
+    """Percentage of Stops Leading to Arrest by Discovered Contraband Type"""
+
+    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         chart_df = contraband_query(request, agency_id, group_by=("contraband_type",))
         chart_data = chart_df["driver_contraband_arrest_rate"].to_list()
@@ -341,6 +356,9 @@ class AgencyArrestsPercentageOfStopsPerContrabandTypeView(APIView):
 
 
 class AgencyStopsYearRange(APIView):
+    """Returns list of years with data for agency/officer"""
+
+    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         filter_set = ArrestSummaryFilterSet(request.GET, agency_id=agency_id)
         year_range = filter_set.qs.order_by("-year").values_list("year", flat=True).distinct("year")
