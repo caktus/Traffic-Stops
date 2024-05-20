@@ -84,7 +84,7 @@ class TestArrests:
         )
         SearchFactory(stop=person.stop, person=person)
         url = reverse_querystring(
-            "nc:arrests-percentage-of-stops", args=[durham.id], query_kwargs={"officer_id": 200}
+            "nc:arrests-percentage-of-stops", args=[durham.id], query_kwargs={"officer": 200}
         )
         response = client.get(url, data={}, format="json")
         assert response.status_code == 200
