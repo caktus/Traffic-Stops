@@ -7,16 +7,26 @@ from tsdata.models import CensusProfile
 
 
 class StopPurpose(models.IntegerChoices):
-    SPEED_LIMIT_VIOLATION = 1, "Speed Limit Violation"  # Safety Violation
-    STOP_LIGHT_SIGN_VIOLATION = 2, "Stop Light/Sign Violation"  # Safety Violation
-    DRIVING_WHILE_IMPAIRED = 3, "Driving While Impaired"  # Safety Violation
-    SAFE_MOVEMENT_VIOLATION = 4, "Safe Movement Violation"  # Safety Violation
-    VEHICLE_EQUIPMENT_VIOLATION = 5, "Vehicle Equipment Violation"  # Regulatory and Equipment
-    VEHICLE_REGULATORY_VIOLATION = 6, "Vehicle Regulatory Violation"  # Regulatory and Equipment
-    OTHER_MOTOR_VEHICLE_VIOLATION = 9, "Other Motor Vehicle Violation"  # Regulatory and Equipment
-    SEAT_BELT_VIOLATION = 7, "Seat Belt Violation"  # Regulatory and Equipment
+    # Safety Violation
+    SPEED_LIMIT_VIOLATION = 1, "Speed Limit Violation"
+    STOP_LIGHT_SIGN_VIOLATION = 2, "Stop Light/Sign Violation"
+    DRIVING_WHILE_IMPAIRED = 3, "Driving While Impaired"
+    SAFE_MOVEMENT_VIOLATION = 4, "Safe Movement Violation"
+    # Regulatory and Equipment
+    VEHICLE_EQUIPMENT_VIOLATION = 5, "Vehicle Equipment Violation"
+    VEHICLE_REGULATORY_VIOLATION = 6, "Vehicle Regulatory Violation"
+    OTHER_MOTOR_VEHICLE_VIOLATION = 9, "Other Motor Vehicle Violation"
+    SEAT_BELT_VIOLATION = 7, "Seat Belt Violation"
+    # Other
     INVESTIGATION = 8, "Investigation"  # Other
     CHECKPOINT = 10, "Checkpoint"  # Other
+
+    @classmethod
+    def get_by_label(cls, label):
+        if label:
+            for purpose in cls:
+                if purpose.label == label:
+                    return purpose
 
 
 class StopPurposeGroup(models.TextChoices):
