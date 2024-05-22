@@ -10,9 +10,9 @@ ansible==6.7.0
 cryptography==37.0.2
 cffi==1.15.0
 Jinja2==3.0.3
-openshift==0.12
+openshift==0.13.2
 kubernetes==12.0.0
-kubernetes-validate~=1.25.0
+kubernetes-validate~=1.29.1
 
 troposphere
 
@@ -22,7 +22,7 @@ sphinx-autobuild
 rstcheck
 
 # AWS tools
-awscli==1.27.109
+awscli==1.32.100
 
 django-debug-toolbar
 

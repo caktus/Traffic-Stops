@@ -4,7 +4,7 @@ The services configured for this project are:
 * PostgreSQL database backups to S3 (within Caktus AWS account)
     * Currently, this is only `traffic_stops`, which contains users, census data, etc.
     * `traffic_stops_nc` is not backed up since the entire dataset is re-imported daily.
-* Papertrail logging (to Caktus account)
+* New Relic logging (to Caktus account)
 * New Relic Infrastructure monitoring (Account: `admin+newrelic@caktusgroup.com`)
 
 
