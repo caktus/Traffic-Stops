@@ -6,7 +6,7 @@ wheel
 
 # deploy
 invoke-kubesae==0.1.0
-ansible==5.9.0
+ansible==6.7.0
 cryptography==37.0.2
 cffi==1.15.0
 Jinja2==3.0.3
