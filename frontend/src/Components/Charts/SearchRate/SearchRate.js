@@ -3,7 +3,7 @@ import SearchRateStyled from './SearchRate.styled';
 import * as S from '../ChartSections/ChartsCommon.styled';
 
 // Data
-import useDataset, { AGENCY_DETAILS, LIKELIHOOD_OF_SEARCH } from '../../../Hooks/useDataset';
+import { LIKELIHOOD_OF_SEARCH } from '../../../Hooks/useDataset';
 
 // Hooks
 import useOfficerId from '../../../Hooks/useOfficerId';
@@ -21,10 +21,8 @@ import HorizontalBarChart from '../../NewCharts/HorizontalBarChart';
 import { ChartContainer } from '../ChartSections/ChartsCommon.styled';
 
 function SearchRate(props) {
-  const { agencyId, yearRange, year } = props;
+  const { agencyId, agencyName, yearRange, year } = props;
   const officerId = useOfficerId();
-
-  const [chartState] = useDataset(agencyId, LIKELIHOOD_OF_SEARCH);
 
   const initData = { labels: [], datasets: [], loading: true };
   const [searchRateData, setSearchRateData] = useState(initData);
@@ -76,7 +74,7 @@ function SearchRate(props) {
                       purposes ${subjectObserving()}.`;
 
   const getBarChartModalHeading = (title) => {
-    let subject = chartState.data[AGENCY_DETAILS].name;
+    let subject = agencyName;
     if (officerId) {
       subject = `Officer ${officerId}`;
     }
@@ -105,7 +103,6 @@ function SearchRate(props) {
             incidents. Use “View Data” to see the numbers underlying the calculations.
           </P>
         </S.ChartDescription>
-
         <ChartContainer override={{ height: '200vh' }}>
           <HorizontalBarChart
             title="Likelihood of Search"
@@ -118,7 +115,7 @@ function SearchRate(props) {
             modalConfig={{
               tableHeader: 'Likelihood of Search',
               tableSubheader: getBarChartModalSubHeading(),
-              agencyName: chartState.data[AGENCY_DETAILS].name,
+              agencyName,
               chartTitle: getBarChartModalHeading('Likelihood of Search'),
             }}
           />

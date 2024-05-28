@@ -33,8 +33,7 @@ import PieChart from '../../NewCharts/PieChart';
 import { pieChartConfig, pieChartLabels } from '../../../util/setChartColors';
 
 function Overview(props) {
-  const { agencyId, yearRange, year } = props;
-
+  const { agencyId, agencyName, yearRange, year } = props;
   const history = useHistory();
   const match = useRouteMatch();
   const officerId = useOfficerId();
@@ -127,7 +126,7 @@ function Overview(props) {
   }
 
   const pieChartTitle = (chartTitle) => {
-    let subject = chartState.data[AGENCY_DETAILS].name;
+    let subject = agencyName;
     if (officerId) {
       subject = `Officer ${officerId}`;
     }
@@ -161,10 +160,7 @@ function Overview(props) {
     }
   }, [chartState.data[USE_OF_FORCE], year]);
 
-  const getPageTitleForShare = () => {
-    const agencyName = chartState.data[AGENCY_DETAILS].name;
-    return `Traffic Stop statistics for ${agencyName}`;
-  };
+  const getPageTitleForShare = () => `Traffic Stop statistics for ${agencyName}`;
 
   const useOfForcePieChartCopy = () => {
     if (officerId) {
@@ -204,7 +200,7 @@ function Overview(props) {
                 tableSubheader: `This data reflects the race/ethnic composition based on the most recent census data.
             While it can be used for general comparative purposes, the actual driving population may
             vary significantly from these figures.`,
-                agencyName: chartState.data[AGENCY_DETAILS].name,
+                agencyName,
                 chartTitle: pieChartTitle('Census Demographics'),
               }}
             />
@@ -229,7 +225,7 @@ function Overview(props) {
                 tableSubheader: getChartModalSubHeading(
                   'Shows the race/ethnic composition of drivers stopped'
                 ),
-                agencyName: chartState.data[AGENCY_DETAILS].name,
+                agencyName,
                 chartTitle: pieChartTitle('Traffic Stops'),
               }}
             />
@@ -256,7 +252,7 @@ function Overview(props) {
                 tableSubheader: getChartModalSubHeading(
                   'Shows the race/ethnic composition of drivers searched'
                 ),
-                agencyName: chartState.data[AGENCY_DETAILS].name,
+                agencyName,
                 chartTitle: pieChartTitle('Searches'),
               }}
             />
@@ -277,7 +273,7 @@ function Overview(props) {
               modalConfig={{
                 tableHeader: 'Use of Force',
                 tableSubheader: getOverviewSubheader(),
-                agencyName: chartState.data[AGENCY_DETAILS].name,
+                agencyName,
                 chartTitle: pieChartTitle('Use of Force'),
               }}
             />
