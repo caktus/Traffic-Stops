@@ -10,7 +10,7 @@ import pandas as pd
 from dateutil import relativedelta
 from django.conf import settings
 from django.core.mail import send_mail
-from django.db.models import Case, Count, F, Q, Sum, Value, When
+from django.db.models import Count, Q, Sum
 from django.db.models.functions import ExtractYear
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page, never_cache
@@ -29,7 +29,6 @@ from nc.filters import DriverStopsFilter
 from nc.models import SEARCH_TYPE_CHOICES as SEARCH_TYPE_CHOICES_TUPLES
 from nc.models import (
     Agency,
-    Contraband,
     ContrabandSummary,
     Person,
     Resource,
@@ -259,80 +258,6 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
             filter_=q,
         )
         return Response(results.flatten())
-
-    @action(detail=True, methods=["get"])
-    @cache_response(key_func=query_cache_key_func)
-    def contraband_hit_rate(self, request, pk=None):
-        response = {}
-        # searches
-        results = GroupedData(by="year", defaults=GROUP_DEFAULTS)
-        q = Q(search_type__isnull=False)
-        self.query(results, group_by=("year", "driver_race", "driver_ethnicity"), filter_=q)
-        response["searches"] = results.flatten()
-
-        # contraband
-        results = GroupedData(by="year", defaults=GROUP_DEFAULTS)
-        q = Q(contraband_found=True)
-        self.query(results, group_by=("year", "driver_race", "driver_ethnicity"), filter_=q)
-        response["contraband"] = results.flatten()
-
-        # # contraband types
-        qs = Contraband.objects.filter(stop__agency=self.get_object(), person__type="D")
-        # # filter down by officer if supplied
-        officer = self.request.query_params.get("officer", None)
-        if officer:
-            qs = qs.filter(stop__officer_id=officer)
-        qs = qs.annotate(
-            year=ExtractYear("stop__date"),
-            driver_race=F("person__race"),
-            driver_ethnicity=F("person__ethnicity"),
-            drugs_found=Case(
-                When(
-                    Q(ounces__gt=0)
-                    | Q(pounds__gt=0)
-                    | Q(dosages__gt=0)
-                    | Q(grams__gt=0)
-                    | Q(kilos__gt=0),
-                    then=Value(True),
-                ),
-                default=Value(False),
-            ),
-            alcohol_found=Case(
-                When(Q(pints__gt=0) | Q(gallons__gt=0), then=Value(True)), default=Value(False)
-            ),
-            money_found=Case(When(Q(money__gt=0), then=Value(True)), default=Value(False)),
-            weapons_found=Case(When(Q(weapons__gt=0), then=Value(True)), default=Value(False)),
-            other_found=Case(When(Q(dollar_amount__gt=0), then=Value(True)), default=Value(False)),
-        )
-
-        results = GroupedData(by=("contraband_type", "year"), defaults=GROUP_DEFAULTS)
-        # group by specified fields and order by year
-        group_by = ("year", "driver_ethnicity", "driver_race")
-        for contraband_type in CONTRABAND_CHOICES.values():
-            field_name = f"{contraband_type.lower()}_found"
-            type_qs = (
-                qs.filter(**{field_name: True})
-                .values(*group_by)
-                .order_by("year")
-                .annotate(contraband_type_count=Count(field_name))
-            )
-            for contraband in type_qs:
-                data = {
-                    "year": contraband["year"],
-                    "contraband_type": contraband_type,
-                }
-                if "driver_race" in group_by:
-                    # The 'Hispanic' ethnicity option is now being aggregated into its
-                    # own race category, and its count excluded from the other counts.
-                    if contraband["driver_ethnicity"] == "H":
-                        race = GROUPS.get("H", "H")
-                    else:
-                        race = GROUPS.get(contraband["driver_race"], contraband["driver_race"])
-                    data.setdefault(race, 0)
-                    data[race] += contraband["contraband_type_count"]
-                results.add(**data)
-        response["contraband_types"] = results.flatten()
-        return Response(response)
 
 
 class DriverStopsViewSet(viewsets.ReadOnlyModelViewSet):
