@@ -16,7 +16,6 @@ API_ENDPOINT_NAMES = (
     "nc:agency-api-stops-by-reason",
     "nc:agency-api-searches",
     "nc:agency-api-searches-by-type",
-    "nc:agency-api-contraband-hit-rate",
     "nc:agency-api-use-of-force",
     "nc:stops-by-percentage",
     "nc:stops-by-count",

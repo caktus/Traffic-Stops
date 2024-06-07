@@ -1,6 +1,5 @@
 from django.test import TestCase
 
-from nc.models import Agency
 from nc.prime_cache import run
 from nc.tests import factories
 
