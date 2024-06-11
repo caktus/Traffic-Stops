@@ -10,7 +10,7 @@ black==24.4.2
     # via -r requirements/test/test.in
 cfgv==3.1.0
     # via pre-commit
-click==8.1.3
+click==8.1.7
     # via
     #   -c requirements/test/../base/base.txt
     #   black
