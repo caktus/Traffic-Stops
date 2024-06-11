@@ -8,7 +8,7 @@ RUN npm install --silent
 COPY frontend/ /code/
 RUN npm run build
 
-FROM python:3.8-slim-bullseye as base
+FROM python:3.11-slim-bullseye as base
 
 # Create a group and user to run our app
 ARG APP_USER=appuser
@@ -93,7 +93,7 @@ ENTRYPOINT ["/code/docker-entrypoint.sh"]
 # Start uWSGI
 CMD ["newrelic-admin", "run-program", "uwsgi", "--single-interpreter", "--enable-threads", "--show-config"]
 
-FROM python:3.8-slim-bullseye AS dev
+FROM python:3.11-slim-bullseye AS dev
 
 ARG USERNAME=appuser
 ARG USER_UID=1000
