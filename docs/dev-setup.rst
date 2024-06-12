@@ -5,7 +5,7 @@ Below you will find basic setup and deployment instructions for the NC Traffic
 Stops project. To begin you should have the following applications installed on
 your local development system:
 
-- Python 3.11
+- Python 3.10
 - NodeJS >= 12.6.0
 - `pip >= 8 or so <http://www.pip-installer.org/>`_
 - Postgres >= 12

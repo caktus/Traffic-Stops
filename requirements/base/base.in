@@ -1,5 +1,5 @@
 # base requirements.in
-django==3.2.14
+django==3.2.25
 celery
 census==0.8.22
 us
