@@ -7,6 +7,17 @@ The services configured for this project are:
 * Papertrail logging (to Caktus account)
 * New Relic Infrastructure monitoring (Account: `admin+newrelic@caktusgroup.com`)
 
+## Monitoring
+
+Amazon CloudWatch Metrics receives data via the [aws-cloudwatch-metrics](https://github.com/aws/eks-charts/tree/master/stable/aws-cloudwatch-metrics)
+Helm chart. To view metrics, login to the AWS account (via the Caktus AssumeRole, above), then:
+
+- Go to CloudWatch
+- Click "All Metrics"
+- Click "ContainerInsights"
+- Drill down as needed
+
+CloudWatch Alarms can be created via Ansible, e.g., to provide an alert on high CPU utilization. See `deploy/deploy-cluster.yml` and add to the "Create alarms" task, as needed.
 
 ## Production database disaster recovery
 

@@ -3,3 +3,47 @@
   gather_facts: false
   roles:
     - role: caktus.k8s-web-cluster
+  tasks:
+    - name: Create Amazon CloudWatch Metrics namespace
+      tags: cloudwatch
+      community.kubernetes.k8s:
+        context: "{{ k8s_context|mandatory }}"
+        kubeconfig: "{{ k8s_kubeconfig }}"
+        name: "{{ k8s_aws_cloudwatch_metrics_namespace }}"
+        api_version: v1
+        kind: Namespace
+        state: present
+    - name: Add AWS CloudWatch Metrics helm chart (monitoring)
+      tags: cloudwatch
+      community.kubernetes.helm:
+        context: "{{ k8s_context|mandatory }}"
+        kubeconfig: "{{ k8s_kubeconfig }}"
+        chart_repo_url: "https://aws.github.io/eks-charts"
+        chart_ref: aws-cloudwatch-metrics
+        # https://artifacthub.io/packages/helm/aws/aws-cloudwatch-metrics
+        chart_version: "{{ k8s_aws_cloudwatch_metrics_chart_version }}"
+        release_name: aws-cloudwatch-metrics
+        release_namespace: "{{ k8s_aws_cloudwatch_metrics_namespace }}"
+        release_values:
+          clusterName: "{{ k8s_aws_cluster_name }}"
+        wait: yes
+    - name: Create alarms
+      tags: cloudwatch
+      amazon.aws.cloudwatch_metric_alarm:
+        state: present
+        region: "{{ aws_region }}"
+        name: "{{ item.name }}"
+        description: "{{ item.description }}"
+        metric: "{{ item.metric }}"
+        namespace: "ContainerInsights"
+        dimensions:
+          ClusterName: "{{ k8s_aws_cluster_name }}"
+        statistic: Average
+        comparison: "{{ item.comparison }}"
+        threshold: "{{ item.threshold }}"
+        period: "{{ item.period }}"
+        evaluation_periods: "{{ item.evaluation_periods }}"
+        alarm_actions:
+          - "{{ k8s_aws_sns_name }}"
+      loop:
+        "{{ k8s_aws_cloudwatch_metrics_alarms }}"
