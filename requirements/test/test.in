@@ -3,10 +3,10 @@
 
 pyyaml
 isort
-pytest
-pytest-cov
+pytest==8.2.2
+pytest-cov==5.0.0
 factory_boy
-pytest-django
+pytest-django==4.8.0
 coverage
 # Linting
 flake8

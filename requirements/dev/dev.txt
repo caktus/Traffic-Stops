@@ -22,7 +22,6 @@ asgiref==3.5.2
     #   django
 attrs==19.3.0
     # via
-    #   -c requirements/dev/../test/test.txt
     #   jsonschema
     #   referencing
 awscli==1.32.100
@@ -281,9 +280,7 @@ urwid==2.1.0
 watchdog==0.10.3
     # via sphinx-autobuild
 wcwidth==0.1.9
-    # via
-    #   -c requirements/dev/../test/test.txt
-    #   prompt-toolkit
+    # via prompt-toolkit
 websocket-client==0.57.0
     # via kubernetes
 wheel==0.37.1
