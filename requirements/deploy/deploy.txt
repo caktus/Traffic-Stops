@@ -18,5 +18,5 @@ urllib3==2.2.1
     # via
     #   -c requirements/deploy/../base/base.txt
     #   sentry-sdk
-uwsgi==2.0.18
+uwsgi==2.0.26
     # via -r requirements/deploy/deploy.in

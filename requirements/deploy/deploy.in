@@ -3,4 +3,4 @@
 python3-memcached
 newrelic==9.10.0
 sentry-sdk==2.5.1
-uwsgi
+uwsgi==2.0.26
