@@ -110,7 +110,7 @@ k8s_aws_load_balancer_type: nlb
 # k8s_papertrail_logspout_memory_limit: 128Mi
 
 # New Relic Account: forwardjustice-team@caktusgroup.com
-k8s_newrelic_chart_version: "5.0.68"
+k8s_newrelic_chart_version: "5.0.82"
 k8s_newrelic_logging_enabled: true
 k8s_newrelic_license_key: !vault |
   $ANSIBLE_VAULT;1.1;AES256
