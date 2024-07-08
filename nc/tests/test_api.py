@@ -26,9 +26,10 @@ class AgencyTests(APITestCase):
         agency = factories.AgencyFactory()
         url = reverse("nc:agency-api-list")
         response = self.client.get(url, format="json")
+        response_data = response.json()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # Other Agencies may have been left around from other tests
-        self.assertIn((agency.pk, agency.name), [(a["id"], a["name"]) for a in response.data])
+        self.assertIn((agency.pk, agency.name), [(a["id"], a["name"]) for a in response_data])
 
     def test_agency_census_data(self):
         """
@@ -39,19 +40,21 @@ class AgencyTests(APITestCase):
         agency = factories.AgencyFactory(census_profile_id=census_profile.id)
         url = reverse("nc:agency-api-detail", args=[agency.pk])
         response = self.client.get(url, format="json")
+        response_data = response.json()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn("census_profile", response.data)
+        self.assertIn("census_profile", response_data)
         # CensusProfile tests check census data in more detail
         for attr in ("hispanic", "non_hispanic", "total"):
-            self.assertEqual(response.data["census_profile"][attr], getattr(census_profile, attr))
+            self.assertEqual(response_data["census_profile"][attr], getattr(census_profile, attr))
 
     def test_stops_api(self):
         """Test Agency stops API endpoint with no stops"""
         agency = factories.AgencyFactory()
         url = reverse("nc:agency-api-stops", args=[agency.pk])
         response = self.client.get(url, format="json")
+        response_data = response.json()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 0)
+        self.assertEqual(len(response_data), 0)
 
     def test_stops_count(self):
         """Test Agency stop counts"""
@@ -73,18 +76,19 @@ class AgencyTests(APITestCase):
         factories.PersonFactory(race="I", stop__agency=agency, ethnicity="H", stop__year=2012)
 
         url = reverse("nc:agency-api-stops", args=[agency.pk])
-        response = self.client.get(url, format="json")
-        self.assertEqual(len(response.data), 2)
+        response = self.client.get(url, format="application/json")
+        response_data = response.json()
+        self.assertEqual(len(response_data), 2)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data[0]["year"], 2010)
-        self.assertEqual(response.data[0]["black"], 2)
-        self.assertEqual(response.data[0]["white"], 1)
-        self.assertEqual(response.data[0]["asian"], 0)
-        self.assertEqual(response.data[0]["hispanic"], 3)
-        self.assertEqual(response.data[1]["year"], 2012)
-        self.assertEqual(response.data[1]["black"], 0)
-        self.assertEqual(response.data[1]["white"], 1)
-        self.assertEqual(response.data[1]["hispanic"], 4)
+        self.assertEqual(response_data[0]["year"], 2010)
+        self.assertEqual(response_data[0]["black"], 2)
+        self.assertEqual(response_data[0]["white"], 1)
+        self.assertEqual(response_data[0]["asian"], 0)
+        self.assertEqual(response_data[0]["hispanic"], 3)
+        self.assertEqual(response_data[1]["year"], 2012)
+        self.assertEqual(response_data[1]["black"], 0)
+        self.assertEqual(response_data[1]["white"], 1)
+        self.assertEqual(response_data[1]["hispanic"], 4)
 
     def test_grouping_by_year(self):
         """
@@ -111,12 +115,13 @@ class AgencyTests(APITestCase):
         )
         url = reverse("nc:agency-api-stops", args=[agency.pk])
         response = self.client.get(url, format="json")
+        response_data = response.json()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 2)
-        self.assertEqual(response.data[0]["year"], year)
-        self.assertEqual(response.data[0][race_label], 1)
-        self.assertEqual(response.data[1]["year"], year + 1)
-        self.assertEqual(response.data[1]["hispanic"], 1)
+        self.assertEqual(len(response_data), 2)
+        self.assertEqual(response_data[0]["year"], year)
+        self.assertEqual(response_data[0][race_label], 1)
+        self.assertEqual(response_data[1]["year"], year + 1)
+        self.assertEqual(response_data[1]["hispanic"], 1)
 
     def test_officer_stops_count(self):
         """Test officer (within an agency) stop counts"""
@@ -131,12 +136,12 @@ class AgencyTests(APITestCase):
         url = reverse("nc:agency-api-stops", args=[agency.pk])
         url = "{}?officer={}".format(url, p1.stop.officer_id)
         response = self.client.get(url, format="json")
+        response_data = response.json()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 2)
-        self.assertEqual(response.data[0]["year"], p1.stop.date.year)
-        self.assertEqual(response.data[0][GROUPS[p1.race]], 1)
-        self.assertEqual(response.data[1]["year"], p2.stop.date.year)
-        self.assertEqual(response.data[1]["hispanic"], 2)
+        self.assertEqual(len(response_data), 2)
+        self.assertEqual(response_data[0]["year"], p1.stop.date.year)
+        self.assertEqual(response_data[1]["year"], p2.stop.date.year)
+        self.assertEqual(response_data[1]["hispanic"], 2)
 
     def test_stops_by_reason(self):
         """Test Agency stops_by_reason API endpoint"""
@@ -189,10 +194,11 @@ class AgencyTests(APITestCase):
         factories.SearchFactory(stop=p5.stop)
 
         response = self.client.get(url, format="json")
+        response_data = response.json()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data.keys()), 2)
+        self.assertEqual(len(response_data.keys()), 2)
 
-        searches = response.data["searches"]
+        searches = response_data["searches"]
         self.assertEqual(searches[0]["year"], 2010)
         self.assertEqual(searches[0]["black"], 0)
         self.assertEqual(searches[0]["hispanic"], 3)
@@ -201,7 +207,7 @@ class AgencyTests(APITestCase):
         self.assertEqual(searches[1]["black"], 1)
         self.assertEqual(searches[1]["purpose"], purpose_label)
 
-        stops = response.data["stops"]
+        stops = response_data["stops"]
         self.assertEqual(stops[0]["year"], 2010)
         self.assertEqual(stops[0]["black"], 1)
         self.assertEqual(stops[0]["hispanic"], 3)
@@ -227,16 +233,17 @@ class AgencyTests(APITestCase):
         factories.SearchFactory(person=p5, stop=p5.stop)
         url = reverse("nc:agency-api-searches", args=[agency.pk])
         response = self.client.get(url, format="json")
+        response_data = response.json()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 2)
+        self.assertEqual(len(response_data), 2)
         # Everyone got searched, so the expected racial data for 2015 are: 1 black,
         # and for 2016 are: 1 native american, 3 hispanic
-        self.assertEqual(response.data[0]["year"], s1.stop.date.year)
-        self.assertEqual(response.data[0]["black"], 1)
-        self.assertEqual(response.data[1]["year"], s2.stop.date.year)
-        self.assertEqual(response.data[1]["black"], 0)
-        self.assertEqual(response.data[1]["native_american"], 1)
-        self.assertEqual(response.data[1]["hispanic"], 3)
+        self.assertEqual(response_data[0]["year"], s1.stop.date.year)
+        self.assertEqual(response_data[0]["black"], 1)
+        self.assertEqual(response_data[1]["year"], s2.stop.date.year)
+        self.assertEqual(response_data[1]["black"], 0)
+        self.assertEqual(response_data[1]["native_american"], 1)
+        self.assertEqual(response_data[1]["hispanic"], 3)
 
     def test_searches_by_reason(self):
         agency = factories.AgencyFactory()
@@ -259,18 +266,18 @@ class AgencyTests(APITestCase):
         factories.SearchFactory(person=p5, stop=p5.stop, type=type_code)
 
         response = self.client.get(url, format="json")
+        response_data = response.json()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # Two years = two items
-        self.assertEqual(len(response.data), 2)
+        self.assertEqual(len(response_data), 2)
 
-        searches = response.data
-        self.assertEqual(searches[0]["year"], 2015)
-        self.assertEqual(searches[0]["black"], 1)
-        self.assertEqual(searches[0]["search_type"], type_label)
-        self.assertEqual(searches[1]["year"], 2016)
-        self.assertEqual(searches[1]["hispanic"], 3)
-        self.assertEqual(searches[1]["native_american"], 1)
-        self.assertEqual(searches[1]["search_type"], type_label)
+        self.assertEqual(response_data[0]["year"], 2015)
+        self.assertEqual(response_data[0]["black"], 1)
+        self.assertEqual(response_data[0]["search_type"], type_label)
+        self.assertEqual(response_data[1]["year"], 2016)
+        self.assertEqual(response_data[1]["hispanic"], 3)
+        self.assertEqual(response_data[1]["native_american"], 1)
+        self.assertEqual(response_data[1]["search_type"], type_label)
 
     def test_use_of_force(self):
         pass
