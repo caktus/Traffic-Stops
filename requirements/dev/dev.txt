@@ -151,6 +151,8 @@ pexpect==4.8.0
     # via ipython
 pickleshare==0.7.5
     # via ipython
+pkgutil-resolve-name==1.3.10
+    # via jsonschema
 port-for==0.3.1
     # via sphinx-autobuild
 prompt-toolkit==3.0.47
