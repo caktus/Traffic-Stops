@@ -5,7 +5,7 @@ Below you will find basic setup and deployment instructions for the NC Traffic
 Stops project. To begin you should have the following applications installed on
 your local development system:
 
-- Python 3.8
+- Python 3.10
 - NodeJS >= 12.6.0
 - `pip >= 8 or so <http://www.pip-installer.org/>`_
 - Postgres >= 12
@@ -85,8 +85,8 @@ To use ``psql`` locally, make sure you have the following env variables loaded
 To setup your local environment you should create a virtualenv and install the
 necessary requirements::
 
-    $ which python3.8  # make sure you have Python 3.8 installed
-    $ mkvirtualenv --python=`which python3.8` traffic-stops
+    $ which python3.11  # make sure you have Python 3.11 installed
+    $ mkvirtualenv --python=`which python3.11` traffic-stops
     (traffic-stops)$ pip install -U pip
     (traffic-stops)$ make setup
 

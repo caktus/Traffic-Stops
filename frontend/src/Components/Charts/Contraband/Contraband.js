@@ -15,7 +15,7 @@ import useMetaTags from '../../../Hooks/useMetaTags';
 import useTableModal from '../../../Hooks/useTableModal';
 
 // State
-import useDataset, { AGENCY_DETAILS, CONTRABAND_HIT_RATE } from '../../../Hooks/useDataset';
+import useDataset, { AGENCY_DETAILS } from '../../../Hooks/useDataset';
 
 // Children
 import { P, WEIGHTS } from '../../../styles/StyledComponents/Typography';
@@ -37,7 +37,7 @@ function Contraband(props) {
   const { agencyId, yearRange, year } = props;
 
   const officerId = useOfficerId();
-  const [chartState] = useDataset(agencyId, CONTRABAND_HIT_RATE);
+  const [chartState] = useDataset(agencyId, AGENCY_DETAILS);
 
   useEffect(() => {
     if (window.location.hash) {

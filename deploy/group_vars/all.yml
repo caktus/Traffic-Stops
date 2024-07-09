@@ -41,7 +41,7 @@ cloudformation_stack:
     MaxScale: 4
     UseAES256Encryption: "true"
     CustomerManagedCmkArn: ""
-    ContainerInstanceType: t3a.medium
+    ContainerInstanceType: t3a.large
     ContainerVolumeSize: 40
     DatabaseAllocatedStorage: 100
     DatabaseClass: db.t3.large
