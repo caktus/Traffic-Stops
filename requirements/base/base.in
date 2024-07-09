@@ -1,6 +1,6 @@
 # base requirements.in
 django==3.2.25
-celery
+celery==5.4.0
 census==0.8.22
 us
 dealer
@@ -27,4 +27,5 @@ requests==2.32.3
 urllib3==2.2.1
 six
 whitenoise
-pandas<1.5
+pandas==2.2.2
+vine==5.1.0
