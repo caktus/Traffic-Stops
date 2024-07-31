@@ -106,10 +106,8 @@ k8s_aws_load_balancer_type: nlb
 # caktus.k8s-hosting-services: Logging and monitoring configuration
 # ----------------------------------------------------------------------------
 
-k8s_papertrail_logspout_destination: "syslog+tls://logs2.papertrailapp.com:20851"
-k8s_papertrail_logspout_memory_limit: 128Mi
-
 # New Relic Account: forwardjustice-team@caktusgroup.com
+# https://github.com/newrelic/helm-charts/releases
 k8s_newrelic_chart_version: "5.0.4"
 k8s_newrelic_logging_enabled: true
 k8s_newrelic_license_key: !vault |
@@ -120,3 +118,20 @@ k8s_newrelic_license_key: !vault |
   3163313364666132340a636330353366613061306361303737303332383431336263323135393232
   65303530343134383464616561383139643263326661636133316534303934346438643366666663
   3136353834393937356364356235393236643835663965643532
+k8s_newrelic_values_newrelic_infrastructure:
+  # New Relic Kubernetes monitoring solution.
+  # newrelic-infrastructure.enabled -- Install the [`newrelic-infrastructure` chart](https://github.com/newrelic/nri-kubernetes/tree/main/charts/newrelic-infrastructure)
+  enabled: "{{ k8s_newrelic_infrastructure_enabled }}"
+  integrations:
+    nri-redis-sampleapp:
+      discovery:
+        command:
+          exec: /var/db/newrelic-infra/nri-discovery-kubernetes --tls --port 10250
+          match:
+            label.app: redis
+      integrations:
+        - name: nri-redis
+          env:
+            # using the discovered IP as the hostname address
+            HOSTNAME: ${discovery.ip}
+            PORT: 6379
