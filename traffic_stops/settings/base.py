@@ -317,6 +317,10 @@ LOGIN_URL = "account_login"
 LOGIN_REDIRECT_URL = "home"
 
 REST_FRAMEWORK_EXTENSIONS = {"DEFAULT_CACHE_RESPONSE_TIMEOUT": 60 * 60 * 24 * 60}  # 60 days
+REST_FRAMEWORK = {
+    "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",),
+    "DEFAULT_PARSER_CLASSES": ("rest_framework.parsers.JSONParser",),
+}
 
 CACHE_COUNT_TIMEOUT = 60 * 60 * 24 * 60  # 60 days
 CACHE_HOST = os.getenv("CACHE_HOST", "")
