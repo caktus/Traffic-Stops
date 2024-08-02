@@ -46,7 +46,7 @@ class ArrestUtilityTests(TestCase):
         self.assertEqual(sort_by_stop_purpose(df)["stop_purpose"].tolist(), StopPurpose.values)
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db(databases=["traffic_stops_nc"])
 class TestArrests:
     def test_arrest_contraband_missing_race(self, client, durham):
         """A single stop will result no data for other races"""

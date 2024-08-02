@@ -23,6 +23,7 @@ def august_person(durham):
     return factories.PersonFactory(stop__agency=durham, stop__date=stop_date)
 
 
+@pytest.mark.django_db(databases=["traffic_stops_nc"])
 def test_stop_date_after_august_excludes_july_stop(client, search_url, durham, july_person):
     response = client.get(
         search_url,
@@ -33,6 +34,7 @@ def test_stop_date_after_august_excludes_july_stop(client, search_url, durham, j
     assert july_person.stop.stop_id not in stop_ids
 
 
+@pytest.mark.django_db(databases=["traffic_stops_nc"])
 def test_stop_date_after_august_includes_august_stop(client, search_url, durham, august_person):
     response = client.get(
         search_url,
@@ -44,6 +46,7 @@ def test_stop_date_after_august_includes_august_stop(client, search_url, durham,
     assert august_person.stop.date == response.data["results"][0]["date"]
 
 
+@pytest.mark.django_db(databases=["traffic_stops_nc"])
 def test_stop_date_after_july_includes_both(client, search_url, durham, july_person, august_person):
     response = client.get(
         search_url,
