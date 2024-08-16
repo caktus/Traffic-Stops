@@ -16,6 +16,11 @@ urlpatterns = [  # noqa
     re_path(r"^api/", include(router.urls)),
     path("api/about/contact/", csrf_exempt(views.ContactView.as_view()), name="contact-form"),
     path(
+        "api/agency/<agency_id>/year-range/",
+        views.AgencyStopsYearRange.as_view(),
+        name="year-range",
+    ),
+    path(
         "api/agency/<agency_id>/stops-by-percentage/",
         views.AgencyTrafficStopsByPercentageView.as_view(),
         name="stops-by-percentage",
@@ -79,5 +84,45 @@ urlpatterns = [  # noqa
         "api/agency/<agency_id>/use-of-force/",
         views.AgencyUseOfForceView.as_view(),
         name="use-of-force",
+    ),
+    path(
+        "api/agency/<agency_id>/arrests-percentage-of-stops/",
+        views.AgencyArrestsPercentageOfStopsView.as_view(),
+        name="arrests-percentage-of-stops",
+    ),
+    path(
+        "api/agency/<agency_id>/arrests-percentage-of-searches/",
+        views.AgencyArrestsPercentageOfSearchesView.as_view(),
+        name="arrests-percentage-of-searches",
+    ),
+    path(
+        "api/agency/<agency_id>/arrests-stops-driver-arrested/",
+        views.AgencyCountOfStopsAndArrests.as_view(),
+        name="arrests-stops-driver-arrested",
+    ),
+    path(
+        "api/agency/<agency_id>/arrests-percentage-of-stops-by-purpose-group/",
+        views.AgencyArrestsPercentageOfStopsByGroupPurposeView.as_view(),
+        name="arrests-percentage-of-stops-by-purpose-group",
+    ),
+    path(
+        "api/agency/<agency_id>/arrests-percentage-of-stops-per-stop-purpose/",
+        views.AgencyArrestsPercentageOfStopsPerStopPurposeView.as_view(),
+        name="arrests-percentage-of-stops-per-stop-purpose",
+    ),
+    path(
+        "api/agency/<agency_id>/arrests-percentage-of-searches-by-purpose-group/",
+        views.AgencyArrestsPercentageOfSearchesByGroupPurposeView.as_view(),
+        name="arrests-percentage-of-searches-by-purpose-group",
+    ),
+    path(
+        "api/agency/<agency_id>/arrests-percentage-of-searches-per-stop-purpose/",
+        views.AgencyArrestsPercentageOfSearchesPerStopPurposeView.as_view(),
+        name="arrests-percentage-of-searches-per-stop-purpose",
+    ),
+    path(
+        "api/agency/<agency_id>/arrests-percentage-of-stops-per-contraband-type/",
+        views.AgencyArrestsPercentageOfStopsPerContrabandTypeView.as_view(),
+        name="arrests-percentage-of-stops-per-contraband-type",
     ),
 ]

@@ -9,6 +9,7 @@ import {
   calculatePercentage,
   calculateYearTotal,
   reduceYearsToTotal,
+  RACE_TABLE_COLUMNS,
 } from '../chartUtils';
 
 // State
@@ -21,20 +22,18 @@ import useTableModal from '../../../Hooks/useTableModal';
 // Children
 import { P } from '../../../styles/StyledComponents/Typography';
 import ChartHeader from '../ChartSections/ChartHeader';
-import DataSubsetPicker from '../ChartSections/DataSubsetPicker/DataSubsetPicker';
 import useOfficerId from '../../../Hooks/useOfficerId';
 import PieChart from '../../NewCharts/PieChart';
 import { pieChartConfig, pieChartLabels } from '../../../util/setChartColors';
 import VerticalBarChart from '../../NewCharts/VerticalBarChart';
 import axios from '../../../Services/Axios';
+import { ChartContainer } from '../ChartSections/ChartsCommon.styled';
 
 function UseOfForce(props) {
-  const { agencyId, showCompare } = props;
+  const { agencyId, year } = props;
   const officerId = useOfficerId();
 
   const [chartState] = useDataset(agencyId, USE_OF_FORCE);
-
-  const [year, setYear] = useState(YEARS_DEFAULT);
 
   const [useOfForceBarData, setUseOfForceBarData] = useState({
     labels: [],
@@ -110,15 +109,9 @@ function UseOfForce(props) {
     }
   }, [chartState.data[USE_OF_FORCE], year]);
 
-  /* INTERACTIONS */
-  // Handle year dropdown state
-  const handleYearSelected = (y) => {
-    if (y === year) return;
-    setYear(y);
-  };
   // Handle stops by percentage legend interactions
   const handleViewData = () => {
-    openModal(USE_OF_FORCE, TABLE_COLUMNS);
+    openModal(USE_OF_FORCE, RACE_TABLE_COLUMNS);
   };
 
   const chartModalTitle = (displayYear = true) => {
@@ -153,8 +146,9 @@ function UseOfForce(props) {
             against.
           </P>
         </S.ChartDescription>
-        <S.ChartSubsection showCompare={showCompare}>
+        <ChartContainer>
           <VerticalBarChart
+            maintainAspectRatio={false}
             title="Use Of Force"
             data={useOfForceBarData}
             modalConfig={{
@@ -164,67 +158,23 @@ function UseOfForce(props) {
               chartTitle: chartModalTitle(false),
             }}
           />
-        </S.ChartSubsection>
-        <S.ChartSubsection>
-          <S.PieWrapper>
-            <PieChart
-              data={useOfForcePieData}
-              displayLegend={false}
-              maintainAspectRatio
-              modalConfig={{
-                tableHeader: 'Use of Force',
-                tableSubheader: getChartModalSubHeading(),
-                agencyName: chartState.data[AGENCY_DETAILS].name,
-                chartTitle: chartModalTitle(),
-              }}
-            />
-          </S.PieWrapper>
-          <DataSubsetPicker
-            label="Year"
-            value={year}
-            onChange={handleYearSelected}
-            options={[YEARS_DEFAULT].concat(chartState.yearRange)}
-            dropUp
+        </ChartContainer>
+        <div>
+          <PieChart
+            data={useOfForcePieData}
+            displayLegend={false}
+            maintainAspectRatio={false}
+            modalConfig={{
+              tableHeader: 'Use of Force',
+              tableSubheader: getChartModalSubHeading(),
+              agencyName: chartState.data[AGENCY_DETAILS].name,
+              chartTitle: chartModalTitle(),
+            }}
           />
-        </S.ChartSubsection>
+        </div>
       </S.ChartSection>
     </UseOfForceStyled>
   );
 }
 
 export default UseOfForce;
-
-const TABLE_COLUMNS = [
-  {
-    Header: 'Year',
-    accessor: 'year',
-  },
-  {
-    Header: 'White*',
-    accessor: 'white',
-  },
-  {
-    Header: 'Black*',
-    accessor: 'black',
-  },
-  {
-    Header: 'Native American*',
-    accessor: 'native_american',
-  },
-  {
-    Header: 'Asian*',
-    accessor: 'asian',
-  },
-  {
-    Header: 'Other*',
-    accessor: 'other',
-  },
-  {
-    Header: 'Hispanic',
-    accessor: 'hispanic',
-  },
-  {
-    Header: 'Total',
-    accessor: 'total',
-  },
-];

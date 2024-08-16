@@ -70,6 +70,13 @@ function Sidebar(props) {
         >
           Use of Force
         </SidebarLink>
+        <SidebarLink
+          data-testid="ArrestsNavLink"
+          to={buildUrl(slugs.ARREST_SLUG)}
+          showCompare={props.showCompare}
+        >
+          Arrests
+        </SidebarLink>
       </S.SidebarNav>
     </S.Sidebar>
   );

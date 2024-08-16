@@ -16,7 +16,6 @@ API_ENDPOINT_NAMES = (
     "nc:agency-api-stops-by-reason",
     "nc:agency-api-searches",
     "nc:agency-api-searches-by-type",
-    "nc:agency-api-contraband-hit-rate",
     "nc:agency-api-use-of-force",
     "nc:stops-by-percentage",
     "nc:stops-by-count",
@@ -30,6 +29,14 @@ API_ENDPOINT_NAMES = (
     "nc:contraband-percentages-grouped-stop-purpose",
     "nc:contraband-percentages-grouped-stop-purpose-modal",
     "nc:use-of-force",
+    "nc:arrests-percentage-of-stops",
+    "nc:arrests-percentage-of-searches",
+    "nc:arrests-stops-driver-arrested",
+    "nc:arrests-percentage-of-stops-by-purpose-group",
+    "nc:arrests-percentage-of-stops-per-stop-purpose",
+    "nc:arrests-percentage-of-searches-by-purpose-group",
+    "nc:arrests-percentage-of-searches-per-stop-purpose",
+    "nc:arrests-percentage-of-stops-per-contraband-type",
 )
 DEFAULT_CUTOFF_SECS = 4
 

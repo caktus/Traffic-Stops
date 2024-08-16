@@ -24,7 +24,7 @@ export const Tooltip = styled.div`
 export default function HorizontalBarChart({
   data,
   title,
-  maintainAspectRatio = true,
+  maintainAspectRatio = false,
   displayLegend = true,
   legendPosition = 'top',
   tooltipTitleCallback = null,
@@ -35,8 +35,16 @@ export default function HorizontalBarChart({
   displayStopPurposeTooltips = false,
   redraw = false,
   pinMaxValue = true, // Some graph percentages go beyond 100%
+  tickStyle = 'percent',
+  stepSize = 0.5,
   modalConfig = {},
 }) {
+  const tickCallback = function tickCallback(val) {
+    if (tickStyle === 'percent') {
+      return `${val * 100}%`;
+    }
+    return val.toLocaleString();
+  };
   const options = {
     responsive: true,
     maintainAspectRatio,
@@ -46,10 +54,8 @@ export default function HorizontalBarChart({
         stacked: xStacked,
         max: pinMaxValue ? 1 : null,
         ticks: {
-          stepSize: pinMaxValue ? 0.1 : 0.5,
-          format: {
-            style: 'percent',
-          },
+          stepSize: pinMaxValue ? 0.1 : stepSize,
+          callback: tickCallback,
         },
       },
       y: {
@@ -152,12 +158,14 @@ export default function HorizontalBarChart({
       position: 'top',
     };
     modalOptions.plugins.tooltip.enabled = true;
+    modalOptions.plugins.tooltip.callbacks.label = tooltipLabelCallback;
     modalOptions.plugins.title = {
       display: true,
       text: modalConfig.chartTitle,
     };
     modalOptions.scales.y.max = null;
     modalOptions.scales.y.ticks.display = true;
+    modalOptions.scales.x.ticks.callback = tickCallback;
     return modalOptions;
   };
 

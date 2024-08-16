@@ -16,6 +16,7 @@ traffic_stops.log.1
 reports
 env
 venv
+bin
 jmeter.log
 npm-debug.log
 .transifexrc
@@ -51,6 +52,7 @@ env-local.sh
 jgdc.yml
 aws_ec2.yml
 deploy/roles
+deploy/.kube
 docker-compose.override.yml
 htmlcov
 nc/notebooks/**/**.html

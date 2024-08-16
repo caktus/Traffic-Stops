@@ -8,7 +8,7 @@ RUN npm install --silent
 COPY frontend/ /code/
 RUN npm run build
 
-FROM python:3.8-slim-bullseye as base
+FROM python:3.10-slim-bullseye as base
 
 # Create a group and user to run our app
 ARG APP_USER=appuser
@@ -93,7 +93,7 @@ ENTRYPOINT ["/code/docker-entrypoint.sh"]
 # Start uWSGI
 CMD ["newrelic-admin", "run-program", "uwsgi", "--single-interpreter", "--enable-threads", "--show-config"]
 
-FROM python:3.8-slim-bullseye AS dev
+FROM python:3.10-slim-bullseye AS dev
 
 ARG USERNAME=appuser
 ARG USER_UID=1000
@@ -113,8 +113,8 @@ RUN groupadd --gid $USER_GID $USERNAME \
 #   openssh-client -- for git over SSH
 #   sudo -- to run commands as superuser
 #   vim -- enhanced vi editor for commits
-ENV KUBE_CLIENT_VERSION="v1.25.10"
-ENV HELM_VERSION="3.12.0"
+ENV KUBE_CLIENT_VERSION="v1.29.4"
+ENV HELM_VERSION="3.14.4"
 RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/apt \
     --mount=type=cache,mode=0755,target=/root/.cache/pip \
     set -ex \

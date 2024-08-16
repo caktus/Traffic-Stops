@@ -16,11 +16,13 @@ def test_no_agency(client, search_url):
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
+@pytest.mark.django_db(databases=["traffic_stops_nc"])
 def test_agency_success(client, search_url, durham):
     response = client.get(search_url, data={"agency": durham.pk}, format="json")
     assert response.status_code == status.HTTP_200_OK
 
 
+@pytest.mark.django_db(databases=["traffic_stops_nc"])
 def test_response_person_fields(client, search_url, durham):
     person = factories.PersonFactory(stop__agency=durham)
     response = client.get(search_url, data={"agency": durham.pk}, format="json")
@@ -42,6 +44,7 @@ def test_response_person_fields(client, search_url, durham):
     assert result == expected
 
 
+@pytest.mark.django_db(databases=["traffic_stops_nc"])
 @pytest.mark.parametrize("race", RACE_VALUES)
 def test_race_filtering(client, search_url, durham, race):
     other_races = RACE_VALUES - set(race)
