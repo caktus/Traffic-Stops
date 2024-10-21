@@ -1,0 +1,18 @@
+cloudformation_stack_state: present
+cloudformation_stack_profile: '{{ aws_profile }}'
+cloudformation_stack_region: '{{ aws_region }}'
+cloudformation_stack_name: 'cdn-staging'
+cloudformation_stack_template_bucket: 'aws-web-stacks-trafficstops'
+cloudformation_stack_template_local_path: '{{ playbook_dir + "/stack/cloudfront.yml" }}'
+cloudformation_stack_template_parameters:
+  AppCloudFrontCertArn: arn:aws:acm:us-east-1:606178775542:certificate/379950bb-4b29-4308-8418-122674fe1076
+  AppCloudFrontForwardedHeaders: "Host,Authorization"
+  DomainName: staging.nccopwatch.org
+  AppCloudFrontOriginDomainName: staging-origin.nccopwatch.org
+  AppCloudFrontRoleArn: cdn-staging
+  # Required for the CloudFront template
+  DomainNameAlternates: ""
+  CustomAppCertificateArn: ""
+  CertificateValidationMethod: "(none)"
+cloudformation_stack_tags:
+  Environment: staging
