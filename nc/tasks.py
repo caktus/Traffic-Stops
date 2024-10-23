@@ -44,3 +44,13 @@ def download_and_import_nc_dataset():
         nc_dataset.report_email_2 = settings.NC_AUTO_IMPORT_MONITORS[1]
     nc_dataset.save()
     import_dataset.delay(nc_dataset.pk)
+
+
+@app.task
+def prime_cache():
+    pass
+
+
+@app.task
+def prime_agency():
+    pass

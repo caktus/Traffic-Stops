@@ -148,8 +148,7 @@ class CachePrimer:
 class AgencyStopsPrimer(CachePrimer):
     def get_queryset(self):
         qs = list(
-            Stop.objects.no_cache()
-            .annotate(agency_name=F("agency_description"))
+            Stop.objects.annotate(agency_name=F("agency_description"))
             .values("agency_name", "agency_id")
             .annotate(num_stops=Count("stop_id"))
             .order_by("-num_stops")
@@ -226,6 +225,7 @@ def run(
 
     if clear_cache:
         logger.info("Clearing cache")
+        # TODO: Change to create CloudFront invalidation
         cache.clear()
 
     if not skip_agencies:
