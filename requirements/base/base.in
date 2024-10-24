@@ -9,7 +9,6 @@ boto3==1.34.100
 botocore==1.34.100
 click==8.1.7
 # django-cache-machine is no longer used, remains for legacy migrations
-django-cache-machine==1.2.0
 django-ckeditor==6.7.0
 django-click==2.3.0
 django-crispy-forms

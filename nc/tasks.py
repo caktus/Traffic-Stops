@@ -47,10 +47,14 @@ def download_and_import_nc_dataset():
 
 
 @app.task
-def prime_cache():
+def queue_cache_primer():
+    # for agency in Agency.objects.all():
+    #     prime_agency.delay(agency_id=agency.id)
     pass
 
 
 @app.task
-def prime_agency():
+def prime_agency(agency_id):
+    # requests.get("myurl/{agency_id}/stops")
+    # requests.get("myurl/80/searches")
     pass

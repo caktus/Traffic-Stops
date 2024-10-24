@@ -55,8 +55,6 @@ django==3.2.25
     #   django-redis
     #   django-storages
     #   djangorestframework
-django-cache-machine==1.2.0
-    # via -r requirements/base/base.in
 django-ckeditor==6.7.0
     # via -r requirements/base/base.in
 django-click==2.3.0
