@@ -15,14 +15,12 @@ ARG APP_USER=appuser
 RUN groupadd -r ${APP_USER} && useradd --no-log-init -r -g ${APP_USER} ${APP_USER}
 
 # Install packages needed to run your application (not build deps):
-#   mime-support -- for mime types when serving static files
 #   postgresql-client -- for running database commands
 # We need to recreate the /usr/share/man/man{1..8} directories first because
 # they were clobbered by a parent image.
 RUN set -ex \
     && RUN_DEPS=" \
     libpcre3 \
-    mime-support \
     postgresql-client \
     vim \
     " \
@@ -127,7 +125,6 @@ RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/
     jq \
     libpcre3 \
     libpq-dev \
-    mime-support \
     nodejs \
     openssh-client \
     postgresql-client-12 \

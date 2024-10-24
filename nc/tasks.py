@@ -44,3 +44,17 @@ def download_and_import_nc_dataset():
         nc_dataset.report_email_2 = settings.NC_AUTO_IMPORT_MONITORS[1]
     nc_dataset.save()
     import_dataset.delay(nc_dataset.pk)
+
+
+@app.task
+def queue_cache_primer():
+    # for agency in Agency.objects.all():
+    #     prime_agency.delay(agency_id=agency.id)
+    pass
+
+
+@app.task
+def prime_agency(agency_id):
+    # requests.get("myurl/{agency_id}/stops")
+    # requests.get("myurl/80/searches")
+    pass

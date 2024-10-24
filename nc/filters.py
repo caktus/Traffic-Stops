@@ -6,7 +6,7 @@ from nc import models
 
 class DriverStopsFilter(filters.FilterSet):
     agency = filters.ModelChoiceFilter(
-        queryset=models.Agency.objects.no_cache().all(),
+        queryset=models.Agency.objects.all(),
         label="Agency",
         method="filter_agency",
         required=True,

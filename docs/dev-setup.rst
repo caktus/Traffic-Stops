@@ -66,7 +66,7 @@ Getting Started (Manual)
 
 Run PostgreSQL in Docker::
 
-    docker-compose up -d
+    docker compose up -d db redis
 
 This will create a PostgreSQL server with multiple databases (see
 ``docker-entrypoint.postgres.sql``).

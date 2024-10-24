@@ -1,4 +1,3 @@
-from caching.base import CachingManager, CachingMixin
 from django.db import models
 from django.utils.html import format_html
 from django_pgviews import view as pg
@@ -133,7 +132,7 @@ SEARCH_BASIS_CHOICES = (
 )
 
 
-class Stop(CachingMixin, models.Model):
+class Stop(models.Model):
     stop_id = models.PositiveIntegerField(primary_key=True)
     agency_description = models.CharField(max_length=100)
     agency = models.ForeignKey("Agency", null=True, related_name="stops", on_delete=models.CASCADE)
@@ -151,10 +150,8 @@ class Stop(CachingMixin, models.Model):
     stop_location = models.CharField(max_length=15)  # todo: keys
     stop_city = models.CharField(max_length=20)
 
-    objects = CachingManager()
 
-
-class Person(CachingMixin, models.Model):
+class Person(models.Model):
     person_id = models.IntegerField(primary_key=True)
     stop = models.ForeignKey(Stop, on_delete=models.CASCADE)
     type = models.CharField(max_length=2, choices=PERSON_TYPE_CHOICES)
@@ -163,10 +160,8 @@ class Person(CachingMixin, models.Model):
     ethnicity = models.CharField(max_length=2, choices=ETHNICITY_CHOICES)
     race = models.CharField(max_length=2, choices=RACE_CHOICES)
 
-    objects = CachingManager()
 
-
-class Search(CachingMixin, models.Model):
+class Search(models.Model):
     search_id = models.IntegerField(primary_key=True)
     stop = models.ForeignKey(Stop, on_delete=models.CASCADE)
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
@@ -179,10 +174,8 @@ class Search(CachingMixin, models.Model):
     personal_property_siezed = models.BooleanField(default=False)
     other_property_sized = models.BooleanField(default=False)
 
-    objects = CachingManager()
 
-
-class Contraband(CachingMixin, models.Model):
+class Contraband(models.Model):
     contraband_id = models.IntegerField(primary_key=True)
     search = models.ForeignKey(Search, on_delete=models.CASCADE)
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
@@ -198,26 +191,20 @@ class Contraband(CachingMixin, models.Model):
     weapons = models.FloatField(default=0, null=True)
     dollar_amount = models.FloatField(default=0, null=True)
 
-    objects = CachingManager()
 
-
-class SearchBasis(CachingMixin, models.Model):
+class SearchBasis(models.Model):
     search_basis_id = models.IntegerField(primary_key=True)
     search = models.ForeignKey(Search, on_delete=models.CASCADE)
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
     stop = models.ForeignKey(Stop, on_delete=models.CASCADE)
     basis = models.CharField(max_length=4, choices=SEARCH_BASIS_CHOICES)
 
-    objects = CachingManager()
 
-
-class Agency(CachingMixin, models.Model):
+class Agency(models.Model):
     name = models.CharField(max_length=255)
     # link to CensusProfile (no cross-database foreign key)
     census_profile_id = models.CharField(max_length=16, blank=True, default="")
     last_reported_stop = models.DateField(null=True)
-
-    objects = CachingManager()
 
     class Meta(object):
         verbose_name_plural = "Agencies"

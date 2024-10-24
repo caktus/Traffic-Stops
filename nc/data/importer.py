@@ -14,7 +14,6 @@ from django.db import connections, transaction
 
 from nc.data import copy_nc
 from nc.models import Agency, Search, Stop, StopSummary
-from nc.prime_cache import run as prime_cache_run
 from tsdata.dataset_facts import compute_dataset_facts
 from tsdata.sql import drop_constraints_and_indexes
 from tsdata.utils import call, download_and_unzip_data, line_count, unzip_data
@@ -100,8 +99,8 @@ def run(url, destination=None, zip_path=None, min_stop_id=None, max_stop_id=None
     logger.info("Materialized view updated")
 
     # prime the query cache for large NC agencies
-    if prime_cache:
-        prime_cache_run()
+    # if prime_cache:
+    #     prime_cache_run()
 
 
 def truncate_input_data(destination, min_stop_id, max_stop_id):
