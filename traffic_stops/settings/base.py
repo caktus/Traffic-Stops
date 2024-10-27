@@ -328,6 +328,8 @@ else:
         },
     }
 
+BROKER_URL = os.getenv("BROKER_URL", "redis://redis:6379/0")
+
 CENSUS_API_KEY = os.getenv("CENSUS_API_KEY", "")
 
 NC_AUTO_IMPORT_DIRECTORY = "/tmp/nc-automated-import"
