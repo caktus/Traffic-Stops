@@ -8,11 +8,11 @@ alabaster==0.7.16
     # via sphinx
 annotated-types==0.7.0
     # via pydantic
-ansible==9.5.1
+ansible==10.5.0
     # via
     #   -r requirements/dev/dev.in
     #   invoke-kubesae
-ansible-core==2.16.12
+ansible-core==2.17.5
     # via ansible
 anyio==4.6.2.post1
     # via
@@ -51,7 +51,7 @@ certifi==2020.6.20
     #   -c requirements/dev/../base/base.txt
     #   kubernetes
     #   requests
-cffi==1.16.0
+cffi==1.17.1
     # via
     #   -r requirements/dev/dev.in
     #   cryptography
@@ -73,7 +73,7 @@ colorama==0.4.6
     #   awscli
     #   invoke-kubesae
     #   sphinx-autobuild
-cryptography==42.0.8
+cryptography==43.0.3
     # via
     #   -r requirements/dev/dev.in
     #   ansible-core
@@ -90,6 +90,8 @@ docutils==0.16
     #   awscli
     #   rstcheck-core
     #   sphinx
+durationpy==0.9
+    # via kubernetes
 exceptiongroup==1.2.2
     # via
     #   -c requirements/dev/../test/test.txt
@@ -114,7 +116,7 @@ invoke==2.2.0
     # via invoke-kubesae
 invoke-kubesae==0.1.0
     # via -r requirements/dev/dev.in
-ipython==8.28.0
+ipython==8.29.0
     # via -r requirements/dev/dev.in
 jedi==0.19.1
     # via
@@ -130,13 +132,13 @@ jmespath==1.0.1
     #   -c requirements/dev/../base/base.txt
     #   boto3
     #   botocore
-jsonschema==4.22.0
+jsonschema==4.23.0
     # via
     #   -r requirements/dev/dev.in
     #   kubernetes-validate
 jsonschema-specifications==2024.10.1
     # via jsonschema
-kubernetes==12.0.0
+kubernetes==31.0.0
     # via
     #   -r requirements/dev/dev.in
     #   openshift
@@ -151,7 +153,9 @@ matplotlib-inline==0.1.7
 mdurl==0.1.2
     # via markdown-it-py
 oauthlib==3.2.2
-    # via requests-oauthlib
+    # via
+    #   kubernetes
+    #   requests-oauthlib
 openshift==0.13.2
     # via -r requirements/dev/dev.in
 packaging==24.1
@@ -205,7 +209,7 @@ pytz==2022.1
     # via
     #   -c requirements/dev/../base/base.txt
     #   django
-pyyaml==5.3.1
+pyyaml==6.0.2
     # via
     #   -c requirements/dev/../test/test.txt
     #   ansible-core
@@ -288,7 +292,7 @@ sqlparse==0.3.1
     #   django-debug-toolbar
 stack-data==0.6.3
     # via ipython
-starlette==0.41.0
+starlette==0.41.2
     # via sphinx-autobuild
 traitlets==5.14.3
     # via
@@ -337,6 +341,3 @@ websockets==13.1
     # via sphinx-autobuild
 wheel==0.44.0
     # via -r requirements/dev/dev.in
-
-# The following packages are considered to be unsafe in a requirements file:
-# setuptools
