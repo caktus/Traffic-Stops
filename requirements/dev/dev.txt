@@ -49,6 +49,7 @@ cachetools==5.5.0
 certifi==2020.6.20
     # via
     #   -c requirements/dev/../base/base.txt
+    #   -c requirements/dev/../test/test.txt
     #   kubernetes
     #   requests
 cffi==1.17.1
@@ -60,6 +61,7 @@ cfn-flip==1.3.0
 charset-normalizer==3.0.1
     # via
     #   -c requirements/dev/../base/base.txt
+    #   -c requirements/dev/../test/test.txt
     #   requests
 click==8.1.7
     # via
@@ -106,6 +108,7 @@ h11==0.14.0
 idna==2.10
     # via
     #   -c requirements/dev/../base/base.txt
+    #   -c requirements/dev/../test/test.txt
     #   anyio
     #   requests
 imagesize==1.4.1
@@ -226,6 +229,7 @@ referencing==0.35.1
 requests==2.32.3
     # via
     #   -c requirements/dev/../base/base.txt
+    #   -c requirements/dev/../test/test.txt
     #   kubernetes
     #   requests-oauthlib
     #   sphinx
@@ -317,6 +321,7 @@ typing-extensions==4.12.2
 urllib3==2.2.1
     # via
     #   -c requirements/dev/../base/base.txt
+    #   -c requirements/dev/../test/test.txt
     #   botocore
     #   kubernetes
     #   requests

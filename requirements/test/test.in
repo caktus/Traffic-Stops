@@ -6,6 +6,7 @@ isort
 pytest
 pytest-cov
 pytest-django
+requests-mock
 factory_boy
 coverage
 # Linting

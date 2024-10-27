@@ -1,23 +1,25 @@
-# from django.test import TestCase
+import pytest
 
-# from nc.prime_cache import run
-# from nc.tests import factories
+from nc import prime_cache
 
 
-# class PrimeCacheTests(TestCase):
-#     """
-#     This merely gives the cache priming code a chance to blow up if silly
-#     changes are made.  No results are verified.
-#     """
+@pytest.fixture(autouse=True)
+def group_urls():
+    """Monkeypatch API_ENDPOINT_NAMES to return a single group URL for tests"""
+    prime_cache.API_ENDPOINT_NAMES = ("nc:arrests-percentage-of-stops",)
 
-#     databases = "__all__"
 
-#     def test_prime_cache(self):
-#         factories.AgencyFactory(id=-1)  # Statewide data
+def test_get_group_urls_empty_allowed_hosts(settings):
+    settings.ALLOWED_HOSTS = []
+    assert (
+        prime_cache.get_group_urls(agency_id=99)[0]
+        == "http://127.0.0.1:8000/api/agency/99/arrests-percentage-of-stops/"
+    )
 
-#         factories.ContrabandFactory()
-#         factories.ContrabandFactory()
-#         factories.ContrabandFactory()
-#         factories.ContrabandFactory()
-#         factories.ContrabandFactory()
-#         run()
+
+def test_get_group_urls_allowed_hosts(settings):
+    settings.ALLOWED_HOSTS = ["nccopwatch.org"]
+    assert (
+        prime_cache.get_group_urls(agency_id=99)[0]
+        == "https://nccopwatch.org/api/agency/99/arrests-percentage-of-stops/"
+    )

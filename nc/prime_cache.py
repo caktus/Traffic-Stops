@@ -36,7 +36,6 @@ API_ENDPOINT_NAMES = (
     "nc:arrests-percentage-of-searches-per-stop-purpose",
     "nc:arrests-percentage-of-stops-per-contraband-type",
 )
-DEFAULT_CUTOFF_SECS = 4
 
 
 def get_agencies_and_officers(by_officer: bool = False):
@@ -66,7 +65,7 @@ def get_agencies_and_officers(by_officer: bool = False):
     return rows
 
 
-def get_group_urls(agency_id: int, officer_id: int = None):
+def get_group_urls(agency_id: int, officer_id: int = None) -> list[str]:
     """Return a list of endpoint URLs for an agency (and optionally an officer)"""
     if settings.ALLOWED_HOSTS and settings.ALLOWED_HOSTS[0] != "*":
         host = f"https://{settings.ALLOWED_HOSTS[0]}"

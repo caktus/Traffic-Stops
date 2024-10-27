@@ -6,8 +6,16 @@
 #
 black==24.10.0
     # via -r requirements/test/test.in
+certifi==2020.6.20
+    # via
+    #   -c requirements/test/../base/base.txt
+    #   requests
 cfgv==3.4.0
     # via pre-commit
+charset-normalizer==3.0.1
+    # via
+    #   -c requirements/test/../base/base.txt
+    #   requests
 click==8.1.7
     # via
     #   -c requirements/test/../base/base.txt
@@ -30,6 +38,10 @@ flake8==7.1.1
     # via -r requirements/test/test.in
 identify==2.6.1
     # via pre-commit
+idna==2.10
+    # via
+    #   -c requirements/test/../base/base.txt
+    #   requests
 iniconfig==2.0.0
     # via pytest
 isort==5.13.2
@@ -75,6 +87,12 @@ pyyaml==6.0.2
     # via
     #   -r requirements/test/test.in
     #   pre-commit
+requests==2.32.3
+    # via
+    #   -c requirements/test/../base/base.txt
+    #   requests-mock
+requests-mock==1.12.1
+    # via -r requirements/test/test.in
 six==1.15.0
     # via
     #   -c requirements/test/../base/base.txt
@@ -88,5 +106,9 @@ typing-extensions==4.12.2
     # via
     #   black
     #   faker
+urllib3==2.2.1
+    # via
+    #   -c requirements/test/../base/base.txt
+    #   requests
 virtualenv==20.27.0
     # via pre-commit
