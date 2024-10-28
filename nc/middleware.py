@@ -13,7 +13,7 @@ class RequestLoggingMiddleware:
 
     def __call__(self, request: HttpRequest):
         headers = {"_type": "request", "_path": request.get_full_path()}
-        headers.update(request.headers)
+        headers.update(request.META)
         logger.info(headers)
         response = self.get_response(request)
         headers = {"_type": "response", "_path": request.get_full_path()}
