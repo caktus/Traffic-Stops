@@ -1,6 +1,8 @@
+import json
 import logging
 
-from django.http import HttpRequest
+from django.http import HttpRequest, HttpResponse
+from django.utils.timezone import now
 
 logger = logging.getLogger(__name__)
 
@@ -12,11 +14,11 @@ class RequestLoggingMiddleware:
         self.get_response = get_response
 
     def __call__(self, request: HttpRequest):
-        headers = {"_type": "request", "_path": request.get_full_path()}
-        headers.update(request.META)
-        logger.info(headers)
-        response = self.get_response(request)
-        headers = {"_type": "response", "_path": request.get_full_path()}
+        headers = {"_type": "request", "_path": request.get_full_path(), "_now": now().isoformat()}
+        headers.update(request.headers)
+        print(json.dumps(headers))
+        response: HttpResponse = self.get_response(request)
+        headers = {"_type": "response", "_path": request.get_full_path(), "_now": now().isoformat()}
         headers.update(response.headers)
-        logger.info(headers)
+        print(json.dumps(headers))
         return response
