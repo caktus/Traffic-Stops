@@ -161,6 +161,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "nc.middleware.RequestLoggingMiddleware",
 ]
 
 ROOT_URLCONF = "traffic_stops.urls"
