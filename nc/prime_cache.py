@@ -1,5 +1,7 @@
 import logging
+import time
 
+import boto3
 import requests
 
 from django.conf import settings
@@ -83,11 +85,36 @@ def get_group_urls(agency_id: int, officer_id: int = None) -> list[str]:
 def prime_group_cache(agency_id: int, num_stops: int, officer_id: int = None):
     """Prime the cache for an agency (and optionally officer)"""
     logger.info(f"Priming cache ({agency_id=}, {officer_id=}, {num_stops=})...")
+    session = requests.Session()
+    # Configure basic auth if provided
+    if settings.CACHE_BASICAUTH_USERNAME and settings.CACHE_BASICAUTH_PASSWORD:
+        session.auth = (settings.CACHE_BASICAUTH_USERNAME, settings.CACHE_BASICAUTH_PASSWORD)
     urls = get_group_urls(agency_id=agency_id, officer_id=officer_id)
     for url in urls:
         logger.debug(f"Querying {url}")
-        response = requests.get(url)
+        response = session.get(url)
         if response.status_code != 200:
             logger.warning(f"Status not OK: {url} ({response.status_code})")
             raise Exception(f"Request to {url} failed: {response.status_code}")
     logger.info(f"Primed cache ({agency_id=}, {officer_id=}, {num_stops=})")
+
+
+def invalidate_cloudfront_cache() -> dict:
+    """
+    Invalidate the CloudFront cache before priming the cache.
+
+    https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/cloudfront/client/create_invalidation.html
+    """
+    if settings.CACHE_CLOUDFRONT_DISTRIBUTION_ID:
+        logger.info(
+            f"Invalidating CloudFront distribution ({settings.CACHE_CLOUDFRONT_DISTRIBUTION_ID=})"
+        )
+        cf = boto3.client("cloudfront")
+        # Create CloudFront invalidation
+        return cf.create_invalidation(
+            DistributionId=settings.CACHE_CLOUDFRONT_DISTRIBUTION_ID,
+            InvalidationBatch={
+                "Paths": {"Quantity": 1, "Items": ["/*"]},
+                "CallerReference": str(time.time()).replace(".", ""),
+            },
+        )

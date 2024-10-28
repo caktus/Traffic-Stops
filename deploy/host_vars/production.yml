@@ -11,6 +11,7 @@ k8s_ingress_tls_domains_extra:
 
 env_contact_us_emails:
   - wcarpenter@forwardjustice.org
+env_cache_cloudfront_distribution_id: ""  # TODO: Set this value once the CloudFront distribution is created
 
 database_password: !vault |
   $ANSIBLE_VAULT;1.1;AES256

@@ -95,8 +95,7 @@ def prime_all_endpoints(
     less than this, stop.
     """
     if clear_cache:
-        logger.info("Clearing cache")
-        # TODO: Change to create CloudFront invalidation
+        prime_cache.invalidate_cloudfront_cache()
 
     if not skip_agencies:
         prime_groups_cache(by_officer=False, cutoff_count=agency_cutoff_count)
