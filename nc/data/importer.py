@@ -14,7 +14,6 @@ from django.db import connections, transaction
 
 from nc.data import copy_nc
 from nc.models import Agency, Search, Stop, StopSummary
-from nc.tasks import prime_all_endpoints
 from tsdata.dataset_facts import compute_dataset_facts
 from tsdata.sql import drop_constraints_and_indexes
 from tsdata.utils import call, download_and_unzip_data, line_count, unzip_data
@@ -101,6 +100,8 @@ def run(url, destination=None, zip_path=None, min_stop_id=None, max_stop_id=None
 
     # prime the query cache for large NC agencies
     if prime_cache:
+        from nc.tasks import prime_all_endpoints
+
         prime_all_endpoints.delay(
             clear_cache=True,
             skip_agencies=False,
