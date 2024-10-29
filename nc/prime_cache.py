@@ -53,7 +53,9 @@ class Timer:
 
     def __exit__(self, type, value, traceback):
         self.elapsed = time.perf_counter() - self.start
-        self.exceeded_threshold = self.elapsed > self.threshold_seconds
+        self.exceeded_threshold = (
+            self.elapsed > self.threshold_seconds if self.threshold_seconds else False
+        )
 
 
 def get_agencies_and_officers(by_officer: bool = False, limit_to_agencies: list = None) -> list:
@@ -119,19 +121,22 @@ def prime_group_cache(agency_id: int, num_stops: int, officer_id: int = None):
         f"Priming cache ({agency_id=}, {officer_id=}, {num_stops=}, {bool(session.auth)=})..."
     )
     urls = get_group_urls(agency_id=agency_id, officer_id=officer_id)
-    for url in urls:
-        with Timer(threshold_seconds=CLOUDFRONT_RESPONSE_TIMEOUT - 1) as timer:
-            response = session.get(url)
-        logger.debug(
-            f"Queried {url=} ({response.headers=}, {response.request.headers=}, {timer.elapsed=})"
-        )
-        if timer.exceeded_threshold:
-            logger.warning(f"Slow response possibly not cached: {url} ({timer.elapsed})")
-            raise Exception(f"Slow prime cache response possibly not cached {url}")
-        if response.status_code != 200:
-            logger.warning(f"Status not OK: {url} ({response.status_code})")
-            raise Exception(f"Request to {url} failed: {response.status_code}")
-    logger.info(f"Primed cache ({agency_id=}, {officer_id=}, {num_stops=})")
+    with Timer() as group_timer:
+        for url in urls:
+            with Timer(threshold_seconds=CLOUDFRONT_RESPONSE_TIMEOUT - 1) as endpoint_timer:
+                response = session.get(url)
+            logger.debug(
+                f"Queried {url=} ({response.headers=}, {response.request.headers=}, {endpoint_timer.elapsed=})"
+            )
+            if endpoint_timer.exceeded_threshold:
+                logger.warning(
+                    f"Slow response possibly not cached: {url} ({endpoint_timer.elapsed})"
+                )
+                raise Exception(f"Slow prime cache response possibly not cached {url}")
+            if response.status_code != 200:
+                logger.warning(f"Status not OK: {url} ({response.status_code})")
+                raise Exception(f"Request to {url} failed: {response.status_code}")
+    logger.info(f"Primed cache ({agency_id=}, {officer_id=}, {num_stops=}, {group_timer.elapsed=})")
 
 
 def invalidate_cloudfront_cache(sleep_seconds: int = 30) -> dict:
