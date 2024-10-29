@@ -109,6 +109,8 @@ def get_group_urls(agency_id: int, officer_id: int = None) -> list[str]:
 def prime_group_cache(agency_id: int, num_stops: int, officer_id: int = None):
     """Prime the cache for an agency (and optionally officer)"""
     session = requests.Session()
+    # Attempt to match Browser behavior
+    session.headers["Accept"] = "application/json"
     # Configure basic auth if provided
     if settings.CACHE_BASICAUTH_USERNAME and settings.CACHE_BASICAUTH_PASSWORD:
         session.auth = (settings.CACHE_BASICAUTH_USERNAME, settings.CACHE_BASICAUTH_PASSWORD)
@@ -117,9 +119,9 @@ def prime_group_cache(agency_id: int, num_stops: int, officer_id: int = None):
     )
     urls = get_group_urls(agency_id=agency_id, officer_id=officer_id)
     for url in urls:
-        logger.debug(f"Querying {url}")
         with Timer(threshold_seconds=CLOUDFRONT_RESPONSE_TIMEOUT - 1) as timer:
             response = session.get(url)
+        logger.debug(f"Queried {url=} ({response.headers=}, {response.request.headers=})")
         if timer.exceeded_threshold:
             logger.warning(f"Slow response possibly not cached: {url} ({timer.elapsed})")
             raise Exception(f"Failed to prime cache for {url}")
@@ -129,7 +131,7 @@ def prime_group_cache(agency_id: int, num_stops: int, officer_id: int = None):
     logger.info(f"Primed cache ({agency_id=}, {officer_id=}, {num_stops=})")
 
 
-def invalidate_cloudfront_cache(sleep_seconds: int = 15) -> dict:
+def invalidate_cloudfront_cache(sleep_seconds: int = 30) -> dict:
     """
     Invalidate the CloudFront cache before priming the cache.
 
