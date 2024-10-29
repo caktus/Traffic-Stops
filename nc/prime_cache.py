@@ -5,7 +5,7 @@ import boto3
 import requests
 
 from django.conf import settings
-from django.db.models import F, Sum
+from django.db.models import F, Q, Sum
 from django.urls import reverse
 
 from nc.models import StopSummary
@@ -40,20 +40,24 @@ API_ENDPOINT_NAMES = (
 )
 
 
-def get_agencies_and_officers(by_officer: bool = False):
+def get_agencies_and_officers(by_officer: bool = False, limit_to_agencies: list = None) -> list:
     """Return a list of agencies (and optionally officers) sorted by number of stops"""
+    limit_to_agencies = limit_to_agencies or []
     values = ["agency_id"]
     if by_officer:
         values.append("officer_id")
+    query = Q()
+    if limit_to_agencies:
+        query &= Q(agency_id__in=limit_to_agencies)
     rows = list(
-        StopSummary.objects.all()
+        StopSummary.objects.filter(query)
         .annotate(agency_name=F("agency__name"))
         .values(*values)
         .annotate(num_stops=Sum("count"))
         .order_by("-num_stops")
         .values_list(*values + ["num_stops"], named=True)
     )
-    if not by_officer:
+    if not by_officer and not limit_to_agencies:
         # Manually insert the statewide to force the caching since a
         # stop instance won't directly be associated with the statewide agency id.
         Row = rows[0].__class__
@@ -64,6 +68,10 @@ def get_agencies_and_officers(by_officer: bool = False):
                 num_stops=StopSummary.objects.aggregate(Sum("count"))["count__sum"],
             ),
         )
+    logger.info(
+        f"Found {len(rows):,} agencies and officers "
+        f"({by_officer=}, {limit_to_agencies=}, {values=}, {query=})"
+    )
     return rows
 
 
@@ -84,11 +92,13 @@ def get_group_urls(agency_id: int, officer_id: int = None) -> list[str]:
 
 def prime_group_cache(agency_id: int, num_stops: int, officer_id: int = None):
     """Prime the cache for an agency (and optionally officer)"""
-    logger.info(f"Priming cache ({agency_id=}, {officer_id=}, {num_stops=})...")
     session = requests.Session()
     # Configure basic auth if provided
     if settings.CACHE_BASICAUTH_USERNAME and settings.CACHE_BASICAUTH_PASSWORD:
         session.auth = (settings.CACHE_BASICAUTH_USERNAME, settings.CACHE_BASICAUTH_PASSWORD)
+    logger.info(
+        f"Priming cache ({agency_id=}, {officer_id=}, {num_stops=}, {bool(session.auth)=})..."
+    )
     urls = get_group_urls(agency_id=agency_id, officer_id=officer_id)
     for url in urls:
         logger.debug(f"Querying {url}")

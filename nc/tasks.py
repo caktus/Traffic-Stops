@@ -54,10 +54,15 @@ def prime_group_cache(agency_id: int, num_stops: int, officer_id: int = None):
 
 
 @app.task
-def prime_groups_cache(by_officer: bool = False, cutoff_count: int = 0):
+def prime_groups_cache(
+    by_officer: bool = False, cutoff_count: int = 0, limit_to_agencies: list = None
+):
     kind = "officer" if by_officer else "agency"
     logger.info(f"Querying {kind} endpoint groups ({by_officer=}, {cutoff_count=})")
-    endpoint_groups = prime_cache.get_agencies_and_officers(by_officer=by_officer)
+    # Get the agencies (and officers) sorted by number of stops
+    endpoint_groups = prime_cache.get_agencies_and_officers(
+        by_officer=by_officer, limit_to_agencies=limit_to_agencies
+    )
     logger.info(f"Queuing {len(endpoint_groups):,} {kind} endpoint groups")
     for endpoint_group in endpoint_groups:
         if endpoint_group.num_stops <= cutoff_count:
@@ -72,33 +77,16 @@ def prime_all_endpoints(
     skip_agencies=False,
     skip_officers=True,
     agency_cutoff_count=None,
+    limit_to_agencies=None,
 ):
-    """
-    Prime query cache for "big" NC agencies.
-
-    Order the agencies by number of stops, and keep making the web requests
-    that use the queries until the queries for an agency take less than
-    cutoff_duration_secs.
-
-    This is expected to be used as part of the following flow:
-    1. reload new NC data
-    2. flush memcached
-    3. prime the cache to load the new data into the query cache
-
-    If memcached isn't flushed before priming the cache, this function will
-    presumably exit prematurely without loading the new data.
-
-    This uses the Django test client to avoid encountering Gunicorn timeouts,
-    so it can't be used remotely.
-
-    :param cutoff_duration_secs: Once priming the cache for an agency takes
-    less than this, stop.
-    """
+    """Prime all API endpoint caches"""
     if clear_cache:
         prime_cache.invalidate_cloudfront_cache()
 
     if not skip_agencies:
-        prime_groups_cache(by_officer=False, cutoff_count=agency_cutoff_count)
+        prime_groups_cache(
+            by_officer=False, cutoff_count=agency_cutoff_count, limit_to_agencies=limit_to_agencies
+        )
 
     if not skip_officers:
         prime_groups_cache.delay(by_officer=True)
