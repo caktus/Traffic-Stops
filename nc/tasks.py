@@ -47,13 +47,12 @@ def download_and_import_nc_dataset():
     import_dataset.delay(nc_dataset.pk)
 
 
-@app.task
+@app.task(autoretry_for=(Exception,), retry_backoff=True, retry_kwargs={"max_retries": 5})
 def prime_group_cache(agency_id: int, num_stops: int, officer_id: int = None):
     prime_cache.prime_group_cache(agency_id=agency_id, num_stops=num_stops, officer_id=officer_id)
     return (agency_id, officer_id)
 
 
-@app.task
 def prime_groups_cache(
     by_officer: bool = False, cutoff_count: int = 0, limit_to_agencies: list = None
 ):
@@ -89,6 +88,6 @@ def prime_all_endpoints(
         )
 
     if not skip_officers:
-        prime_groups_cache.delay(by_officer=True)
+        prime_groups_cache(by_officer=True, limit_to_agencies=limit_to_agencies)
 
     logger.info("Complete")
