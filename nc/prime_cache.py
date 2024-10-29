@@ -38,6 +38,22 @@ API_ENDPOINT_NAMES = (
     "nc:arrests-percentage-of-searches-per-stop-purpose",
     "nc:arrests-percentage-of-stops-per-contraband-type",
 )
+CLOUDFRONT_RESPONSE_TIMEOUT = 30
+
+
+class Timer:
+    """Context manager to time a block of code"""
+
+    def __init__(self, threshold_seconds: int = None):
+        self.threshold_seconds = threshold_seconds
+
+    def __enter__(self):
+        self.start = time.perf_counter()
+        return self
+
+    def __exit__(self, type, value, traceback):
+        self.elapsed = time.perf_counter() - self.start
+        self.exceeded_threshold = self.elapsed > self.threshold_seconds
 
 
 def get_agencies_and_officers(by_officer: bool = False, limit_to_agencies: list = None) -> list:
@@ -102,14 +118,18 @@ def prime_group_cache(agency_id: int, num_stops: int, officer_id: int = None):
     urls = get_group_urls(agency_id=agency_id, officer_id=officer_id)
     for url in urls:
         logger.debug(f"Querying {url}")
-        response = session.get(url)
+        with Timer(threshold_seconds=CLOUDFRONT_RESPONSE_TIMEOUT - 1) as timer:
+            response = session.get(url)
+        if timer.exceeded_threshold:
+            logger.warning(f"Slow response possibly not cached: {url} ({timer.elapsed})")
+            raise Exception(f"Failed to prime cache for {url}")
         if response.status_code != 200:
             logger.warning(f"Status not OK: {url} ({response.status_code})")
             raise Exception(f"Request to {url} failed: {response.status_code}")
     logger.info(f"Primed cache ({agency_id=}, {officer_id=}, {num_stops=})")
 
 
-def invalidate_cloudfront_cache() -> dict:
+def invalidate_cloudfront_cache(sleep_seconds: int = 15) -> dict:
     """
     Invalidate the CloudFront cache before priming the cache.
 
@@ -136,13 +156,14 @@ def invalidate_cloudfront_cache() -> dict:
                 DistributionId=settings.CACHE_CLOUDFRONT_DISTRIBUTION_ID, Id=invalidation_id
             )
             status = response["Invalidation"]["Status"]
-            logger.debug(f"Invalidation status: {status}")
+            logger.debug(f"Invalidation pending ({status=})")
             if status == "Completed":
                 # Stop waiting, invalidation is complete
                 invalidation_in_progress = False
+                logger.info(f"Invalidation complete ({status=})")
             elif status == "InProgress":
-                # Wait 10 seconds before checking again
-                logger.debug("Sleeping...")
-                time.sleep(10)
+                # Wait before checking again
+                logger.debug(f"Sleeping for {sleep_seconds} seconds...")
+                time.sleep(sleep_seconds)
             else:
                 raise Exception(f"Invalidation failed: {status})")
