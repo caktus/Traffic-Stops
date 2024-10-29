@@ -121,10 +121,28 @@ def invalidate_cloudfront_cache() -> dict:
         )
         cf = boto3.client("cloudfront")
         # Create CloudFront invalidation
-        return cf.create_invalidation(
+        resp_invalidation: dict = cf.create_invalidation(
             DistributionId=settings.CACHE_CLOUDFRONT_DISTRIBUTION_ID,
             InvalidationBatch={
                 "Paths": {"Quantity": 1, "Items": ["/*"]},
                 "CallerReference": str(time.time()).replace(".", ""),
             },
         )
+        invalidation_id: str = resp_invalidation["Invalidation"]["Id"]
+        # Wait for invalidation to complete
+        invalidation_in_progress = True
+        while invalidation_in_progress:
+            response = cf.get_invalidation(
+                DistributionId=settings.CACHE_CLOUDFRONT_DISTRIBUTION_ID, Id=invalidation_id
+            )
+            status = response["Invalidation"]["Status"]
+            logger.debug(f"Invalidation status: {status}")
+            if status == "Completed":
+                # Stop waiting, invalidation is complete
+                invalidation_in_progress = False
+            elif status == "InProgress":
+                # Wait 10 seconds before checking again
+                logger.debug("Sleeping...")
+                time.sleep(10)
+            else:
+                raise Exception(f"Invalidation failed: {status})")
