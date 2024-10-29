@@ -49,8 +49,11 @@ def download_and_import_nc_dataset():
 
 @app.task(autoretry_for=(Exception,), retry_backoff=True, retry_kwargs={"max_retries": 5})
 def prime_group_cache(agency_id: int, num_stops: int, officer_id: int = None):
+    """Prime the cache for a single agency (and optionally officer)"""
     prime_cache.prime_group_cache(agency_id=agency_id, num_stops=num_stops, officer_id=officer_id)
-    return (agency_id, officer_id)
+    # Run the task again to ensure the cache is primed
+    prime_cache.prime_group_cache(agency_id=agency_id, num_stops=num_stops, officer_id=officer_id)
+    return (agency_id, officer_id, num_stops)
 
 
 def prime_groups_cache(

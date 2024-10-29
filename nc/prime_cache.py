@@ -108,6 +108,7 @@ def get_group_urls(agency_id: int, officer_id: int = None) -> list[str]:
 
 def prime_group_cache(agency_id: int, num_stops: int, officer_id: int = None):
     """Prime the cache for an agency (and optionally officer)"""
+    logger.debug(f"Priming group cache ({agency_id=}, {officer_id=}, {num_stops=})...")
     session = requests.Session()
     # Attempt to match Browser behavior
     session.headers["Accept"] = "application/json"
@@ -121,10 +122,12 @@ def prime_group_cache(agency_id: int, num_stops: int, officer_id: int = None):
     for url in urls:
         with Timer(threshold_seconds=CLOUDFRONT_RESPONSE_TIMEOUT - 1) as timer:
             response = session.get(url)
-        logger.debug(f"Queried {url=} ({response.headers=}, {response.request.headers=})")
+        logger.debug(
+            f"Queried {url=} ({response.headers=}, {response.request.headers=}, {timer.elapsed=})"
+        )
         if timer.exceeded_threshold:
             logger.warning(f"Slow response possibly not cached: {url} ({timer.elapsed})")
-            raise Exception(f"Failed to prime cache for {url}")
+            raise Exception(f"Slow prime cache response possibly not cached {url}")
         if response.status_code != 200:
             logger.warning(f"Status not OK: {url} ({response.status_code})")
             raise Exception(f"Request to {url} failed: {response.status_code}")
@@ -158,14 +161,15 @@ def invalidate_cloudfront_cache(sleep_seconds: int = 30) -> dict:
                 DistributionId=settings.CACHE_CLOUDFRONT_DISTRIBUTION_ID, Id=invalidation_id
             )
             status = response["Invalidation"]["Status"]
-            logger.debug(f"Invalidation pending ({status=})")
             if status == "Completed":
                 # Stop waiting, invalidation is complete
                 invalidation_in_progress = False
                 logger.info(f"Invalidation complete ({status=})")
             elif status == "InProgress":
                 # Wait before checking again
-                logger.debug(f"Sleeping for {sleep_seconds} seconds...")
+                logger.debug(
+                    f"Invalidation pending ({status=}), sleeping for {sleep_seconds} seconds..."
+                )
                 time.sleep(sleep_seconds)
             else:
                 raise Exception(f"Invalidation failed: {status})")
