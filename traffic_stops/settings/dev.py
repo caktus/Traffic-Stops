@@ -27,6 +27,9 @@ CELERY_EAGER_PROPAGATES_EXCEPTIONS = True
 
 NC_AUTO_IMPORT_MONITORS = ("nc-monitor@example.com",)
 
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "")
+ALLOWED_HOSTS = ALLOWED_HOSTS.split(",") if ALLOWED_HOSTS else []
+
 # Special test settings
 if "test" in sys.argv:
     PASSWORD_HASHERS = (
