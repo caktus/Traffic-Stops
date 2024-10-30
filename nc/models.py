@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.functions import ExtractYear
 from django.utils.html import format_html
 from django_pgviews import view as pg
 
@@ -290,6 +291,12 @@ class StopSummary(pg.ReadOnlyMaterializedView):
     class Meta:
         managed = False
         indexes = [
+            models.Index(fields=["agency"]),
+            models.Index(fields=["date"]),
+            models.Index(
+                ExtractYear("date").desc(),
+                name="stopsummary_year_desc_idx",
+            ),
             models.Index(fields=["agency", "officer_id", "search_type"]),
             models.Index(fields=["agency", "date"]),
             models.Index(fields=["engage_force"]),
