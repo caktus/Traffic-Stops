@@ -105,6 +105,10 @@ def get_group_urls(agency_id: int, officer_id: int = None) -> list[str]:
         if officer_id:
             url += f"?officer={officer_id}"
         urls.append(host + url)
+        # Add a URL with a trailing ? to ensure the cache is primed
+        # since React sometimes appends it to the URL
+        if not officer_id:
+            urls.append(host + url + "?")
     return urls
 
 
