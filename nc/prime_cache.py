@@ -40,7 +40,7 @@ API_ENDPOINT_NAMES = (
     "nc:arrests-percentage-of-searches-per-stop-purpose",
     "nc:arrests-percentage-of-stops-per-contraband-type",
 )
-CLOUDFRONT_RESPONSE_TIMEOUT = 30
+CLOUDFRONT_RESPONSE_TIMEOUT = 60
 
 
 class Timer:
@@ -119,7 +119,8 @@ def prime_group_cache(agency_id: int, num_stops: int, officer_id: int = None):
     logger.debug(f"Priming group cache ({agency_id=}, {officer_id=}, {num_stops=})...")
     session = requests.Session()
     # Attempt to match Browser behavior
-    session.headers["Accept"] = "application/json"
+    session.headers["Accept"] = "application/json, text/plain, */*"
+    session.headers["Accept-Encoding"] = "gzip, deflate, br, zstd"
     # Configure basic auth if provided
     if settings.CACHE_BASICAUTH_USERNAME and settings.CACHE_BASICAUTH_PASSWORD:
         session.auth = (settings.CACHE_BASICAUTH_USERNAME, settings.CACHE_BASICAUTH_PASSWORD)
