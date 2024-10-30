@@ -1,8 +1,7 @@
 import pytest
 
-from faker import Faker
-
 from django.conf import settings
+from faker import Faker
 
 from tsdata.models import StateFacts
 
