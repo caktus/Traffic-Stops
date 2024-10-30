@@ -12,6 +12,7 @@ from nc.models import StopSummary
 
 logger = logging.getLogger(__name__)
 API_ENDPOINT_NAMES = (
+    "nc:year-range",
     "nc:agency-api-stops",
     "nc:agency-api-stops-by-reason",
     "nc:agency-api-searches",
@@ -21,10 +22,11 @@ API_ENDPOINT_NAMES = (
     "nc:stops-by-count",
     "nc:stop-purpose-groups",
     "nc:stops-grouped-by-purpose",
-    "nc:contraband-percentages",
     "nc:searches-by-percentage",
     "nc:searches-by-count",
     "nc:search-rate",
+    "nc:contraband-percentages",
+    "nc:contraband-type-percentages",
     "nc:contraband-percentages-stop-purpose-groups",
     "nc:contraband-percentages-grouped-stop-purpose",
     "nc:contraband-percentages-grouped-stop-purpose-modal",
@@ -130,7 +132,8 @@ def prime_group_cache(agency_id: int, num_stops: int, officer_id: int = None):
             with Timer(threshold_seconds=CLOUDFRONT_RESPONSE_TIMEOUT - 1) as endpoint_timer:
                 response = session.get(url)
             logger.debug(
-                f"Queried {url=} ({response.headers=}, {response.request.headers=}, {endpoint_timer.elapsed=})"
+                f"Queried {url=} ({response.headers=}, {response.request.headers=}, "
+                f"{endpoint_timer.elapsed=})"
             )
             if endpoint_timer.exceeded_threshold:
                 logger.warning(
