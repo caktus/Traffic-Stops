@@ -57,7 +57,7 @@ def prime_group_cache(agency_id: int, num_stops: int, officer_id: int = None):
 
 
 def prime_groups_cache(
-    by_officer: bool = False, cutoff_count: int = 0, limit_to_agencies: list = None
+    by_officer: bool = False, cutoff_count: int = 0, limit_to_agencies: list[int] = None
 ):
     kind = "officer" if by_officer else "agency"
     logger.info(f"Querying {kind} endpoint groups ({by_officer=}, {cutoff_count=})")
@@ -75,11 +75,11 @@ def prime_groups_cache(
 
 @app.task
 def prime_all_endpoints(
-    clear_cache=False,
-    skip_agencies=False,
-    skip_officers=True,
-    agency_cutoff_count=None,
-    limit_to_agencies=None,
+    clear_cache: bool = False,
+    skip_agencies: bool = False,
+    skip_officers: bool = True,
+    agency_cutoff_count: int = 0,
+    limit_to_agencies: list[int] = None,
 ):
     """Prime all API endpoint caches"""
     if clear_cache:
