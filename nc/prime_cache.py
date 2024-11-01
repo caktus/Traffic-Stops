@@ -2,7 +2,7 @@ import logging
 import time
 
 import boto3
-import requests
+import httpx
 
 from django.conf import settings
 from django.db.models import F, Q, Sum
@@ -117,34 +117,41 @@ def get_group_urls(agency_id: int, officer_id: int = None) -> list[str]:
 def prime_group_cache(agency_id: int, num_stops: int, officer_id: int = None):
     """Prime the cache for an agency (and optionally officer)"""
     logger.debug(f"Priming group cache ({agency_id=}, {officer_id=}, {num_stops=})...")
-    session = requests.Session()
     # Attempt to match Browser behavior
-    session.headers["Accept"] = "application/json, text/plain, */*"
-    session.headers["Accept-Encoding"] = "gzip, deflate, br, zstd"
-    # Configure basic auth if provided
+    headers = {
+        "Accpet": "application/json, text/plain, */*",
+        "Accept-Encoding": "gzip, deflate, br, zstd",
+    }
+    auth = None
     if settings.CACHE_BASICAUTH_USERNAME and settings.CACHE_BASICAUTH_PASSWORD:
-        session.auth = (settings.CACHE_BASICAUTH_USERNAME, settings.CACHE_BASICAUTH_PASSWORD)
-    logger.info(
-        f"Priming cache ({agency_id=}, {officer_id=}, {num_stops=}, {bool(session.auth)=})..."
-    )
-    urls = get_group_urls(agency_id=agency_id, officer_id=officer_id)
-    with Timer() as group_timer:
-        for url in urls:
-            with Timer(threshold_seconds=CLOUDFRONT_RESPONSE_TIMEOUT - 1) as endpoint_timer:
-                response = session.get(url)
-            logger.debug(
-                f"Queried {url=} ({response.headers=}, {response.request.headers=}, "
-                f"{endpoint_timer.elapsed=})"
-            )
-            if endpoint_timer.exceeded_threshold:
-                logger.warning(
-                    f"Slow response possibly not cached: {url} ({endpoint_timer.elapsed})"
+        auth = httpx.BasicAuth(
+            username=settings.CACHE_BASICAUTH_USERNAME, password=settings.CACHE_BASICAUTH_PASSWORD
+        )
+    with httpx.Client(auth=auth, headers=headers, http2=True) as client:
+        # Configure basic auth if provided
+        logger.info(
+            f"Priming cache ({agency_id=}, {officer_id=}, {num_stops=}, {bool(client.auth)=})..."
+        )
+        urls = get_group_urls(agency_id=agency_id, officer_id=officer_id)
+        with Timer() as group_timer:
+            for url in urls:
+                with Timer(threshold_seconds=CLOUDFRONT_RESPONSE_TIMEOUT - 1) as endpoint_timer:
+                    response = client.get(url)
+                logger.debug(
+                    f"Queried {url=} ({response.headers=}, {response.request.headers=}, "
+                    f"{endpoint_timer.elapsed=})"
                 )
-                raise Exception(f"Slow prime cache response possibly not cached {url}")
-            if response.status_code != 200:
-                logger.warning(f"Status not OK: {url} ({response.status_code})")
-                raise Exception(f"Request to {url} failed: {response.status_code}")
-    logger.info(f"Primed cache ({agency_id=}, {officer_id=}, {num_stops=}, {group_timer.elapsed=})")
+                if endpoint_timer.exceeded_threshold:
+                    logger.warning(
+                        f"Slow response possibly not cached: {url} ({endpoint_timer.elapsed})"
+                    )
+                    raise Exception(f"Slow prime cache response possibly not cached {url}")
+                if response.status_code != 200:
+                    logger.warning(f"Status not OK: {url} ({response.status_code})")
+                    raise Exception(f"Request to {url} failed: {response.status_code}")
+        logger.info(
+            f"Primed cache ({agency_id=}, {officer_id=}, {num_stops=}, {group_timer.elapsed=})"
+        )
 
 
 def invalidate_cloudfront_cache(sleep_seconds: int = 30) -> dict:
