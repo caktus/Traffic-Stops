@@ -1,6 +1,6 @@
 # Deploy.in
 -c ../base/base.txt
 python3-memcached
-newrelic==9.10.0
-sentry-sdk==2.5.1
-uwsgi==2.0.26
+newrelic
+sentry-sdk
+uwsgi
