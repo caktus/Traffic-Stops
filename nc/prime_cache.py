@@ -1,5 +1,7 @@
+from contextlib import contextmanager
 import logging
 import time
+from typing import Generator
 
 import boto3
 import httpx
@@ -107,48 +109,57 @@ def get_group_urls(agency_id: int, officer_id: int = None) -> list[str]:
         if officer_id:
             url += f"?officer={officer_id}"
         urls.append(host + url)
-        # Add a URL with a trailing ? to ensure the cache is primed
-        # since React sometimes appends it to the URL
-        if not officer_id:
-            urls.append(host + url + "?")
     return urls
 
 
-def prime_group_cache(agency_id: int, num_stops: int, officer_id: int = None):
-    """Prime the cache for an agency (and optionally officer)"""
-    logger.debug(f"Priming group cache ({agency_id=}, {officer_id=}, {num_stops=})...")
+@contextmanager
+def client() -> Generator[httpx.Client, None, None]:
+    """Return a configured HTTPX client for cache priming"""
     # Attempt to match Browser behavior
     headers = {
         "Accept": "application/json, text/plain, */*",
         "Accept-Encoding": "gzip, deflate, br, zstd",
     }
+    # Configure basic auth (for staging environment)
     auth = None
     if settings.CACHE_BASICAUTH_USERNAME and settings.CACHE_BASICAUTH_PASSWORD:
         auth = httpx.BasicAuth(
             username=settings.CACHE_BASICAUTH_USERNAME, password=settings.CACHE_BASICAUTH_PASSWORD
         )
-    with httpx.Client(auth=auth, headers=headers, http2=True) as client:
-        # Configure basic auth if provided
+    with httpx.Client(
+        auth=auth, headers=headers, http2=True, timeout=CLOUDFRONT_RESPONSE_TIMEOUT
+    ) as client:
+        yield client
+
+
+def prime_endpoint_cache(client: httpx.Client, url: str):
+    """Prime the cache for a single endpoint"""
+    logger.debug(f"Priming endpoint cache ({url=})...")
+    with Timer(threshold_seconds=CLOUDFRONT_RESPONSE_TIMEOUT - 1) as timer:
+        response = client.get(url)
+    logger.debug(
+        f"Queried {url=} ({response.headers=}, {response.request.headers=}, {timer.elapsed=})"
+    )
+    if timer.exceeded_threshold:
+        raise Exception(f"Slow prime cache response possibly not cached {url} ({timer.elapsed})")
+    if response.status_code != 200:
+        raise Exception(f"Request to {url} failed: {response.status_code}")
+
+
+def prime_group_cache(agency_id: int, num_stops: int, officer_id: int = None):
+    """Prime the cache for an agency (and optionally officer)"""
+    logger.debug(f"Priming group cache ({agency_id=}, {officer_id=}, {num_stops=})...")
+    with client() as c:
         logger.info(
-            f"Priming cache ({agency_id=}, {officer_id=}, {num_stops=}, {bool(client.auth)=})..."
+            f"Priming cache ({agency_id=}, {officer_id=}, {num_stops=}, {bool(c.auth)=})..."
         )
         urls = get_group_urls(agency_id=agency_id, officer_id=officer_id)
         with Timer() as group_timer:
             for url in urls:
-                with Timer(threshold_seconds=CLOUDFRONT_RESPONSE_TIMEOUT - 1) as endpoint_timer:
-                    response = client.get(url)
-                logger.debug(
-                    f"Queried {url=} ({response.headers=}, {response.request.headers=}, "
-                    f"{endpoint_timer.elapsed=})"
-                )
-                if endpoint_timer.exceeded_threshold:
-                    logger.warning(
-                        f"Slow response possibly not cached: {url} ({endpoint_timer.elapsed})"
-                    )
-                    raise Exception(f"Slow prime cache response possibly not cached {url}")
-                if response.status_code != 200:
-                    logger.warning(f"Status not OK: {url} ({response.status_code})")
-                    raise Exception(f"Request to {url} failed: {response.status_code}")
+                prime_endpoint_cache(client=c, url=url)
+                # Add a URL with a trailing ? to ensure the cache is primed
+                # since React sometimes appends it to the URL
+                prime_endpoint_cache(client=c, url=url + "?")
         logger.info(
             f"Primed cache ({agency_id=}, {officer_id=}, {num_stops=}, {group_timer.elapsed=})"
         )
