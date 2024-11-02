@@ -119,7 +119,7 @@ def prime_group_cache(agency_id: int, num_stops: int, officer_id: int = None):
     logger.debug(f"Priming group cache ({agency_id=}, {officer_id=}, {num_stops=})...")
     # Attempt to match Browser behavior
     headers = {
-        "Accpet": "application/json, text/plain, */*",
+        "Accept": "application/json, text/plain, */*",
         "Accept-Encoding": "gzip, deflate, br, zstd",
     }
     auth = None
