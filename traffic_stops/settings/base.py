@@ -153,6 +153,7 @@ TEMPLATES = [
 ]
 
 MIDDLEWARE = [
+    "nc.middleware.ResponseLoggingMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
