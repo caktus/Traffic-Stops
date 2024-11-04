@@ -8,12 +8,11 @@ import sys
 from pathlib import Path
 
 from django.conf import settings
-from django.core.cache import cache
 from django.core.mail import EmailMessage
 from django.db import connections, transaction
 
 from nc.data import copy_nc
-from nc.models import Agency, Search, Stop, StopSummary
+from nc.models import Agency, ContrabandSummary, Search, Stop, StopSummary
 from tsdata.dataset_facts import compute_dataset_facts
 from tsdata.sql import drop_constraints_and_indexes
 from tsdata.utils import call, download_and_unzip_data, line_count, unzip_data
@@ -84,9 +83,6 @@ def run(url, destination=None, zip_path=None, min_stop_id=None, max_stop_id=None
     copy_from(destination, nc_agency_csv)
     logger.info("NC Data Import Complete")
 
-    # Clear the query cache to get rid of NC queries made on old data
-    cache.clear()
-
     # fix landing page data
     facts = compute_dataset_facts(
         Agency, Stop, settings.NC_KEY, Search=Search, override_start_date=override_start_date
@@ -94,9 +90,10 @@ def run(url, destination=None, zip_path=None, min_stop_id=None, max_stop_id=None
     logger.info("NC dataset facts: %r", facts)
 
     # update materialized view
-    logger.info("Updating materialized view")
+    logger.info("Updating materialized views")
     StopSummary.refresh()
-    logger.info("Materialized view updated")
+    ContrabandSummary.refresh()
+    logger.info("Materialized views updated")
 
     # prime the query cache for large NC agencies
     if prime_cache:
