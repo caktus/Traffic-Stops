@@ -16,15 +16,13 @@
           then A to abort.
       when: cloudformation_stack_result is changed
 
-- name: kubernetes cluster management
-  hosts: cluster
+- name: cdn (cloudfront) management
+  hosts: cdn
   gather_facts: false
   tags: cdn
   vars:
     ansible_connection: local
     ansible_python_interpreter: "{{ ansible_playbook_python }}"
-  vars_files:
-    - group_vars/cdn.yml
   roles:
     - role: caktus.aws-web-stacks
   tasks:
