@@ -1,6 +1,7 @@
-from contextlib import contextmanager
 import logging
 import time
+
+from contextlib import contextmanager
 from typing import Generator
 
 import boto3
@@ -119,6 +120,7 @@ def client() -> Generator[httpx.Client, None, None]:
     headers = {
         "Accept": "application/json, text/plain, */*",
         "Accept-Encoding": "gzip, deflate, br, zstd",
+        "Accept-Language": "en-US,en;q=0.9",
     }
     # Configure basic auth (for staging environment)
     auth = None
@@ -132,11 +134,11 @@ def client() -> Generator[httpx.Client, None, None]:
         yield client
 
 
-def prime_endpoint_cache(client: httpx.Client, url: str):
+def prime_endpoint_cache(client: httpx.Client, url: str, headers: dict = None):
     """Prime the cache for a single endpoint"""
     logger.debug(f"Priming endpoint cache ({url=})...")
     with Timer(threshold_seconds=CLOUDFRONT_RESPONSE_TIMEOUT - 1) as timer:
-        response = client.get(url)
+        response = client.get(url, headers=headers)
     logger.debug(
         f"Queried {url=} ({response.headers=}, {response.request.headers=}, {timer.elapsed=})"
     )
@@ -156,10 +158,22 @@ def prime_group_cache(agency_id: int, num_stops: int, officer_id: int = None):
         urls = get_group_urls(agency_id=agency_id, officer_id=officer_id)
         with Timer() as group_timer:
             for url in urls:
-                prime_endpoint_cache(client=c, url=url)
+                # Request with brotli encoding
+                prime_endpoint_cache(
+                    client=c,
+                    url=url,
+                    # headers={"Accept-Encoding": "gzip, deflate, br, zstd"},
+                )
                 # Add a URL with a trailing ? to ensure the cache is primed
                 # since React sometimes appends it to the URL
                 prime_endpoint_cache(client=c, url=url + "?")
+                # Request with alternative gzip encoding
+                prime_endpoint_cache(
+                    client=c,
+                    url=url,
+                    headers={"Accept-Encoding": "gzip, deflate, zstd"},
+                )
+
         logger.info(
             f"Primed cache ({agency_id=}, {officer_id=}, {num_stops=}, {group_timer.elapsed=})"
         )
