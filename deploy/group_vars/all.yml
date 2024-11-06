@@ -37,10 +37,10 @@ cloudformation_stack_template_parameters:
   MaxScale: 4
   UseAES256Encryption: "true"
   CustomerManagedCmkArn: ""
-  ContainerInstanceType: db.t4g.large
+  ContainerInstanceType: db.t4g.xlarge
   ContainerVolumeSize: 40
   DatabaseAllocatedStorage: 100
-  DatabaseClass: db.t3.large
+  DatabaseClass: db.t4g.xlarge
   DatabaseEngineVersion: "12"
   DatabaseParameterGroupFamily: postgres12
   DatabaseMultiAZ: "false"
