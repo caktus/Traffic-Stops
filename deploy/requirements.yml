@@ -6,7 +6,7 @@
 
 - src: https://github.com/caktus/ansible-role-aws-web-stacks
   name: caktus.aws-web-stacks
-  version: ''
+  version: 'ansible-upgrade'
 
 - src: https://github.com/caktus/ansible-role-k8s-web-cluster
   name: caktus.k8s-web-cluster
