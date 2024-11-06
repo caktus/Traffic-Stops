@@ -20,7 +20,7 @@ argh==0.26.2
     # via sphinx-autobuild
 asgiref==3.8.1
     # via
-    #   -c requirements/dev/../base/base.txt
+    #   -c /Users/ronardluna/Desktop/caktus_development/Traffic-Stops/requirements/base/base.txt
     #   django
 attrs==23.2.0
     # via
@@ -34,11 +34,11 @@ backcall==0.1.0
     # via ipython
 boto3==1.34.100
     # via
-    #   -c requirements/dev/../base/base.txt
+    #   -c /Users/ronardluna/Desktop/caktus_development/Traffic-Stops/requirements/base/base.txt
     #   invoke-kubesae
 botocore==1.34.100
     # via
-    #   -c requirements/dev/../base/base.txt
+    #   -c /Users/ronardluna/Desktop/caktus_development/Traffic-Stops/requirements/base/base.txt
     #   awscli
     #   boto3
     #   s3transfer
@@ -46,7 +46,7 @@ cachetools==4.1.0
     # via google-auth
 certifi==2020.6.20
     # via
-    #   -c requirements/dev/../base/base.txt
+    #   -c /Users/ronardluna/Desktop/caktus_development/Traffic-Stops/requirements/base/base.txt
     #   kubernetes
     #   requests
 cffi==1.16.0
@@ -57,12 +57,12 @@ cfn-flip==1.2.3
     # via troposphere
 charset-normalizer==3.0.1
     # via
-    #   -c requirements/dev/../base/base.txt
+    #   -c /Users/ronardluna/Desktop/caktus_development/Traffic-Stops/requirements/base/base.txt
     #   requests
 click==8.1.7
     # via
-    #   -c requirements/dev/../base/base.txt
-    #   -c requirements/dev/../test/test.txt
+    #   -c /Users/ronardluna/Desktop/caktus_development/Traffic-Stops/requirements/base/base.txt
+    #   -c /Users/ronardluna/Desktop/caktus_development/Traffic-Stops/requirements/test/test.txt
     #   cfn-flip
 colorama==0.4.3
     # via
@@ -78,7 +78,7 @@ decorator==4.4.2
     #   traitlets
 django==4.2.16
     # via
-    #   -c requirements/dev/../base/base.txt
+    #   -c /Users/ronardluna/Desktop/caktus_development/Traffic-Stops/requirements/base/base.txt
     #   django-debug-toolbar
 django-debug-toolbar==4.4.6
     # via -r requirements/dev/dev.in
@@ -91,7 +91,7 @@ google-auth==1.14.3
     # via kubernetes
 idna==2.10
     # via
-    #   -c requirements/dev/../base/base.txt
+    #   -c /Users/ronardluna/Desktop/caktus_development/Traffic-Stops/requirements/base/base.txt
     #   requests
 imagesize==1.2.0
     # via sphinx
@@ -114,7 +114,7 @@ jinja2==3.1.4
     #   sphinx
 jmespath==1.0.1
     # via
-    #   -c requirements/dev/../base/base.txt
+    #   -c /Users/ronardluna/Desktop/caktus_development/Traffic-Stops/requirements/base/base.txt
     #   boto3
     #   botocore
 jsonschema==4.22.0
@@ -139,7 +139,7 @@ openshift==0.13.2
     # via -r requirements/dev/dev.in
 packaging==24.1
     # via
-    #   -c requirements/dev/../test/test.txt
+    #   -c /Users/ronardluna/Desktop/caktus_development/Traffic-Stops/requirements/test/test.txt
     #   ansible-core
     #   kubernetes-validate
     #   sphinx
@@ -157,7 +157,7 @@ port-for==0.3.1
     # via sphinx-autobuild
 prompt-toolkit==3.0.47
     # via
-    #   -c requirements/dev/../base/base.txt
+    #   -c /Users/ronardluna/Desktop/caktus_development/Traffic-Stops/requirements/base/base.txt
     #   ipython
 ptyprocess==0.6.0
     # via pexpect
@@ -178,19 +178,19 @@ pygments==2.6.1
     #   sphinx
 python-dateutil==2.9.0.post0
     # via
-    #   -c requirements/dev/../base/base.txt
-    #   -c requirements/dev/../test/test.txt
+    #   -c /Users/ronardluna/Desktop/caktus_development/Traffic-Stops/requirements/base/base.txt
+    #   -c /Users/ronardluna/Desktop/caktus_development/Traffic-Stops/requirements/test/test.txt
     #   botocore
     #   kubernetes
 python-string-utils==1.0.0
     # via openshift
 pytz==2022.1
     # via
-    #   -c requirements/dev/../base/base.txt
+    #   -c /Users/ronardluna/Desktop/caktus_development/Traffic-Stops/requirements/base/base.txt
     #   babel
 pyyaml==5.3.1
     # via
-    #   -c requirements/dev/../test/test.txt
+    #   -c /Users/ronardluna/Desktop/caktus_development/Traffic-Stops/requirements/test/test.txt
     #   ansible-core
     #   awscli
     #   cfn-flip
@@ -205,7 +205,7 @@ referencing==0.35.1
     #   kubernetes-validate
 requests==2.32.3
     # via
-    #   -c requirements/dev/../base/base.txt
+    #   -c /Users/ronardluna/Desktop/caktus_development/Traffic-Stops/requirements/base/base.txt
     #   kubernetes
     #   requests-oauthlib
     #   sphinx
@@ -225,13 +225,13 @@ rstcheck==3.3.1
     # via -r requirements/dev/dev.in
 s3transfer==0.10.1
     # via
-    #   -c requirements/dev/../base/base.txt
+    #   -c /Users/ronardluna/Desktop/caktus_development/Traffic-Stops/requirements/base/base.txt
     #   awscli
     #   boto3
 six==1.15.0
     # via
-    #   -c requirements/dev/../base/base.txt
-    #   -c requirements/dev/../test/test.txt
+    #   -c /Users/ronardluna/Desktop/caktus_development/Traffic-Stops/requirements/base/base.txt
+    #   -c /Users/ronardluna/Desktop/caktus_development/Traffic-Stops/requirements/test/test.txt
     #   cfn-flip
     #   google-auth
     #   kubernetes
@@ -260,7 +260,7 @@ sphinxcontrib-serializinghtml==1.1.4
     # via sphinx
 sqlparse==0.3.1
     # via
-    #   -c requirements/dev/../base/base.txt
+    #   -c /Users/ronardluna/Desktop/caktus_development/Traffic-Stops/requirements/base/base.txt
     #   django
     #   django-debug-toolbar
 tornado==6.0.4
@@ -275,7 +275,7 @@ typing-extensions==4.12.2
     # via kubernetes-validate
 urllib3==2.2.3
     # via
-    #   -c requirements/dev/../base/base.txt
+    #   -c /Users/ronardluna/Desktop/caktus_development/Traffic-Stops/requirements/base/base.txt
     #   botocore
     #   kubernetes
     #   requests
@@ -285,7 +285,7 @@ watchdog==0.10.3
     # via sphinx-autobuild
 wcwidth==0.2.13
     # via
-    #   -c requirements/dev/../base/base.txt
+    #   -c /Users/ronardluna/Desktop/caktus_development/Traffic-Stops/requirements/base/base.txt
     #   prompt-toolkit
 websocket-client==0.57.0
     # via kubernetes
