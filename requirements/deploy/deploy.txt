@@ -6,7 +6,7 @@
 #
 certifi==2020.6.20
     # via
-    #   -c requirements/deploy/../base/base.txt
+    #   -c /Users/ronardluna/Desktop/caktus_development/Traffic-Stops/requirements/base/base.txt
     #   sentry-sdk
 newrelic==10.8.1
     # via -r requirements/deploy/deploy.in
@@ -16,7 +16,7 @@ sentry-sdk==2.25.1
     # via -r requirements/deploy/deploy.in
 urllib3==2.2.3
     # via
-    #   -c requirements/deploy/../base/base.txt
+    #   -c /Users/ronardluna/Desktop/caktus_development/Traffic-Stops/requirements/base/base.txt
     #   sentry-sdk
 uwsgi==2.0.28
     # via -r requirements/deploy/deploy.in
