@@ -223,4 +223,3 @@ Resources:
           Value: !Ref 'AWS::StackName'
       ValidationMethod: !Ref 'CertificateValidationMethod'
     Type: AWS::CertificateManager::Certificate
-

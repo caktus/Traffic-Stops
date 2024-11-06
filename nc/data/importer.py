@@ -99,8 +99,14 @@ def run(url, destination=None, zip_path=None, min_stop_id=None, max_stop_id=None
     logger.info("Materialized view updated")
 
     # prime the query cache for large NC agencies
-    # if prime_cache:
-    #     prime_cache_run()
+    if prime_cache:
+        from nc.tasks import prime_all_endpoints
+
+        prime_all_endpoints.delay(
+            clear_cache=True,
+            skip_agencies=False,
+            skip_officers=True,
+        )
 
 
 def truncate_input_data(destination, min_stop_id, max_stop_id):

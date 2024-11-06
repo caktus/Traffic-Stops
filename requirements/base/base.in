@@ -23,6 +23,8 @@ djangorestframework==3.12.4
 dj-database-url
 drf-extensions==0.7.1
 psycopg2==2.9.9
+brotli==1.1.0
+httpx[http2]
 requests==2.32.3
 urllib3==2.2.1
 six

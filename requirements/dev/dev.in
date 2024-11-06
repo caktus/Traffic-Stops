@@ -5,16 +5,16 @@
 wheel
 
 # deploy
-invoke-kubesae==0.1.0
-ansible==9.5.1
-cryptography==42.0.8
-cffi==1.16.0
-Jinja2==3.1.4
-openshift==0.13.2
-kubernetes==12.0.0
+invoke-kubesae
+ansible
+cryptography
+cffi
+Jinja2
+openshift
+kubernetes
 kubernetes-validate~=1.29.1
-referencing==0.35.1
-jsonschema==4.22
+referencing
+jsonschema
 
 troposphere
 
