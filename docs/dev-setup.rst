@@ -85,7 +85,7 @@ To use ``psql`` locally, make sure you have the following env variables loaded
 To setup your local environment you should create a virtualenv and install the
 necessary requirements::
 
-    $ which python3.10  # make sure you have Python 3.11 installed
+    $ which python3.10  # make sure you have Python 3.10 installed
     $ mkvirtualenv --python=`which python3.10` traffic-stops
     (traffic-stops)$ pip install -U pip
     (traffic-stops)$ make setup
