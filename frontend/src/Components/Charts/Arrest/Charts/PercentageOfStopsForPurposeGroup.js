@@ -48,9 +48,9 @@ function PercentageOfStopsForStopPurposeGroup(props) {
       .get(url)
       .then((res) => {
         const colors = {
-          'Safety Violation': '#5F0F40',
-          'Regulatory Equipment': '#E36414',
-          Other: '#0F4C5C',
+          'Safety Violation': '#027979',
+          'Regulatory Equipment': '#E37C1C',
+          Other: '#B40895',
         };
         const data = {
           labels: Object.keys(colors),

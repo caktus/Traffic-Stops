@@ -60,7 +60,7 @@ function PercentageOfStopsPerContrabandType(props) {
             total: Object.values(dataCounts).reduce((a, b) => a + b, 0),
           });
         });
-        const colors = ['#9FD356', '#3C91E6', '#EFCEFA', '#2F4858', '#A653F4'];
+        const colors = ['#E37C1C', '#4153F6', '#027979', '#B40895', '#E60032'];
         const data = {
           labels: ['Alcohol', 'Drugs', 'Money', 'Other', 'Weapons'],
           datasets: [

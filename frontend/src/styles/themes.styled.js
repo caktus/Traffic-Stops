@@ -29,20 +29,21 @@ export default Object.freeze({
 
     // Charting
     ethnicGroup: {
-      asian: '#ffe066',
-      black: '#8879fc',
-      hispanic: '#9c0f2e',
-      native_american: '#0c3a66',
-      other: '#9e7b9b',
-      white: '#02bcbb',
+      asian: '#4153F6',
+      black: '#8352F4',
+      hispanic: '#E60032',
+      native_american: '#E37C1C',
+      other: '#B40895',
+      white: '#027979',
       average: '#939393',
     },
+
     contrabandTypes: {
-      alcohol: '#9FD356',
-      drugs: '#3C91E6',
-      money: '#EFCEFA',
-      other: '#2F4858',
-      weapons: '#A653F4',
+      alcohol: '#E37C1C',
+      drugs: '#4153F6',
+      money: '#027979',
+      other: '#B40895',
+      weapons: '#E60032',
     },
     fontColorsByEthnicGroup: {
       asian: '#212121',

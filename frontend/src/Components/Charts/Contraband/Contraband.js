@@ -191,7 +191,14 @@ function Contraband(props) {
             total: Object.values(dataCounts).reduce((a, b) => a + b, 0),
           });
         });
-        const colors = ['#02bcbb', '#8879fc', '#9c0f2e', '#ffe066', '#0c3a66', '#9e7b9b'];
+        const colors = [
+          '#027979', //new color: Teal, old color:'#02bcbb',
+          '#8352F4', //new color: Purple, old color:'#8879fc',
+          '#E60032', //new color: Red, old color:'#9c0f2e',
+          '#4153F6', //new color: Blue, old color: #0c3a66',
+          '#E37C1C', //new color: Orange, old color: '#ffe066',
+          '#B40895', //new color: Fuschia, old color: '#9e7b9b'
+        ];
         const data = {
           labels: ['White', 'Black', 'Hispanic', 'Asian', 'Native American', 'Other'],
           datasets: [
@@ -247,7 +254,7 @@ function Contraband(props) {
             total: Object.values(dataCounts).reduce((a, b) => a + b, 0),
           });
         });
-        const colors = ['#9FD356', '#3C91E6', '#EFCEFA', '#2F4858', '#A653F4'];
+        const colors = ['#E37C1C', '#4153F6', '#027979', '#B40895', '#E60032'];
         const data = {
           labels: ['Alcohol', 'Drugs', 'Money', 'Other', 'Weapons'],
           datasets: [
@@ -286,9 +293,9 @@ function Contraband(props) {
       .get(url)
       .then((res) => {
         const colors = {
-          'Safety Violation': '#5F0F40',
-          'Regulatory Equipment': '#E36414',
-          Other: '#0F4C5C',
+          'Safety Violation': '#027979',
+          'Regulatory Equipment': '#E37C1C',
+          Other: '#B40895',
         };
         const stopPurposeDataSets = res.data.contraband_percentages.map((ds) => ({
           axis: 'x',
@@ -337,11 +344,11 @@ function Contraband(props) {
 
   const updateContrabandHitRateByStopPurpose = (data) => {
     const colors = {
-      Alcohol: '#9FD356',
-      Drugs: '#3C91E6',
-      Money: '#EFCEFA',
-      Other: '#2F4858',
-      Weapons: '#A653F4',
+      Alcohol: '#E37C1C',
+      Drugs: '#4153F6',
+      Money: '#E60032',
+      Other: '#B40895',
+      Weapons: '#027979',
     };
     const stopPurposeDataSets = data.map((sp) => ({
       labels: ['White', 'Black', 'Hispanic', 'Asian', 'Native American', 'Other'],

@@ -48,16 +48,15 @@ export const STOP_PURPOSE_TYPES = [
 ];
 
 export const STOP_TYPE_COLORS = [
-  '#ff7da8',
-  '#c1d670',
-  '#f9c86e',
-  '#74bd5b',
-  '#74db9d',
-  '#ad8de0',
-  '#dba7ed',
-  '#ff916d',
-  '#4abdc4',
-  '#f1ed39',
+  '#E60032', // Vivid Red
+  '#06D6A0', // Aqua Green
+  '#8352F4', // Bright Purple
+  '#FAE500', // Vibrant Yellow
+  '#027979', // Teal
+  '#E37C1C', // Orange
+  '#4153F6', // Strong Blue
+  '#B40895', // Magenta
+  '#0D3B66'  // Navy Blue
 ];
 
 export const STATIC_LEGEND_KEYS = RACES.map((r) => ({
