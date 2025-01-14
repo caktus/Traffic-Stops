@@ -1,0 +1,23 @@
+cloudfront_domain_name: "{{ k8s_domain_names[0] }}"
+cloudfront_domain_name_origin: "{{ env_name }}-origin.nccopwatch.org"
+
+cloudformation_stack_state: present
+cloudformation_stack_profile: '{{ aws_profile }}'
+cloudformation_stack_region: '{{ aws_region }}'
+cloudformation_stack_name: 'cdn-{{ env_name }}'
+cloudformation_stack_template_bucket: 'aws-web-stacks-trafficstops'
+cloudformation_stack_template_bucket_path: 'templates/cdn.yml'
+cloudformation_stack_template_local_path: '{{ playbook_dir + "/stack/cloudfront.yml" }}'
+cloudformation_stack_template_parameters:
+  AppCloudFrontCertArn: arn:aws:acm:us-east-1:606178775542:certificate/379950bb-4b29-4308-8418-122674fe1076
+  AppCloudFrontForwardedHeaders: "Host,Authorization"
+  DomainName: "{{ cloudfront_domain_name }}"
+  AppCloudFrontOriginDomainName: "{{ cloudfront_domain_name_origin }}"
+  # Allow key-less access to create CloudFront invalidations
+  AppCloudFrontRoleArn: trafficstops-stack-ContainerInstanceRole-1XMBM3VLAYOVE
+  # Required for the CloudFront template
+  DomainNameAlternates: ""
+  CustomAppCertificateArn: ""
+  CertificateValidationMethod: "(none)"
+cloudformation_stack_tags:
+  Environment: "{{ env_name }}"

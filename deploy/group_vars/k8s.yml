@@ -40,7 +40,7 @@ k8s_collectstatic_enabled: false
 
 # Auxillary pod configuration:
 k8s_worker_enabled: true
-k8s_worker_replicas: 1
+k8s_worker_replicas: 2
 k8s_worker_celery_app: "traffic_stops"
 k8s_worker_command:
   - newrelic-admin
@@ -103,6 +103,9 @@ env_email_host_password: !vault |
   31326137623163613135346565346632623661303839653038333866363565623865363766326465
   3232353563333332396133636565626662366332356638303166
 env_email_use_tls: "true"
+# Basic auth
+env_basicauth_username: ""
+env_basicauth_password: ""
 
 k8s_environment_variables:
   CONTAINER_IMAGE_TAG: "{{ k8s_container_image_tag }}"
@@ -115,6 +118,9 @@ k8s_environment_variables:
   ALLOWED_HOSTS: "{{ k8s_domain_names[0] }}"
   ENVIRONMENT: "{{ env_name }}"
   CACHE_HOST: "{{ env_cache_host }}"
+  CACHE_CLOUDFRONT_DISTRIBUTION_ID: "{{ env_cache_cloudfront_distribution_id }}"
+  CACHE_BASICAUTH_USERNAME: "{{ env_basicauth_username }}"
+  CACHE_BASICAUTH_PASSWORD: "{{ env_basicauth_password }}"
   BROKER_URL: "{{ env_broker_url }}"
   # *** Uploaded media
   DEFAULT_FILE_STORAGE: "{{ env_default_file_storage }}"
