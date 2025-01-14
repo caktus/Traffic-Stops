@@ -9,7 +9,7 @@ cloudformation_stack_template_bucket: 'aws-web-stacks-trafficstops'
 cloudformation_stack_template_bucket_path: 'templates/cdn.yml'
 cloudformation_stack_template_local_path: '{{ playbook_dir + "/stack/cloudfront.yml" }}'
 cloudformation_stack_template_parameters:
-  AppCloudFrontCertArn: arn:aws:acm:us-east-1:606178775542:certificate/379950bb-4b29-4308-8418-122674fe1076
+  AppCloudFrontCertArn: arn:aws:acm:us-east-1:606178775542:certificate/5bcc16cb-7ca3-4277-8992-a4e20500cc0b
   AppCloudFrontForwardedHeaders: "Host,Authorization"
   DomainName: "{{ cloudfront_domain_name }}"
   AppCloudFrontOriginDomainName: "{{ cloudfront_domain_name_origin }}"
