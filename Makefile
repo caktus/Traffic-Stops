@@ -9,7 +9,7 @@ update_requirements:
 	pip-compile --output-file=requirements/base/base.txt requirements/base/base.in
 	pip-compile --output-file=requirements/test/test.txt requirements/test/test.in
 	pip-compile --output-file=requirements/dev/dev.txt requirements/dev/dev.in
-	pip-compile --output-file=requirements/deploy/deploy.txt requirements/deploy/deploy.in
+	pip-compile --upgrade --output-file=requirements/deploy/deploy.txt requirements/deploy/deploy.in
 
 install_requirements:
 	@echo 'Installing pip-tools...'
