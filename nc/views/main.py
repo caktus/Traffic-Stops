@@ -13,13 +13,12 @@ from django.core.mail import send_mail
 from django.db.models import Count, Q, Sum
 from django.db.models.functions import ExtractYear
 from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page, never_cache
+from django.views.decorators.cache import never_cache
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_extensions.cache.decorators import cache_response
 from rest_framework_extensions.key_constructor import bits
 from rest_framework_extensions.key_constructor.constructors import DefaultObjectKeyConstructor
 
@@ -88,9 +87,6 @@ class QueryKeyConstructor(DefaultObjectKeyConstructor):
 
 
 query_cache_key_func = QueryKeyConstructor()
-
-
-CACHE_TIMEOUT = settings.CACHE_COUNT_TIMEOUT
 
 
 def get_date_range(request):
@@ -202,14 +198,12 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
             results.add(**data)
 
     @action(detail=True, methods=["get"])
-    @cache_response(key_func=query_cache_key_func)
     def stops(self, request, pk=None):
         results = GroupedData(by="year", defaults=GROUP_DEFAULTS)
         self.query(results, group_by=("year", "driver_race", "driver_ethnicity"))
         return Response(results.flatten())
 
     @action(detail=True, methods=["get"])
-    @cache_response(key_func=query_cache_key_func)
     def stops_by_reason(self, request, pk=None):
         response = {}
         # stops
@@ -227,7 +221,6 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(response)
 
     @action(detail=True, methods=["get"])
-    @cache_response(key_func=query_cache_key_func)
     def use_of_force(self, request, pk=None):
         results = GroupedData(by="year", defaults=GROUP_DEFAULTS)
         q = Q(search_type__isnull=False) & Q(engage_force="t")
@@ -235,7 +228,6 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(results.flatten())
 
     @action(detail=True, methods=["get"])
-    @cache_response(key_func=query_cache_key_func)
     def searches(self, request, pk=None):
         results = GroupedData(by="year", defaults=GROUP_DEFAULTS)
         q = Q(search_type__isnull=False)
@@ -243,7 +235,6 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(results.flatten())
 
     @action(detail=True, methods=["get"])
-    @cache_response(key_func=query_cache_key_func)
     def searches_by_type(self, request, pk=None):
         results = GroupedData(by=("search_type", "year"), defaults=GROUP_DEFAULTS)
         q = Q(search_type__isnull=False)
@@ -381,7 +372,6 @@ class AgencyTrafficStopsByPercentageView(APIView):
             ],
         }
 
-    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         stop_qs = StopSummary.objects.all().annotate(year=ExtractYear("date"))
 
@@ -479,7 +469,6 @@ class AgencyTrafficStopsByCountView(APIView):
             ],
         }
 
-    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         date_precision, date_range = get_date_range(request)
 
@@ -525,7 +514,6 @@ class AgencyStopPurposeGroupView(APIView):
         else:
             return [0] * years_len
 
-    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         date_precision, date_range = get_date_range(request)
         qs = StopSummary.objects.all()
@@ -635,7 +623,6 @@ class AgencyStopGroupByPurposeView(APIView):
             ],
         }
 
-    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         date_precision, date_range = get_date_range(request)
         qs = StopSummary.objects.all()
@@ -713,7 +700,6 @@ class AgencyStopGroupByPurposeView(APIView):
 
 
 class AgencyContrabandView(APIView):
-    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         year = request.GET.get("year", None)
 
@@ -776,7 +762,6 @@ class AgencyContrabandView(APIView):
 
 
 class AgencyContrabandTypesView(APIView):
-    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         year = request.GET.get("year", None)
 
@@ -886,7 +871,6 @@ class AgencyContrabandStopPurposeView(APIView):
             ],
         }
 
-    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         year = request.GET.get("year", None)
 
@@ -1038,7 +1022,6 @@ class AgencyContrabandGroupedStopPurposeView(APIView):
             data.append(group)
         return data
 
-    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         year = request.GET.get("year", None)
 
@@ -1107,7 +1090,6 @@ class AgencyContrabandGroupedStopPurposeView(APIView):
 
 
 class AgencyContrabandStopGroupByPurposeModalView(APIView):
-    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         grouped_stop_purpose = request.GET.get("grouped_stop_purpose")
         contraband_type = request.GET.get("contraband_type")
@@ -1195,7 +1177,6 @@ class AgencySearchesByPercentageView(APIView):
             ],
         }
 
-    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         stop_qs = StopSummary.objects.all().annotate(year=ExtractYear("date"))
 
@@ -1308,7 +1289,6 @@ class AgencySearchesByCountView(APIView):
             ],
         }
 
-    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         date_precision, date_range = get_date_range(request)
 
@@ -1396,7 +1376,6 @@ class AgencySearchRateView(APIView):
             ],
         }
 
-    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         stop_qs = StopSummary.objects.all().annotate(year=ExtractYear("date"))
         search_qs = StopSummary.objects.filter(search_type__isnull=False).annotate(
@@ -1524,7 +1503,6 @@ class AgencyUseOfForceView(APIView):
             ],
         }
 
-    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         qs = StopSummary.objects.filter(search_type__isnull=False, engage_force="t").annotate(
             year=ExtractYear("date")

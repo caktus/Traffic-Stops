@@ -251,16 +251,6 @@ LOGGING = {
             "level": "DEBUG",
             "propagate": False,
         },
-        "caching": {
-            "handlers": ["console"],
-            "level": "DEBUG",
-            "propagate": False,
-        },
-        "caching.invalidation": {
-            "handlers": ["console"],
-            "level": "INFO",
-            "propagate": False,
-        },
         "celery": {
             "level": "INFO",
             "handlers": ["console"],
@@ -316,9 +306,10 @@ X_FRAME_OPTIONS = "DENY"
 LOGIN_URL = "account_login"
 LOGIN_REDIRECT_URL = "home"
 
-REST_FRAMEWORK_EXTENSIONS = {"DEFAULT_CACHE_RESPONSE_TIMEOUT": 60 * 60 * 24 * 60}  # 60 days
-
-CACHE_COUNT_TIMEOUT = 60 * 60 * 24 * 60  # 60 days
+# Cache settings
+CACHE_CLOUDFRONT_DISTRIBUTION_ID = os.getenv("CACHE_CLOUDFRONT_DISTRIBUTION_ID", "")
+CACHE_BASICAUTH_USERNAME = os.getenv("CACHE_BASICAUTH_USERNAME", "")
+CACHE_BASICAUTH_PASSWORD = os.getenv("CACHE_BASICAUTH_PASSWORD", "")
 CACHE_HOST = os.getenv("CACHE_HOST", "")
 if "redis" in CACHE_HOST:
     CACHES = {
@@ -337,6 +328,8 @@ else:
             "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
         },
     }
+
+BROKER_URL = os.getenv("BROKER_URL", "redis://redis:6379/0")
 
 CENSUS_API_KEY = os.getenv("CENSUS_API_KEY", "")
 
