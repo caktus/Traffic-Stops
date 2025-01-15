@@ -4,10 +4,13 @@ import * as S from '../ChartSections/ChartsCommon.styled';
 
 // Util
 import {
+  CONTRANBAND_TYPE_COLORS,
   CONTRABAND_TYPES,
   CONTRABAND_TYPES_TABLE_COLUMNS,
+  DEMOGRAPHICS_COLORS,
   RACE_TABLE_COLUMNS,
   STATIC_CONTRABAND_KEYS,
+  STOP_PURPOSE_COLORS,
 } from '../chartUtils';
 
 // Hooks
@@ -192,12 +195,12 @@ function Contraband(props) {
           });
         });
         const colors = [
-          '#027979', //new color: Teal, old color:'#02bcbb',
-          '#8352F4', //new color: Purple, old color:'#8879fc',
-          '#E60032', //new color: Red, old color:'#9c0f2e',
-          '#4153F6', //new color: Blue, old color: #0c3a66',
-          '#E37C1C', //new color: Orange, old color: '#ffe066',
-          '#B40895', //new color: Fuschia, old color: '#9e7b9b'
+          DEMOGRAPHICS_COLORS.white,
+          DEMOGRAPHICS_COLORS.black,
+          DEMOGRAPHICS_COLORS.hispanic,
+          DEMOGRAPHICS_COLORS.asian,
+          DEMOGRAPHICS_COLORS.nativeAmerican,
+          DEMOGRAPHICS_COLORS.other,
         ];
         const data = {
           labels: ['White', 'Black', 'Hispanic', 'Asian', 'Native American', 'Other'],
@@ -254,7 +257,13 @@ function Contraband(props) {
             total: Object.values(dataCounts).reduce((a, b) => a + b, 0),
           });
         });
-        const colors = ['#E37C1C', '#4153F6', '#027979', '#B40895', '#E60032'];
+        const colors = [
+          CONTRANBAND_TYPE_COLORS.alcohol,
+          CONTRANBAND_TYPE_COLORS.drugs,
+          CONTRANBAND_TYPE_COLORS.money,
+          CONTRANBAND_TYPE_COLORS.other,
+          CONTRANBAND_TYPE_COLORS.weapons,
+        ];
         const data = {
           labels: ['Alcohol', 'Drugs', 'Money', 'Other', 'Weapons'],
           datasets: [
@@ -293,9 +302,9 @@ function Contraband(props) {
       .get(url)
       .then((res) => {
         const colors = {
-          'Safety Violation': '#027979',
-          'Regulatory Equipment': '#E37C1C',
-          Other: '#B40895',
+          'Safety Violation': STOP_PURPOSE_COLORS.safteyViolation,
+          'Regulatory Equipment': STOP_PURPOSE_COLORS.regulatoryEquipment,
+          Other: STOP_PURPOSE_COLORS.other,
         };
         const stopPurposeDataSets = res.data.contraband_percentages.map((ds) => ({
           axis: 'x',
@@ -344,11 +353,11 @@ function Contraband(props) {
 
   const updateContrabandHitRateByStopPurpose = (data) => {
     const colors = {
-      Alcohol: '#E37C1C',
-      Drugs: '#4153F6',
-      Money: '#E60032',
-      Other: '#B40895',
-      Weapons: '#027979',
+      Alcohol: CONTRANBAND_TYPE_COLORS.alcohol,
+      Drugs: CONTRANBAND_TYPE_COLORS.drugs,
+      Money: CONTRANBAND_TYPE_COLORS.money,
+      Other: CONTRANBAND_TYPE_COLORS.other,
+      Weapons: CONTRANBAND_TYPE_COLORS.weapons,
     };
     const stopPurposeDataSets = data.map((sp) => ({
       labels: ['White', 'Black', 'Hispanic', 'Asian', 'Native American', 'Other'],

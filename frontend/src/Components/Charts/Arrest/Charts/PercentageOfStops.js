@@ -10,7 +10,7 @@ import useOfficerId from '../../../../Hooks/useOfficerId';
 import NewModal from '../../../NewCharts/NewModal';
 import { ChartContainer } from '../../ChartSections/ChartsCommon.styled';
 import createTableData from '../../../../util/createTableData';
-import { RACE_TABLE_COLUMNS } from '../../chartUtils';
+import { RACE_TABLE_COLUMNS, DEMOGRAPHICS_COLORS } from '../../chartUtils';
 
 const graphTitle = 'Traffic Stops Leading to Arrest by Percentage';
 
@@ -45,12 +45,12 @@ function PercentageOfStops(props) {
       .then((res) => {
         const tableData = createTableData(res.data);
         const colors = [
-          '#027979', //new color: Teal, old color:'#02bcbb',
-          '#8352F4', //new color: Purple, old color:'#8879fc',
-          '#E60032', //new color: Red, old color:'#9c0f2e',
-          '#4153F6', //new color: Blue, old color: #0c3a66',
-          '#E37C1C', //new color: Orange, old color: '#ffe066',
-          '#B40895', //new color: Fuschia, old color: '#9e7b9b'
+          DEMOGRAPHICS_COLORS.white,
+          DEMOGRAPHICS_COLORS.black,
+          DEMOGRAPHICS_COLORS.hispanic,
+          DEMOGRAPHICS_COLORS.asian,
+          DEMOGRAPHICS_COLORS.nativeAmerican,
+          DEMOGRAPHICS_COLORS.other,
         ];
         const data = {
           labels: ['White', 'Black', 'Hispanic', 'Asian', 'Native American', 'Other'],

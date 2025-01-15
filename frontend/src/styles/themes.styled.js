@@ -1,3 +1,5 @@
+import { DEMOGRAPHICS_COLORS, CONTRANBAND_TYPE_COLORS } from "Components/Charts/chartUtils";
+
 export default Object.freeze({
   /* Colors */
   colors: {
@@ -29,21 +31,21 @@ export default Object.freeze({
 
     // Charting
     ethnicGroup: {
-      asian: '#4153F6',
-      black: '#8352F4',
-      hispanic: '#E60032',
-      native_american: '#E37C1C',
-      other: '#B40895',
-      white: '#027979',
+      asian: DEMOGRAPHICS_COLORS.asian,
+      black: DEMOGRAPHICS_COLORS.black,
+      hispanic: DEMOGRAPHICS_COLORS.hispanic,
+      native_american: DEMOGRAPHICS_COLORS.nativeAmerican,
+      other: DEMOGRAPHICS_COLORS.other,
+      white:DEMOGRAPHICS_COLORS.white,
       average: '#939393',
     },
 
     contrabandTypes: {
-      alcohol: '#E37C1C',
-      drugs: '#4153F6',
-      money: '#027979',
-      other: '#B40895',
-      weapons: '#E60032',
+      alcohol: CONTRANBAND_TYPE_COLORS.alcohol,
+      drugs: CONTRANBAND_TYPE_COLORS.drugs,
+      money: CONTRANBAND_TYPE_COLORS.money,
+      other: CONTRANBAND_TYPE_COLORS.other,
+      weapons: CONTRANBAND_TYPE_COLORS.weapons,
     },
     fontColorsByEthnicGroup: {
       asian: '#212121',
