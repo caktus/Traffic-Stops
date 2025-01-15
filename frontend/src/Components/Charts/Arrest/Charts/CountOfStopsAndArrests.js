@@ -46,8 +46,8 @@ function CountOfStopsAndArrests(props) {
         const tableData = createTableData(res.data);
         const labels = ['Stops With Arrests', 'Stops Without Arrests'];
         const colors = [
-          '#F9DC4E', //'#5364f4'
-          '#551DC3', //'#96a0fa',
+          '#F9DC4E', // '#5364f4'
+          '#551DC3', // '#96a0fa',
         ];
 
         const datasets = res.data.arrest_counts.map((dataset, i) => ({

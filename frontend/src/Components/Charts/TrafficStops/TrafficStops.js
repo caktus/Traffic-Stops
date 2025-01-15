@@ -120,9 +120,9 @@ function TrafficStops(props) {
 
   const purposeGroupedPieLabels = ['Safety Violation', 'Regulatory and Equipment', 'Other'];
   const purposeGroupedPieColors = [
-    STOP_PURPOSE_COLORS.safteyViolation, 
-    STOP_PURPOSE_COLORS.regulatoryEquipment, 
-    STOP_PURPOSE_COLORS.other
+    STOP_PURPOSE_COLORS.safteyViolation,
+    STOP_PURPOSE_COLORS.regulatoryEquipment,
+    STOP_PURPOSE_COLORS.other,
   ];
   const purposeGroupedPieConfig = {
     backgroundColor: purposeGroupedPieColors,

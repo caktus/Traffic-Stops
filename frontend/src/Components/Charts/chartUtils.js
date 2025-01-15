@@ -1,4 +1,3 @@
-import { m } from 'framer-motion';
 import toTitleCase from '../../util/toTitleCase';
 
 export const RACES = ['white', 'black', 'hispanic', 'asian', 'native_american', 'other'];
@@ -57,7 +56,7 @@ export const STOP_TYPE_COLORS = [
   '#E37C1C', // Orange
   '#4153F6', // Strong Blue
   '#B40895', // Magenta
-  '#0D3B66'  // Navy Blue
+  '#0D3B66', // Navy Blue
 ];
 
 export const DEMOGRAPHICS_COLORS = {
@@ -81,7 +80,7 @@ export const STOP_PURPOSE_COLORS = {
   safteyViolation: '#551DC3',
   regulatoryEquipment: '#D24B76',
   other: '#999999',
-}
+};
 
 export const STATIC_LEGEND_KEYS = RACES.map((r) => ({
   value: r,

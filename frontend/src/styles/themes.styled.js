@@ -1,4 +1,4 @@
-import { DEMOGRAPHICS_COLORS, CONTRANBAND_TYPE_COLORS } from "Components/Charts/chartUtils";
+import { DEMOGRAPHICS_COLORS, CONTRANBAND_TYPE_COLORS } from '../Components/Charts/chartUtils';
 
 export default Object.freeze({
   /* Colors */
@@ -36,7 +36,7 @@ export default Object.freeze({
       hispanic: DEMOGRAPHICS_COLORS.hispanic,
       native_american: DEMOGRAPHICS_COLORS.nativeAmerican,
       other: DEMOGRAPHICS_COLORS.other,
-      white:DEMOGRAPHICS_COLORS.white,
+      white: DEMOGRAPHICS_COLORS.white,
       average: '#939393',
     },
 

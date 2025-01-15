@@ -24,10 +24,10 @@ from rest_framework_extensions.key_constructor.constructors import DefaultObject
 
 from nc import serializers
 from nc.constants import (
-    CONTRABAND_TYPE_COLS, 
-    DEFAULT_RENAME_COLUMNS, 
-    DEMOGRAPHICS_COLORS_BORDER , 
+    CONTRABAND_TYPE_COLS,
+    DEFAULT_RENAME_COLUMNS,
     DEMOGRAPHICS_COLORS_BG,
+    DEMOGRAPHICS_COLORS_BORDER,
     STOP_PURPOSE_COLORS,
 )
 from nc.filters import DriverStopsFilter

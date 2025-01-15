@@ -1,4 +1,4 @@
-import { DEMOGRAPHICS_COLORS } from "Components/Charts/chartUtils";
+import { DEMOGRAPHICS_COLORS } from '../Components/Charts/chartUtils';
 
 export const pieColors = [
   DEMOGRAPHICS_COLORS.white,
