@@ -90,9 +90,9 @@ k8s_iam_users: [copelco]
 # Pin ingress-nginx and cert-manager to current versions so future upgrades of this
 # role will not upgrade these charts without your intervention:
 # https://github.com/kubernetes/ingress-nginx/releases
-k8s_ingress_nginx_chart_version: "4.9.1"
+k8s_ingress_nginx_chart_version: "4.11.3"
 # https://github.com/jetstack/cert-manager/releases
-k8s_cert_manager_chart_version: "v1.14.3"
+k8s_cert_manager_chart_version: "v1.16.2"
 # AWS only:
 # Use the newer load balancer type (NLB). DO NOT edit k8s_aws_load_balancer_type after
 # creating your Service.
@@ -106,7 +106,7 @@ k8s_aws_load_balancer_type: nlb
 # k8s_papertrail_logspout_memory_limit: 128Mi
 
 # New Relic Account: forwardjustice-team@caktusgroup.com
-k8s_newrelic_chart_version: "5.0.68"
+k8s_newrelic_chart_version: "5.0.103"
 k8s_newrelic_logging_enabled: true
 k8s_newrelic_license_key: !vault |
   $ANSIBLE_VAULT;1.1;AES256

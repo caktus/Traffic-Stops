@@ -81,7 +81,7 @@ six==1.15.0
     # via
     #   -c requirements/test/../base/base.txt
     #   python-dateutil
-tomli==2.0.2
+tomli==2.2.1
     # via
     #   black
     #   coverage
