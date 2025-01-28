@@ -18,8 +18,7 @@ ENV POSTGRESQL_CLIENT_VERSION="16"
 #   postgresql-client -- for running database commands
 # We need to recreate the /usr/share/man/man{1..8} directories first because
 # they were clobbered by a parent image.
-RUN set -ex \
-    && RUN_DEPS=" \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     libpcre3 \
     mime-support \
     postgresql-client-${POSTGRESQL_CLIENT_VERSION} \
