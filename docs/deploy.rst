@@ -111,3 +111,13 @@ Deploy application
 4. Deploy::
 
     inv staging deploy --tag=...
+
+
+CloudFront distributions
+------------------------------------------------
+
+The application is behind a CloudFront distribution.
+
+To deploy the distribution, run::
+
+    ansible-playbook deploy-cf-stack.yml -t cdn -vvvv

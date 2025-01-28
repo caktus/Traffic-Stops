@@ -5,8 +5,8 @@ pyyaml
 isort
 pytest==8.3.3
 pytest-cov==6.0.0
-factory_boy
 pytest-django==4.9.0
+factory_boy
 coverage
 # Linting
 flake8

@@ -1,21 +1,19 @@
-FROM node:18.17.0-bullseye-slim as static_files
+FROM node:18.17.0-bullseye-slim AS static_files
 
 WORKDIR /code
-ENV PATH /code/node_modules/.bin:$PATH
+ENV PATH=/code/node_modules/.bin:$PATH
 COPY frontend/package.json frontend/package-lock.json /code/
-RUN npm install -g npm@latest
 RUN npm install --silent
 COPY frontend/ /code/
 RUN npm run build
 
-FROM python:3.10-slim-bullseye as base
+FROM python:3.10-slim-bullseye AS base
 
 # Create a group and user to run our app
 ARG APP_USER=appuser
 RUN groupadd -r ${APP_USER} && useradd --no-log-init -r -g ${APP_USER} ${APP_USER}
 
 # Install packages needed to run your application (not build deps):
-#   mime-support -- for mime types when serving static files
 #   postgresql-client -- for running database commands
 # We need to recreate the /usr/share/man/man{1..8} directories first because
 # they were clobbered by a parent image.
@@ -127,7 +125,6 @@ RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/
     jq \
     libpcre3 \
     libpq-dev \
-    mime-support \
     nodejs \
     openssh-client \
     postgresql-client-12 \

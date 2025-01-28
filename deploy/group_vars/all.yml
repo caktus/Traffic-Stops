@@ -23,41 +23,37 @@ admin_database_password: !vault |
 #                        provisioning with aws-web-stacks.
 # ----------------------------------------------------------------------------
 
-stack_name: "{{ app_name }}-stack"
-
-cloudformation_stack:
-  region: "{{ aws_region }}"
-  stack_name: "{{ stack_name }}"
-  template_bucket: "aws-web-stacks-{{ app_name }}"
-  # Webstacks required variable
-  template_local_path: '{{ playbook_dir + "/stack/eks-no-nat.yml" }}'
-  create_changeset: true
-  termination_protection: true
-
-  template_parameters:
-    PrimaryAZ: "{{ aws_region }}a"
-    SecondaryAZ: "{{ aws_region }}b"
-    DesiredScale: 2
-    MaxScale: 4
-    UseAES256Encryption: "true"
-    CustomerManagedCmkArn: ""
-    ContainerInstanceType: t3a.large
-    ContainerVolumeSize: 40
-    DatabaseAllocatedStorage: 100
-    DatabaseClass: db.t3.large
-    DatabaseEngineVersion: "12"
-    DatabaseParameterGroupFamily: postgres12
-    DatabaseMultiAZ: "false"
-    DatabaseUser: "{{ app_name }}_admin"
-    DatabasePassword: "{{ admin_database_password }}"
-    DatabaseName: "{{ app_name }}"
-    DomainName: nccopwatch.org
-    DomainNameAlternates: ""
-    AssetsCloudFrontDomain: files.nccopwatch.org
-    AssetsCloudFrontCertArn: arn:aws:acm:us-east-1:606178775542:certificate/379950bb-4b29-4308-8418-122674fe1076
-    AssetsUseCloudFront: "true"
-  tags:
-    Environment: "{{ app_name }}"
+cloudformation_stack_state: present
+cloudformation_stack_profile: '{{ aws_profile }}'
+cloudformation_stack_region: '{{ aws_region }}'
+cloudformation_stack_name: "{{ app_name }}-stack"
+cloudformation_stack_termination_protection: true
+cloudformation_stack_template_bucket: "aws-web-stacks-{{ app_name }}"
+cloudformation_stack_template_local_path: '{{ playbook_dir + "/stack/eks-no-nat.yml" }}'
+cloudformation_stack_template_parameters:
+  PrimaryAZ: "{{ aws_region }}a"
+  SecondaryAZ: "{{ aws_region }}b"
+  DesiredScale: 2
+  MaxScale: 4
+  UseAES256Encryption: "true"
+  CustomerManagedCmkArn: ""
+  ContainerInstanceType: db.t4g.xlarge
+  ContainerVolumeSize: 40
+  DatabaseAllocatedStorage: 100
+  DatabaseClass: db.t4g.xlarge
+  DatabaseEngineVersion: "12"
+  DatabaseParameterGroupFamily: postgres12
+  DatabaseMultiAZ: "false"
+  DatabaseUser: "{{ app_name }}_admin"
+  DatabasePassword: "{{ admin_database_password }}"
+  DatabaseName: "{{ app_name }}"
+  DomainName: nccopwatch.org
+  DomainNameAlternates: ""
+  AssetsCloudFrontDomain: files.nccopwatch.org
+  AssetsCloudFrontCertArn: arn:aws:acm:us-east-1:606178775542:certificate/379950bb-4b29-4308-8418-122674fe1076
+  AssetsUseCloudFront: "true"
+cloudformation_stack_tags:
+  Environment: "{{ app_name }}"
 
 # Install Descheduler to attempt to spread out pods again after node failures
 k8s_install_descheduler: yes
@@ -79,7 +75,7 @@ k8s_descheduler_release_values:
 #                         clusters for web apps.
 # ----------------------------------------------------------------------------
 
-k8s_cluster_name: "{{ cloudformation_stack.stack_name }}-cluster"
+k8s_cluster_name: "{{ cloudformation_stack_name }}-cluster"
 k8s_context: "arn:aws:eks:us-east-2:606178775542:cluster/{{ k8s_cluster_name }}"
 k8s_cluster_type: aws
 

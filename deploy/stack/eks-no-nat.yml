@@ -514,6 +514,7 @@ Parameters:
       - t3.large
       - t3.xlarge
       - t3.2xlarge
+      - t4g.large
       - t2.nano
       - t2.micro
       - t2.small
