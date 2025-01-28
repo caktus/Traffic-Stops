@@ -23,7 +23,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     mime-support \
     postgresql-client-${POSTGRESQL_CLIENT_VERSION} \
     vim \
-    " \
     && seq 1 8 | xargs -I{} mkdir -p /usr/share/man/man{} \
     && apt-get update && apt-get install -y --no-install-recommends $RUN_DEPS \
     && rm -rf /var/lib/apt/lists/*
