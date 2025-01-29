@@ -134,7 +134,7 @@ class AgencyTests(APITestCase):
             ethnicity="H", stop__agency=agency, stop__year=2017, stop__officer_id=p1.stop.officer_id
         )
         url = reverse("nc:agency-api-stops", args=[agency.pk])
-        url = "{}?officer={}".format(url, p1.stop.officer_id)
+        url = f"{url}?officer={p1.stop.officer_id}"
         response = self.client.get(url, format="json")
         response_data = response.json()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
