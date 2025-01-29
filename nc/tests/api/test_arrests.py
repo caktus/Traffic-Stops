@@ -10,7 +10,6 @@ from nc.tests.factories import ContrabandFactory, PersonFactory, SearchFactory
 from nc.tests.urls import reverse_querystring
 from nc.views.arrests import sort_by_stop_purpose
 
-
 class ArrestUtilityTests(TestCase):
     def test_sort_by_stop_purpose(self):
         """Sort DataFrame by stop_purpose column in order of the IntegerChoices"""

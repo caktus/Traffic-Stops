@@ -76,10 +76,10 @@ def unzip_data(destination, url=None, zip_path=None):
 
     first_file_in_zip = get_datafile_path(None, destination, zip_path=zip_path)
     if os.path.exists(first_file_in_zip):
-        logger.debug("{} exists, skipping extract".format(first_file_in_zip))
+        logger.debug(f"{first_file_in_zip} exists, skipping extract")
     else:
         archive = zipfile.ZipFile(zip_path)
-        logger.debug("Extracting archive into {}".format(destination))
+        logger.debug(f"Extracting archive into {destination}")
         archive.extractall(path=destination)
         logger.debug("Extraction complete")
 
@@ -89,17 +89,17 @@ def download_and_unzip_data(url, destination, prefix="state-"):
     # make sure destination exists or create a temporary directory
     if not destination:
         destination = tempfile.mkdtemp(prefix=prefix)
-        logger.debug("Created temp directory {}".format(destination))
+        logger.debug(f"Created temp directory {destination}")
     else:
         if not os.path.exists(destination):
             os.makedirs(destination)
-            logger.info("Created {}".format(destination))
+            logger.info(f"Created {destination}")
     zip_filename = get_zipfile_path(url, destination)
     # don't re-download data if raw data file already exists
     if os.path.exists(zip_filename):
-        logger.debug("{} exists, skipping download".format(zip_filename))
+        logger.debug(f"{zip_filename} exists, skipping download")
     else:
-        logger.debug("Downloading data to {}".format(zip_filename))
+        logger.debug(f"Downloading data to {zip_filename}")
         response = requests.get(url, stream=True)
         # XXX check status code here; e.g., if permissions haven't been granted
         # for a file being downloaded from S3 a 403 will be returned
@@ -112,9 +112,7 @@ def download_and_unzip_data(url, destination, prefix="state-"):
                     downloaded += len(chunk)
                     now = time.clock()
                     if (now - start) >= 5:
-                        logger.debug(
-                            "{0:.2g}% downloaded".format(downloaded / content_length * 100)
-                        )
+                        logger.debug(f"{downloaded / content_length * 100:.2g}% downloaded")
                         start = now
                     f.write(chunk)
                     f.flush()

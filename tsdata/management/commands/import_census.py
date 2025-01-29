@@ -53,7 +53,7 @@ class Command(BaseCommand):
         else:
             r = requests.get(options["url"])
             if r.status_code != 200:
-                raise CommandError("Failed to access {}".format(options["url"]))
+                raise CommandError(f"Failed to access {options['url']}")
             data = r.json()
         if options["output"]:
             print(json.dumps(data, indent=options["indent"]))

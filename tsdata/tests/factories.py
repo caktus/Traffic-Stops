@@ -10,7 +10,7 @@ from tsdata import models
 class DatasetFactory(factory.django.DjangoModelFactory):
     state = factory.Iterator(models.STATE_CHOICES, getter=lambda c: c[0])
     name = factory.Sequence(lambda n: "Dataset %d" % n)
-    url = factory.LazyAttribute(lambda obj: "https://example.com/%s" % obj.state)
+    url = factory.LazyAttribute(lambda obj: f"https://example.com/{obj.state}")
     date_received = factory.fuzzy.FuzzyDateTime(
         datetime.datetime(2008, 1, 1, 0, 0, tzinfo=datetime.timezone.utc)
     )

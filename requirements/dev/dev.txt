@@ -62,7 +62,7 @@ charset-normalizer==3.0.1
     # via
     #   -c requirements/dev/../base/base.txt
     #   requests
-click==8.1.7
+click==8.1.8
     # via
     #   -c requirements/dev/../base/base.txt
     #   -c requirements/dev/../test/test.txt
@@ -80,11 +80,11 @@ cryptography==43.0.3
     #   ansible-core
 decorator==5.1.1
     # via ipython
-django==4.2.16
+django==4.2.18
     # via
     #   -c requirements/dev/../base/base.txt
     #   django-debug-toolbar
-django-debug-toolbar==4.4.6
+django-debug-toolbar==5.0.1
     # via -r requirements/dev/dev.in
 docutils==0.16
     # via
@@ -316,7 +316,7 @@ typing-extensions==4.12.2
     #   typer
     #   urwid
     #   uvicorn
-urllib3==2.2.3
+urllib3==2.3.0
     # via
     #   -c /Users/ronardluna/Desktop/caktus_development/Traffic-Stops/requirements/base/base.txt
     #   botocore
