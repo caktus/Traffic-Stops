@@ -31,13 +31,11 @@ MIDDLEWARE = [
     "whitenoise.middleware.WhiteNoiseMiddleware",
 ] + MIDDLEWARE
 
-STORAGES = {
-    "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
-    },
-    "staticfiles": {
-        "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
-    },
+STORAGES["default"] = {
+    "BACKEND": "django.core.files.storage.FileSystemStorage",
+}
+STORAGES["staticfiles"] = {
+    "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
 }
 
 EMAIL_HOST = os.getenv("EMAIL_HOST", "localhost")
