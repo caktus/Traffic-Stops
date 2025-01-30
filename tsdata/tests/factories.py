@@ -20,7 +20,7 @@ class DatasetFactory(factory.django.DjangoModelFactory):
 
 
 class CensusProfileFactory(factory.django.DjangoModelFactory):
-    class Meta(object):
+    class Meta:
         model = models.CensusProfile
 
     id = factory.Sequence(lambda n: "16000US%07d" % n)

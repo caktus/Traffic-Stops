@@ -207,7 +207,7 @@ class Agency(models.Model):
     census_profile_id = models.CharField(max_length=16, blank=True, default="")
     last_reported_stop = models.DateField(null=True)
 
-    class Meta(object):
+    class Meta:
         verbose_name_plural = "Agencies"
 
     def __str__(self):

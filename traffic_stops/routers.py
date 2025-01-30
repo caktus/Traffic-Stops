@@ -5,7 +5,7 @@ from django.conf import settings
 logger = logging.getLogger(__name__)
 
 
-class StateDatasetRouter(object):
+class StateDatasetRouter:
     """Read/write from speciic State databases"""
 
     def _db_name(self, model):

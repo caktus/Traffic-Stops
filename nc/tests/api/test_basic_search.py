@@ -8,7 +8,7 @@ from nc.tests import factories
 pytestmark = pytest.mark.django_db
 
 
-RACE_VALUES = set([v[0] for v in RACE_CHOICES])
+RACE_VALUES = {v[0] for v in RACE_CHOICES}
 
 
 def test_no_agency(client, search_url):

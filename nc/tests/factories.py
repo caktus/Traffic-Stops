@@ -19,14 +19,14 @@ class ViewRefreshFactory(factory.django.DjangoModelFactory):
 
 
 class AgencyFactory(ViewRefreshFactory):
-    class Meta(object):
+    class Meta:
         model = models.Agency
 
     name = factory.Sequence(lambda n: "Agency %03d" % n)
 
 
 class PersonFactory(ViewRefreshFactory):
-    class Meta(object):
+    class Meta:
         model = models.Person
 
     person_id = factory.Sequence(lambda x: x)
@@ -38,7 +38,7 @@ class PersonFactory(ViewRefreshFactory):
 
 
 class StopFactory(ViewRefreshFactory):
-    class Meta(object):
+    class Meta:
         model = models.Stop
 
     stop_id = factory.Sequence(lambda x: x)
@@ -61,7 +61,7 @@ class StopFactory(ViewRefreshFactory):
 
 
 class SearchFactory(ViewRefreshFactory):
-    class Meta(object):
+    class Meta:
         model = models.Search
 
     search_id = factory.Sequence(lambda x: x)
@@ -71,7 +71,7 @@ class SearchFactory(ViewRefreshFactory):
 
 
 class ContrabandFactory(ViewRefreshFactory):
-    class Meta(object):
+    class Meta:
         model = models.Contraband
 
     contraband_id = factory.Sequence(lambda x: x)

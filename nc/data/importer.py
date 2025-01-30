@@ -159,8 +159,8 @@ def to_standard_csv(input_path, output_path):
         quoting=csv.QUOTE_MINIMAL,
         skipinitialspace=False,
     )
-    with open(input_path, "rt") as input:
-        with open(output_path, "wt") as output:
+    with open(input_path) as input:
+        with open(output_path, "w") as output:
             reader = csv.reader(input, dialect="nc_data_in")
             writer = csv.writer(output, dialect="nc_data_out")
             headings_written = False
@@ -191,7 +191,7 @@ def convert_to_csv(destination):
         logger.info(f"Converting {data_path} > {csv_path}")
         # Edit source data .txt file in-place to remove NUL bytes
         # (only seen in Stop.txt)
-        call([r"sed -i 's/\x0//g' {}".format(data_path)], shell=True)
+        call([rf"sed -i 's/\x0//g' {data_path}"], shell=True)
         to_standard_csv(data_path, csv_path)
         data_count = line_count(data_path)
         csv_count = line_count(csv_path)
