@@ -18,7 +18,7 @@ def call(cmd, shell=False):
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=shell)
     stdout, stderr = p.communicate()
     if p.returncode != 0:
-        raise IOError(stderr)
+        raise OSError(stderr)
     if stderr:
         logger.error(stderr.decode("utf-8"))
     return stdout
@@ -122,7 +122,7 @@ def download_and_unzip_data(url, destination, prefix="state-"):
     return destination
 
 
-class GroupedData(object):
+class GroupedData:
     """Data structure to build and flatten nested dictionaries"""
 
     def __init__(self, by, defaults=None):

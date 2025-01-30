@@ -55,7 +55,7 @@ RACE_VARIABLES = {
 }
 
 
-class ACS(object):
+class ACS:
     """Base class to call ACS API and normalize output"""
 
     source = "ACS 5-Year Data"
@@ -135,7 +135,7 @@ class ACSStatePlaces(ACS):
         return self.api.acs5.state_place(self.variables, self.fips, census.ALL)
 
     def get(self):
-        df = super(ACSStatePlaces, self).get()
+        df = super().get()
         # ignore Census Designated Places (CDP)
         return df[~df.location.str.contains("CDP")]
 
