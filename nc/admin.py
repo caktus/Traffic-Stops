@@ -2,7 +2,7 @@ from ckeditor.widgets import CKEditorWidget
 from django import forms
 from django.contrib import admin
 
-from nc.models import Agency, Resource, ResourceFile, StopSummary
+from nc.models import Agency, NCCensusProfile, Resource, ResourceFile, StopSummary
 
 
 class AgencyAdmin(admin.ModelAdmin):
@@ -93,6 +93,15 @@ class ResourceAdmin(admin.ModelAdmin):
     def save_related(self, request, form, formsets, change):
         super().save_related(request, form, formsets, change)
         form.instance.agencies.set(form.cleaned_data["agencies"], clear=True)
+
+
+@admin.register(NCCensusProfile)
+class NCCensusProfileAdmin(admin.ModelAdmin):
+    list_display = ("id", "acs_id", "location", "geography", "race", "population", "total")
+    list_filter = ("geography",)
+    ordering = ("location",)
+    readonly_fields = ("acs_id", "location", "geography", "race", "population", "total", "source")
+    search_fields = ("location", "id", "acs_id")
 
 
 admin.site.register(Agency, AgencyAdmin)

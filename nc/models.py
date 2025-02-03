@@ -442,3 +442,25 @@ class ResourceFile(models.Model):
         if self.file:
             return f"{self.file.name} for {self.resource.title}"
         return f"Resource file for {self.resource.title}"
+
+
+class NCCensusProfile(models.Model):
+    class GeographyChoices(models.TextChoices):
+        STATE = "state", "State"
+        COUNTY = "county", "County"
+        PLACE = "place", "Place"
+
+    acs_id = models.CharField(verbose_name="ACS ID", max_length=32)
+    location = models.CharField(max_length=64)
+    geography = models.CharField(max_length=16, choices=GeographyChoices.choices)
+    source = models.CharField(max_length=64)
+    race = models.CharField(max_length=32)
+    population = models.BigIntegerField()
+    total = models.BigIntegerField()
+
+    class Meta:
+        verbose_name = "NC Census Profile"
+        verbose_name_plural = "NC Census Profiles"
+
+    def __str__(self):
+        return f"{self.location} {self.race} people ({self.geography})"
