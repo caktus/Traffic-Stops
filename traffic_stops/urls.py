@@ -10,7 +10,8 @@ admin.autodiscover()
 
 urlpatterns = [  # noqa
     path("", include(("nc.urls", "nc"), namespace="nc"), name="home"),
-    re_path(r"^admin/", admin.site.urls),
+    path("admin/", admin.site.urls),
+    path("ckeditor5/", include("django_ckeditor_5.urls")),
 ]
 
 if settings.DEBUG:
