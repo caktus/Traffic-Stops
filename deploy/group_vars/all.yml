@@ -24,12 +24,12 @@ admin_database_password: !vault |
 # ----------------------------------------------------------------------------
 
 # Parameters
-cloudformation_stack_database_engine_version: "16.6"
-cloudformation_stack_database_parameter_group_family: postgres16
+cloudformation_stack_database_engine_version: "17.2"
+cloudformation_stack_database_parameter_group_family: postgres17
 
 # Find tag:
 # https://github.com/caktus/k8s-caktus-backup/pkgs/container/k8s-caktus-backup
-k8s_hosting_services_image_tag: 0.7.0-postgres17
+k8s_hosting_services_image_tag: 0.7.0-postgres16
 
 cloudformation_stack_state: present
 cloudformation_stack_profile: '{{ aws_profile }}'
