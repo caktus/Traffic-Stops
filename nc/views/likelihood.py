@@ -39,6 +39,7 @@ def likelihood_stop_query(request, agency_id, debug=False):
     filter_set = LikelihoodStopSummaryFilterSet(request.GET, agency_id=agency_id)
     qs = filter_set.qs
     df = pd.DataFrame(qs.values())
+    df = df.rename(columns={"driver_race_comb": "driver_race"})
     df.fillna(0, inplace=True)
     if debug:
         print(qs.explain(analyze=True, verbose=True))
