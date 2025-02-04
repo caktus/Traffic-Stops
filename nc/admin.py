@@ -2,7 +2,15 @@ from ckeditor.widgets import CKEditorWidget
 from django import forms
 from django.contrib import admin
 
-from nc.models import Agency, NCCensusProfile, Resource, ResourceFile, StopSummary
+from nc.models import (
+    Agency,
+    ContrabandSummary,
+    LikelihoodStopSummary,
+    NCCensusProfile,
+    Resource,
+    ResourceFile,
+    StopSummary,
+)
 
 
 class AgencyAdmin(admin.ModelAdmin):
@@ -43,6 +51,24 @@ class StopSummaryAdmin(admin.ModelAdmin):
 
     def agency_name(self, obj):
         return obj.agency.name
+
+
+@admin.register(ContrabandSummary)
+class ContrabandSummaryAdmin(admin.ModelAdmin):
+    date_hierarchy = "date"
+    list_display = (
+        "id",
+        "date",
+        "agency",
+        "stop_purpose_group",
+        "driver_searched",
+        "driver_arrest",
+        "contraband_found",
+    )
+    list_filter = ("date", "stop_purpose_group")
+    list_select_related = ("agency",)
+    search_fields = ("id", "agency__name")
+    raw_id_fields = ("stop", "agency", "search", "contraband")
 
 
 class InlineResourceFile(admin.StackedInline):
@@ -97,11 +123,70 @@ class ResourceAdmin(admin.ModelAdmin):
 
 @admin.register(NCCensusProfile)
 class NCCensusProfileAdmin(admin.ModelAdmin):
-    list_display = ("id", "acs_id", "location", "geography", "race", "population", "total")
-    list_filter = ("geography",)
+    list_display = (
+        "id",
+        "acs_id",
+        "location",
+        "geography",
+        "race",
+        "population",
+        "population_total",
+        "population_pct",
+    )
+    list_filter = ("geography", "race")
     ordering = ("location",)
-    readonly_fields = ("acs_id", "location", "geography", "race", "population", "total", "source")
+    readonly_fields = (
+        "acs_id",
+        "location",
+        "geography",
+        "race",
+        "population",
+        "population_total",
+        "population_percent",
+        "source",
+    )
     search_fields = ("location", "id", "acs_id")
+
+    @admin.display(ordering="population_percent")
+    def population_pct(self, obj):
+        return f"{obj.population_percent:.2%}"
+
+
+@admin.register(LikelihoodStopSummary)
+class LikelihoodStopSummaryAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "agency_name",
+        "driver_race_comb",
+        "population",
+        "population_total",
+        "stops",
+        "stops_total",
+        "stop_rate",
+        "baseline_rate",
+        "stop_rate_ratio",
+    )
+    list_filter = ("driver_race_comb", "agency")
+    list_select_related = ("agency",)
+    readonly_fields = (
+        "id",
+        "agency",
+        "driver_race_comb",
+        "population",
+        "population_total",
+        "population_percent",
+        "stops",
+        "stops_total",
+        "stop_rate",
+        "baseline_rate",
+        "stop_rate_ratio",
+    )
+    search_fields = ("agency__name",)
+    ordering = ("agency__name", "driver_race_comb")
+
+    @admin.display(ordering="agency__name")
+    def agency_name(self, obj):
+        return obj.agency.name
 
 
 admin.site.register(Agency, AgencyAdmin)

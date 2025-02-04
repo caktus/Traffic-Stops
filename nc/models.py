@@ -456,7 +456,8 @@ class NCCensusProfile(models.Model):
     source = models.CharField(max_length=64)
     race = models.CharField(max_length=32)
     population = models.BigIntegerField()
-    total = models.BigIntegerField()
+    population_total = models.BigIntegerField()
+    population_percent = models.FloatField()
 
     class Meta:
         verbose_name = "NC Census Profile"
@@ -464,3 +465,82 @@ class NCCensusProfile(models.Model):
 
     def __str__(self):
         return f"{self.location} {self.race} people ({self.geography})"
+
+
+class Race(models.TextChoices):
+    ASIAN = "Asian"
+    BLACK = "Black"
+    HISPANIC = "Hispanic"
+    NATIVE_AMERICAN = "Native American"
+    OTHER = "Other"
+    WHITE = "White"
+
+
+LIKELIHOOD_STOP_SQL = """
+WITH stop_summary AS (
+    SELECT
+        agency_id
+        , name AS agency
+        , agency.census_profile_id AS acs_id
+        , driver_race_comb AS driver_race
+        , sum(count) AS stops
+        , sum(sum(count)) OVER (PARTITION BY agency_id)::integer AS stops_total
+        , (sum(count) * 1.0) / sum(sum(count)) OVER (PARTITION BY agency_id) AS stops_percent
+    FROM nc_stopsummary summary
+    JOIN nc_agency agency ON (summary.agency_id = agency.id)
+    WHERE agency.census_profile_id IS NOT NULL
+    GROUP BY 1, 2, 3, 4
+    ORDER BY 2, 3
+), stop_summary_with_acs AS (
+    SELECT
+        stops.*
+        , acs.*
+        , (stops * 1.0) / NULLIF(population, 0) AS stop_rate
+    FROM stop_summary stops
+    JOIN nc_nccensusprofile acs ON (stops.acs_id = acs.acs_id AND stops.driver_race = acs.race)
+    ORDER BY agency_id, driver_race
+)
+SELECT
+    row_number() over() AS id
+    , parent.agency_id
+    , parent.agency
+    , parent.driver_race
+    , parent.population
+    , parent.population_total
+    , parent.population_percent
+    , parent.stops
+    , parent.stops_total
+    , parent.stop_rate
+    , baseline.stop_rate AS baseline_rate
+    , (parent.stop_rate - baseline.stop_rate) / baseline.stop_rate AS stop_rate_ratio
+FROM stop_summary_with_acs parent
+JOIN stop_summary_with_acs baseline ON (baseline.driver_race = 'White' AND parent.agency = baseline.agency)
+ORDER BY agency_id, driver_race
+"""  # noqa
+
+
+class LikelihoodStopSummary(pg.ReadOnlyMaterializedView):
+    sql = LIKELIHOOD_STOP_SQL
+    # Don't create view with data, this will be manually managed
+    # and refreshed by the data import process
+    # https://github.com/mikicz/django-pgviews#with-no-data
+    with_data = False
+
+    id = models.PositiveIntegerField(verbose_name="ID", primary_key=True)
+    agency = models.ForeignKey("Agency", on_delete=models.DO_NOTHING)
+    driver_race_comb = models.CharField(
+        verbose_name="Driver Race", max_length=216, choices=Race.choices, db_column="driver_race"
+    )
+    population = models.PositiveIntegerField()
+    population_total = models.PositiveIntegerField()
+    population_percent = models.DecimalField(max_digits=5, decimal_places=2)
+    stops = models.PositiveIntegerField()
+    stops_total = models.PositiveIntegerField()
+    stop_rate = models.DecimalField(max_digits=5, decimal_places=2)
+    baseline_rate = models.DecimalField(max_digits=5, decimal_places=2)
+    stop_rate_ratio = models.DecimalField(max_digits=5, decimal_places=2)
+
+    class Meta:
+        managed = False
+        verbose_name = "Likelihood of Stop Summary"
+        verbose_name_plural = "Likelihood of Stop Summaries"

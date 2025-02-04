@@ -183,18 +183,21 @@ def refresh_census_models(data):
             ["asian"],
             ["black"],
             ["hispanic"],
+            ["native_american"],
+            ["other", "native_hawaiian", "two_or_more_races"],
             ["white"],
-            ["other", "native_american", "native_hawaiian", "two_or_more_races"],
         ]:
+            race_label = race[0].title().replace("_", " ")
             population = sum([row[r] for r in race])
             nc_profile = NCCensusProfile(
                 acs_id=row["id"],
                 location=row["location"],
                 geography=row["geography"],
                 source=row["source"],
-                race=race[0],
+                race=race_label,
                 population=population,
-                total=row["total"],
+                population_total=row["total"],
+                population_percent=population * 1.0 / row["total"] if row["total"] else 0,
             )
             logger.debug(f"Parsed {nc_profile.race} population in {nc_profile.location}")
             nc_profiles.append(nc_profile)
