@@ -55,14 +55,13 @@ dj-database-url==0.5.0
 django==4.2.18
     # via
     #   -r requirements/base/base.in
-    #   django-ckeditor
+    #   django-ckeditor-5
     #   django-filter
-    #   django-js-asset
     #   django-memoize
     #   django-redis
     #   django-storages
     #   djangorestframework
-django-ckeditor==6.7.2
+django-ckeditor-5==0.2.15
     # via -r requirements/base/base.in
 django-click==2.4.0
     # via -r requirements/base/base.in
@@ -74,8 +73,6 @@ django-extensions==3.0.1
     # via -r requirements/base/base.in
 django-filter==2.4.0
     # via -r requirements/base/base.in
-django-js-asset==2.1.0
-    # via django-ckeditor
 django-memoize==2.3.1
     # via -r requirements/base/base.in
 django-pgviews-redux==0.11.0
@@ -121,6 +118,8 @@ numpy==2.0.0
     # via pandas
 pandas==2.2.3
     # via -r requirements/base/base.in
+pillow==11.1.0
+    # via django-ckeditor-5
 prompt-toolkit==3.0.47
     # via click-repl
 psycopg2==2.9.9

@@ -1,6 +1,6 @@
-from ckeditor.widgets import CKEditorWidget
 from django import forms
 from django.contrib import admin
+from django_ckeditor_5.widgets import CKEditor5Widget
 
 from nc.models import (
     Agency,
@@ -83,8 +83,8 @@ class InlineResourceFile(admin.StackedInline):
 
 class ResourceForm(forms.ModelForm):
     # https://django-ckeditor.readthedocs.io/en/latest/#widget
-    title = forms.CharField(widget=CKEditorWidget())
-    description = forms.CharField(widget=CKEditorWidget())
+    title = forms.CharField(widget=CKEditor5Widget())
+    description = forms.CharField(widget=CKEditor5Widget())
 
     class Meta:
         model = Resource
