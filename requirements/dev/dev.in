@@ -26,7 +26,7 @@ rstcheck
 # AWS tools
 awscli==1.36.17
 
-django-debug-toolbar==5.0.1
+django-debug-toolbar
 
 # For better debugging
 ipython
