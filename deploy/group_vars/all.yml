@@ -24,8 +24,8 @@ admin_database_password: !vault |
 # ----------------------------------------------------------------------------
 
 # Parameters
-cloudformation_stack_database_engine_version: "17.2"
-cloudformation_stack_database_parameter_group_family: postgres17
+cloudformation_stack_database_engine_version: "16.6"
+cloudformation_stack_database_parameter_group_family: postgres16
 
 # Find tag:
 # https://github.com/caktus/k8s-caktus-backup/pkgs/container/k8s-caktus-backup
