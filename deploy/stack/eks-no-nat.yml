@@ -695,6 +695,7 @@ Parameters:
       - db.t3.large
       - db.t3.xlarge
       - db.t3.2xlarge
+      - db.t4g.xlarge
       - db.m1.small
       - db.m1.medium
       - db.m1.large
@@ -802,6 +803,7 @@ Parameters:
       - postgres14
       - postgres15
       - postgres16
+      - postgres17
       - sqlserver-ee-11.0
       - sqlserver-ee-12.0
       - sqlserver-ee-13.0

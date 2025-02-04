@@ -8,7 +8,7 @@ your local development system:
 - Python 3.10
 - NodeJS >= 12.6.0
 - `pip >= 8 or so <http://www.pip-installer.org/>`_
-- Postgres >= 16
+- Postgres >= 17
 
 Getting Started (Docker 🐳)
 ---------------------------
