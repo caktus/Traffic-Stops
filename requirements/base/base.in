@@ -6,7 +6,7 @@ us
 dealer
 boto
 boto3
-botocore
+botocore==1.36.15
 click
 # django-cache-machine is no longer used, remains for legacy migrations
 django-ckeditor-5

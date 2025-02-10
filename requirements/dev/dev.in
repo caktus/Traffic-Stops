@@ -24,7 +24,7 @@ sphinx-autobuild
 rstcheck
 
 # AWS tools
-awscli
+awscli==1.37.15
 
 django-debug-toolbar
 
