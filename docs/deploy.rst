@@ -120,4 +120,4 @@ The application is behind a CloudFront distribution.
 
 To deploy the distribution, run::
 
-    ansible-playbook deploy-cf-stack.yml -t cdn -vvvv
+    ansible-playbook -i inventory-cdn deploy-cf-stack.yml -t cdn -vvvv
