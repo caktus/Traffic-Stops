@@ -12,7 +12,7 @@ click==8.1.8
     # via
     #   -c requirements/test/../base/base.txt
     #   black
-coverage==7.6.11
+coverage==7.6.12
     # via
     #   -r requirements/test/test.in
     #   pytest-cov
@@ -24,7 +24,7 @@ exceptiongroup==1.2.2
     #   pytest
 factory-boy==3.3.3
     # via -r requirements/test/test.in
-faker==36.0.0
+faker==36.1.0
     # via factory-boy
 filelock==3.17.0
     # via virtualenv
@@ -71,18 +71,10 @@ pytest-cov==6.0.0
     # via -r requirements/test/test.in
 pytest-django==4.10.0
     # via -r requirements/test/test.in
-python-dateutil==2.9.0.post0
-    # via
-    #   -c requirements/test/../base/base.txt
-    #   faker
 pyyaml==6.0.2
     # via
     #   -r requirements/test/test.in
     #   pre-commit
-six==1.17.0
-    # via
-    #   -c requirements/test/../base/base.txt
-    #   python-dateutil
 tomli==2.2.1
     # via
     #   black
@@ -92,5 +84,9 @@ typing-extensions==4.12.2
     # via
     #   -c requirements/test/../base/base.txt
     #   black
-virtualenv==20.29.1
+tzdata==2025.1
+    # via
+    #   -c requirements/test/../base/base.txt
+    #   faker
+virtualenv==20.29.2
     # via pre-commit

@@ -74,7 +74,7 @@ colorama==0.4.6
     #   awscli
     #   invoke-kubesae
     #   sphinx-autobuild
-cryptography==44.0.0
+cryptography==44.0.1
     # via
     #   -r requirements/dev/dev.in
     #   ansible-core
@@ -204,7 +204,6 @@ pygments==2.19.1
 python-dateutil==2.9.0.post0
     # via
     #   -c requirements/dev/../base/base.txt
-    #   -c requirements/dev/../test/test.txt
     #   botocore
     #   kubernetes
 python-string-utils==1.0.0
@@ -257,7 +256,6 @@ shellingham==1.5.4
 six==1.17.0
     # via
     #   -c requirements/dev/../base/base.txt
-    #   -c requirements/dev/../test/test.txt
     #   cfn-flip
     #   kubernetes
     #   openshift
