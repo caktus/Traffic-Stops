@@ -5,8 +5,8 @@ census==0.8.22
 us
 dealer
 boto
-boto3==1.34.100
-botocore==1.34.100
+boto3==1.35.76
+botocore==1.35.76
 click==8.1.7
 # django-cache-machine is no longer used, remains for legacy migrations
 django-ckeditor==6.7.0

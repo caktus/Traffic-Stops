@@ -4,7 +4,7 @@ services:
       POSTGRES_HOST_AUTH_METHOD: trust
       POSTGRES_DB: traffic_stops
       DATABASE_URL: postgres://postgres@127.0.0.1:5432/traffic_stops
-    image: postgres:12-alpine
+    image: postgres:16-alpine
     ports:
       - "9051:5432"
     volumes:
@@ -39,7 +39,7 @@ services:
       context: .
       dockerfile: Dockerfile
       target: dev
-    command: ["sleep", "infinity"]
+    command: [ "sleep", "infinity" ]
     links:
       - db:db
       - redis:redis

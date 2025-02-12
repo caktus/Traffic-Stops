@@ -13,6 +13,7 @@ FROM python:3.10-slim-bullseye AS base
 ARG APP_USER=appuser
 RUN groupadd -r ${APP_USER} && useradd --no-log-init -r -g ${APP_USER} ${APP_USER}
 
+ENV POSTGRESQL_CLIENT_VERSION="16"
 # Install packages needed to run your application (not build deps):
 #   postgresql-client -- for running database commands
 # We need to recreate the /usr/share/man/man{1..8} directories first because
@@ -21,10 +22,13 @@ RUN set -ex \
     && RUN_DEPS=" \
     libpcre3 \
     mime-support \
-    postgresql-client \
+    postgresql-client-${POSTGRESQL_CLIENT_VERSION} \
     vim \
     " \
     && seq 1 8 | xargs -I{} mkdir -p /usr/share/man/man{} \
+    && apt-get update && apt-get -y install wget gnupg2 lsb-release \
+    && sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list' \
+    && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
     && apt-get update && apt-get install -y --no-install-recommends $RUN_DEPS \
     && rm -rf /var/lib/apt/lists/*
 
@@ -111,8 +115,9 @@ RUN groupadd --gid $USER_GID $USERNAME \
 #   openssh-client -- for git over SSH
 #   sudo -- to run commands as superuser
 #   vim -- enhanced vi editor for commits
-ENV KUBE_CLIENT_VERSION="v1.29.4"
-ENV HELM_VERSION="3.14.4"
+ENV KUBE_CLIENT_VERSION="v1.30.7"
+ENV HELM_VERSION="3.16.3"
+ENV POSTGRESQL_CLIENT_VERSION="16"
 RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/apt \
     --mount=type=cache,mode=0755,target=/root/.cache/pip \
     set -ex \
@@ -127,7 +132,8 @@ RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/
     libpq-dev \
     nodejs \
     openssh-client \
-    postgresql-client-12 \
+    postgresql-client-${POSTGRESQL_CLIENT_VERSION} \
+    psql \
     sudo \
     vim \
     " \

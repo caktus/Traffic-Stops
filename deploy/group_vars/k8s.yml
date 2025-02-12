@@ -18,6 +18,8 @@ RepositoryURL: "606178775542.dkr.ecr.us-east-2.amazonaws.com"
 k8s_auth_host: "{{ ClusterEndpoint }}"
 k8s_auth_ssl_ca_cert: "k8s_auth_ssl_ca_cert.txt"
 k8s_namespace: "{{ app_name }}-{{ env_name }}"
+k8s_kubeconfig: "{{ playbook_dir + '/.kube/config' }}"
+k8s_context: "arn:aws:eks:us-east-2:606178775542:cluster/{{ k8s_cluster_name }}"
 
 k8s_ingress_certificate_issuer: letsencrypt-production
 
