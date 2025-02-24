@@ -3,7 +3,7 @@ import SearchRateStyled from './SearchRate.styled';
 import * as S from '../ChartSections/ChartsCommon.styled';
 
 // Data
-import useDataset, { AGENCY_DETAILS, LIKELIHOOD_OF_SEARCH } from '../../../Hooks/useDataset';
+import useDataset, { AGENCY_DETAILS, LIKELIHOOD_OF_SEARCH, LIKELIHOOD_OF_STOP } from '../../../Hooks/useDataset';
 
 // Hooks
 import useOfficerId from '../../../Hooks/useOfficerId';
@@ -11,7 +11,10 @@ import useMetaTags from '../../../Hooks/useMetaTags';
 import useTableModal from '../../../Hooks/useTableModal';
 
 // Constants
-import { STOP_REASON_TABLE_COLUMNS } from '../chartUtils';
+import {
+  LIKELIHOOD_OF_STOP_TABLE_COLUMNS,
+  STOP_REASON_TABLE_COLUMNS,
+} from '../chartUtils';
 
 // Children
 import { P } from '../../../styles/StyledComponents/Typography';
@@ -19,21 +22,25 @@ import ChartHeader from '../ChartSections/ChartHeader';
 import axios from '../../../Services/Axios';
 import HorizontalBarChart from '../../NewCharts/HorizontalBarChart';
 import { ChartContainer } from '../ChartSections/ChartsCommon.styled';
+import { backgroundColor, border } from 'styled-system';
 
 function SearchRate(props) {
   const { agencyId, yearRange, year } = props;
   const officerId = useOfficerId();
 
-  const [chartState] = useDataset(agencyId, LIKELIHOOD_OF_SEARCH);
+  const [chartState] = useDataset(agencyId, LIKELIHOOD_OF_SEARCH, AGENCY_DETAILS);
 
-  const initData = { labels: [], datasets: [], loading: true };
-  const [searchRateData, setSearchRateData] = useState(initData);
+  const initSearchRateData = { labels: [], datasets: [], loading: true };
+  const [searchRateData, setSearchRateData] = useState(initSearchRateData);
+
+  const initStopRateData = { labels: [], datasets: [], loading: true };
+  const [stopRateData, setStopRateData] = useState(initStopRateData);
 
   const renderMetaTags = useMetaTags();
   const [renderTableModal, { openModal }] = useTableModal();
 
   useEffect(() => {
-    setSearchRateData(initData);
+    setSearchRateData(initSearchRateData);
     const params = [];
     if (year && year !== 'All') {
       params.push({ param: 'year', val: year });
@@ -47,7 +54,50 @@ function SearchRate(props) {
     axios
       .get(url)
       .then((res) => {
+        console.log('search rate data', res.data);
         setSearchRateData(res.data);
+      })
+      .catch((err) => console.log(err));
+  }, [year]);
+
+  useEffect(() => {
+    setStopRateData(initStopRateData);
+    const params = [];
+    if (year && year !== 'All') {
+      params.push({ param: 'year', val: year });
+    }
+    if (officerId) {
+      params.push({ param: 'officer', val: officerId });
+    }
+
+    const urlParams = params.map((p) => `${p.param}=${p.val}`).join('&');
+    const url = `/api/agency/${agencyId}/likelihood-of-stops/?${urlParams}`;
+    axios
+      .get(url)
+      .then((res) => {
+        console.log('stop rate data', res.data.stop_percentages);
+        const tableData = res.data.table_data;
+        const colors = ['#9FD356', '#3C91E6', '#EFCEFA', '#2F4858', '#A653F4'];
+        const labels = ['Black', 'Hispanic', 'Asian', 'Native American', 'Other'];
+        const data = {
+          labels: labels,
+          datasets: [
+            {
+              axis: 'y',
+              label: 'All', 
+              data: res.data.stop_percentages,
+              fill: false,
+              backgroundColor: colors,
+              borderColor: colors,
+              hoverBackgroundColor: colors,
+              borderWidth: 1, 
+            },
+          ],
+          isModalOpen: false,
+          tableData,
+          csvData: tableData,
+        }
+        setStopRateData(data);
       })
       .catch((err) => console.log(err));
   }, [year]);
@@ -123,6 +173,39 @@ function SearchRate(props) {
             }}
           />
         </ChartContainer>
+      </S.ChartSection>
+
+      <S.ChartSection>
+      <ChartHeader chartTitle="Likelihood of Stop" handleViewData={() => setStopRateData((state) => ({ ...state, isOpen: true }))} />
+        <S.ChartDescription>
+          <P>
+            Shows the likelihood that drivers of a particular race / ethnicity are stopped{' '}
+            <strong>compared to white drivers</strong>, based city population size.
+          </P>
+          <P>
+            <strong>NOTE:</strong> Large or unexpected percentages may be based on a low number of
+            incidents. Use “View Data” to see the numbers underlying the calculations.
+          </P>
+        </S.ChartDescription>
+
+        <HorizontalBarChart
+          title="Likelihood of Stop"
+          data={stopRateData}
+          maintainAspectRatio={true}
+          tooltipTitleCallback={formatTooltipLabel}
+          displayLegend={false}
+          tooltipLabelCallback={(ctx) => `${ctx.label}: ${(ctx.raw).toFixed(2)}%`}
+          legendPosition="bottom"
+          pinMaxValue={false}
+          modalConfig={{
+            tableHeader: 'Likelihood of Stop',
+            tableSubheader: getBarChartModalSubHeading(
+              'Watts-hillandale the indy edgemont sodu gregson street towerview drive jazz.'
+            ),
+            agencyName: chartState.data[AGENCY_DETAILS].name,
+            chartTitle: getBarChartModalHeading('Likelihood of Stop'),
+          }}
+          />
       </S.ChartSection>
     </SearchRateStyled>
   );
