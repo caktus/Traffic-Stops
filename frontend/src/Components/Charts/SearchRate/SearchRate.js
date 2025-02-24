@@ -78,9 +78,8 @@ function SearchRate(props) {
         console.log('stop rate data', res.data.stop_percentages);
         const tableData = res.data.table_data;
         const colors = ['#9FD356', '#3C91E6', '#EFCEFA', '#2F4858', '#A653F4'];
-        const labels = ['Black', 'Hispanic', 'Asian', 'Native American', 'Other'];
         const data = {
-          labels: labels,
+          labels: ['Black', 'Hispanic', 'Asian', 'Native American', 'Other'],
           datasets: [
             {
               axis: 'y',
@@ -192,10 +191,8 @@ function SearchRate(props) {
           title="Likelihood of Stop"
           data={stopRateData}
           maintainAspectRatio={true}
-          tooltipTitleCallback={formatTooltipLabel}
           displayLegend={false}
           tooltipLabelCallback={(ctx) => `${ctx.label}: ${(ctx.raw).toFixed(2)}%`}
-          legendPosition="bottom"
           pinMaxValue={false}
           modalConfig={{
             tableHeader: 'Likelihood of Stop',
