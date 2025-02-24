@@ -125,4 +125,9 @@ urlpatterns = [  # noqa
         views.AgencyArrestsPercentageOfStopsPerContrabandTypeView.as_view(),
         name="arrests-percentage-of-stops-per-contraband-type",
     ),
+    path(
+        "api/agency/<agency_id>/likelihood-of-stops/",
+        views.LikelihoodStopView.as_view(),
+        name="likelihood-of-stops",
+    ),
 ]

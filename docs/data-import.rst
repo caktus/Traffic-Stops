@@ -25,8 +25,8 @@ To load an existing database dump on S3, run:
 .. code-block:: bash
 
     dropdb traffic_stops_nc && createdb -E UTF-8 traffic_stops_nc
-    aws s3 cp s3://forwardjustice-trafficstops/trafficstops-staging_database.dump .
-    pg_restore -Ox -d traffic_stops_nc trafficstops-staging_database.dump
+    aws s3 cp s3://forwardjustice-trafficstops/traffic_stops_nc-20250204.dump .
+    pg_restore -Ox -d traffic_stops_nc traffic_stops_nc-20250204.dump
 
 
 Raw NC Data (slower)
