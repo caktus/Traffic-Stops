@@ -22,13 +22,13 @@ import ChartHeader from '../ChartSections/ChartHeader';
 import axios from '../../../Services/Axios';
 import HorizontalBarChart from '../../NewCharts/HorizontalBarChart';
 import { ChartContainer } from '../ChartSections/ChartsCommon.styled';
-import { backgroundColor, border } from 'styled-system';
 
 function SearchRate(props) {
   const { agencyId, yearRange, year } = props;
   const officerId = useOfficerId();
 
-  const [chartState] = useDataset(agencyId, LIKELIHOOD_OF_SEARCH, AGENCY_DETAILS);
+  const [searchChartState] = useDataset(agencyId, LIKELIHOOD_OF_SEARCH, AGENCY_DETAILS);
+  const [stopChartState] = useDataset(agencyId, LIKELIHOOD_OF_STOP, AGENCY_DETAILS);
 
   const initSearchRateData = { labels: [], datasets: [], loading: true };
   const [searchRateData, setSearchRateData] = useState(initSearchRateData);
@@ -54,7 +54,6 @@ function SearchRate(props) {
     axios
       .get(url)
       .then((res) => {
-        console.log('search rate data', res.data);
         setSearchRateData(res.data);
       })
       .catch((err) => console.log(err));
@@ -75,7 +74,6 @@ function SearchRate(props) {
     axios
       .get(url)
       .then((res) => {
-        console.log('stop rate data', res.data.stop_percentages);
         const tableData = res.data.table_data;
         const colors = ['#9FD356', '#3C91E6', '#EFCEFA', '#2F4858', '#A653F4'];
         const data = {
@@ -101,9 +99,18 @@ function SearchRate(props) {
       .catch((err) => console.log(err));
   }, [year]);
 
-  const handleViewData = () => {
-    openModal(LIKELIHOOD_OF_SEARCH, STOP_REASON_TABLE_COLUMNS);
+  const handleViewData = (type) => {
+    switch (type) {
+      case 'search':
+        openModal(LIKELIHOOD_OF_SEARCH, STOP_REASON_TABLE_COLUMNS);
+        break;
+      case 'stop':
+        openModal(LIKELIHOOD_OF_STOP, LIKELIHOOD_OF_STOP_TABLE_COLUMNS);
+        break;
+      default:
+        break;
   };
+};
 
   const formatTooltipLabel = (ctx) => ctx[0].dataset.label;
   const formatTooltipValue = (ctx) => `${ctx.label}: ${(ctx.raw * 100).toFixed(2)}%`;
@@ -125,7 +132,7 @@ function SearchRate(props) {
                       purposes ${subjectObserving()}.`;
 
   const getBarChartModalHeading = (title) => {
-    let subject = chartState.data[AGENCY_DETAILS].name;
+    let subject = searchChartState.data[AGENCY_DETAILS].name;
     if (officerId) {
       subject = `Officer ${officerId}`;
     }
@@ -141,7 +148,7 @@ function SearchRate(props) {
       {renderMetaTags()}
       {renderTableModal()}
       <S.ChartSection>
-        <ChartHeader chartTitle="Likelihood of Search" handleViewData={handleViewData} />
+        <ChartHeader chartTitle="Likelihood of Search" handleViewData={() => handleViewData('search')} />
         <S.ChartDescription>
           <P>
             Shows the likelihood that drivers of a particular race / ethnicity are searched{' '}
@@ -167,7 +174,7 @@ function SearchRate(props) {
             modalConfig={{
               tableHeader: 'Likelihood of Search',
               tableSubheader: getBarChartModalSubHeading(),
-              agencyName: chartState.data[AGENCY_DETAILS].name,
+              agencyName: searchChartState.data[AGENCY_DETAILS].name,
               chartTitle: getBarChartModalHeading('Likelihood of Search'),
             }}
           />
@@ -175,7 +182,7 @@ function SearchRate(props) {
       </S.ChartSection>
 
       <S.ChartSection>
-      <ChartHeader chartTitle="Likelihood of Stop" handleViewData={() => setStopRateData((state) => ({ ...state, isOpen: true }))} />
+      <ChartHeader chartTitle="Likelihood of Stop" handleViewData={() => handleViewData('stop')} />
         <S.ChartDescription>
           <P>
             Shows the likelihood that drivers of a particular race / ethnicity are stopped{' '}
@@ -199,7 +206,7 @@ function SearchRate(props) {
             tableSubheader: getBarChartModalSubHeading(
               'Watts-hillandale the indy edgemont sodu gregson street towerview drive jazz.'
             ),
-            agencyName: chartState.data[AGENCY_DETAILS].name,
+            agencyName: searchChartState.data[AGENCY_DETAILS].name,
             chartTitle: getBarChartModalHeading('Likelihood of Stop'),
           }}
           />
