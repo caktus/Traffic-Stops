@@ -48,17 +48,39 @@ export const STOP_PURPOSE_TYPES = [
 ];
 
 export const STOP_TYPE_COLORS = [
-  '#ff7da8',
-  '#c1d670',
-  '#f9c86e',
-  '#74bd5b',
-  '#74db9d',
-  '#ad8de0',
-  '#dba7ed',
-  '#ff916d',
-  '#4abdc4',
-  '#f1ed39',
+  '#E60032', // Vivid Red
+  '#06D6A0', // Aqua Green
+  '#8352F4', // Bright Purple
+  '#FAE500', // Vibrant Yellow
+  '#027979', // Teal
+  '#E37C1C', // Orange
+  '#4153F6', // Strong Blue
+  '#B40895', // Magenta
+  '#0D3B66', // Navy Blue
 ];
+
+export const DEMOGRAPHICS_COLORS = {
+  white: '#551DC3', // Chrysler Blue
+  black: '#F9DC4E', // Naples Yellow
+  hispanic: '#24BC7D', // Fuchia Rose
+  asian: '#1282A2', // Light Sea Green
+  nativeAmerican: '#D24B76', // Mint
+  other: '#999999', // Tufts Blue
+};
+
+export const CONTRANBAND_TYPE_COLORS = {
+  alcohol: '#551DC3', // Vivid Red
+  drugs: '#F9DC4E', // Aqua Green
+  money: '#24BC7D', // Bright Purple
+  other: '#999999', // Vibrant Yellow
+  weapons: '#D24B76', // Teal
+};
+
+export const STOP_PURPOSE_COLORS = {
+  safteyViolation: '#551DC3',
+  regulatoryEquipment: '#D24B76',
+  other: '#999999',
+};
 
 export const STATIC_LEGEND_KEYS = RACES.map((r) => ({
   value: r,

@@ -4,10 +4,13 @@ import * as S from '../ChartSections/ChartsCommon.styled';
 
 // Util
 import {
+  CONTRANBAND_TYPE_COLORS,
   CONTRABAND_TYPES,
   CONTRABAND_TYPES_TABLE_COLUMNS,
+  DEMOGRAPHICS_COLORS,
   RACE_TABLE_COLUMNS,
   STATIC_CONTRABAND_KEYS,
+  STOP_PURPOSE_COLORS,
 } from '../chartUtils';
 
 // Hooks
@@ -191,7 +194,14 @@ function Contraband(props) {
             total: Object.values(dataCounts).reduce((a, b) => a + b, 0),
           });
         });
-        const colors = ['#02bcbb', '#8879fc', '#9c0f2e', '#ffe066', '#0c3a66', '#9e7b9b'];
+        const colors = [
+          DEMOGRAPHICS_COLORS.white,
+          DEMOGRAPHICS_COLORS.black,
+          DEMOGRAPHICS_COLORS.hispanic,
+          DEMOGRAPHICS_COLORS.asian,
+          DEMOGRAPHICS_COLORS.nativeAmerican,
+          DEMOGRAPHICS_COLORS.other,
+        ];
         const data = {
           labels: ['White', 'Black', 'Hispanic', 'Asian', 'Native American', 'Other'],
           datasets: [
@@ -247,7 +257,13 @@ function Contraband(props) {
             total: Object.values(dataCounts).reduce((a, b) => a + b, 0),
           });
         });
-        const colors = ['#9FD356', '#3C91E6', '#EFCEFA', '#2F4858', '#A653F4'];
+        const colors = [
+          CONTRANBAND_TYPE_COLORS.alcohol,
+          CONTRANBAND_TYPE_COLORS.drugs,
+          CONTRANBAND_TYPE_COLORS.money,
+          CONTRANBAND_TYPE_COLORS.other,
+          CONTRANBAND_TYPE_COLORS.weapons,
+        ];
         const data = {
           labels: ['Alcohol', 'Drugs', 'Money', 'Other', 'Weapons'],
           datasets: [
@@ -286,9 +302,9 @@ function Contraband(props) {
       .get(url)
       .then((res) => {
         const colors = {
-          'Safety Violation': '#5F0F40',
-          'Regulatory Equipment': '#E36414',
-          Other: '#0F4C5C',
+          'Safety Violation': STOP_PURPOSE_COLORS.safteyViolation,
+          'Regulatory Equipment': STOP_PURPOSE_COLORS.regulatoryEquipment,
+          Other: STOP_PURPOSE_COLORS.other,
         };
         const stopPurposeDataSets = res.data.contraband_percentages.map((ds) => ({
           axis: 'x',
@@ -337,11 +353,11 @@ function Contraband(props) {
 
   const updateContrabandHitRateByStopPurpose = (data) => {
     const colors = {
-      Alcohol: '#9FD356',
-      Drugs: '#3C91E6',
-      Money: '#EFCEFA',
-      Other: '#2F4858',
-      Weapons: '#A653F4',
+      Alcohol: CONTRANBAND_TYPE_COLORS.alcohol,
+      Drugs: CONTRANBAND_TYPE_COLORS.drugs,
+      Money: CONTRANBAND_TYPE_COLORS.money,
+      Other: CONTRANBAND_TYPE_COLORS.other,
+      Weapons: CONTRANBAND_TYPE_COLORS.weapons,
     };
     const stopPurposeDataSets = data.map((sp) => ({
       labels: ['White', 'Black', 'Hispanic', 'Asian', 'Native American', 'Other'],
