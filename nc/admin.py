@@ -1,16 +1,18 @@
-from ckeditor.widgets import CKEditorWidget
 from django import forms
 from django.contrib import admin
+from django_ckeditor_5.widgets import CKEditor5Widget
 
 from nc.models import Agency, Resource, ResourceFile, StopSummary
 
 
+@admin.register(Agency)
 class AgencyAdmin(admin.ModelAdmin):
     list_display = ("name", "id", "census_profile_id")
     search_fields = ("name",)
     ordering = ("id",)
 
 
+@admin.register(StopSummary)
 class StopSummaryAdmin(admin.ModelAdmin):
     list_display = (
         "id",
@@ -56,14 +58,15 @@ class InlineResourceFile(admin.StackedInline):
 
 class ResourceForm(forms.ModelForm):
     # https://django-ckeditor.readthedocs.io/en/latest/#widget
-    title = forms.CharField(widget=CKEditorWidget())
-    description = forms.CharField(widget=CKEditorWidget())
+    title = forms.CharField(widget=CKEditor5Widget())
+    description = forms.CharField(widget=CKEditor5Widget())
 
     class Meta:
         model = Resource
         fields = "__all__"
 
 
+@admin.register(Resource)
 class ResourceAdmin(admin.ModelAdmin):
     fields = (
         "agencies",
@@ -93,8 +96,3 @@ class ResourceAdmin(admin.ModelAdmin):
     def save_related(self, request, form, formsets, change):
         super().save_related(request, form, formsets, change)
         form.instance.agencies.set(form.cleaned_data["agencies"], clear=True)
-
-
-admin.site.register(Agency, AgencyAdmin)
-admin.site.register(StopSummary, StopSummaryAdmin)
-admin.site.register(Resource, ResourceAdmin)

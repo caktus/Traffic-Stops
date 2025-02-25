@@ -31,7 +31,12 @@ MIDDLEWARE = [
     "whitenoise.middleware.WhiteNoiseMiddleware",
 ] + MIDDLEWARE
 
-STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
+STORAGES["default"] = {
+    "BACKEND": "django.core.files.storage.FileSystemStorage",
+}
+STORAGES["staticfiles"] = {
+    "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
+}
 
 EMAIL_HOST = os.getenv("EMAIL_HOST", "localhost")
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
@@ -47,7 +52,7 @@ elif EMAIL_USE_SSL:
 else:
     default_smtp_port = 25
 EMAIL_PORT = os.getenv("EMAIL_PORT", default_smtp_port)
-EMAIL_SUBJECT_PREFIX = "[trafficstops %s] " % ENVIRONMENT.title()
+EMAIL_SUBJECT_PREFIX = f"[trafficstops {ENVIRONMENT.title()}] "
 DEFAULT_FROM_EMAIL = f"noreply@{os.getenv('DOMAIN', os.environ)}"
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
