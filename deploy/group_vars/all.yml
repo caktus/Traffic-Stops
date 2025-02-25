@@ -51,6 +51,7 @@ cloudformation_stack_template_parameters:
   DatabaseClass: db.t4g.xlarge
   DatabaseEngineVersion: "{{ cloudformation_stack_database_engine_version }}"
   DatabaseParameterGroupFamily: "{{ cloudformation_stack_database_parameter_group_family }}"
+  DatabaseBackupRetentionDays: 2
   DatabaseMultiAZ: "false"
   DatabaseUser: "{{ app_name }}_admin"
   DatabasePassword: "{{ admin_database_password }}"
