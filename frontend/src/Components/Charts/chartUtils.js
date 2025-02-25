@@ -251,16 +251,8 @@ export const LIKELIHOOD_OF_STOP_TABLE_COLUMNS = [
     accessor: 'stops_total',
   },
   {
-    Header: 'Stops Percentage',
-    accessor: 'stops_percent',
-  },
-  {
     Header: 'Stop Rate',
     accessor: 'stop_rate',
-  },
-  {
-    Header: 'Baseline Rate',
-    accessor: 'baseline_rate',
   },
   {
     Header: 'Stop Rate Ratio',
