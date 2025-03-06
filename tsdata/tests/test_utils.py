@@ -85,7 +85,7 @@ class TestUtils(TestCase):
         expected_num_lines = 2345
         with tempfile.NamedTemporaryFile(mode="w") as t:
             for i in range(expected_num_lines):
-                print("line %s" % i, file=t)
+                print(f"line {i}", file=t)
             t.flush()
             self.assertEqual(expected_num_lines, line_count(t.name))
 

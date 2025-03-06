@@ -12,3 +12,4 @@ coverage
 flake8
 black
 pre-commit
+identify

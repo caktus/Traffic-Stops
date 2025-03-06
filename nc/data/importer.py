@@ -159,8 +159,8 @@ def to_standard_csv(input_path, output_path):
         quoting=csv.QUOTE_MINIMAL,
         skipinitialspace=False,
     )
-    with open(input_path, "rt") as input:
-        with open(output_path, "wt") as output:
+    with open(input_path) as input:
+        with open(output_path, "w") as output:
             reader = csv.reader(input, dialect="nc_data_in")
             writer = csv.writer(output, dialect="nc_data_out")
             headings_written = False
@@ -186,20 +186,20 @@ def convert_to_csv(destination):
             continue
         csv_path = data_path.replace(".txt", ".csv")
         if os.path.exists(csv_path):
-            logger.info("{} already exists, skipping csv conversion".format(csv_path))
+            logger.info(f"{csv_path} already exists, skipping csv conversion")
             continue
-        logger.info("Converting {} > {}".format(data_path, csv_path))
+        logger.info(f"Converting {data_path} > {csv_path}")
         # Edit source data .txt file in-place to remove NUL bytes
         # (only seen in Stop.txt)
-        call([r"sed -i 's/\x0//g' {}".format(data_path)], shell=True)
+        call([rf"sed -i 's/\x0//g' {data_path}"], shell=True)
         to_standard_csv(data_path, csv_path)
         data_count = line_count(data_path)
         csv_count = line_count(csv_path)
         if data_count == (csv_count - 1):
-            logger.debug("CSV line count matches original data file: {}".format(data_count))
+            logger.debug(f"CSV line count matches original data file: {data_count}")
         else:
-            logger.error("DAT {}".format(data_count))
-            logger.error("CSV {}".format(csv_count))
+            logger.error(f"DAT {data_count}")
+            logger.error(f"CSV {csv_count}")
 
 
 def update_nc_agencies(nc_csv_path, destination):
