@@ -445,6 +445,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       data = mapSearchesByReason(ds);
     } else if (ds === LIKELIHOOD_OF_STOP) {
       chartData = tableChartState.data[ds].table_data;
+      // eslint-disable-next-line no-param-reassign,no-return-assign
       chartData.forEach((chartDatum) => (chartDatum['total'] = calculateYearTotal(chartDatum)));
       return chartData;
     } else {
