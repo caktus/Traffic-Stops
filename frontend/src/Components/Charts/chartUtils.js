@@ -224,6 +224,45 @@ export const CONTRABAND_TYPES_TABLE_COLUMNS = [
   },
 ];
 
+export const LIKELIHOOD_OF_STOP_TABLE_COLUMNS = [
+  {
+    Header: 'Driver Race',
+    accessor: 'driver_race',
+  },
+  {
+    Header: 'Population',
+    accessor: 'population',
+  },
+  {
+    Header: 'Population Total',
+    accessor: 'population_total',
+  },
+  {
+    Header: 'Population Percentage',
+    accessor: 'population_percent',
+  },
+  {
+    Header: 'Basline Rate',
+    accessor: 'baseline_rate',
+  },
+  {
+    Header: 'Stops',
+    accessor: 'stops',
+  },
+  {
+    Header: 'Stops Total',
+    accessor: 'stops_total',
+  },
+  {
+    Header: 'Stop Rate',
+    accessor: 'stop_rate',
+  },
+  {
+    Header: 'Stop Rate Ratio',
+    accessor: 'stop_rate_ratio',
+  },
+];
+
 export const STOP_REASON_TABLE_COLUMNS = [
   {
     Header: 'Year',
