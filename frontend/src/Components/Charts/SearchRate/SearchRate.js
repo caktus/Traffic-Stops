@@ -29,6 +29,7 @@ function SearchRate(props) {
   const officerId = useOfficerId();
 
   const [searchChartState] = useDataset(agencyId, LIKELIHOOD_OF_SEARCH, AGENCY_DETAILS);
+  const [stopChartState] = useDataset(agencyId, LIKELIHOOD_OF_STOP, AGENCY_DETAILS);
 
   const initSearchRateData = { labels: [], datasets: [], loading: true };
   const [searchRateData, setSearchRateData] = useState(initSearchRateData);
@@ -175,7 +176,7 @@ function SearchRate(props) {
             tableSubheader: getBarChartModalSubHeading(
               'Watts-hillandale the indy edgemont sodu gregson street towerview drive jazz.'
             ),
-            agencyName: searchChartState.data[AGENCY_DETAILS].name,
+            agencyName: stopChartState.data[AGENCY_DETAILS].name,
             chartTitle: getBarChartModalHeading('Likelihood of Stop'),
           }}
         />
