@@ -81,13 +81,13 @@ function SearchRate(props) {
           datasets: [
             {
               axis: 'y',
-              label: 'All', 
+              label: 'All',
               data: res.data.stop_percentages,
               fill: false,
               backgroundColor: colors,
               borderColor: colors,
               hoverBackgroundColor: colors,
-              borderWidth: 1, 
+              borderWidth: 1,
             },
           ],
           isModalOpen: false,

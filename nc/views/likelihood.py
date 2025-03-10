@@ -52,13 +52,13 @@ def likelihood_stop_query(request, agency_id, debug=False):
     if debug:
         print(qs.explain(analyze=True, verbose=True))
         print(df)
-    
+
     return df
+
 
 class LikelihoodStopView(APIView):
     """Comparison of Population to Traffic Stops"""
 
-    
     def get(self, request, agency_id):
         # Build chart data
         chart_df = likelihood_stop_query(request=request, agency_id=agency_id)
