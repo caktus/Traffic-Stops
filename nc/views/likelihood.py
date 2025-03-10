@@ -31,6 +31,9 @@ class LikelihoodStopSummaryFilterSet(django_filters.FilterSet):
 def likelihood_stop_query(request, agency_id, debug=False):
     """
     Query LikelihoodStopSummary view for stop likelihood data.
+
+    Related notebooks:
+    - https://nccopwatch-share.s3.amazonaws.com/2024-04-likelihood-of-stops/likelihood-of-stops.html
     """  # noqa
     # Build query to filter down queryset
     filter_set = LikelihoodStopSummaryFilterSet(request.GET, agency_id=agency_id)
