@@ -3,7 +3,11 @@ import SearchRateStyled from './SearchRate.styled';
 import * as S from '../ChartSections/ChartsCommon.styled';
 
 // Data
-import useDataset, { AGENCY_DETAILS, LIKELIHOOD_OF_SEARCH, LIKELIHOOD_OF_STOP } from '../../../Hooks/useDataset';
+import useDataset, {
+  AGENCY_DETAILS,
+  LIKELIHOOD_OF_SEARCH,
+  LIKELIHOOD_OF_STOP,
+} from '../../../Hooks/useDataset';
 
 // Hooks
 import useOfficerId from '../../../Hooks/useOfficerId';
@@ -11,10 +15,7 @@ import useMetaTags from '../../../Hooks/useMetaTags';
 import useTableModal from '../../../Hooks/useTableModal';
 
 // Constants
-import {
-  LIKELIHOOD_OF_STOP_TABLE_COLUMNS,
-  STOP_REASON_TABLE_COLUMNS,
-} from '../chartUtils';
+import { LIKELIHOOD_OF_STOP_TABLE_COLUMNS, STOP_REASON_TABLE_COLUMNS } from '../chartUtils';
 
 // Children
 import { P } from '../../../styles/StyledComponents/Typography';
@@ -93,7 +94,7 @@ function SearchRate(props) {
           isModalOpen: false,
           tableData,
           csvData: tableData,
-        }
+        };
         setStopRateData(data);
       })
       .catch((err) => console.log(err));
@@ -109,8 +110,8 @@ function SearchRate(props) {
         break;
       default:
         break;
+    }
   };
-};
 
   const formatTooltipLabel = (ctx) => ctx[0].dataset.label;
   const formatTooltipValue = (ctx) => `${ctx.label}: ${(ctx.raw * 100).toFixed(2)}%`;
@@ -148,7 +149,10 @@ function SearchRate(props) {
       {renderMetaTags()}
       {renderTableModal()}
       <S.ChartSection>
-      <ChartHeader chartTitle="Likelihood of Stop" handleViewData={() => handleViewData('stop')} />
+        <ChartHeader
+          chartTitle="Likelihood of Stop"
+          handleViewData={() => handleViewData('stop')}
+        />
         <S.ChartDescription>
           <P>
             Shows the likelihood that drivers of a particular race / ethnicity are stopped{' '}
@@ -170,16 +174,19 @@ function SearchRate(props) {
           modalConfig={{
             tableHeader: 'Likelihood of Stop',
             tableSubheader: getBarChartModalSubHeading(
-              'Watts-hillandale the indy edgemont sodu gregson street towerview drive jazz.'
+              'Watts-hillandale the indy edgemont sodu gregson street towerview drive jazz.',
             ),
             agencyName: searchChartState.data[AGENCY_DETAILS].name,
             chartTitle: getBarChartModalHeading('Likelihood of Stop'),
           }}
-          />
+        />
       </S.ChartSection>
 
       <S.ChartSection>
-        <ChartHeader chartTitle="Likelihood of Search" handleViewData={() => handleViewData('search')} />
+        <ChartHeader
+          chartTitle="Likelihood of Search"
+          handleViewData={() => handleViewData('search')}
+        />
         <S.ChartDescription>
           <P>
             Shows the likelihood that drivers of a particular race / ethnicity are searched{' '}

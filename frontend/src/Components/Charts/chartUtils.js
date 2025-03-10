@@ -227,7 +227,7 @@ export const CONTRABAND_TYPES_TABLE_COLUMNS = [
 export const LIKELIHOOD_OF_STOP_TABLE_COLUMNS = [
   {
     Header: 'Driver Race',
-    accessor:'driver_race',
+    accessor: 'driver_race',
   },
   {
     Header: 'Population',
@@ -240,7 +240,6 @@ export const LIKELIHOOD_OF_STOP_TABLE_COLUMNS = [
   {
     Header: 'Population Percentage',
     accessor: 'population_percent',
-
   },
   {
     Header: 'Basline Rate',
