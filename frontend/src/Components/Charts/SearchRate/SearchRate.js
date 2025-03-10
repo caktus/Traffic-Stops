@@ -148,6 +148,37 @@ function SearchRate(props) {
       {renderMetaTags()}
       {renderTableModal()}
       <S.ChartSection>
+      <ChartHeader chartTitle="Likelihood of Stop" handleViewData={() => handleViewData('stop')} />
+        <S.ChartDescription>
+          <P>
+            Shows the likelihood that drivers of a particular race / ethnicity are stopped{' '}
+            <strong>compared to white drivers</strong>, based city population size.
+          </P>
+          <P>
+            <strong>NOTE:</strong> Large or unexpected percentages may be based on a low number of
+            incidents. Use “View Data” to see the numbers underlying the calculations.
+          </P>
+        </S.ChartDescription>
+
+        <HorizontalBarChart
+          title="Likelihood of Stop"
+          data={stopRateData}
+          maintainAspectRatio={true}
+          displayLegend={false}
+          tooltipLabelCallback={(ctx) => `${ctx.label}: ${(ctx.raw * 100).toFixed(2)}%`}
+          pinMaxValue={false}
+          modalConfig={{
+            tableHeader: 'Likelihood of Stop',
+            tableSubheader: getBarChartModalSubHeading(
+              'Watts-hillandale the indy edgemont sodu gregson street towerview drive jazz.'
+            ),
+            agencyName: searchChartState.data[AGENCY_DETAILS].name,
+            chartTitle: getBarChartModalHeading('Likelihood of Stop'),
+          }}
+          />
+      </S.ChartSection>
+
+      <S.ChartSection>
         <ChartHeader chartTitle="Likelihood of Search" handleViewData={() => handleViewData('search')} />
         <S.ChartDescription>
           <P>
@@ -179,37 +210,6 @@ function SearchRate(props) {
             }}
           />
         </ChartContainer>
-      </S.ChartSection>
-
-      <S.ChartSection>
-      <ChartHeader chartTitle="Likelihood of Stop" handleViewData={() => handleViewData('stop')} />
-        <S.ChartDescription>
-          <P>
-            Shows the likelihood that drivers of a particular race / ethnicity are stopped{' '}
-            <strong>compared to white drivers</strong>, based city population size.
-          </P>
-          <P>
-            <strong>NOTE:</strong> Large or unexpected percentages may be based on a low number of
-            incidents. Use “View Data” to see the numbers underlying the calculations.
-          </P>
-        </S.ChartDescription>
-
-        <HorizontalBarChart
-          title="Likelihood of Stop"
-          data={stopRateData}
-          maintainAspectRatio={true}
-          displayLegend={false}
-          tooltipLabelCallback={(ctx) => `${ctx.label}: ${(ctx.raw).toFixed(2)}%`}
-          pinMaxValue={false}
-          modalConfig={{
-            tableHeader: 'Likelihood of Stop',
-            tableSubheader: getBarChartModalSubHeading(
-              'Watts-hillandale the indy edgemont sodu gregson street towerview drive jazz.'
-            ),
-            agencyName: searchChartState.data[AGENCY_DETAILS].name,
-            chartTitle: getBarChartModalHeading('Likelihood of Stop'),
-          }}
-          />
       </S.ChartSection>
     </SearchRateStyled>
   );

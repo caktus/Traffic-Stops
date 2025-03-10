@@ -243,6 +243,10 @@ export const LIKELIHOOD_OF_STOP_TABLE_COLUMNS = [
 
   },
   {
+    Header: 'Basline Rate',
+    accessor: 'baseline_rate',
+  },
+  {
     Header: 'Stops',
     accessor: 'stops',
   },
