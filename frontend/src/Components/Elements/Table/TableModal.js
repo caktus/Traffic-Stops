@@ -16,6 +16,7 @@ import {
   STOPS_BY_REASON,
   SEARCHES,
   USE_OF_FORCE,
+  LIKELIHOOD_OF_STOP,
 } from '../../../Hooks/useDataset';
 
 // Constants
@@ -59,6 +60,7 @@ const mapDatasetToChartName = {
   USE_OF_FORCE: 'Use of Force',
   CONTRABAND_HIT_RATE: 'Contraband "Hit Rate"',
   LIKELIHOOD_OF_SEARCH: 'Likelihood of Search',
+  LIKELIHOOD_OF_STOP: 'Likelihood of Stop',
 };
 
 const mapDataSetToEnum = {
@@ -69,6 +71,7 @@ const mapDataSetToEnum = {
   USE_OF_FORCE,
   CONTRABAND_HIT_RATE,
   LIKELIHOOD_OF_SEARCH,
+  LIKELIHOOD_OF_STOP,
 };
 
 function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
@@ -429,6 +432,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
 
   const _buildTableData = (ds) => {
     let data;
+    let chartData;
     if (ds === STOPS_BY_REASON) {
       data = mapStopsByPurpose(ds);
     } else if (ds === CONTRABAND_HIT_RATE) {
@@ -439,8 +443,13 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       data = mapSearchByType(ds);
     } else if (Array.isArray(ds)) {
       data = mapSearchesByReason(ds);
+    } else if (ds === LIKELIHOOD_OF_STOP) {
+      chartData = tableChartState.data[ds].table_data;
+      // eslint-disable-next-line no-param-reassign,no-return-assign
+      chartData.forEach((chartDatum) => (chartDatum['total'] = calculateYearTotal(chartDatum)));
+      return chartData;
     } else {
-      const chartData = tableChartState.data[ds];
+      chartData = tableChartState.data[ds];
       // eslint-disable-next-line no-param-reassign,no-return-assign
       chartData.forEach((chartDatum) => (chartDatum['total'] = calculateYearTotal(chartDatum)));
 
@@ -468,7 +477,12 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
   };
 
   const setupCSVData = (ds) => {
-    const csvData = JSON.parse(JSON.stringify(_buildTableData(ds)));
+    let csvData;
+    if (ds === LIKELIHOOD_OF_STOP) {
+      csvData = _buildTableData(ds);
+      return JSON.stringify(csvData);
+    }
+    csvData = JSON.parse(JSON.stringify(_buildTableData(ds)));
     // Cleanup data tables for spreadsheet download
     csvData.forEach((datum) => {
       if (datum.hasOwnProperty('no_data') && datum.no_data) {

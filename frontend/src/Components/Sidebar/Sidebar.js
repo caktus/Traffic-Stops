@@ -54,7 +54,7 @@ function Sidebar(props) {
           to={buildUrl(slugs.SEARCH_RATE_SLUG)}
           showCompare={props.showCompare}
         >
-          Search Rate
+          Stop/Search Rate
         </SidebarLink>
         <SidebarLink
           data-testid="ContrabandNavLink"

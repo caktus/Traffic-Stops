@@ -7,6 +7,7 @@ import {
   USE_OF_FORCE,
   CONTRABAND_HIT_RATE,
   LIKELIHOOD_OF_SEARCH,
+  LIKELIHOOD_OF_STOP,
 } from '../Hooks/useDataset';
 
 const API_BASE = '/api';
@@ -31,6 +32,9 @@ export const getStopsByReasonURL = (agencyId) => `${API_BASE}/agency/${agencyId}
 
 export const getUseOfForceURL = (agencyId) => `${API_BASE}/agency/${agencyId}/use_of_force/`;
 
+export const getLikelihoodOfStopURL = (agencyId) =>
+  `${API_BASE}/agency/${agencyId}/likelihood-of-stops/`;
+
 export const getSearchesByTypeURL = (agencyId) =>
   `${API_BASE}/agency/${agencyId}/searches_by_type/`;
 
@@ -53,6 +57,9 @@ export default function mapDatasetKeyToEndpoint(datasetKey) {
     }
     case LIKELIHOOD_OF_SEARCH: {
       return getStopsByReasonURL;
+    }
+    case LIKELIHOOD_OF_STOP: {
+      return getLikelihoodOfStopURL;
     }
     case SEARCHES_BY_TYPE: {
       return getSearchesByTypeURL;
