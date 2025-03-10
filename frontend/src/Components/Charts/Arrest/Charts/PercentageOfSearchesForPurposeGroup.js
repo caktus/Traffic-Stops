@@ -11,7 +11,7 @@ import NewModal from '../../../NewCharts/NewModal';
 import { ChartContainer } from '../../ChartSections/ChartsCommon.styled';
 import createTableData from '../../../../util/createTableData';
 import DataSubsetPicker from '../../ChartSections/DataSubsetPicker/DataSubsetPicker';
-import { RACE_TABLE_COLUMNS, STOP_PURPOSE_GROUPS } from '../../chartUtils';
+import { RACE_TABLE_COLUMNS, STOP_PURPOSE_GROUPS, STOP_PURPOSE_COLORS } from '../../chartUtils';
 
 const graphTitle = 'Percentage of Searches Leading to Arrest by Stop Purpose Group ';
 
@@ -49,9 +49,9 @@ function PercentageOfSearchesForStopPurposeGroup(props) {
       .get(url)
       .then((res) => {
         const colors = {
-          'Safety Violation': '#5F0F40',
-          'Regulatory Equipment': '#E36414',
-          Other: '#0F4C5C',
+          'Safety Violation': STOP_PURPOSE_COLORS.safteyViolation,
+          'Regulatory Equipment': STOP_PURPOSE_COLORS.regulatoryEquipment,
+          Other: STOP_PURPOSE_COLORS.other,
         };
         const data = {
           labels: Object.keys(colors),
