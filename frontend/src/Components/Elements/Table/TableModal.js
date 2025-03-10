@@ -450,7 +450,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
     } else {
       chartData = tableChartState.data[ds];
       // eslint-disable-next-line no-param-reassign,no-return-assign
-      chartData.forEach((chartDatum) => { return chartDatum['total'] = calculateYearTotal(chartDatum)});
+      chartData.forEach((chartDatum) => { return (chartDatum['total'] = calculateYearTotal(chartDatum))});
 
       if (dateInterval === 'year') {
         markMissingYears(chartData, false);

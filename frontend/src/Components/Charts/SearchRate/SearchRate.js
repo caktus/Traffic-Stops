@@ -29,7 +29,6 @@ function SearchRate(props) {
   const officerId = useOfficerId();
 
   const [searchChartState] = useDataset(agencyId, LIKELIHOOD_OF_SEARCH, AGENCY_DETAILS);
-  const [stopChartState] = useDataset(agencyId, LIKELIHOOD_OF_STOP, AGENCY_DETAILS);
 
   const initSearchRateData = { labels: [], datasets: [], loading: true };
   const [searchRateData, setSearchRateData] = useState(initSearchRateData);
@@ -167,14 +166,14 @@ function SearchRate(props) {
         <HorizontalBarChart
           title="Likelihood of Stop"
           data={stopRateData}
-          maintainAspectRatio={true}
+          maintainAspectRatio
           displayLegend={false}
           tooltipLabelCallback={(ctx) => `${ctx.label}: ${(ctx.raw * 100).toFixed(2)}%`}
           pinMaxValue={false}
           modalConfig={{
             tableHeader: 'Likelihood of Stop',
             tableSubheader: getBarChartModalSubHeading(
-              'Watts-hillandale the indy edgemont sodu gregson street towerview drive jazz.',
+              'Watts-hillandale the indy edgemont sodu gregson street towerview drive jazz.'
             ),
             agencyName: searchChartState.data[AGENCY_DETAILS].name,
             chartTitle: getBarChartModalHeading('Likelihood of Stop'),
