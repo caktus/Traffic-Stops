@@ -559,6 +559,9 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       }
       return `${message} stopped for a specific reason.`;
     }
+    if (ds === LIKELIHOOD_OF_STOP) {
+      return `${message} stopped for a specific.`;
+    }
     return '';
   };
 

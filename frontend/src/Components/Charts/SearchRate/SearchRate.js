@@ -15,7 +15,11 @@ import useMetaTags from '../../../Hooks/useMetaTags';
 import useTableModal from '../../../Hooks/useTableModal';
 
 // Constants
-import { DEMOGRAPHICS_COLORS, LIKELIHOOD_OF_STOP_TABLE_COLUMNS, STOP_REASON_TABLE_COLUMNS } from '../chartUtils';
+import {
+  DEMOGRAPHICS_COLORS,
+  LIKELIHOOD_OF_STOP_TABLE_COLUMNS,
+  STOP_REASON_TABLE_COLUMNS,
+} from '../chartUtils';
 
 // Children
 import { P } from '../../../styles/StyledComponents/Typography';
@@ -76,13 +80,13 @@ function SearchRate(props) {
       .get(url)
       .then((res) => {
         const tableData = res.data.table_data;
-            const colors = [
-                  DEMOGRAPHICS_COLORS.black,
-                  DEMOGRAPHICS_COLORS.hispanic,
-                  DEMOGRAPHICS_COLORS.asian,
-                  DEMOGRAPHICS_COLORS.nativeAmerican,
-                  DEMOGRAPHICS_COLORS.other,
-                ];
+        const colors = [
+          DEMOGRAPHICS_COLORS.black,
+          DEMOGRAPHICS_COLORS.hispanic,
+          DEMOGRAPHICS_COLORS.asian,
+          DEMOGRAPHICS_COLORS.nativeAmerican,
+          DEMOGRAPHICS_COLORS.other,
+        ];
         const data = {
           labels: ['Black', 'Hispanic', 'Asian', 'Native American', 'Other'],
           datasets: [
@@ -132,11 +136,20 @@ function SearchRate(props) {
     return 'by this department';
   };
 
-  const getBarChartModalSubHeading =
-    () => `Shows the likelihood that drivers of a particular race / ethnicity are searched
-                      compared to white drivers, based on stop cause. Stops done for “safety”
-                      purposes may be less likely to show racial bias than stops done for “investigatory”
-                      purposes ${subjectObserving()}.`;
+  const getBarChartModalSubHeading = (type) => {
+    if (type === 'search') {
+      return `Shows the likelihood that drivers of a particular race / ethnicity are searched
+      compared to white drivers, based on stop cause. Stops done for “safety”
+      purposes may be less likely to show racial bias than stops done for “investigatory”
+      purposes ${subjectObserving()}.`;
+    }
+    if (type === 'stop') {
+      return `Shows the likelihood that drivers of a particular race/ethnicity are stopped
+      compared to white drivers, based on population estimates. A Stop Rate Ratio of 1.0
+      (or 100%) indicates equal stop likelihood across groups, while values above or
+      below 1.0 suggest disparities. ${subjectObserving()}`;
+    }
+  };
 
   const getBarChartModalHeading = (title) => {
     let subject = searchChartState.data[AGENCY_DETAILS].name;
@@ -161,12 +174,16 @@ function SearchRate(props) {
         />
         <S.ChartDescription>
           <P>
-            Shows the likelihood that drivers of a particular race / ethnicity are stopped{' '}
-            <strong>compared to white drivers</strong>, based city population size.
+            Shows the likelihood that drivers of a particular race/ethnicity are stopped{' '}
+            <strong>compared to white drivers</strong>, based on population estimates. A Stop Rate
+            Ratio of 1.0 (or 100%) indicates equal stop likelihood across groups, while values above
+            or below 1.0 suggest disparities.
           </P>
           <P>
-            <strong>NOTE:</strong> Large or unexpected percentages may be based on a low number of
-            incidents. Use “View Data” to see the numbers underlying the calculations.
+            <strong>NOTE:</strong> The Stop Rate Ratio is a simplified estimate and may not fully
+            account for differences in driving behavior, such as how often individuals drive.
+            However, it provides a general measure of potential racial and ethnic disparities in
+            traffic stops.
           </P>
         </S.ChartDescription>
 
@@ -179,9 +196,7 @@ function SearchRate(props) {
           pinMaxValue={false}
           modalConfig={{
             tableHeader: 'Likelihood of Stop',
-            tableSubheader: getBarChartModalSubHeading(
-              'Watts-hillandale the indy edgemont sodu gregson street towerview drive jazz.'
-            ),
+            tableSubheader: getBarChartModalSubHeading('stop'),
             agencyName: stopChartState.data[AGENCY_DETAILS].name,
             chartTitle: getBarChartModalHeading('Likelihood of Stop'),
           }}
@@ -217,7 +232,7 @@ function SearchRate(props) {
             pinMaxValue={false}
             modalConfig={{
               tableHeader: 'Likelihood of Search',
-              tableSubheader: getBarChartModalSubHeading(),
+              tableSubheader: getBarChartModalSubHeading('search'),
               agencyName: searchChartState.data[AGENCY_DETAILS].name,
               chartTitle: getBarChartModalHeading('Likelihood of Search'),
             }}
