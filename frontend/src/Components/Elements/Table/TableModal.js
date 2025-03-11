@@ -452,12 +452,11 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       chartData = chartData.map((chartDatum) => ({
         ...chartDatum,
         ...Object.fromEntries(
-          Object.entries(chartDatum).map(([key, value]) => [
-            key,
-            typeof value === 'number' ? parseFloat(value.toFixed(2)) : value,
-          ]),
+            Object.entries(chartDatum).map(([key, value]) =>
+                [key, typeof value === "number" ? parseFloat((value * 100).toFixed(2)) : value]
+            )
         ),
-      }));
+    }));
       // eslint-disable-next-line no-param-reassign,no-return-assign
       chartData.forEach((chartDatum) => (chartDatum['total'] = calculateYearTotal(chartDatum)));
       return chartData;
