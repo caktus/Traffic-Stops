@@ -15,7 +15,7 @@ import useMetaTags from '../../../Hooks/useMetaTags';
 import useTableModal from '../../../Hooks/useTableModal';
 
 // Constants
-import { LIKELIHOOD_OF_STOP_TABLE_COLUMNS, STOP_REASON_TABLE_COLUMNS } from '../chartUtils';
+import { DEMOGRAPHICS_COLORS, LIKELIHOOD_OF_STOP_TABLE_COLUMNS, STOP_REASON_TABLE_COLUMNS } from '../chartUtils';
 
 // Children
 import { P } from '../../../styles/StyledComponents/Typography';
@@ -76,7 +76,13 @@ function SearchRate(props) {
       .get(url)
       .then((res) => {
         const tableData = res.data.table_data;
-        const colors = ['#9FD356', '#3C91E6', '#EFCEFA', '#2F4858', '#A653F4'];
+            const colors = [
+                  DEMOGRAPHICS_COLORS.black,
+                  DEMOGRAPHICS_COLORS.hispanic,
+                  DEMOGRAPHICS_COLORS.asian,
+                  DEMOGRAPHICS_COLORS.nativeAmerican,
+                  DEMOGRAPHICS_COLORS.other,
+                ];
         const data = {
           labels: ['Black', 'Hispanic', 'Asian', 'Native American', 'Other'],
           datasets: [
