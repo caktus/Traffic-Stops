@@ -192,7 +192,10 @@ function SearchRate(props) {
           data={stopRateData}
           maintainAspectRatio
           displayLegend={false}
-          tooltipLabelCallback={(ctx) => `${ctx.label}: ${(ctx.raw * 100).toFixed(2)}%`}
+          tooltipLabelCallback={(ctx) => [
+            `${ctx.label} drivers are ${(ctx.raw * 100).toFixed(2)}% more likely`,
+            `to be pulled over than white drivers.`,
+          ]}
           pinMaxValue={false}
           modalConfig={{
             tableHeader: 'Likelihood of Stop',
