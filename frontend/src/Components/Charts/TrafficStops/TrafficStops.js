@@ -25,6 +25,7 @@ import {
   STOP_TYPES,
   RACE_TABLE_COLUMNS,
   STOP_REASON_TABLE_COLUMNS,
+  STOP_PURPOSE_COLORS,
 } from '../chartUtils';
 
 // State
@@ -118,7 +119,11 @@ function TrafficStops(props) {
   });
 
   const purposeGroupedPieLabels = ['Safety Violation', 'Regulatory and Equipment', 'Other'];
-  const purposeGroupedPieColors = ['#5F0F40', '#E36414', '#0F4C5C'];
+  const purposeGroupedPieColors = [
+    STOP_PURPOSE_COLORS.safteyViolation,
+    STOP_PURPOSE_COLORS.regulatoryEquipment,
+    STOP_PURPOSE_COLORS.other,
+  ];
   const purposeGroupedPieConfig = {
     backgroundColor: purposeGroupedPieColors,
     borderColor: purposeGroupedPieColors,

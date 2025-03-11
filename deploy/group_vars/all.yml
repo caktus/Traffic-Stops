@@ -23,6 +23,14 @@ admin_database_password: !vault |
 #                        provisioning with aws-web-stacks.
 # ----------------------------------------------------------------------------
 
+# Parameters
+cloudformation_stack_database_engine_version: "16.6"
+cloudformation_stack_database_parameter_group_family: postgres16
+
+# Find tag:
+# https://github.com/caktus/k8s-caktus-backup/pkgs/container/k8s-caktus-backup
+k8s_hosting_services_image_tag: 0.7.0-postgres16
+
 cloudformation_stack_state: present
 cloudformation_stack_profile: '{{ aws_profile }}'
 cloudformation_stack_region: '{{ aws_region }}'
@@ -37,12 +45,13 @@ cloudformation_stack_template_parameters:
   MaxScale: 4
   UseAES256Encryption: "true"
   CustomerManagedCmkArn: ""
-  ContainerInstanceType: db.t4g.xlarge
+  ContainerInstanceType: t3a.large
   ContainerVolumeSize: 40
   DatabaseAllocatedStorage: 100
   DatabaseClass: db.t4g.xlarge
-  DatabaseEngineVersion: "12"
-  DatabaseParameterGroupFamily: postgres12
+  DatabaseEngineVersion: "{{ cloudformation_stack_database_engine_version }}"
+  DatabaseParameterGroupFamily: "{{ cloudformation_stack_database_parameter_group_family }}"
+  DatabaseBackupRetentionDays: 2
   DatabaseMultiAZ: "false"
   DatabaseUser: "{{ app_name }}_admin"
   DatabasePassword: "{{ admin_database_password }}"
@@ -54,21 +63,6 @@ cloudformation_stack_template_parameters:
   AssetsUseCloudFront: "true"
 cloudformation_stack_tags:
   Environment: "{{ app_name }}"
-
-# Install Descheduler to attempt to spread out pods again after node failures
-k8s_install_descheduler: yes
-# You must set the k8s_descheduler_chart_version to match the Kubernetes
-# node version (0.23.x -> K8s 1.23.x); see:
-# https://github.com/kubernetes-sigs/descheduler#compatibility-matrix
-k8s_descheduler_chart_version: v0.29.0
-# See values.yaml for options:
-# https://github.com/kubernetes-sigs/descheduler/blob/master/charts/descheduler/values.yaml#L63
-k8s_descheduler_release_values:
-  deschedulerPolicy:
-    strategies:
-      # During upgrades or reboots, don't pre-emptively drain a node.
-      RemovePodsViolatingNodeTaints:
-        enabled: false
 
 # ----------------------------------------------------------------------------
 # caktus.k8s-web-cluster: An Ansible role to help configure Kubernetes
@@ -90,9 +84,9 @@ k8s_iam_users: [copelco]
 # Pin ingress-nginx and cert-manager to current versions so future upgrades of this
 # role will not upgrade these charts without your intervention:
 # https://github.com/kubernetes/ingress-nginx/releases
-k8s_ingress_nginx_chart_version: "4.9.1"
+k8s_ingress_nginx_chart_version: "4.11.3"
 # https://github.com/jetstack/cert-manager/releases
-k8s_cert_manager_chart_version: "v1.14.3"
+k8s_cert_manager_chart_version: "v1.16.2"
 # AWS only:
 # Use the newer load balancer type (NLB). DO NOT edit k8s_aws_load_balancer_type after
 # creating your Service.
@@ -102,11 +96,8 @@ k8s_aws_load_balancer_type: nlb
 # caktus.k8s-hosting-services: Logging and monitoring configuration
 # ----------------------------------------------------------------------------
 
-# k8s_papertrail_logspout_destination: "syslog+tls://logs2.papertrailapp.com:20851"
-# k8s_papertrail_logspout_memory_limit: 128Mi
-
 # New Relic Account: forwardjustice-team@caktusgroup.com
-k8s_newrelic_chart_version: "5.0.68"
+k8s_newrelic_chart_version: "5.0.103"
 k8s_newrelic_logging_enabled: true
 k8s_newrelic_license_key: !vault |
   $ANSIBLE_VAULT;1.1;AES256
@@ -116,3 +107,18 @@ k8s_newrelic_license_key: !vault |
   3163313364666132340a636330353366613061306361303737303332383431336263323135393232
   65303530343134383464616561383139643263326661636133316534303934346438643366666663
   3136353834393937356364356235393236643835663965643532
+
+# Install Descheduler to attempt to spread out pods again after node failures
+k8s_install_descheduler: yes
+# You must set the k8s_descheduler_chart_version to match the Kubernetes
+# node version (0.23.x -> K8s 1.23.x); see:
+# https://github.com/kubernetes-sigs/descheduler#compatibility-matrix
+k8s_descheduler_chart_version: v0.30.2
+# See values.yaml for options:
+# https://github.com/kubernetes-sigs/descheduler/blob/master/charts/descheduler/values.yaml#L63
+k8s_descheduler_release_values:
+  deschedulerPolicy:
+    strategies:
+      # During upgrades or reboots, don't pre-emptively drain a node.
+      RemovePodsViolatingNodeTaints:
+        enabled: false

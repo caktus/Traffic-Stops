@@ -1,4 +1,13 @@
-export const pieColors = ['#02bcbb', '#8879fc', '#9c0f2e', '#ffe066', '#0c3a66', '#9e7b9b'];
+import { DEMOGRAPHICS_COLORS } from '../Components/Charts/chartUtils';
+
+export const pieColors = [
+  DEMOGRAPHICS_COLORS.white,
+  DEMOGRAPHICS_COLORS.black,
+  DEMOGRAPHICS_COLORS.hispanic,
+  DEMOGRAPHICS_COLORS.asian,
+  DEMOGRAPHICS_COLORS.nativeAmerican,
+  DEMOGRAPHICS_COLORS.other,
+];
 export const pieChartLabels = ['White', 'Black', 'Hispanic', 'Asian', 'Native American', 'Other'];
 export const pieChartConfig = {
   backgroundColor: pieColors,

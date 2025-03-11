@@ -1,6 +1,7 @@
 - name: kubernetes cluster management
   hosts: cluster
   gather_facts: false
+  tags: cluster
   vars:
     ansible_connection: local
     ansible_python_interpreter: "{{ ansible_playbook_python }}"
