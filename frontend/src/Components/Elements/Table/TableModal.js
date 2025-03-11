@@ -573,7 +573,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       return `${message} stopped for a specific reason.`;
     }
     if (ds === LIKELIHOOD_OF_STOP) {
-      return `${message} stopped relative to their population, 
+      return `${message} stopped relative to their population,
       showing stop rates and disparities compared to white drivers.`;
     }
     return '';

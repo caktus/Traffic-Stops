@@ -48,32 +48,32 @@ export const STOP_PURPOSE_TYPES = [
 ];
 
 export const STOP_TYPE_COLORS = [
-  '#E60032', 
-  '#06D6A0', 
-  '#8352F4', 
-  '#FAE500', 
-  '#027979', 
-  '#E37C1C', 
-  '#4153F6', 
-  '#B40895', 
-  '#0D3B66', 
+  '#E60032',
+  '#06D6A0',
+  '#8352F4',
+  '#FAE500',
+  '#027979',
+  '#E37C1C',
+  '#4153F6',
+  '#B40895',
+  '#0D3B66',
 ];
 
 export const DEMOGRAPHICS_COLORS = {
   white: '#1282A2',
-  black: '#551DC3', 
-  hispanic: '#D24B76', 
-  asian: '#F9DC4E', 
-  nativeAmerican: '#24BC7D', 
-  other: '#999999', 
+  black: '#551DC3',
+  hispanic: '#D24B76',
+  asian: '#F9DC4E',
+  nativeAmerican: '#24BC7D',
+  other: '#999999',
 };
 
 export const CONTRANBAND_TYPE_COLORS = {
-  alcohol: '#24BC7D', 
-  drugs: '#1282A2', 
-  money: '#D24B76', 
-  other: '#999999', 
-  weapons: '#551DC3', 
+  alcohol: '#24BC7D',
+  drugs: '#1282A2',
+  money: '#D24B76',
+  other: '#999999',
+  weapons: '#551DC3',
 };
 
 export const STOP_PURPOSE_COLORS = {

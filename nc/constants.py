@@ -18,21 +18,21 @@ DEFAULT_RENAME_COLUMNS = {
 STATEWIDE = -1
 
 DEMOGRAPHICS_COLORS_BORDER = {
-    "white": "#1282A2",  #blue
-    "black": "#551DC3",  #purple
-    "hispanic": "#D24B76",  #pink
-    "asian": "#F9DC4E",  #yellow
-    "native_american": "#24BC7D",  #green
-    "other": "#999999",  #gray
+    "white": "#1282A2",  # blue
+    "black": "#551DC3",  # purple
+    "hispanic": "#D24B76",  # pink
+    "asian": "#F9DC4E",  # yellow
+    "native_american": "#24BC7D",  # green
+    "other": "#999999",  # gray
 }
 
 DEMOGRAPHICS_COLORS_BG = {
-    "white": "#6CD2EF", #blue
-    "black": "#804EE4", #purple
-    "hispanic":"#E28DA8", #pink
-    "asian": "#FAE475", #yellow 
-    "native_american":  "#87E8C0", #green  
-    "other": "#B8B8B8", 
+    "white": "#6CD2EF",  # blue
+    "black": "#804EE4",  # purple
+    "hispanic": "#E28DA8",  # pink
+    "asian": "#FAE475",  # yellow
+    "native_american": "#87E8C0",  # green
+    "other": "#B8B8B8",
 }
 
 STOP_PURPOSE_COLORS = {
