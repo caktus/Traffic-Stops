@@ -639,7 +639,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
               />
             </S.BottomMarginTen>
           )}
-          {!showDateRangePicker && (
+          {!showDateRangePicker &&  dataSet !== 'LIKELIHOOD_OF_STOP' && (
             <Button
               variant="positive"
               marginTop={10}
