@@ -738,7 +738,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
         </S.TableModal>
       </>
     ),
-    portalTarget,
+    portalTarget
   );
 }
 
