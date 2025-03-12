@@ -431,10 +431,6 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
   };
 
   const _buildTableData = (ds) => {
-    const formatDecmials = (value) => {
-      return typeof value === 'number' ? value.toFixed(2) : value;
-    };
-
     let data;
     let chartData;
     if (ds === STOPS_BY_REASON) {
@@ -452,11 +448,12 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       chartData = chartData.map((chartDatum) => ({
         ...chartDatum,
         ...Object.fromEntries(
-            Object.entries(chartDatum).map(([key, value]) =>
-                [key, typeof value === "number" ? parseFloat((value * 100).toFixed(2)) : value]
-            )
+          Object.entries(chartDatum).map(([key, value]) => [
+            key,
+            typeof value === 'number' ? parseFloat((value * 100).toFixed(2)) : value,
+          ])
         ),
-    }));
+      }));
       // eslint-disable-next-line no-param-reassign,no-return-assign
       chartData.forEach((chartDatum) => (chartDatum['total'] = calculateYearTotal(chartDatum)));
       return chartData;
@@ -736,7 +733,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
         </S.TableModal>
       </>
     ),
-    portalTarget,
+    portalTarget
   );
 }
 
