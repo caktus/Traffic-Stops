@@ -268,7 +268,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       tableData = mergedData.sort((a, b) =>
         // Sort data descending by year
         // eslint-disable-next-line no-nested-ternary
-        a['year'] < b['year'] ? 1 : b['year'] < a['year'] ? -1 : 0,
+        a['year'] < b['year'] ? 1 : b['year'] < a['year'] ? -1 : 0
       );
     }
     return [raceTotals, ...tableData];
@@ -318,7 +318,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       tableData = mergedData.sort((a, b) =>
         // Sort data descending by year
         // eslint-disable-next-line no-nested-ternary
-        a['year'] < b['year'] ? 1 : b['year'] < a['year'] ? -1 : 0,
+        a['year'] < b['year'] ? 1 : b['year'] < a['year'] ? -1 : 0
       );
     }
     return [raceTotals, ...tableData];
@@ -359,7 +359,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       tableData = mergedData.sort((a, b) =>
         // Sort data descending by year
         // eslint-disable-next-line no-nested-ternary
-        a['year'] < b['year'] ? 1 : b['year'] < a['year'] ? -1 : 0,
+        a['year'] < b['year'] ? 1 : b['year'] < a['year'] ? -1 : 0
       );
     }
     return [raceTotals, ...tableData];
@@ -392,7 +392,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       tableData = mappedData.sort((a, b) =>
         // Sort data descending by year
         // eslint-disable-next-line no-nested-ternary
-        a['year'] < b['year'] ? 1 : b['year'] < a['year'] ? -1 : 0,
+        a['year'] < b['year'] ? 1 : b['year'] < a['year'] ? -1 : 0
       );
     }
     return [raceTotals, ...tableData];
@@ -424,7 +424,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       tableData = mappedData.sort((a, b) =>
         // Sort data descending by year
         // eslint-disable-next-line no-nested-ternary
-        a['year'] < b['year'] ? 1 : b['year'] < a['year'] ? -1 : 0,
+        a['year'] < b['year'] ? 1 : b['year'] < a['year'] ? -1 : 0
       );
     }
     return [raceTotals, ...tableData];
@@ -482,7 +482,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
         tableData = chartData.sort((a, b) =>
           // Sort data descending by year
           // eslint-disable-next-line no-nested-ternary
-          a['year'] < b['year'] ? 1 : b['year'] < a['year'] ? -1 : 0,
+          a['year'] < b['year'] ? 1 : b['year'] < a['year'] ? -1 : 0
         );
       }
       data = [raceTotals, ...tableData];
