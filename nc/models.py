@@ -548,9 +548,9 @@ class LikelihoodStopSummary(pg.ReadOnlyMaterializedView):
     population_percent = models.DecimalField(max_digits=5, decimal_places=2)
     stops = models.PositiveIntegerField()
     stops_total = models.PositiveIntegerField()
-    stop_rate = models.DecimalField(max_digits=5, decimal_places=2)
-    baseline_rate = models.DecimalField(max_digits=5, decimal_places=2)
-    stop_rate_ratio = models.DecimalField(max_digits=5, decimal_places=2)
+    stop_rate = models.DecimalField(max_digits=5, decimal_places=4)
+    baseline_rate = models.DecimalField(max_digits=5, decimal_places=4)
+    stop_rate_ratio = models.DecimalField(max_digits=5, decimal_places=4)
     year = models.PositiveIntegerField()
 
     class Meta:
