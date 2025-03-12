@@ -477,20 +477,28 @@ class Race(models.TextChoices):
 
 
 LIKELIHOOD_STOP_SQL = """
-WITH stop_summary AS (
+WITH stops_by_year AS (
     SELECT
         agency_id
-        , name AS agency
         , agency.census_profile_id AS acs_id
         , driver_race_comb AS driver_race
+        , EXTRACT('year' FROM date AT TIME ZONE 'America/New_York')::integer AS "year"
         , sum(count) AS stops
-        , sum(sum(count)) OVER (PARTITION BY agency_id)::integer AS stops_total
-        , (sum(count) * 1.0) / sum(sum(count)) OVER (PARTITION BY agency_id) AS stops_percent
     FROM nc_stopsummary summary
     JOIN nc_agency agency ON (summary.agency_id = agency.id)
     WHERE agency.census_profile_id IS NOT NULL
     GROUP BY 1, 2, 3, 4
-    ORDER BY 2, 3
+), stop_summary AS (
+    SELECT
+        agency_id
+        , acs_id
+        , driver_race
+        , year
+        , stops
+        , sum(stops) OVER (PARTITION BY agency_id, year)::integer AS stops_total
+        , (sum(stops) * 1.0) / sum(stops) OVER (PARTITION BY agency_id, year) AS stops_percent
+    FROM stops_by_year summary
+    GROUP BY 1, 2, 3, 4, 5
 ), stop_summary_with_acs AS (
     SELECT
         stops.*
@@ -499,11 +507,16 @@ WITH stop_summary AS (
     FROM stop_summary stops
     JOIN nc_nccensusprofile acs ON (stops.acs_id = acs.acs_id AND stops.driver_race = acs.race)
     ORDER BY agency_id, driver_race
+), stop_summary_baseline AS (
+    SELECT
+        *
+    FROM stop_summary_with_acs
+    WHERE driver_race = 'White'
 )
 SELECT
     row_number() over() AS id
     , parent.agency_id
-    , parent.agency
+    , parent.year
     , parent.driver_race
     , parent.population
     , parent.population_total
@@ -514,8 +527,7 @@ SELECT
     , baseline.stop_rate AS baseline_rate
     , (parent.stop_rate - baseline.stop_rate) / baseline.stop_rate AS stop_rate_ratio
 FROM stop_summary_with_acs parent
-JOIN stop_summary_with_acs baseline ON (baseline.driver_race = 'White' AND parent.agency = baseline.agency)
-ORDER BY agency_id, driver_race
+JOIN stop_summary_baseline baseline ON (parent.agency_id = baseline.agency_id AND parent.year = baseline.year)
 """  # noqa
 
 
@@ -539,6 +551,7 @@ class LikelihoodStopSummary(pg.ReadOnlyMaterializedView):
     stop_rate = models.DecimalField(max_digits=5, decimal_places=2)
     baseline_rate = models.DecimalField(max_digits=5, decimal_places=2)
     stop_rate_ratio = models.DecimalField(max_digits=5, decimal_places=2)
+    year = models.PositiveIntegerField()
 
     class Meta:
         managed = False
