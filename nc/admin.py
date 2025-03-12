@@ -181,6 +181,7 @@ class LikelihoodStopSummaryAdmin(admin.ModelAdmin):
         "stop_rate",
         "baseline_rate",
         "stop_rate_ratio",
+        "year",
     )
     search_fields = ("agency__name",)
     ordering = ("agency__name", "driver_race_comb")
