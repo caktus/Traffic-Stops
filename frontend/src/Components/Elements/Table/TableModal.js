@@ -431,6 +431,10 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
   };
 
   const _buildTableData = (ds) => {
+    const formatDecmials = (value) => {
+      return typeof value === 'number' ? value.toFixed(2) : value;
+    };
+
     let data;
     let chartData;
     if (ds === STOPS_BY_REASON) {
@@ -445,6 +449,14 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       data = mapSearchesByReason(ds);
     } else if (ds === LIKELIHOOD_OF_STOP) {
       chartData = tableChartState.data[ds].table_data;
+      chartData = chartData.map((chartDatum) => ({
+        ...chartDatum,
+        ...Object.fromEntries(
+            Object.entries(chartDatum).map(([key, value]) =>
+                [key, typeof value === "number" ? parseFloat((value * 100).toFixed(2)) : value]
+            )
+        ),
+    }));
       // eslint-disable-next-line no-param-reassign,no-return-assign
       chartData.forEach((chartDatum) => (chartDatum['total'] = calculateYearTotal(chartDatum)));
       return chartData;
@@ -559,6 +571,10 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       }
       return `${message} stopped for a specific reason.`;
     }
+    if (ds === LIKELIHOOD_OF_STOP) {
+      return `${message} stopped relative to their population,
+      showing stop rates and disparities compared to white drivers.`;
+    }
     return '';
   };
 
@@ -639,7 +655,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
               />
             </S.BottomMarginTen>
           )}
-          {!showDateRangePicker &&  dataSet !== 'LIKELIHOOD_OF_STOP' && (
+          {!showDateRangePicker && dataSet !== 'LIKELIHOOD_OF_STOP' && (
             <Button
               variant="positive"
               marginTop={10}
@@ -720,7 +736,7 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
         </S.TableModal>
       </>
     ),
-    portalTarget
+    portalTarget,
   );
 }
 

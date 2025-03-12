@@ -48,37 +48,37 @@ export const STOP_PURPOSE_TYPES = [
 ];
 
 export const STOP_TYPE_COLORS = [
-  '#E60032', // Vivid Red
-  '#06D6A0', // Aqua Green
-  '#8352F4', // Bright Purple
-  '#FAE500', // Vibrant Yellow
-  '#027979', // Teal
-  '#E37C1C', // Orange
-  '#4153F6', // Strong Blue
-  '#B40895', // Magenta
-  '#0D3B66', // Navy Blue
+  '#E60032',
+  '#06D6A0',
+  '#8352F4',
+  '#FAE500',
+  '#027979',
+  '#E37C1C',
+  '#4153F6',
+  '#B40895',
+  '#0D3B66',
 ];
 
 export const DEMOGRAPHICS_COLORS = {
-  white: '#551DC3', // Chrysler Blue
-  black: '#F9DC4E', // Naples Yellow
-  hispanic: '#24BC7D', // Fuchia Rose
-  asian: '#1282A2', // Light Sea Green
-  nativeAmerican: '#D24B76', // Mint
-  other: '#999999', // Tufts Blue
+  white: '#1282A2',
+  black: '#551DC3',
+  hispanic: '#D24B76',
+  asian: '#F9DC4E',
+  nativeAmerican: '#24BC7D',
+  other: '#999999',
 };
 
 export const CONTRANBAND_TYPE_COLORS = {
-  alcohol: '#551DC3', // Vivid Red
-  drugs: '#F9DC4E', // Aqua Green
-  money: '#24BC7D', // Bright Purple
-  other: '#999999', // Vibrant Yellow
-  weapons: '#D24B76', // Teal
+  alcohol: '#24BC7D',
+  drugs: '#1282A2',
+  money: '#D24B76',
+  other: '#999999',
+  weapons: '#551DC3',
 };
 
 export const STOP_PURPOSE_COLORS = {
-  safteyViolation: '#551DC3',
-  regulatoryEquipment: '#D24B76',
+  safteyViolation: '#FF8133',
+  regulatoryEquipment: '#804EE4',
   other: '#999999',
 };
 
