@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from nc.constants import STATEWIDE
-from nc.models import DriverEthnicity, DriverRace, LikelihoodStopSummary, StopSummary
+from nc.models import DriverEthnicity, DriverRace, LikelihoodStopSummary, Stop, StopSummary
 from nc.tests.factories import NCCensusProfileFactory, PersonFactory
 from nc.tests.urls import reverse_querystring
 from nc.views.likelihood import likelihood_stop_query
@@ -164,3 +164,13 @@ class TestLikelihoodStop:
         data = response.json()
         # Stop rate ratio should be 1.0 for black drivers, or twice as likely to be stopped
         assert data["stop_percentages"] == [1.0]
+
+    def test_likelihood_stop_timezone_boundary(self, this_year):
+        """Test January 1st boundary for stop likelihood."""
+        # Update all stops to January 1st of this year
+        Stop.objects.update(date=this_year.replace(month=1, day=1))
+        StopSummary.refresh()
+        LikelihoodStopSummary.refresh()
+        years = LikelihoodStopSummary.objects.values("year").distinct()
+        # All stops should be this year, not last year
+        assert years[0] == {"year": this_year.year}

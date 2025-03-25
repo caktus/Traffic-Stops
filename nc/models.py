@@ -482,7 +482,7 @@ WITH stops_by_year AS (
         agency_id
         , agency.census_profile_id AS acs_id
         , driver_race_comb AS driver_race
-        , EXTRACT('year' FROM date AT TIME ZONE 'America/New_York')::integer AS "year"
+        , EXTRACT('year' FROM date)::integer AS "year"
         , sum(count) AS stops
     FROM nc_stopsummary summary
     JOIN nc_agency agency ON (summary.agency_id = agency.id)
