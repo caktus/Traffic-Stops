@@ -155,9 +155,9 @@ function SearchRate(props) {
     }
     if (type === 'stop') {
       return `Shows the likelihood that drivers of a particular race/ethnicity are stopped
-      compared to white drivers, based on population estimates. A Stop Rate Ratio of 1.0
-      (or 100%) indicates equal stop likelihood across groups, while values above or
-      below 1.0 suggest disparities. ${subjectObserving()}`;
+      compared to white drivers, based on population estimates according to the most recent
+      census. A Stop Rate Ratio of 1.0 (or 100%) indicates equal stop likelihood across
+      groups, while values above or below 1.0 suggest disparities. ${subjectObserving()}`;
     }
   };
 
@@ -185,9 +185,9 @@ function SearchRate(props) {
         <S.ChartDescription>
           <P>
             Shows the likelihood that drivers of a particular race/ethnicity are stopped{' '}
-            <strong>compared to white drivers</strong>, based on population estimates. A Stop Rate
-            Ratio of 1.0 (or 100%) indicates equal stop likelihood across groups, while values above
-            or below 1.0 suggest disparities.
+            <strong>compared to white drivers</strong>, based on population estimates according
+            to the most recent census. A Stop Rate Ratio of 1.0 (or 100%) indicates equal
+            stop likelihood across groups, while values above or below 1.0 suggest disparities.
           </P>
           <P>
             <strong>NOTE:</strong> The Stop Rate Ratio is a simplified estimate and may not fully
@@ -202,10 +202,15 @@ function SearchRate(props) {
           data={stopRateData}
           maintainAspectRatio
           displayLegend={false}
-          tooltipLabelCallback={(ctx) => [
-            `${ctx.label} drivers are ${(ctx.raw * 100).toFixed(2)}% more likely`,
-            `to be pulled over than white drivers.`,
-          ]}
+          tooltipLabelCallback={(ctx) => {
+            const ratio = ctx.raw;
+            const rounded = ratio.toFixed(1);
+
+            return [
+              `${ctx.label} drivers are ${rounded}× as likely`,
+              `to be pulled over as white drivers.`,
+            ];
+          }}
           pinMaxValue={false}
           modalConfig={{
             tableHeader: 'Likelihood of Stop',
