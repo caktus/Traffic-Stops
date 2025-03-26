@@ -295,10 +295,6 @@ export const STOP_REASON_TABLE_COLUMNS = [
     accessor: 'purpose',
   },
   {
-    Header: 'White*',
-    accessor: 'white',
-  },
-  {
     Header: 'Black*',
     accessor: 'black',
   },
