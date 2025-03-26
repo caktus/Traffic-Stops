@@ -27,7 +27,7 @@ import ChartHeader from '../ChartSections/ChartHeader';
 import axios from '../../../Services/Axios';
 import HorizontalBarChart from '../../NewCharts/HorizontalBarChart';
 import { ChartContainer } from '../ChartSections/ChartsCommon.styled';
-import { useChartState } from 'Context/chart-state';
+import { useChartState } from ''../'Context/chart-state';
 
 function SearchRate(props) {
   const { agencyId, yearRange, year } = props;
@@ -45,7 +45,8 @@ function SearchRate(props) {
   const renderMetaTags = useMetaTags();
   const [renderTableModal, { openModal }] = useTableModal();
 
-  const [chartState, dispatch] = useChartState();
+  // eslint-disable-next-line no-unused-vars
+  const [_, dispatch] = useChartState();
 
   useEffect(() => {
     setSearchRateData(initSearchRateData);
