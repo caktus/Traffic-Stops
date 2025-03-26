@@ -27,7 +27,7 @@ import ChartHeader from '../ChartSections/ChartHeader';
 import axios from '../../../Services/Axios';
 import HorizontalBarChart from '../../NewCharts/HorizontalBarChart';
 import { ChartContainer } from '../ChartSections/ChartsCommon.styled';
-import { useChartState } from ''../'Context/chart-state';
+import { useChartState } from '../../../Context/chart-state';
 
 function SearchRate(props) {
   const { agencyId, yearRange, year } = props;
