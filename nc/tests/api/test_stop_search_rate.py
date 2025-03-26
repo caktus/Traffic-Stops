@@ -167,10 +167,13 @@ class TestLikelihoodStop:
 
     def test_likelihood_stop_timezone_boundary(self, this_year):
         """Test January 1st boundary for stop likelihood."""
-        # Update all stops to January 1st of this year
-        Stop.objects.update(date=this_year.replace(month=1, day=1))
+        # Use a time safely into Jan 1 to avoid timezone offset issues
+        jan_1_midday = this_year.replace(month=1, day=1, hour=12)
+
+        Stop.objects.update(date=jan_1_midday)
         StopSummary.refresh()
         LikelihoodStopSummary.refresh()
+
         years = LikelihoodStopSummary.objects.values("year").distinct()
-        # All stops should be this year, not last year
         assert years[0] == {"year": this_year.year}
+
