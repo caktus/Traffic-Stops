@@ -185,9 +185,9 @@ function SearchRate(props) {
         <S.ChartDescription>
           <P>
             Shows the likelihood that drivers of a particular race/ethnicity are stopped{' '}
-            <strong>compared to white drivers</strong>, based on population estimates according
-            to the most recent census. A Stop Rate Ratio of 1.0 (or 100%) indicates equal
-            stop likelihood across groups, while values above or below 1.0 suggest disparities.
+            <strong>compared to white drivers</strong>, based on population estimates according to
+            the most recent census. A Stop Rate Ratio of 1.0 (or 100%) indicates equal stop
+            likelihood across groups, while values above or below 1.0 suggest disparities.
           </P>
           <P>
             <strong>NOTE:</strong> The Stop Rate Ratio is a simplified estimate and may not fully
