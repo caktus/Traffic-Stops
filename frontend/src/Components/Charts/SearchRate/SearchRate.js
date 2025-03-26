@@ -27,6 +27,7 @@ import ChartHeader from '../ChartSections/ChartHeader';
 import axios from '../../../Services/Axios';
 import HorizontalBarChart from '../../NewCharts/HorizontalBarChart';
 import { ChartContainer } from '../ChartSections/ChartsCommon.styled';
+import { useChartState } from 'Context/chart-state';
 
 function SearchRate(props) {
   const { agencyId, yearRange, year } = props;
@@ -43,6 +44,8 @@ function SearchRate(props) {
 
   const renderMetaTags = useMetaTags();
   const [renderTableModal, { openModal }] = useTableModal();
+
+  const [chartState, dispatch] = useChartState();
 
   useEffect(() => {
     setSearchRateData(initSearchRateData);
@@ -79,7 +82,7 @@ function SearchRate(props) {
     axios
       .get(url)
       .then((res) => {
-        const tableData = res.data.table_data;
+        const tableData = [...res.data.table_data];
         const colors = [
           DEMOGRAPHICS_COLORS.black,
           DEMOGRAPHICS_COLORS.hispanic,
@@ -103,9 +106,15 @@ function SearchRate(props) {
           ],
           isModalOpen: false,
           tableData,
-          csvData: tableData,
+          csvData: [...tableData],
         };
         setStopRateData(data);
+
+        dispatch({
+          type: 'DATASET_FETCH_SUCCESS',
+          dataset: LIKELIHOOD_OF_STOP,
+          payload: res.data, // send raw API response
+        });
       })
       .catch((err) => console.log(err));
   }, [year]);
