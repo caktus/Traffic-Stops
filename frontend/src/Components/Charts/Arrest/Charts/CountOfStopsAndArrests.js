@@ -119,7 +119,7 @@ function CountOfStopsAndArrests(props) {
           modalConfig={{
             tableHeader: graphTitle,
             tableSubheader: getBarChartModalSubHeading(
-              'Shows count of stops and corresponding arrests for a given race/ethnic group',
+              'Shows count of stops and corresponding arrests for a given race/ethnic group'
             ),
             agencyName,
             chartTitle: getBarChartModalSubHeading(graphTitle),
