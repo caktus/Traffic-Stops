@@ -77,8 +77,8 @@ export const CONTRANBAND_TYPE_COLORS = {
 };
 
 export const STOP_PURPOSE_COLORS = {
-  safteyViolation: '#FF8133',
-  regulatoryEquipment: '#804EE4',
+  safteyViolation: '#A4284F',
+  regulatoryEquipment: '#FF8133',
   other: '#999999',
 };
 

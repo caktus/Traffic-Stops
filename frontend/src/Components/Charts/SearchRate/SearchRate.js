@@ -181,6 +181,7 @@ function SearchRate(props) {
         <ChartHeader
           chartTitle="Likelihood of Stop"
           handleViewData={() => handleViewData('stop')}
+          hideActions={!!officerId}
         />
         <S.ChartDescription>
           <P>
@@ -196,29 +197,36 @@ function SearchRate(props) {
             traffic stops.
           </P>
         </S.ChartDescription>
+        {officerId ? (
+          <div style={{ textAlign: 'center', margin: '2em' }}>
+            <h2>
+              <em>This chart is not yet available at the officer level. Coming soon!</em>
+            </h2>
+          </div>
+        ) : (
+          <HorizontalBarChart
+            title="Likelihood of Stop"
+            data={stopRateData}
+            maintainAspectRatio
+            displayLegend={false}
+            tooltipLabelCallback={(ctx) => {
+              const ratio = ctx.raw;
+              const rounded = ratio.toFixed(1);
 
-        <HorizontalBarChart
-          title="Likelihood of Stop"
-          data={stopRateData}
-          maintainAspectRatio
-          displayLegend={false}
-          tooltipLabelCallback={(ctx) => {
-            const ratio = ctx.raw;
-            const rounded = ratio.toFixed(1);
-
-            return [
-              `${ctx.label} drivers are ${rounded}× as likely`,
-              `to be pulled over as white drivers.`,
-            ];
-          }}
-          pinMaxValue={false}
-          modalConfig={{
-            tableHeader: 'Likelihood of Stop',
-            tableSubheader: getBarChartModalSubHeading('stop'),
-            agencyName: stopChartState.data[AGENCY_DETAILS].name,
-            chartTitle: getBarChartModalHeading('Likelihood of Stop'),
-          }}
-        />
+              return [
+                `${ctx.label} drivers are ${rounded}× as likely`,
+                `to be pulled over as white drivers.`,
+              ];
+            }}
+            pinMaxValue={false}
+            modalConfig={{
+              tableHeader: 'Likelihood of Stop',
+              tableSubheader: getBarChartModalSubHeading('stop'),
+              agencyName: stopChartState.data[AGENCY_DETAILS].name,
+              chartTitle: getBarChartModalHeading('Likelihood of Stop'),
+            }}
+          />
+        )}
       </S.ChartSection>
 
       <S.ChartSection>
