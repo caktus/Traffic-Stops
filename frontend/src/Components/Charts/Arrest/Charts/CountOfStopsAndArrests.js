@@ -45,10 +45,7 @@ function CountOfStopsAndArrests(props) {
       .then((res) => {
         const tableData = createTableData(res.data);
         const labels = ['Stops With Arrests', 'Stops Without Arrests'];
-        const colors = [
-          '#1282A2',
-          '#9CDBED',
-        ];
+        const colors = ['#1282A2', '#9CDBED'];
 
         const datasets = res.data.arrest_counts.map((dataset, i) => ({
           axis: 'y',
@@ -122,7 +119,7 @@ function CountOfStopsAndArrests(props) {
           modalConfig={{
             tableHeader: graphTitle,
             tableSubheader: getBarChartModalSubHeading(
-              'Shows count of stops and corresponding arrests for a given race/ethnic group'
+              'Shows count of stops and corresponding arrests for a given race/ethnic group',
             ),
             agencyName,
             chartTitle: getBarChartModalSubHeading(graphTitle),
