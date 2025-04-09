@@ -11,6 +11,7 @@
 import logging
 
 import census
+import census.core
 import pandas as pd
 
 from django.conf import settings
@@ -57,12 +58,13 @@ RACE_VARIABLES = {
 class ACS(object):
     """Base class to call ACS API and normalize output"""
 
-    source = "ACS 5-Year Data (2017-2021)"
+    source = "ACS 5-Year Data"
     geography = None
     drop_columns = None
 
-    def __init__(self, key, state_abbr):
-        self.api = census.Census(key, year=2021)
+    def __init__(self, key: str, state_abbr: str, year: int):
+        self.year = year
+        self.api = census.Census(key, year=self.year)
         self.fips = getattr(states, state_abbr).fips
         self.state_abbr = state_abbr
 
@@ -70,10 +72,6 @@ class ACS(object):
         # NAME = geography/location
         # GEO_ID = combination of country, state, county
         self.variables = ["NAME", "GEO_ID"] + list(self.race_variables.keys())
-        # Patch years until this upstream PR is merged:
-        # https://github.com/datamade/census/pull/126
-        years = list(self.api.acs5.years) + [2021]
-        self.api.acs5.years = years
 
     def call_api(self):
         raise NotImplementedError()
@@ -85,6 +83,7 @@ class ACS(object):
         df["state"] = self.state_abbr
         df["source"] = self.source
         df["geography"] = self.geography
+        df["year"] = self.year
         # rename common columns
         df.rename(columns={"NAME": "location", "GEO_ID": "id"}, inplace=True)
         # replace census variable names with easier to read race labels
@@ -143,38 +142,44 @@ class ACSStatePlaces(ACS):
 
 def get_state_census_data(key):
     """Download several state Census endpoints into a single DataFrame"""
+    years = census.core.ACS5Client.years
+    importers = (ACSState, ACSStateCounties, ACSStatePlaces)
     profiles = []
-    for state in [abbr.upper() for abbr, name in STATE_CHOICES]:
-        profiles.append(ACSState(key, state).get())
-        profiles.append(ACSStateCounties(key, state).get())
-        profiles.append(ACSStatePlaces(key, state).get())
+    logger.debug(f"Downloading ACS 5-Year Data for years {years}")
+    for state in [abbr.upper() for abbr, _ in STATE_CHOICES]:
+        for year in years:
+            for importer in importers:
+                data = importer(key, state, year).get()
+                profiles.append(data)
+                logger.debug(f"Parsed {importer.geography} data for {state} in {year}")
     return pd.concat(profiles)
 
 
 @transaction.atomic
 def refresh_census_models(data):
     profiles = []
-    CensusProfile.objects.all().delete()
-    for row in data:
-        profile = CensusProfile(
-            id=row["id"],
-            location=row["location"],
-            geography=row["geography"],
-            state=row["state"],
-            source=row["source"],
-            white=row["white"],
-            black=row["black"],
-            native_american=row["native_american"],
-            asian=row["asian"],
-            native_hawaiian=row["native_hawaiian"],
-            other=row["other"],
-            two_or_more_races=row["two_or_more_races"],
-            hispanic=row["hispanic"],
-            non_hispanic=row["non_hispanic"],
-            total=row["total"],
-        )
-        profiles.append(profile)
-    CensusProfile.objects.bulk_create(profiles)
+    # CensusProfile.objects.all().delete()
+    # for row in data:
+    #     profile = CensusProfile(
+    #         id=row["id"],
+    #         location=row["location"],
+    #         geography=row["geography"],
+    #         state=row["state"],
+    #         source=row["source"],
+    #         year=row["year"],
+    #         white=row["white"],
+    #         black=row["black"],
+    #         native_american=row["native_american"],
+    #         asian=row["asian"],
+    #         native_hawaiian=row["native_hawaiian"],
+    #         other=row["other"],
+    #         two_or_more_races=row["two_or_more_races"],
+    #         hispanic=row["hispanic"],
+    #         non_hispanic=row["non_hispanic"],
+    #         total=row["total"],
+    #     )
+    #     profiles.append(profile)
+    # CensusProfile.objects.bulk_create(profiles)
     # Load NC-specific data into NCCensusProfile model for easier querying
     nc_profiles = []
     NCCensusProfile.objects.all().delete()
@@ -194,6 +199,7 @@ def refresh_census_models(data):
                 location=row["location"],
                 geography=row["geography"],
                 source=row["source"],
+                year=row["year"],
                 race=race_label,
                 population=population,
                 population_total=row["total"],

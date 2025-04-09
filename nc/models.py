@@ -453,6 +453,7 @@ class NCCensusProfile(models.Model):
     acs_id = models.CharField(verbose_name="ACS ID", max_length=32)
     location = models.CharField(max_length=64)
     geography = models.CharField(max_length=16, choices=GeographyChoices.choices)
+    year = models.PositiveIntegerField(default=2018)
     source = models.CharField(max_length=64)
     race = models.CharField(max_length=32)
     population = models.BigIntegerField()
@@ -482,7 +483,7 @@ WITH stops_by_year AS (
         agency_id
         , agency.census_profile_id AS acs_id
         , driver_race_comb AS driver_race
-        , EXTRACT('year' FROM date)::integer AS "year"
+        , EXTRACT('year' FROM date)::integer AS "stop_year"
         , sum(count) AS stops
     FROM nc_stopsummary summary
     JOIN nc_agency agency ON (summary.agency_id = agency.id)
@@ -493,10 +494,10 @@ WITH stops_by_year AS (
         agency_id
         , acs_id
         , driver_race
-        , year
+        , stop_year
         , stops
-        , sum(stops) OVER (PARTITION BY agency_id, year)::integer AS stops_total
-        , (sum(stops) * 1.0) / sum(stops) OVER (PARTITION BY agency_id, year) AS stops_percent
+        , sum(stops) OVER (PARTITION BY agency_id, stop_year)::integer AS stops_total
+        , (sum(stops) * 1.0) / sum(stops) OVER (PARTITION BY agency_id, stop_year) AS stops_percent
     FROM stops_by_year summary
     GROUP BY 1, 2, 3, 4, 5
 ), stop_summary_with_acs AS (
@@ -516,7 +517,7 @@ WITH stops_by_year AS (
 SELECT
     row_number() over() AS id
     , parent.agency_id
-    , parent.year
+    , parent.stop_year
     , parent.driver_race
     , parent.population
     , parent.population_total
@@ -527,7 +528,7 @@ SELECT
     , baseline.stop_rate AS baseline_rate
     , (parent.stop_rate - baseline.stop_rate) / baseline.stop_rate AS stop_rate_ratio
 FROM stop_summary_with_acs parent
-JOIN stop_summary_baseline baseline ON (parent.agency_id = baseline.agency_id AND parent.year = baseline.year)
+JOIN stop_summary_baseline baseline ON (parent.agency_id = baseline.agency_id AND parent.stop_year = baseline.stop_year)
 """  # noqa
 
 

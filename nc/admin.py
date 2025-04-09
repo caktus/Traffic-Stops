@@ -127,6 +127,7 @@ class NCCensusProfileAdmin(admin.ModelAdmin):
         "id",
         "acs_id",
         "location",
+        "year",
         "geography",
         "race",
         "population",

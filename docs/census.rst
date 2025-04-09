@@ -12,8 +12,8 @@ Setup
 
 2. Download the data::
 
-    python manage.py import_census --use-api --output > acs-2018.json
+    python manage.py import_census --use-api --output > acs-2022.json
 
 3. Upload to the S3 bucket:
 
-    aws s3 cp acs-2018.json s3://nccopwatch/ --acl public-read
+    aws s3 cp acs-2022.json s3://nccopwatch/ --acl public-read

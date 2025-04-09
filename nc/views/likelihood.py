@@ -1,22 +1,24 @@
 import django_filters
 import pandas as pd
 
-from django.utils import timezone
+from django.db.models import Sum
+from django.db.models.functions import ExtractYear
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from nc.constants import STATEWIDE
-from nc.models import LikelihoodStopSummary
+from nc.models import StopSummary, NCCensusProfile, Agency
 
 
-class LikelihoodStopSummaryFilterSet(django_filters.FilterSet):
-    """FilterSet for LikelihoodStopSummary materialized view"""
+class StopSummaryFilterSet(django_filters.FilterSet):
+    """FilterSet for StopSummary arrest and stop data"""
 
     year = django_filters.NumberFilter(field_name="year")
+    officer = django_filters.CharFilter(field_name="officer_id")
 
     class Meta:
-        model = LikelihoodStopSummary
-        exclude = ["id"]
+        model = StopSummary
+        fields = ("stop_purpose",)
 
     def __init__(self, *args, **kwargs):
         self.agency_id = kwargs.pop("agency_id")
@@ -24,18 +26,14 @@ class LikelihoodStopSummaryFilterSet(django_filters.FilterSet):
 
     @property
     def qs(self):
-        self.queryset = LikelihoodStopSummary.objects.all()
+        self.queryset = StopSummary.objects.annotate(year=ExtractYear("date"))
         qs = super().qs
-        # By default, filter stops to the previous year
-        if "year" not in self.data:
-            last_year = timezone.now().year - 1
-            qs = qs.filter(year=last_year)
         if int(self.agency_id) != STATEWIDE:
             qs = qs.filter(agency_id=self.agency_id)
         return qs
 
 
-def likelihood_stop_query(request, agency_id, debug=False):
+def likelihood_stop_query(request, agency_id, debug=True):
     """
     Query LikelihoodStopSummary view for stop likelihood data.
 
@@ -43,28 +41,43 @@ def likelihood_stop_query(request, agency_id, debug=False):
     - https://nccopwatch-share.s3.amazonaws.com/2024-04-likelihood-of-stops/likelihood-of-stops.html
     """  # noqa
     # Build query to filter down queryset
-    filter_set = LikelihoodStopSummaryFilterSet(request.GET, agency_id=agency_id)
-    qs = filter_set.qs
-    df = pd.DataFrame(qs.values())
-    df = df.rename(columns={"driver_race_comb": "driver_race"})
-    if "year" in df.columns:
-        df = df.drop(columns=["year"])
+    filter_set = StopSummaryFilterSet(request.GET, agency_id=agency_id)
+    # Perform query with SQL aggregations
+    qs = filter_set.qs.values("driver_race_comb").annotate(stops=Sum("count"))
+    df = pd.DataFrame(qs)
+    if df.empty:
+        # Create empty DF with expected column names
+        df = pd.DataFrame(
+            qs, columns=list(qs.query.values_select) + list(qs.query.annotation_select)
+        )
+    df["stops_total"] = df["stops"].sum()
+    # Merge with ACS data
+    agency = Agency.objects.get(id=agency_id)
+    qs = NCCensusProfile.objects.filter(
+        year=filter_set.form.cleaned_data["year"], acs_id=agency.census_profile_id
+    ).values("race", "population", "population_total")
+    df_acs = pd.DataFrame(qs)
+    df = df.merge(
+        right=df_acs[["race", "population", "population_total"]],
+        left_on="driver_race_comb",
+        right_on="race",
+    )
+    # Calculate rates
+    df["stop_rate"] = df["stops"] / df["population"]
+    df["baseline_rate"] = df[df["race"] == "White"]["stop_rate"].iloc[0]
+    df["stop_rate_ratio"] = (df["stop_rate"] - df["baseline_rate"]) / df["baseline_rate"]
     df.fillna(0, inplace=True)
+    df.rename(columns={"driver_race_comb": "driver_race"}, inplace=True)
 
-    # Define the desired order, excluding White
-    race_order = ["Black", "Hispanic", "Asian", "Native American", "Other"]
-
-    # Remove White drivers from the DataFrame
-    df = df[df["driver_race"] != "White"]
-
-    # Ensure driver_race column follows this order
-    df["driver_race"] = pd.Categorical(df["driver_race"], categories=race_order, ordered=True)
-    df = df.sort_values("driver_race")  # Sort based on defined order
+    # Add custom sortable driver race column
+    columns = ["White", "Black", "Hispanic", "Asian", "Native American", "Other"]
+    df["driver_race_category"] = pd.Categorical(df["driver_race"], columns)
+    df.sort_values("driver_race_category", inplace=True)
+    df = df.drop(columns=["driver_race_category"])
 
     if debug:
         print(qs.explain(analyze=True, verbose=True))
         print(df)
-
     return df
 
 

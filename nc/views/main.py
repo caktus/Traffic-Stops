@@ -1361,7 +1361,6 @@ class AgencySearchRateView(APIView):
             ],
         }
 
-
     def get(self, request, agency_id):
         stop_qs = StopSummary.objects.all().annotate(year=ExtractYear("date"))
         search_qs = StopSummary.objects.filter(search_type__isnull=False).annotate(

@@ -62,6 +62,7 @@ class CensusProfile(models.Model):
     geography = models.CharField(max_length=16, choices=GEOGRAPHY_CHOICES)
     state = models.CharField(max_length=2)
     source = models.CharField(max_length=255)
+    year = models.PositiveSmallIntegerField(default=2018)
     white = models.PositiveIntegerField(default=0)
     black = models.PositiveIntegerField(default=0)
     native_american = models.PositiveIntegerField(default=0)
