@@ -57,7 +57,8 @@ class Import(models.Model):
 
 
 class CensusProfile(models.Model):
-    id = models.CharField("ID", primary_key=True, max_length=16)
+    id = models.AutoField(primary_key=True)
+    acs_id = models.CharField(max_length=16)
     location = models.CharField(max_length=255)
     geography = models.CharField(max_length=16, choices=GEOGRAPHY_CHOICES)
     state = models.CharField(max_length=2)

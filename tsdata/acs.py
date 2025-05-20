@@ -158,28 +158,28 @@ def get_state_census_data(key):
 @transaction.atomic
 def refresh_census_models(data):
     profiles = []
-    # CensusProfile.objects.all().delete()
-    # for row in data:
-    #     profile = CensusProfile(
-    #         id=row["id"],
-    #         location=row["location"],
-    #         geography=row["geography"],
-    #         state=row["state"],
-    #         source=row["source"],
-    #         year=row["year"],
-    #         white=row["white"],
-    #         black=row["black"],
-    #         native_american=row["native_american"],
-    #         asian=row["asian"],
-    #         native_hawaiian=row["native_hawaiian"],
-    #         other=row["other"],
-    #         two_or_more_races=row["two_or_more_races"],
-    #         hispanic=row["hispanic"],
-    #         non_hispanic=row["non_hispanic"],
-    #         total=row["total"],
-    #     )
-    #     profiles.append(profile)
-    # CensusProfile.objects.bulk_create(profiles)
+    CensusProfile.objects.all().delete()
+    for row in data:
+        profile = CensusProfile(
+            acs_id=row["id"],
+            location=row["location"],
+            geography=row["geography"],
+            state=row["state"],
+            source=row["source"],
+            year=row["year"],
+            white=row["white"],
+            black=row["black"],
+            native_american=row["native_american"],
+            asian=row["asian"],
+            native_hawaiian=row["native_hawaiian"],
+            other=row["other"],
+            two_or_more_races=row["two_or_more_races"],
+            hispanic=row["hispanic"],
+            non_hispanic=row["non_hispanic"],
+            total=row["total"],
+        )
+        profiles.append(profile)
+    CensusProfile.objects.bulk_create(profiles)
     # Load NC-specific data into NCCensusProfile model for easier querying
     nc_profiles = []
     NCCensusProfile.objects.all().delete()

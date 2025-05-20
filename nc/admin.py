@@ -134,7 +134,7 @@ class NCCensusProfileAdmin(admin.ModelAdmin):
         "population_total",
         "population_pct",
     )
-    list_filter = ("geography", "race")
+    list_filter = ("geography", "race", "year")
     ordering = ("location",)
     readonly_fields = (
         "acs_id",
