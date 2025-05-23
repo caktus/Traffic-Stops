@@ -88,6 +88,7 @@ class CensusProfile(models.Model):
             hispanic=self.hispanic,
             non_hispanic=self.non_hispanic,
             total=self.total,
+            year=self.year,
         )
 
 

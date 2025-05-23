@@ -1,7 +1,7 @@
 import django_filters
 import pandas as pd
 
-from django.db.models import Sum
+from django.db.models import Sum, Q, Avg
 from django.db.models.functions import ExtractYear
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -31,6 +31,20 @@ class StopSummaryFilterSet(django_filters.FilterSet):
         if int(self.agency_id) != STATEWIDE:
             qs = qs.filter(agency_id=self.agency_id)
         return qs
+
+
+def get_acs_data(acs_id: str, year: int = None) -> pd.DataFrame:
+    """
+    Return ACS population data by race for a given acs_id and optional year. If
+    no year is provided, return the average population for the acs_id.
+    """
+    qs = NCCensusProfile.objects.filter(acs_id=acs_id)
+    if year:
+        qs = qs.filter(year=year).values("race", "population")
+    else:
+        # Get the average population for the acs_id
+        qs = qs.values("race").annotate(population=Avg("population"))
+    return pd.DataFrame(qs)
 
 
 def likelihood_stop_query(request, agency_id, debug=True):
@@ -86,7 +100,7 @@ class LikelihoodStopView(APIView):
 
     def get(self, request, agency_id):
         # Build chart data
-        chart_df = likelihood_stop_query(request=request, agency_id=agency_id)
+        chart_df = likelihood_stop_query(request=request, agency_id=agency_id, debug=True)
 
         # Extract only stop_rate_ratio values as an array
         stop_percentages = chart_df["stop_rate_ratio"].tolist()

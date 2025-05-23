@@ -216,7 +216,11 @@ class Agency(models.Model):
     @property
     def census_profile(self):
         if self.census_profile_id:
-            profile = CensusProfile.objects.get(id=self.census_profile_id)
+            profile = (
+                CensusProfile.objects.filter(acs_id=self.census_profile_id)
+                .order_by("-year")
+                .first()
+            )
             return profile.get_census_dict()
         else:
             return dict()
