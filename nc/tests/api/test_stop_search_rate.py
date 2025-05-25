@@ -11,7 +11,12 @@ from nc.constants import STATEWIDE
 from nc.models import DriverEthnicity, DriverRace, LikelihoodStopSummary, Stop, StopSummary
 from nc.tests.factories import NCCensusProfileFactory, PersonFactory
 from nc.tests.urls import reverse_querystring
-from nc.views.likelihood import likelihood_stop_query, get_acs_data
+from nc.views.likelihood import (
+    likelihood_stop_query,
+    get_acs_population_data,
+    get_stop_count_data,
+    StopSummaryFilterSet,
+)
 
 
 @pytest.fixture
@@ -25,7 +30,7 @@ def year_2021():
 
 
 @pytest.mark.django_db(databases=["traffic_stops_nc"])
-class TestACS:
+class TestGetACSPopulationData:
     @pytest.mark.parametrize("year,white_pop,black_pop", [(2020, 50, 50), (2010, 25, 75)])
     def test_acs_data_by_year(self, year: int, white_pop: int, black_pop: int):
         """Test census population data by year."""
@@ -45,7 +50,7 @@ class TestACS:
             population_percent=(black_pop / (white_pop + black_pop)),
             year=year,
         )
-        data = get_acs_data(acs_id="durham", year=year)
+        data = get_acs_population_data(acs_id="durham", year=year)
         assert data.shape == (2, 2)
         assert data["population"].sum() == white_pop + black_pop
         assert data[data["race"] == "White"]["population"].iloc[0] == white_pop
@@ -71,7 +76,7 @@ class TestACS:
                 population_percent=population_percent,
                 year=year,
             )
-        data = get_acs_data(acs_id="durham")
+        data = get_acs_population_data(acs_id="durham")
         assert data.shape == (2, 2)
         expected_df = pd.DataFrame(
             data, columns=["race", "year", "population", "population_total", "population_percent"]
@@ -81,6 +86,197 @@ class TestACS:
         assert data["population"].sum() == expected_white_pop + expected_black_pop
         assert data[data["race"] == "White"]["population"].iloc[0] == expected_white_pop
         assert data[data["race"] == "Black"]["population"].iloc[0] == expected_black_pop
+
+
+@pytest.mark.django_db(databases=["traffic_stops_nc"])
+class TestGetStopCountData:
+    def test_agency_stop_counts_by_year(self, durham, year_2020):
+        """Test stop count data for a single agency for a specific year."""
+        PersonFactory.create_batch(
+            size=20,
+            race=DriverRace.BLACK,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=durham,
+            stop__date=year_2020,
+        )
+        PersonFactory.create_batch(
+            size=10,
+            race=DriverRace.WHITE,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=durham,
+            stop__date=year_2020,
+        )
+        StopSummary.refresh()
+        filter_set = StopSummaryFilterSet(data={"year": year_2020.year}, agency_id=durham.id)
+        filter_set.is_valid()
+        df = get_stop_count_data(filter_set=filter_set)
+        assert df.shape == (2, 3)  # Two rows for black and white drivers
+        assert df["stops"].sum() == 30
+        # black and white drivers
+        assert df[df["driver_race_comb"] == "Black"]["stops"].iloc[0] == 20
+        assert df[df["driver_race_comb"] == "White"]["stops"].iloc[0] == 10
+
+    def test_statewide_stop_counts_by_year(self, durham, raleigh, year_2020):
+        """Test statewide stop count data for a specific year."""
+        PersonFactory.create_batch(
+            size=20,
+            race=DriverRace.BLACK,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=durham,
+            stop__date=year_2020,
+        )
+        PersonFactory.create_batch(
+            size=10,
+            race=DriverRace.WHITE,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=durham,
+            stop__date=year_2020,
+        )
+        PersonFactory.create_batch(
+            size=20,
+            race=DriverRace.BLACK,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=raleigh,
+            stop__date=year_2020,
+        )
+        PersonFactory.create_batch(
+            size=10,
+            race=DriverRace.WHITE,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=raleigh,
+            stop__date=year_2020,
+        )
+        StopSummary.refresh()
+        filter_set = StopSummaryFilterSet(data={"year": year_2020.year}, agency_id=STATEWIDE)
+        filter_set.is_valid()
+        df = get_stop_count_data(filter_set=filter_set)
+        assert df.shape == (2, 3)  # Two rows for black and white drivers
+        assert df["stops"].sum() == 60
+        # black and white drivers
+        assert df[df["driver_race_comb"] == "Black"]["stops"].iloc[0] == 40
+        assert df[df["driver_race_comb"] == "White"]["stops"].iloc[0] == 20
+
+    @pytest.mark.parametrize("agency_id", [STATEWIDE, 80])
+    def test_statewide_stop_counts_by_year_no_data(self, year_2020, agency_id):
+        """
+        Test stop count data for statewide or agency ID with no stops still
+        returns empty DataFrame.
+        """
+        StopSummary.refresh()
+        filter_set = StopSummaryFilterSet(data={"year": year_2020.year}, agency_id=agency_id)
+        filter_set.is_valid()
+        df = get_stop_count_data(filter_set=filter_set)
+        assert df.shape == (0, 3)
+
+    def test_agency_stop_counts_average(self, durham, year_2020, year_2021):
+        """Test stop count data for a single agency across multiple years."""
+        PersonFactory.create_batch(
+            size=20,
+            race=DriverRace.BLACK,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=durham,
+            stop__date=year_2020,
+        )
+        PersonFactory.create_batch(
+            size=10,
+            race=DriverRace.WHITE,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=durham,
+            stop__date=year_2020,
+        )
+        PersonFactory.create_batch(
+            size=40,
+            race=DriverRace.BLACK,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=durham,
+            stop__date=year_2021,
+        )
+        PersonFactory.create_batch(
+            size=30,
+            race=DriverRace.WHITE,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=durham,
+            stop__date=year_2021,
+        )
+        StopSummary.refresh()
+        filter_set = StopSummaryFilterSet(data={}, agency_id=durham.id)
+        filter_set.is_valid()
+        df = get_stop_count_data(filter_set=filter_set)
+        assert df.shape == (2, 3)  # Two rows for black and white drivers
+        assert df["stops"].sum() == 50
+        # black and white drivers
+        assert df[df["driver_race_comb"] == "Black"]["stops"].iloc[0] == 30
+        assert df[df["driver_race_comb"] == "White"]["stops"].iloc[0] == 20
+
+    def test_statewide_stop_counts_average(self, durham, raleigh, year_2020, year_2021):
+        """Test statewide stop count data across multiple years."""
+        PersonFactory.create_batch(
+            size=30,
+            race=DriverRace.BLACK,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=durham,
+            stop__date=year_2020,
+        )
+        PersonFactory.create_batch(
+            size=10,
+            race=DriverRace.WHITE,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=durham,
+            stop__date=year_2020,
+        )
+        PersonFactory.create_batch(
+            size=60,
+            race=DriverRace.BLACK,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=durham,
+            stop__date=year_2021,
+        )
+        PersonFactory.create_batch(
+            size=30,
+            race=DriverRace.WHITE,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=durham,
+            stop__date=year_2021,
+        )
+        PersonFactory.create_batch(
+            size=20,
+            race=DriverRace.BLACK,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=raleigh,
+            stop__date=year_2020,
+        )
+        PersonFactory.create_batch(
+            size=10,
+            race=DriverRace.WHITE,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=raleigh,
+            stop__date=year_2020,
+        )
+        PersonFactory.create_batch(
+            size=40,
+            race=DriverRace.BLACK,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=raleigh,
+            stop__date=year_2021,
+        )
+        PersonFactory.create_batch(
+            size=30,
+            race=DriverRace.WHITE,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=raleigh,
+            stop__date=year_2021,
+        )
+        StopSummary.refresh()
+        filter_set = StopSummaryFilterSet(data={}, agency_id=STATEWIDE)
+        filter_set.is_valid()
+        df = get_stop_count_data(filter_set=filter_set)
+        assert df.shape == (2, 3)  # Two rows for black and white drivers
+        assert df["stops"].sum() == 50
+        # black and white drivers
+        # 30 + 20 = 50, 60 + 40 = 100, so average is 75
+
+        assert df[df["driver_race_comb"] == "Black"]["stops"].iloc[0] == 30
+        assert df[df["driver_race_comb"] == "White"]["stops"].iloc[0] == 20
 
 
 @pytest.mark.django_db(databases=["traffic_stops_nc"])
