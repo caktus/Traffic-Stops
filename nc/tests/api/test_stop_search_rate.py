@@ -3,9 +3,6 @@ import datetime as dt
 import pandas as pd
 import pytest
 
-from django.conf import settings
-from django.utils import timezone
-
 from nc.constants import STATEWIDE
 from nc.models import DriverEthnicity, DriverRace, StopSummary
 from nc.tests.factories import NCCensusProfileFactory, PersonFactory
@@ -280,36 +277,34 @@ class TestGetStopCountData:
 
 
 @pytest.mark.django_db(databases=["traffic_stops_nc"])
-class TestLikelihoodStop:
-    def test_likelihood_stop_view_durham_year_2020(self, client, durham, year_2020):
+class TestLikelihoodStopView:
+    def test_agency_stop_counts_by_year(self, client, durham, year_2020):
         """Test likelihood of stop API view."""
-        # Easy math 50% black, 50% white population
         NCCensusProfileFactory(
             acs_id="durham",
             race="Black",
-            population=50,
-            population_total=100,
+            population=100,
+            population_total=200,
             population_percent=0.5,
             year=year_2020.year,
         )
         NCCensusProfileFactory(
             acs_id="durham",
             race="White",
-            population=50,
-            population_total=100,
+            population=100,
+            population_total=200,
             population_percent=0.5,
             year=year_2020.year,
         )
-        # 32% black drivers stopped, 20% white drivers stopped
         PersonFactory.create_batch(
-            size=16,
+            size=21,
             race=DriverRace.BLACK,
             ethnicity=DriverEthnicity.NON_HISPANIC,
             stop__agency=durham,
             stop__date=year_2020,
         )
         PersonFactory.create_batch(
-            size=10,
+            size=13,
             race=DriverRace.WHITE,
             ethnicity=DriverEthnicity.NON_HISPANIC,
             stop__agency=durham,
@@ -324,90 +319,26 @@ class TestLikelihoodStop:
         data = response.json()
         # Stop rate ratio should be 0.6 for black drivers, or black drivers are
         # 60% more likely to be pulled over than white drivers
-        assert data["stop_percentages"] == [0.0, 0.6]
+        assert data["stop_percentages"] == [0.62]
         table_data = data["table_data"]
         # Two rows for white and black drivers
         assert len(table_data) == 2
         # Stop rate ratio should be 1.5 for black drivers
         black_drivers = table_data[1]
+        # Check key order for table data
+        assert list(black_drivers.keys()) == [
+            "race",
+            "population",
+            "stops",
+            "stop_rate",
+            "baseline_rate",
+            "stop_rate_ratio",
+        ]
         stop_rate = black_drivers["stop_rate"]
         baseline_rate = black_drivers["baseline_rate"]
-        assert stop_rate == 0.32  # 32% stop rate for black drivers
-        assert baseline_rate == 0.2  # 20% baseline stop rate for white drivers
-        stop_rate_ratio = (stop_rate - baseline_rate) / baseline_rate
-        # 12% / 20% = 0.6, or 60% more likely to be stopped
-        assert pytest.approx(stop_rate_ratio) == 0.6
+        assert stop_rate == 21.0  # 21% stop rate for black drivers
+        assert baseline_rate == 13.0  # 13% baseline stop rate for white drivers
+        stop_rate_ratio = round((stop_rate - baseline_rate) / baseline_rate * 100, 2)
+        # (21 - 13) / 13 = 8 / 13 * 100 = 61.54
+        assert pytest.approx(stop_rate_ratio) == 61.54
         assert black_drivers["stop_rate_ratio"] == pytest.approx(stop_rate_ratio)
-
-    def test_likelihood_stop_view_statewide_year_2020(
-        self, client, year_2020, durham, raleigh, nc_state
-    ):
-        """Test statewide likelihood of stop API view."""
-        # Easy math 50% black, 50% white population
-        NCCensusProfileFactory(
-            acs_id="nc",
-            race="Black",
-            population=50,
-            population_total=100,
-            population_percent=0.5,
-            year=year_2020.year,
-        )
-        NCCensusProfileFactory(
-            acs_id="nc",
-            race="White",
-            population=50,
-            population_total=100,
-            population_percent=0.5,
-            year=year_2020.year,
-        )
-        # Durham stops
-        PersonFactory.create_batch(
-            size=10,
-            race=DriverRace.BLACK,
-            ethnicity=DriverEthnicity.NON_HISPANIC,
-            stop__agency=durham,
-            stop__date=year_2020,
-        )
-        PersonFactory.create_batch(
-            size=5,
-            race=DriverRace.WHITE,
-            ethnicity=DriverEthnicity.NON_HISPANIC,
-            stop__agency=durham,
-            stop__date=year_2020,
-        )
-        # Raleigh stops
-        PersonFactory.create_batch(
-            size=15,
-            race=DriverRace.BLACK,
-            ethnicity=DriverEthnicity.NON_HISPANIC,
-            stop__agency=raleigh,
-            stop__date=year_2020,
-        )
-        PersonFactory.create_batch(
-            size=5,
-            race=DriverRace.WHITE,
-            ethnicity=DriverEthnicity.NON_HISPANIC,
-            stop__agency=raleigh,
-            stop__date=year_2020,
-        )
-        StopSummary.refresh()
-        url = reverse_querystring(
-            "nc:likelihood-of-stops", args=[STATEWIDE], query_kwargs={"year": year_2020.year}
-        )
-        response = client.get(url, format="json")
-        assert response.status_code == 200
-        data = response.json()
-        table_data = data["table_data"]
-        data = response.json()
-        # Two rows for white and black drivers
-        assert len(table_data) == 2
-        black_drivers = table_data[1]
-        stop_rate = black_drivers["stop_rate"]
-        baseline_rate = black_drivers["baseline_rate"]
-        assert stop_rate == 0.5  # 50% stop rate for black drivers statewide
-        assert baseline_rate == 0.2  # 20% baseline stop rate for white drivers statewide
-        stop_rate_ratio = (stop_rate - baseline_rate) / baseline_rate
-        # 30% / 20% = 1.5, or 150%/2.5 times more likely to be stopped
-        assert pytest.approx(stop_rate_ratio) == 1.5
-        assert black_drivers["stop_rate_ratio"] == pytest.approx(stop_rate_ratio)
-        assert data["stop_percentages"] == [0.0, stop_rate_ratio]

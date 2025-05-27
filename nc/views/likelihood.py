@@ -104,15 +104,18 @@ def likelihood_stop_query(request, agency_id, debug=True):
     df.fillna(0, inplace=True)
     df.rename(columns={"driver_race_comb": "driver_race"}, inplace=True)
 
-    # Add custom sortable driver race column
-    columns = ["White", "Black", "Hispanic", "Asian", "Native American", "Other"]
-    df["driver_race_category"] = pd.Categorical(df["driver_race"], columns)
+    # Ensure driver_race column follows this order
+    race_order = ["White", "Black", "Hispanic", "Asian", "Native American", "Other"]
+    df["driver_race_category"] = pd.Categorical(df["driver_race"], categories=race_order)
     df.sort_values("driver_race_category", inplace=True)
     df = df.drop(columns=["driver_race_category"])
 
-    # if debug:
-    #     print(qs.explain(analyze=True, verbose=True))
-    #     print(df)
+    # Reorder columns
+    df = df[["race", "population", "stops", "stop_rate", "baseline_rate", "stop_rate_ratio"]].copy()
+
+    if debug:
+        print(df)
+
     return df
 
 
@@ -120,14 +123,21 @@ class LikelihoodStopView(APIView):
     """Comparison of Population to Traffic Stops"""
 
     def get(self, request, agency_id):
-        # Build chart data
-        chart_df = likelihood_stop_query(request=request, agency_id=agency_id, debug=True)
-
+        # Build chart and table data
+        df = likelihood_stop_query(request=request, agency_id=agency_id, debug=False)
+        # Don't include White stops in the chart
+        chart_df = df[df["race"] != "White"].copy()
         # Extract only stop_rate_ratio values as an array
-        stop_percentages = chart_df["stop_rate_ratio"].tolist()
+        stop_percentages = chart_df["stop_rate_ratio"].round(2).tolist()
+
+        # Multiply table data by 100 for ease of interpretation
+        table_data = df.copy()
+        table_data["stop_rate"] = (table_data["stop_rate"] * 100).round(2)
+        table_data["baseline_rate"] = (table_data["baseline_rate"] * 100).round(2)
+        table_data["stop_rate_ratio"] = (table_data["stop_rate_ratio"] * 100).round(2)
 
         data = {
             "stop_percentages": stop_percentages,
-            "table_data": chart_df.to_dict(orient="records"),
+            "table_data": table_data.to_dict(orient="records"),
         }
         return Response(data=data, status=200)

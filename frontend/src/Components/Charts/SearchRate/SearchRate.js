@@ -210,11 +210,12 @@ function SearchRate(props) {
             maintainAspectRatio
             displayLegend={false}
             tooltipLabelCallback={(ctx) => {
-              const ratio = ctx.raw;
+              const pct = ctx.raw * 100;
+              const ratio = ctx.raw + 1;
               const rounded = ratio.toFixed(1);
 
               return [
-                `${ctx.label} drivers are ${rounded}× as likely`,
+                `${ctx.label} drivers are ${pct}% more likely / ${rounded}× as likely`,
                 `to be pulled over as white drivers.`,
               ];
             }}
