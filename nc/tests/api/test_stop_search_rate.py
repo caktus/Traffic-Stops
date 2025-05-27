@@ -1,18 +1,13 @@
-from decimal import Decimal
-
 import pandas as pd
 import pytest
 import datetime as dt
 
-from django.urls import reverse
-from django.utils import timezone
 
 from nc.constants import STATEWIDE
-from nc.models import DriverEthnicity, DriverRace, LikelihoodStopSummary, Stop, StopSummary
+from nc.models import DriverEthnicity, DriverRace, StopSummary
 from nc.tests.factories import NCCensusProfileFactory, PersonFactory
 from nc.tests.urls import reverse_querystring
 from nc.views.likelihood import (
-    likelihood_stop_query,
     get_acs_population_data,
     get_stop_count_data,
     StopSummaryFilterSet,
@@ -271,12 +266,18 @@ class TestGetStopCountData:
         filter_set.is_valid()
         df = get_stop_count_data(filter_set=filter_set)
         assert df.shape == (2, 3)  # Two rows for black and white drivers
-        assert df["stops"].sum() == 50
-        # black and white drivers
-        # 30 + 20 = 50, 60 + 40 = 100, so average is 75
-
-        assert df[df["driver_race_comb"] == "Black"]["stops"].iloc[0] == 30
-        assert df[df["driver_race_comb"] == "White"]["stops"].iloc[0] == 20
+        # 2020: 30 + 10 + 20 + 10 = 70
+        # 2021: 60 + 30 + 40 + 30 = 160
+        # Average: (70 + 160) / 2 = 115
+        assert df["stops"].sum() == 115
+        # 2020: 30 + 20 = 50
+        # 2021: 60 + 40 = 100
+        # Average: (50 + 100) / 2 = 75
+        assert df[df["driver_race_comb"] == "Black"]["stops"].iloc[0] == 75
+        # 2020: 10 + 10 = 20
+        # 2021: 30 + 30 = 60
+        # Average: (20 + 60) / 2 = 40
+        assert df[df["driver_race_comb"] == "White"]["stops"].iloc[0] == 40
 
 
 @pytest.mark.django_db(databases=["traffic_stops_nc"])
