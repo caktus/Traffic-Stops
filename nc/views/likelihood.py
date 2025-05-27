@@ -1,13 +1,13 @@
 import django_filters
 import pandas as pd
 
-from django.db.models import Sum, Avg
+from django.db.models import Avg, Sum
 from django.db.models.functions import ExtractYear
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from nc.constants import STATEWIDE
-from nc.models import StopSummary, NCCensusProfile, Agency
+from nc.models import Agency, NCCensusProfile, StopSummary
 
 
 class StopSummaryFilterSet(django_filters.FilterSet):
