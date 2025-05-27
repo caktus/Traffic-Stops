@@ -5,7 +5,6 @@ from django.contrib import admin
 from nc.models import (
     Agency,
     ContrabandSummary,
-    LikelihoodStopSummary,
     NCCensusProfile,
     Resource,
     ResourceFile,
@@ -151,45 +150,6 @@ class NCCensusProfileAdmin(admin.ModelAdmin):
     @admin.display(ordering="population_percent")
     def population_pct(self, obj):
         return f"{obj.population_percent:.2%}"
-
-
-@admin.register(LikelihoodStopSummary)
-class LikelihoodStopSummaryAdmin(admin.ModelAdmin):
-    list_display = (
-        "id",
-        "agency_name",
-        "driver_race_comb",
-        "population",
-        "population_total",
-        "stops",
-        "stops_total",
-        "stop_rate",
-        "baseline_rate",
-        "stop_rate_ratio",
-        "year",
-    )
-    list_filter = ("driver_race_comb", "year", "agency")
-    list_select_related = ("agency",)
-    readonly_fields = (
-        "id",
-        "agency",
-        "driver_race_comb",
-        "population",
-        "population_total",
-        "population_percent",
-        "stops",
-        "stops_total",
-        "stop_rate",
-        "baseline_rate",
-        "stop_rate_ratio",
-        "year",
-    )
-    search_fields = ("agency__name",)
-    ordering = ("agency__name", "driver_race_comb")
-
-    @admin.display(ordering="agency__name")
-    def agency_name(self, obj):
-        return obj.agency.name
 
 
 admin.site.register(Agency, AgencyAdmin)
