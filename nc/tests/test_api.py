@@ -37,7 +37,7 @@ class AgencyTests(APITestCase):
         for inclusion of reasonable data
         """
         census_profile = CensusProfileFactory()
-        agency = factories.AgencyFactory(census_profile_id=census_profile.id)
+        agency = factories.AgencyFactory(census_profile_id=census_profile.acs_id)
         url = reverse("nc:agency-api-detail", args=[agency.pk])
         response = self.client.get(url, format="json")
         response_data = response.json()
