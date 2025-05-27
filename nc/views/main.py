@@ -1337,50 +1337,30 @@ class AgencySearchRateView(APIView):
                     average = 0
                 values.insert(0, average)
                 return values
-
             return [0] * (len(labels) + 1)
+
+        # Only return non-white races in response
+        included_races = [
+            "Black",
+            "Hispanic",
+            "Asian",
+            "Native American",
+            "Other",
+        ]
 
         return {
             "labels": ["Average"] + list(labels.values()),
             "datasets": [
                 {
-                    "label": "White",
-                    "data": get_values("White"),
-                    "borderColor": DEMOGRAPHICS_COLORS_BORDER["white"],
-                    "backgroundColor": DEMOGRAPHICS_COLORS_BG["white"],
-                },
-                {
-                    "label": "Black",
-                    "data": get_values("Black"),
-                    "borderColor": DEMOGRAPHICS_COLORS_BORDER["black"],
-                    "backgroundColor": DEMOGRAPHICS_COLORS_BG["black"],
-                },
-                {
-                    "label": "Hispanic",
-                    "data": get_values("Hispanic"),
-                    "borderColor": DEMOGRAPHICS_COLORS_BORDER["hispanic"],
-                    "backgroundColor": DEMOGRAPHICS_COLORS_BG["hispanic"],
-                },
-                {
-                    "label": "Asian",
-                    "data": get_values("Asian"),
-                    "borderColor": DEMOGRAPHICS_COLORS_BORDER["asian"],
-                    "backgroundColor": DEMOGRAPHICS_COLORS_BG["asian"],
-                },
-                {
-                    "label": "Native American",
-                    "data": get_values("Native American"),
-                    "borderColor": DEMOGRAPHICS_COLORS_BORDER["native_american"],
-                    "backgroundColor": DEMOGRAPHICS_COLORS_BG["native_american"],
-                },
-                {
-                    "label": "Other",
-                    "data": get_values("Other"),
-                    "borderColor": DEMOGRAPHICS_COLORS_BORDER["other"],
-                    "backgroundColor": DEMOGRAPHICS_COLORS_BG["other"],
-                },
+                    "label": race,
+                    "data": get_values(race),
+                    "borderColor": DEMOGRAPHICS_COLORS_BORDER[race.lower().replace(" ", "_")],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BORDER[race.lower().replace(" ", "_")],
+                }
+                for race in included_races
             ],
         }
+
 
     def get(self, request, agency_id):
         stop_qs = StopSummary.objects.all().annotate(year=ExtractYear("date"))
@@ -1474,37 +1454,37 @@ class AgencyUseOfForceView(APIView):
                     "label": "White",
                     "data": get_values("White"),
                     "borderColor": DEMOGRAPHICS_COLORS_BORDER["white"],
-                    "backgroundColor": DEMOGRAPHICS_COLORS_BG["white"],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BORDER["white"],
                 },
                 {
                     "label": "Black",
                     "data": get_values("Black"),
                     "borderColor": DEMOGRAPHICS_COLORS_BORDER["black"],
-                    "backgroundColor": DEMOGRAPHICS_COLORS_BG["black"],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BORDER["black"],
                 },
                 {
                     "label": "Hispanic",
                     "data": get_values("Hispanic"),
                     "borderColor": DEMOGRAPHICS_COLORS_BORDER["hispanic"],
-                    "backgroundColor": DEMOGRAPHICS_COLORS_BG["hispanic"],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BORDER["hispanic"],
                 },
                 {
                     "label": "Asian",
                     "data": get_values("Asian"),
                     "borderColor": DEMOGRAPHICS_COLORS_BORDER["asian"],
-                    "backgroundColor": DEMOGRAPHICS_COLORS_BG["asian"],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BORDER["asian"],
                 },
                 {
                     "label": "Native American",
                     "data": get_values("Native American"),
                     "borderColor": DEMOGRAPHICS_COLORS_BORDER["native_american"],
-                    "backgroundColor": DEMOGRAPHICS_COLORS_BG["native_american"],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BORDER["native_american"],
                 },
                 {
                     "label": "Other",
                     "data": get_values("Other"),
                     "borderColor": DEMOGRAPHICS_COLORS_BORDER["other"],
-                    "backgroundColor": DEMOGRAPHICS_COLORS_BG["other"],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BORDER["other"],
                 },
             ],
         }

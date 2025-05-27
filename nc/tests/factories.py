@@ -6,26 +6,14 @@ import factory.fuzzy
 from nc import models
 
 
-class ViewRefreshFactory(factory.django.DjangoModelFactory):
-    """
-    Refresh materialized view after object creation so tests don't have to
-    manually invoke this functionality.
-    """
-
-    @factory.post_generation
-    def refresh_view(obj, create, extracted, **kwargs):
-        models.StopSummary.refresh()
-        models.ContrabandSummary.refresh()
-
-
-class AgencyFactory(ViewRefreshFactory):
+class AgencyFactory(factory.django.DjangoModelFactory):
     class Meta(object):
         model = models.Agency
 
     name = factory.Sequence(lambda n: "Agency %03d" % n)
 
 
-class PersonFactory(ViewRefreshFactory):
+class PersonFactory(factory.django.DjangoModelFactory):
     class Meta(object):
         model = models.Person
 
@@ -37,7 +25,7 @@ class PersonFactory(ViewRefreshFactory):
     type = "D"
 
 
-class StopFactory(ViewRefreshFactory):
+class StopFactory(factory.django.DjangoModelFactory):
     class Meta(object):
         model = models.Stop
 
@@ -60,7 +48,7 @@ class StopFactory(ViewRefreshFactory):
             self.date = self.date.replace(year=extracted, day=day)
 
 
-class SearchFactory(ViewRefreshFactory):
+class SearchFactory(factory.django.DjangoModelFactory):
     class Meta(object):
         model = models.Search
 
@@ -70,7 +58,7 @@ class SearchFactory(ViewRefreshFactory):
     type = factory.fuzzy.FuzzyChoice(x[0] for x in models.SEARCH_TYPE_CHOICES)
 
 
-class ContrabandFactory(ViewRefreshFactory):
+class ContrabandFactory(factory.django.DjangoModelFactory):
     class Meta(object):
         model = models.Contraband
 
@@ -78,3 +66,12 @@ class ContrabandFactory(ViewRefreshFactory):
     search = factory.SubFactory(SearchFactory)
     person = factory.SubFactory(PersonFactory)
     stop = factory.SubFactory(StopFactory)
+
+
+class NCCensusProfileFactory(factory.django.DjangoModelFactory):
+    class Meta(object):
+        model = models.NCCensusProfile
+
+    acs_id = factory.Sequence(lambda x: x)
+    location = factory.Faker("city")
+    source = "ACS"

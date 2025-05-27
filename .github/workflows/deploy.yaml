@@ -2,7 +2,7 @@ name: deploy
 
 on:
   push:
-    branches: [main, develop, update-chart-colors]
+    branches: [main, develop, CU-868bygc55_Add-likelihood-of-stop-chart]
 
 jobs:
   deploy:

@@ -8,6 +8,8 @@
 #  - NC: https://data.census.gov/table?q=B03002&g=0400000US37&y=2021&d=ACS+5-Year+Estimates+Detailed+Tables&tid=ACSDT5Y2021.B03002  # noqa
 #  - Durham city, NC: https://data.census.gov/table?q=B03002&g=1600000US3719000&y=2021&d=ACS+5-Year+Estimates+Detailed+Tables  # noqa
 
+import logging
+
 import census
 import pandas as pd
 
@@ -15,7 +17,10 @@ from django.conf import settings
 from django.db import transaction
 from us import states
 
+from nc.models import NCCensusProfile
 from tsdata.models import STATE_CHOICES, CensusProfile
+
+logger = logging.getLogger(__name__)
 
 # Variables: http://api.census.gov/data/2021/acs/acs5/variables.json
 NC_RACE_VARS = {
@@ -170,3 +175,30 @@ def refresh_census_models(data):
         )
         profiles.append(profile)
     CensusProfile.objects.bulk_create(profiles)
+    # Load NC-specific data into NCCensusProfile model for easier querying
+    nc_profiles = []
+    NCCensusProfile.objects.all().delete()
+    for row in data:
+        for race in [
+            ["asian"],
+            ["black"],
+            ["hispanic"],
+            ["native_american"],
+            ["other", "native_hawaiian", "two_or_more_races"],
+            ["white"],
+        ]:
+            race_label = race[0].title().replace("_", " ")
+            population = sum([row[r] for r in race])
+            nc_profile = NCCensusProfile(
+                acs_id=row["id"],
+                location=row["location"],
+                geography=row["geography"],
+                source=row["source"],
+                race=race_label,
+                population=population,
+                population_total=row["total"],
+                population_percent=population * 1.0 / row["total"] if row["total"] else 0,
+            )
+            logger.debug(f"Parsed {nc_profile.race} population in {nc_profile.location}")
+            nc_profiles.append(nc_profile)
+    NCCensusProfile.objects.bulk_create(nc_profiles)
