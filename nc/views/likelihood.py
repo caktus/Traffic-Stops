@@ -132,9 +132,21 @@ class LikelihoodStopView(APIView):
 
         # Multiply table data by 100 for ease of interpretation
         table_data = df.copy()
-        table_data["stop_rate"] = (table_data["stop_rate"] * 100).round(2)
-        table_data["baseline_rate"] = (table_data["baseline_rate"] * 100).round(2)
-        table_data["stop_rate_ratio"] = (table_data["stop_rate_ratio"] * 100).round(2)
+        table_data["population"] = table_data["population"].astype(int)
+        table_data["stops"] = table_data["stops"].astype(int)
+        table_data["stop_rate"] = (table_data["stop_rate"] * 100).round(1)
+        table_data["baseline_rate"] = (table_data["baseline_rate"] * 100).round(1)
+
+        def round_stop_rate_ratio(x):
+            if x > 0:
+                x = x + 1
+            elif x < 0:
+                x = x - 1
+            return x
+
+        table_data["stop_rate_ratio"] = (
+            (table_data["stop_rate_ratio"]).apply(round_stop_rate_ratio).round(2)
+        )
 
         data = {
             "stop_percentages": stop_percentages,

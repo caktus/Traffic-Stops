@@ -212,7 +212,7 @@ function SearchRate(props) {
             tooltipLabelCallback={(ctx) => {
               const pct = ctx.raw * 100;
               const ratio = ctx.raw + 1;
-              const rounded = ratio.toFixed(1);
+              const rounded = ratio.toFixed(2);
 
               return [
                 `${ctx.label} drivers are ${pct}% more likely / ${rounded}× as likely`,
