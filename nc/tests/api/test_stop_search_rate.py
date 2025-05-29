@@ -338,7 +338,7 @@ class TestLikelihoodStopView:
         baseline_rate = black_drivers["baseline_rate"]
         assert stop_rate == 21.0  # 21% stop rate for black drivers
         assert baseline_rate == 13.0  # 13% baseline stop rate for white drivers
-        stop_rate_ratio = round((stop_rate - baseline_rate) / baseline_rate * 100, 2)
+        stop_rate_ratio = round((stop_rate - baseline_rate) / baseline_rate, 2) + 1
         # (21 - 13) / 13 = 8 / 13 * 100 = 61.54
-        assert pytest.approx(stop_rate_ratio) == 61.54
+        assert pytest.approx(stop_rate_ratio) == 1.62
         assert black_drivers["stop_rate_ratio"] == pytest.approx(stop_rate_ratio)
