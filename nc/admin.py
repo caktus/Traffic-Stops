@@ -122,6 +122,7 @@ class ResourceAdmin(admin.ModelAdmin):
         super().save_related(request, form, formsets, change)
         form.instance.agencies.set(form.cleaned_data["agencies"], clear=True)
 
+
 @admin.register(NCCensusProfile)
 class NCCensusProfileAdmin(admin.ModelAdmin):
     list_display = (
