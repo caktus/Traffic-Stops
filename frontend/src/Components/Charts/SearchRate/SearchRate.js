@@ -41,6 +41,7 @@ function SearchRate(props) {
 
   const initStopRateData = { labels: [], datasets: [], loading: true };
   const [stopRateData, setStopRateData] = useState(initStopRateData);
+  const [noACSData, setNoACSData] = useState(false);
 
   const renderMetaTags = useMetaTags();
   const [renderTableModal, { openModal }] = useTableModal();
@@ -70,6 +71,7 @@ function SearchRate(props) {
 
   useEffect(() => {
     setStopRateData(initStopRateData);
+    setNoACSData(false);
     const params = [];
     if (year && year !== 'All') {
       params.push({ param: 'year', val: year });
@@ -83,6 +85,10 @@ function SearchRate(props) {
     axios
       .get(url)
       .then((res) => {
+        if (!res.data.stop_percentages || res.data.stop_percentages.length === 0) {
+          setNoACSData(true);
+          return;
+        }
         const tableData = [...res.data.table_data];
         const colors = [
           DEMOGRAPHICS_COLORS.black,
@@ -149,8 +155,8 @@ function SearchRate(props) {
   const getBarChartModalSubHeading = (type) => {
     if (type === 'search') {
       return `Shows the likelihood that drivers of a particular race / ethnicity are searched
-      compared to white drivers, based on stop cause. Stops done for “safety”
-      purposes may be less likely to show racial bias than stops done for “investigatory”
+      compared to white drivers, based on stop cause. Stops done for "safety"
+      purposes may be less likely to show racial bias than stops done for "investigatory"
       purposes ${subjectObserving()}.`;
     }
     if (type === 'stop') {
@@ -203,6 +209,12 @@ function SearchRate(props) {
               <em>This chart is not yet available at the officer level. Coming soon!</em>
             </h2>
           </div>
+        ) : noACSData ? (
+          <div style={{ textAlign: 'center', margin: '2em' }}>
+            <h2>
+              <em>5-year ACS data not available for the selected year</em>
+            </h2>
+          </div>
         ) : (
           <HorizontalBarChart
             title="Likelihood of Stop"
@@ -211,11 +223,17 @@ function SearchRate(props) {
             displayLegend={false}
             tooltipLabelCallback={(ctx) => {
               const pct = ctx.raw * 100;
-              const ratio = ctx.raw + 1;
-              const rounded = ratio.toFixed(2);
-
+              const isNegative = ctx.raw < 0;
+              const likelihood = isNegative ? 'less' : 'more';
+              let multiplier;
+              if (isNegative) {
+                multiplier = -(1 / (1 + ctx.raw));
+              } else {
+                multiplier = 1 + ctx.raw;
+              }
+              const rounded = Math.abs(multiplier).toFixed(2);
               return [
-                `${ctx.label} drivers are ${pct}% more likely / ${rounded}× as likely`,
+                `${ctx.label} drivers are ${Math.abs(pct).toFixed(0)}% ${likelihood} likely / ${isNegative ? '-' : ''}${rounded}× as likely`,
                 `to be pulled over as white drivers.`,
               ];
             }}
@@ -238,13 +256,13 @@ function SearchRate(props) {
         <S.ChartDescription>
           <P>
             Shows the likelihood that drivers of a particular race / ethnicity are searched{' '}
-            <strong>compared to white drivers</strong>, based on stop cause. Stops done for “safety”
-            purposes may be less likely to show racial bias than stops done for “investigatory”
+            <strong>compared to white drivers</strong>, based on stop cause. Stops done for "safety"
+            purposes may be less likely to show racial bias than stops done for "investigatory"
             purposes.
           </P>
           <P>
             <strong>NOTE:</strong> Large or unexpected percentages may be based on a low number of
-            incidents. Use “View Data” to see the numbers underlying the calculations.
+            incidents. Use "View Data" to see the numbers underlying the calculations.
           </P>
         </S.ChartDescription>
 
