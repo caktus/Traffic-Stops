@@ -85,10 +85,15 @@ function SearchRate(props) {
     axios
       .get(url)
       .then((res) => {
-        if (!res.data.stop_percentages || res.data.stop_percentages.length === 0) {
+        if (
+          year &&
+          year !== 'All' &&
+          (!res.data.stop_percentages || res.data.stop_percentages.length === 0)
+        ) {
           setNoACSData(true);
           return;
         }
+        setNoACSData(false);
         const tableData = [...res.data.table_data];
         const colors = [
           DEMOGRAPHICS_COLORS.black,
@@ -123,8 +128,20 @@ function SearchRate(props) {
           payload: res.data, // send raw API response
         });
       })
-      .catch((err) => console.log(err));
-  }, [year]);
+      .catch((err) => {
+        if (
+          year &&
+          year !== 'All' &&
+          err.response &&
+          (err.response.status === 404 || err.response.status === 500)
+        ) {
+          setNoACSData(true);
+        } else {
+          setNoACSData(false);
+          console.log(err);
+        }
+      });
+  }, [year, officerId, agencyId]);
 
   const handleViewData = (type) => {
     switch (type) {
@@ -203,6 +220,7 @@ function SearchRate(props) {
             traffic stops.
           </P>
         </S.ChartDescription>
+        {/* eslint-disable-next-line no-nested-ternary */}
         {officerId ? (
           <div style={{ textAlign: 'center', margin: '2em' }}>
             <h2>
@@ -233,7 +251,9 @@ function SearchRate(props) {
               }
               const rounded = Math.abs(multiplier).toFixed(2);
               return [
-                `${ctx.label} drivers are ${Math.abs(pct).toFixed(0)}% ${likelihood} likely / ${isNegative ? '-' : ''}${rounded}× as likely`,
+                `${ctx.label} drivers are ${Math.abs(pct).toFixed(0)}% ${likelihood} likely / ` +
+                  (isNegative ? '-' : '') +
+                  `${rounded}× as likely`,
                 `to be pulled over as white drivers.`,
               ];
             }}
@@ -256,12 +276,15 @@ function SearchRate(props) {
         <S.ChartDescription>
           <P>
             Shows the likelihood that drivers of a particular race / ethnicity are searched{' '}
+            {/* eslint-disable-next-line react/no-unescaped-entities */}
             <strong>compared to white drivers</strong>, based on stop cause. Stops done for "safety"
+            {/* eslint-disable-next-line react/no-unescaped-entities */}
             purposes may be less likely to show racial bias than stops done for "investigatory"
             purposes.
           </P>
           <P>
             <strong>NOTE:</strong> Large or unexpected percentages may be based on a low number of
+            {/* eslint-disable-next-line react/no-unescaped-entities */}
             incidents. Use "View Data" to see the numbers underlying the calculations.
           </P>
         </S.ChartDescription>
