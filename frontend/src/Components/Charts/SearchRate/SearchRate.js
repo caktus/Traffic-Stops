@@ -241,18 +241,11 @@ function SearchRate(props) {
             displayLegend={false}
             tooltipLabelCallback={(ctx) => {
               const pct = ctx.raw * 100;
-              const isNegative = ctx.raw < 0;
-              const likelihood = isNegative ? 'less' : 'more';
-              let multiplier;
-              if (isNegative) {
-                multiplier = -(1 / (1 + ctx.raw));
-              } else {
-                multiplier = 1 + ctx.raw;
-              }
+              const likelihood = ctx.raw < 0 ? 'less' : 'more';
+              const multiplier = 1 + ctx.raw;
               const rounded = Math.abs(multiplier).toFixed(2);
               return [
                 `${ctx.label} drivers are ${Math.abs(pct).toFixed(0)}% ${likelihood} likely / ` +
-                  (isNegative ? '-' : '') +
                   `${rounded}× as likely`,
                 `to be pulled over as white drivers.`,
               ];
