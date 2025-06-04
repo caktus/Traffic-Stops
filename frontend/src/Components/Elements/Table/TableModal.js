@@ -445,20 +445,6 @@ function TableModal({ chartState, dataSet, columns, isOpen, closeModal }) {
       data = mapSearchesByReason(ds);
     } else if (ds === LIKELIHOOD_OF_STOP) {
       chartData = tableChartState.data[ds].table_data;
-      // Define keys that should be converted to percentages
-      chartData = chartData.map((chartDatum) => {
-        const formattedDatum = { ...chartDatum };
-
-        Object.keys(formattedDatum).forEach((key) => {
-          if (
-            ['baseline_rate', 'stop_rate', 'stop_rate_ratio', 'population_percent'].includes(key) &&
-            typeof formattedDatum[key] === 'number'
-          ) {
-            formattedDatum[key] = parseFloat((formattedDatum[key] * 100).toFixed(2)); // Convert to percentage
-          }
-        });
-        return formattedDatum;
-      });
       // eslint-disable-next-line no-param-reassign,no-return-assign
       chartData.forEach((chartDatum) => (chartDatum['total'] = calculateYearTotal(chartDatum)));
       return chartData;
