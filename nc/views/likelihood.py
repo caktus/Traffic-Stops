@@ -100,7 +100,7 @@ def likelihood_stop_query(request, agency_id, debug=True):
     # Calculate rates
     df["stop_rate"] = df["stops"] / df["population"]
     df["baseline_rate"] = df[df["race"] == "White"]["stop_rate"].iloc[0]
-    df["stop_rate_ratio"] = (df["stop_rate"] - df["baseline_rate"]) / df["baseline_rate"]
+    df["stop_rate_ratio"] = df["stop_rate"] / df["baseline_rate"]
     df.fillna(0, inplace=True)
     df.rename(columns={"driver_race_comb": "driver_race"}, inplace=True)
 
@@ -124,29 +124,19 @@ class LikelihoodStopView(APIView):
 
     def get(self, request, agency_id):
         # Build chart and table data
-        df = likelihood_stop_query(request=request, agency_id=agency_id, debug=False)
+        df = likelihood_stop_query(request=request, agency_id=agency_id, debug=True)
         # Don't include White stops in the chart
         chart_df = df[df["race"] != "White"].copy()
         # Extract only stop_rate_ratio values as an array
-        stop_percentages = chart_df["stop_rate_ratio"].round(2).tolist()
-
-        # Multiply table data by 100 for ease of interpretation
+        stop_percentages = (chart_df["stop_rate_ratio"] - 1).round(2).tolist()
+        # Prepare table data
         table_data = df.copy()
         table_data["population"] = table_data["population"].astype(int)
         table_data["stops"] = table_data["stops"].astype(int)
-        table_data["stop_rate"] = (table_data["stop_rate"] * 100).round(1)
-        table_data["baseline_rate"] = (table_data["baseline_rate"] * 100).round(1)
-
-        def round_stop_rate_ratio(x):
-            if x > 0:
-                x = x + 1
-            elif x < 0:
-                x = x - 1
-            return x
-
-        table_data["stop_rate_ratio"] = (
-            (table_data["stop_rate_ratio"]).apply(round_stop_rate_ratio).round(2)
-        )
+        # Multiply rates by 100 for ease of interpretation
+        table_data["stop_rate"] = (table_data["stop_rate"] * 100).round(2)
+        table_data["baseline_rate"] = (table_data["baseline_rate"] * 100).round(2)
+        table_data["stop_rate_ratio"] = table_data["stop_rate_ratio"].round(2)
 
         data = {
             "stop_percentages": stop_percentages,
