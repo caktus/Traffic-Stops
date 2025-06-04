@@ -85,10 +85,14 @@ function SearchRate(props) {
     axios
       .get(url)
       .then((res) => {
-        if (!res.data.stop_percentages || res.data.stop_percentages.length === 0) {
+        if (
+          year && year !== 'All' &&
+          (!res.data.stop_percentages || res.data.stop_percentages.length === 0)
+        ) {
           setNoACSData(true);
           return;
         }
+        setNoACSData(false);
         const tableData = [...res.data.table_data];
         const colors = [
           DEMOGRAPHICS_COLORS.black,
@@ -123,8 +127,19 @@ function SearchRate(props) {
           payload: res.data, // send raw API response
         });
       })
-      .catch((err) => console.log(err));
-  }, [year]);
+      .catch((err) => {
+        if (
+          year && year !== 'All' &&
+          err.response &&
+          (err.response.status === 404 || err.response.status === 500)
+        ) {
+          setNoACSData(true);
+        } else {
+          setNoACSData(false);
+          console.log(err);
+        }
+      });
+  }, [year, officerId, agencyId]);
 
   const handleViewData = (type) => {
     switch (type) {

@@ -78,7 +78,9 @@ export default function CensusData({ agencyDetails, showCompareDepartments }) {
         </summary>
         <p>
           {censusData()}
-          <a href={ABOUT_SLUG}>Sourced from most recent U.S. Census Bureau. See About page for more info.</a>
+          <a href={ABOUT_SLUG}>
+            Sourced from most recent U.S. Census Bureau. See About page for more info.
+          </a>
         </p>
       </S.CensusDemographicsMobile>
     </>
