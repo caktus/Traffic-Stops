@@ -86,7 +86,8 @@ function SearchRate(props) {
       .get(url)
       .then((res) => {
         if (
-          year && year !== 'All' &&
+          year &&
+          year !== 'All' &&
           (!res.data.stop_percentages || res.data.stop_percentages.length === 0)
         ) {
           setNoACSData(true);
@@ -129,7 +130,8 @@ function SearchRate(props) {
       })
       .catch((err) => {
         if (
-          year && year !== 'All' &&
+          year &&
+          year !== 'All' &&
           err.response &&
           (err.response.status === 404 || err.response.status === 500)
         ) {
@@ -250,11 +252,7 @@ function SearchRate(props) {
               const rounded = Math.abs(multiplier).toFixed(2);
               return [
                 `${ctx.label} drivers are ${Math.abs(pct).toFixed(0)}% ${likelihood} likely / ` +
-                  (
-                    isNegative
-                      ? '-'
-                      : ''
-                  ) +
+                  (isNegative ? '-' : '') +
                   `${rounded}× as likely`,
                 `to be pulled over as white drivers.`,
               ];
