@@ -41,6 +41,7 @@ function SearchRate(props) {
 
   const initStopRateData = { labels: [], datasets: [], loading: true };
   const [stopRateData, setStopRateData] = useState(initStopRateData);
+  const [noACSData, setNoACSData] = useState(false);
 
   const renderMetaTags = useMetaTags();
   const [renderTableModal, { openModal }] = useTableModal();
@@ -70,6 +71,7 @@ function SearchRate(props) {
 
   useEffect(() => {
     setStopRateData(initStopRateData);
+    setNoACSData(false);
     const params = [];
     if (year && year !== 'All') {
       params.push({ param: 'year', val: year });
@@ -83,6 +85,15 @@ function SearchRate(props) {
     axios
       .get(url)
       .then((res) => {
+        if (
+          year &&
+          year !== 'All' &&
+          (!res.data.stop_percentages || res.data.stop_percentages.length === 0)
+        ) {
+          setNoACSData(true);
+          return;
+        }
+        setNoACSData(false);
         const tableData = [...res.data.table_data];
         const colors = [
           DEMOGRAPHICS_COLORS.black,
@@ -117,8 +128,20 @@ function SearchRate(props) {
           payload: res.data, // send raw API response
         });
       })
-      .catch((err) => console.log(err));
-  }, [year]);
+      .catch((err) => {
+        if (
+          year &&
+          year !== 'All' &&
+          err.response &&
+          (err.response.status === 404 || err.response.status === 500)
+        ) {
+          setNoACSData(true);
+        } else {
+          setNoACSData(false);
+          console.log(err);
+        }
+      });
+  }, [year, officerId, agencyId]);
 
   const handleViewData = (type) => {
     switch (type) {
@@ -149,8 +172,8 @@ function SearchRate(props) {
   const getBarChartModalSubHeading = (type) => {
     if (type === 'search') {
       return `Shows the likelihood that drivers of a particular race / ethnicity are searched
-      compared to white drivers, based on stop cause. Stops done for “safety”
-      purposes may be less likely to show racial bias than stops done for “investigatory”
+      compared to white drivers, based on stop cause. Stops done for "safety"
+      purposes may be less likely to show racial bias than stops done for "investigatory"
       purposes ${subjectObserving()}.`;
     }
     if (type === 'stop') {
@@ -197,10 +220,17 @@ function SearchRate(props) {
             traffic stops.
           </P>
         </S.ChartDescription>
+        {/* eslint-disable-next-line no-nested-ternary */}
         {officerId ? (
           <div style={{ textAlign: 'center', margin: '2em' }}>
             <h2>
               <em>This chart is not yet available at the officer level. Coming soon!</em>
+            </h2>
+          </div>
+        ) : noACSData ? (
+          <div style={{ textAlign: 'center', margin: '2em' }}>
+            <h2>
+              <em>5-year ACS data not available for the selected year</em>
             </h2>
           </div>
         ) : (
@@ -210,11 +240,13 @@ function SearchRate(props) {
             maintainAspectRatio
             displayLegend={false}
             tooltipLabelCallback={(ctx) => {
-              const ratio = ctx.raw;
-              const rounded = ratio.toFixed(1);
-
+              const pct = ctx.raw * 100;
+              const likelihood = ctx.raw < 0 ? 'less' : 'more';
+              const multiplier = 1 + ctx.raw;
+              const rounded = Math.abs(multiplier).toFixed(2);
               return [
-                `${ctx.label} drivers are ${rounded}× as likely`,
+                `${ctx.label} drivers are ${Math.abs(pct).toFixed(0)}% ${likelihood} likely / ` +
+                  `${rounded}× as likely`,
                 `to be pulled over as white drivers.`,
               ];
             }}
@@ -237,13 +269,16 @@ function SearchRate(props) {
         <S.ChartDescription>
           <P>
             Shows the likelihood that drivers of a particular race / ethnicity are searched{' '}
-            <strong>compared to white drivers</strong>, based on stop cause. Stops done for “safety”
-            purposes may be less likely to show racial bias than stops done for “investigatory”
+            {/* eslint-disable-next-line react/no-unescaped-entities */}
+            <strong>compared to white drivers</strong>, based on stop cause. Stops done for "safety"
+            {/* eslint-disable-next-line react/no-unescaped-entities */}
+            purposes may be less likely to show racial bias than stops done for "investigatory"
             purposes.
           </P>
           <P>
             <strong>NOTE:</strong> Large or unexpected percentages may be based on a low number of
-            incidents. Use “View Data” to see the numbers underlying the calculations.
+            {/* eslint-disable-next-line react/no-unescaped-entities */}
+            incidents. Use "View Data" to see the numbers underlying the calculations.
           </P>
         </S.ChartDescription>
 

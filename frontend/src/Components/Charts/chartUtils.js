@@ -249,19 +249,11 @@ export const CONTRABAND_TYPES_TABLE_COLUMNS = [
 export const LIKELIHOOD_OF_STOP_TABLE_COLUMNS = [
   {
     Header: 'Driver Race',
-    accessor: 'driver_race',
+    accessor: 'race',
   },
   {
     Header: 'Population',
     accessor: 'population',
-  },
-  {
-    Header: 'Population Total',
-    accessor: 'population_total',
-  },
-  {
-    Header: 'Population Percentage',
-    accessor: 'population_percent',
   },
   {
     Header: 'Basline Rate',
@@ -270,10 +262,6 @@ export const LIKELIHOOD_OF_STOP_TABLE_COLUMNS = [
   {
     Header: 'Stops',
     accessor: 'stops',
-  },
-  {
-    Header: 'Stops Total',
-    accessor: 'stops_total',
   },
   {
     Header: 'Stop Rate',

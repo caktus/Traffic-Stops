@@ -21,7 +21,7 @@ class PersonFactory(factory.django.DjangoModelFactory):
     stop = factory.SubFactory("nc.tests.factories.StopFactory")
     age = factory.fuzzy.FuzzyInteger(16, 100)
     race = factory.fuzzy.FuzzyChoice(x[0] for x in models.RACE_CHOICES)
-    ethnicity = factory.fuzzy.FuzzyChoice(x[0] for x in models.ETHNICITY_CHOICES)
+    ethnicity = models.DriverEthnicity.NON_HISPANIC
     type = "D"
 
 
@@ -75,3 +75,5 @@ class NCCensusProfileFactory(factory.django.DjangoModelFactory):
     acs_id = factory.Sequence(lambda x: x)
     location = factory.Faker("city")
     source = "ACS"
+    population_total = factory.fuzzy.FuzzyInteger(1000, 100000)
+    population_percent = factory.fuzzy.FuzzyFloat(0.0, 1.0)
