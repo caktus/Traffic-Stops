@@ -256,16 +256,16 @@ export const LIKELIHOOD_OF_STOP_TABLE_COLUMNS = [
     accessor: 'population',
   },
   {
-    Header: 'Basline Rate',
-    accessor: 'baseline_rate',
-  },
-  {
     Header: 'Stops',
     accessor: 'stops',
   },
   {
     Header: 'Stop Rate',
     accessor: 'stop_rate',
+  },
+  {
+    Header: 'Basline Rate',
+    accessor: 'baseline_rate',
   },
   {
     Header: 'Stop Rate Ratio',
