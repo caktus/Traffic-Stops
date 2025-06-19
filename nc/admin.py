@@ -12,14 +12,12 @@ from nc.models import (
 )
 
 
-@admin.register(Agency)
 class AgencyAdmin(admin.ModelAdmin):
     list_display = ("name", "id", "census_profile_id")
     search_fields = ("name",)
     ordering = ("id",)
 
 
-@admin.register(StopSummary)
 class StopSummaryAdmin(admin.ModelAdmin):
     list_display = (
         "id",
@@ -91,7 +89,6 @@ class ResourceForm(forms.ModelForm):
         fields = "__all__"
 
 
-@admin.register(Resource)
 class ResourceAdmin(admin.ModelAdmin):
     fields = (
         "agencies",
