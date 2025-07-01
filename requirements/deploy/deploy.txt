@@ -8,15 +8,15 @@ certifi==2020.6.20
     # via
     #   -c requirements/deploy/../base/base.txt
     #   sentry-sdk
-newrelic==10.8.1
+newrelic==10.14.0
     # via -r requirements/deploy/deploy.in
 python3-memcached==1.51
     # via -r requirements/deploy/deploy.in
-sentry-sdk==2.25.1
+sentry-sdk==2.32.0
     # via -r requirements/deploy/deploy.in
 urllib3==2.2.1
     # via
     #   -c requirements/deploy/../base/base.txt
     #   sentry-sdk
-uwsgi==2.0.28
+uwsgi==2.0.30
     # via -r requirements/deploy/deploy.in
