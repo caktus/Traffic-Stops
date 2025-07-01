@@ -31,15 +31,15 @@ attrs==24.2.0
     # via
     #   jsonschema
     #   referencing
-awscli==1.32.100
+awscli==1.36.17
     # via -r requirements/dev/dev.in
 babel==2.16.0
     # via sphinx
-boto3==1.34.100
+boto3==1.35.76
     # via
     #   -c requirements/dev/../base/base.txt
     #   invoke-kubesae
-botocore==1.34.100
+botocore==1.35.76
     # via
     #   -c requirements/dev/../base/base.txt
     #   awscli
@@ -146,7 +146,7 @@ kubernetes==31.0.0
     # via
     #   -r requirements/dev/dev.in
     #   openshift
-kubernetes-validate==1.29.1
+kubernetes-validate==1.30.0
     # via -r requirements/dev/dev.in
 markdown-it-py==3.0.0
     # via rich

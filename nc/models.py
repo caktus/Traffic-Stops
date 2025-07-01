@@ -216,7 +216,11 @@ class Agency(models.Model):
     @property
     def census_profile(self):
         if self.census_profile_id:
-            profile = CensusProfile.objects.get(id=self.census_profile_id)
+            profile = (
+                CensusProfile.objects.filter(acs_id=self.census_profile_id)
+                .order_by("-year")
+                .first()
+            )
             return profile.get_census_dict()
         else:
             return dict()
@@ -442,3 +446,36 @@ class ResourceFile(models.Model):
         if self.file:
             return f"{self.file.name} for {self.resource.title}"
         return f"Resource file for {self.resource.title}"
+
+
+class NCCensusProfile(models.Model):
+    class GeographyChoices(models.TextChoices):
+        STATE = "state", "State"
+        COUNTY = "county", "County"
+        PLACE = "place", "Place"
+
+    acs_id = models.CharField(verbose_name="ACS ID", max_length=32)
+    location = models.CharField(max_length=64)
+    geography = models.CharField(max_length=16, choices=GeographyChoices.choices)
+    year = models.PositiveIntegerField(default=2018)
+    source = models.CharField(max_length=64)
+    race = models.CharField(max_length=32)
+    population = models.BigIntegerField()
+    population_total = models.BigIntegerField()
+    population_percent = models.FloatField()
+
+    class Meta:
+        verbose_name = "NC Census Profile"
+        verbose_name_plural = "NC Census Profiles"
+
+    def __str__(self):
+        return f"{self.location} {self.race} people ({self.geography})"
+
+
+class Race(models.TextChoices):
+    ASIAN = "Asian"
+    BLACK = "Black"
+    HISPANIC = "Hispanic"
+    NATIVE_AMERICAN = "Native American"
+    OTHER = "Other"
+    WHITE = "White"

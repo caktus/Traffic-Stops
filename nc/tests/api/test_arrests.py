@@ -3,25 +3,12 @@ import pytest
 
 from django.test import TestCase
 from django.urls import reverse
-from django.utils.http import urlencode
 
 from nc.constants import STATEWIDE
-from nc.models import DriverEthnicity, DriverRace, StopPurpose
+from nc.models import ContrabandSummary, DriverEthnicity, DriverRace, StopPurpose, StopSummary
 from nc.tests.factories import ContrabandFactory, PersonFactory, SearchFactory
+from nc.tests.urls import reverse_querystring
 from nc.views.arrests import sort_by_stop_purpose
-
-
-def reverse_querystring(
-    view, urlconf=None, args=None, kwargs=None, current_app=None, query_kwargs=None
-):
-    """Custom reverse to handle query strings.
-    Usage:
-        reverse('app.views.my_view', kwargs={'pk': 123}, query_kwargs={'search': 'Bob'})
-    """
-    base_url = reverse(view, urlconf=urlconf, args=args, kwargs=kwargs, current_app=current_app)
-    if query_kwargs:
-        return "{}?{}".format(base_url, urlencode(query_kwargs))
-    return base_url
 
 
 class ArrestUtilityTests(TestCase):
@@ -55,6 +42,8 @@ class TestArrests:
         )
         search = SearchFactory(stop=person.stop)
         ContrabandFactory(stop=person.stop, person=person, search=search, pints=2)
+        StopSummary.refresh()
+        ContrabandSummary.refresh()
         url = reverse("nc:arrests-percentage-of-stops-per-contraband-type", args=[durham.id])
         response = client.get(url, data={}, format="json")
         assert response.status_code == 200
@@ -68,6 +57,8 @@ class TestArrests:
             stop__driver_arrest=True,
         )
         SearchFactory(stop=person.stop, person=person)
+        StopSummary.refresh()
+        ContrabandSummary.refresh()
         url = reverse("nc:arrests-percentage-of-stops", args=[STATEWIDE])
         response = client.get(url, data={}, format="json")
         assert response.status_code == 200
@@ -83,6 +74,8 @@ class TestArrests:
             stop__officer_id=100,
         )
         SearchFactory(stop=person.stop, person=person)
+        StopSummary.refresh()
+        ContrabandSummary.refresh()
         url = reverse_querystring(
             "nc:arrests-percentage-of-stops", args=[durham.id], query_kwargs={"officer": 200}
         )
@@ -94,6 +87,7 @@ class TestArrests:
         """Officer pages should only include stops from that officer"""
         PersonFactory(stop__date="2020-01-15", stop__agency=durham)
         PersonFactory(stop__date="2002-07-15", stop__agency=durham)
+        StopSummary.refresh()
         url = reverse("nc:year-range", args=[durham.id])
         response = client.get(url, data={}, format="json")
         assert response.status_code == 200

@@ -23,7 +23,7 @@ class CensusProfileFactory(factory.django.DjangoModelFactory):
     class Meta(object):
         model = models.CensusProfile
 
-    id = factory.Sequence(lambda n: "16000US%07d" % n)
+    acs_id = factory.Sequence(lambda n: "16000US%07d" % n)
     location = factory.Sequence(lambda n: "Location %d" % n)
     geography = "place"
     state = "AA"

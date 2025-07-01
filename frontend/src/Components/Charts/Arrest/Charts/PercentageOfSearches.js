@@ -10,7 +10,7 @@ import useOfficerId from '../../../../Hooks/useOfficerId';
 import NewModal from '../../../NewCharts/NewModal';
 import { ChartContainer } from '../../ChartSections/ChartsCommon.styled';
 import createTableData from '../../../../util/createTableData';
-import { RACE_TABLE_COLUMNS } from '../../chartUtils';
+import { RACE_TABLE_COLUMNS, DEMOGRAPHICS_COLORS } from '../../chartUtils';
 
 const graphTitle = 'Searches Leading to Arrest by Percentage ';
 
@@ -44,7 +44,14 @@ function PercentageOfSearches(props) {
       .get(url)
       .then((res) => {
         const tableData = createTableData(res.data);
-        const colors = ['#02bcbb', '#8879fc', '#9c0f2e', '#ffe066', '#0c3a66', '#9e7b9b'];
+        const colors = [
+          DEMOGRAPHICS_COLORS.white,
+          DEMOGRAPHICS_COLORS.black,
+          DEMOGRAPHICS_COLORS.hispanic,
+          DEMOGRAPHICS_COLORS.asian,
+          DEMOGRAPHICS_COLORS.nativeAmerican,
+          DEMOGRAPHICS_COLORS.other,
+        ];
         const data = {
           labels: ['White', 'Black', 'Hispanic', 'Asian', 'Native American', 'Other'],
           datasets: [

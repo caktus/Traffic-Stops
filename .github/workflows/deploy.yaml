@@ -2,11 +2,11 @@ name: deploy
 
 on:
   push:
-    branches: [main, develop, CU-86897a79g-cache-misses]
+    branches: [main, develop, CU-868ee8pa2-import-emails]
 
 jobs:
   deploy:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     env:
       ENV: staging
       GITHUB_ENV: https://staging.nccopwatch.org/

@@ -7,7 +7,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from nc.models import PURPOSE_CHOICES, RACE_CHOICES, SEARCH_TYPE_CHOICES
+from nc.models import PURPOSE_CHOICES, RACE_CHOICES, SEARCH_TYPE_CHOICES, StopSummary
 from nc.tests import factories
 from nc.views import GROUPS
 from tsdata.tests.factories import CensusProfileFactory
@@ -37,7 +37,7 @@ class AgencyTests(APITestCase):
         for inclusion of reasonable data
         """
         census_profile = CensusProfileFactory()
-        agency = factories.AgencyFactory(census_profile_id=census_profile.id)
+        agency = factories.AgencyFactory(census_profile_id=census_profile.acs_id)
         url = reverse("nc:agency-api-detail", args=[agency.pk])
         response = self.client.get(url, format="json")
         response_data = response.json()
@@ -50,6 +50,7 @@ class AgencyTests(APITestCase):
     def test_stops_api(self):
         """Test Agency stops API endpoint with no stops"""
         agency = factories.AgencyFactory()
+        StopSummary.refresh()
         url = reverse("nc:agency-api-stops", args=[agency.pk])
         response = self.client.get(url, format="json")
         response_data = response.json()
@@ -74,6 +75,7 @@ class AgencyTests(APITestCase):
         factories.PersonFactory(race="B", stop__agency=agency, ethnicity="H", stop__year=2012)
         factories.PersonFactory(race="B", stop__agency=agency, ethnicity="H", stop__year=2012)
         factories.PersonFactory(race="I", stop__agency=agency, ethnicity="H", stop__year=2012)
+        StopSummary.refresh()
 
         url = reverse("nc:agency-api-stops", args=[agency.pk])
         response = self.client.get(url, format="application/json")
@@ -113,6 +115,7 @@ class AgencyTests(APITestCase):
             stop__agency=agency,
             stop__date=end_of_year + datetime.timedelta(days=1),
         )
+        StopSummary.refresh()
         url = reverse("nc:agency-api-stops", args=[agency.pk])
         response = self.client.get(url, format="json")
         response_data = response.json()
@@ -133,6 +136,7 @@ class AgencyTests(APITestCase):
         factories.PersonFactory(
             ethnicity="H", stop__agency=agency, stop__year=2017, stop__officer_id=p1.stop.officer_id
         )
+        StopSummary.refresh()
         url = reverse("nc:agency-api-stops", args=[agency.pk])
         url = "{}?officer={}".format(url, p1.stop.officer_id)
         response = self.client.get(url, format="json")
@@ -192,6 +196,7 @@ class AgencyTests(APITestCase):
         factories.SearchFactory(stop=p3.stop)
         factories.SearchFactory(stop=p4.stop)
         factories.SearchFactory(stop=p5.stop)
+        StopSummary.refresh()
 
         response = self.client.get(url, format="json")
         response_data = response.json()
@@ -231,6 +236,7 @@ class AgencyTests(APITestCase):
         factories.SearchFactory(person=p4, stop=p4.stop)
         p5 = factories.PersonFactory(race="I", ethnicity="N", stop__agency=agency, stop__year=2016)
         factories.SearchFactory(person=p5, stop=p5.stop)
+        StopSummary.refresh()
         url = reverse("nc:agency-api-searches", args=[agency.pk])
         response = self.client.get(url, format="json")
         response_data = response.json()
@@ -264,6 +270,7 @@ class AgencyTests(APITestCase):
         factories.SearchFactory(person=p4, stop=p4.stop, type=type_code)
         p5 = factories.PersonFactory(race="I", ethnicity="N", stop__agency=agency, stop__year=2016)
         factories.SearchFactory(person=p5, stop=p5.stop, type=type_code)
+        StopSummary.refresh()
 
         response = self.client.get(url, format="json")
         response_data = response.json()
