@@ -3,11 +3,7 @@ import SearchRateStyled from './SearchRate.styled';
 import * as S from '../ChartSections/ChartsCommon.styled';
 
 // Data
-import useDataset, {
-  AGENCY_DETAILS,
-  LIKELIHOOD_OF_SEARCH,
-  LIKELIHOOD_OF_STOP,
-} from '../../../Hooks/useDataset';
+import { LIKELIHOOD_OF_SEARCH, LIKELIHOOD_OF_STOP } from '../../../Hooks/useDataset';
 
 // Hooks
 import useOfficerId from '../../../Hooks/useOfficerId';
@@ -30,11 +26,8 @@ import { ChartContainer } from '../ChartSections/ChartsCommon.styled';
 import { useChartState } from '../../../Context/chart-state';
 
 function SearchRate(props) {
-  const { agencyId, yearRange, year } = props;
+  const { agencyId, yearRange, year, agencyName } = props;
   const officerId = useOfficerId();
-
-  const [searchChartState] = useDataset(agencyId, LIKELIHOOD_OF_SEARCH, AGENCY_DETAILS);
-  const [stopChartState] = useDataset(agencyId, LIKELIHOOD_OF_STOP, AGENCY_DETAILS);
 
   const initSearchRateData = { labels: [], datasets: [], loading: true };
   const [searchRateData, setSearchRateData] = useState(initSearchRateData);
@@ -49,6 +42,7 @@ function SearchRate(props) {
   // eslint-disable-next-line no-unused-vars
   const [_, dispatch] = useChartState();
 
+  // Fetch search rate data
   useEffect(() => {
     setSearchRateData(initSearchRateData);
     const params = [];
@@ -67,8 +61,9 @@ function SearchRate(props) {
         setSearchRateData(res.data);
       })
       .catch((err) => console.log(err));
-  }, [year]);
+  }, [year, officerId, agencyId]);
 
+  // Fetch stop rate data
   useEffect(() => {
     setStopRateData(initStopRateData);
     setNoACSData(false);
@@ -141,7 +136,7 @@ function SearchRate(props) {
           console.log(err);
         }
       });
-  }, [year, officerId, agencyId]);
+  }, [year, officerId, agencyId, dispatch]);
 
   const handleViewData = (type) => {
     switch (type) {
@@ -182,10 +177,11 @@ function SearchRate(props) {
       census. A Stop Rate Ratio of 1.0 (or 100%) indicates equal stop likelihood across
       groups, while values above or below 1.0 suggest disparities. ${subjectObserving()}`;
     }
+    return '';
   };
 
   const getBarChartModalHeading = (title) => {
-    let subject = searchChartState.data[AGENCY_DETAILS].name;
+    let subject = agencyName || 'Unknown Agency';
     if (officerId) {
       subject = `Officer ${officerId}`;
     }
@@ -254,7 +250,7 @@ function SearchRate(props) {
             modalConfig={{
               tableHeader: 'Likelihood of Stop',
               tableSubheader: getBarChartModalSubHeading('stop'),
-              agencyName: stopChartState.data[AGENCY_DETAILS].name,
+              agencyName: agencyName || 'Unknown Agency',
               chartTitle: getBarChartModalHeading('Likelihood of Stop'),
             }}
           />
@@ -294,7 +290,7 @@ function SearchRate(props) {
             modalConfig={{
               tableHeader: 'Likelihood of Search',
               tableSubheader: getBarChartModalSubHeading('search'),
-              agencyName: searchChartState.data[AGENCY_DETAILS].name,
+              agencyName: agencyName || 'Unknown Agency',
               chartTitle: getBarChartModalHeading('Likelihood of Search'),
             }}
           />

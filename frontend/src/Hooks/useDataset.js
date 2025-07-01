@@ -49,7 +49,7 @@ function useDataset(agencyId, datasetKey) {
       }
     };
     _fetchData();
-  }, [agencyId, dispatch, search]);
+  }, [agencyId, datasetKey, dispatch, search]);
 
   return [state, dispatch];
 }
