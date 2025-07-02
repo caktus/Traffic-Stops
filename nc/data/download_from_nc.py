@@ -31,18 +31,18 @@ def nc_download_and_unzip_data(destination, prefix="state-"):
     # make sure destination exists or create a temporary directory
     if not destination:
         destination = tempfile.mkdtemp(prefix=prefix)
-        logger.debug("Created temp directory {}".format(destination))
+        logger.debug(f"Created temp directory {destination}")
     else:
         if not os.path.exists(destination):
             os.makedirs(destination)
-            logger.info("Created {}".format(destination))
+            logger.info(f"Created {destination}")
     zip_basename = date.today().strftime("NC_STOPS_Extract_%Y_%m_%d.zip")
     zip_filename = os.path.join(destination, zip_basename)
     # don't re-download data if raw data file already exists
     if os.path.exists(zip_filename):
-        logger.debug("{} exists, skipping download".format(zip_filename))
+        logger.debug(f"{zip_filename} exists, skipping download")
     else:
-        logger.debug("Downloading data to {}".format(zip_filename))
+        logger.debug(f"Downloading data to {zip_filename}")
         nc_data_site = settings.NC_FTP_HOST
         nc_data_file = "STOPS_Extract.zip"
         nc_data_directory = "/TSTOPextract"
@@ -52,11 +52,11 @@ def nc_download_and_unzip_data(destination, prefix="state-"):
         listing = ftps.retrlines("LIST", show_ftp_listing)
         line = listing.split("\n")[0]
         if not line.startswith("226 "):  # server's "Transfer complete" message
-            raise ValueError("Expected 226 response from ftp server, got %r" % listing)
+            raise ValueError(f"Expected 226 response from ftp server, got {listing!r}")
         logger.info('Downloading "%s"...', nc_data_file)
         with open(zip_filename, "wb") as f:
-            ftps.retrbinary("RETR %s" % nc_data_file, f.write)
-        logger.info('File written to "%s"' % zip_filename)
+            ftps.retrbinary(f"RETR {nc_data_file}", f.write)
+        logger.info(f'File written to "{zip_filename}"')
 
     unzip_data(destination, zip_path=zip_filename)
     return destination

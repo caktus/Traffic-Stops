@@ -32,7 +32,7 @@ class Dataset(models.Model):
     report_email_2 = models.EmailField(blank=True)
 
     def __str__(self):
-        return "{}: {}".format(self.get_state_display(), self.name)
+        return f"{self.get_state_display()}: {self.name}"
 
     @property
     def agency_model(self):
@@ -53,7 +53,7 @@ class Import(models.Model):
     successful = models.BooleanField(default=False)
 
     def __str__(self):
-        return "Import of {}".format(self.dataset)
+        return f"Import of {self.dataset}"
 
 
 class CensusProfile(models.Model):
@@ -102,7 +102,7 @@ class StateFacts(models.Model):
     end_date = models.CharField(max_length=20, default="")
 
     def __str__(self):
-        return "Facts for state %s" % self.state_key
+        return f"Facts for state {self.state_key}"
 
     class Meta:
         verbose_name_plural = "state facts"
@@ -116,7 +116,7 @@ class TopAgencyFacts(models.Model):
     name = models.CharField(max_length=255, default="")
 
     def __str__(self):
-        return "Facts for state %s agency %s" % (self.state_facts.state_key, self.name)
+        return f"Facts for state {self.state_facts.state_key} agency {self.name}"
 
     class Meta:
         unique_together = (("state_facts", "rank"),)

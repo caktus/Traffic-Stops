@@ -1,8 +1,7 @@
 from django.conf import settings
-from django.conf.urls import include
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path, re_path
+from django.urls import include, path, re_path
 
 from .views import index
 
@@ -10,8 +9,9 @@ admin.autodiscover()
 
 
 urlpatterns = [  # noqa
-    re_path(r"^", include(("nc.urls", "nc"), namespace="nc"), name="home"),
-    re_path(r"^admin/", admin.site.urls),
+    path("", include(("nc.urls", "nc"), namespace="nc"), name="home"),
+    path("admin/", admin.site.urls),
+    path("ckeditor5/", include("django_ckeditor_5.urls")),
 ]
 
 if settings.DEBUG:

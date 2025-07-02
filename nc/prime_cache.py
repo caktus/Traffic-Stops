@@ -1,8 +1,8 @@
 import logging
 import time
 
+from collections.abc import Generator
 from contextlib import contextmanager
-from typing import Generator
 
 import boto3
 import httpx
