@@ -157,7 +157,6 @@ function SearchRate(props) {
   };
 
   const formatTooltipLabel = (ctx) => ctx[0].dataset.label;
-  const formatTooltipValue = (ctx) => `${ctx.label}: ${(ctx.raw * 100).toFixed(2)}%`;
 
   const subjectObserving = () => {
     if (officerId) {
@@ -288,7 +287,18 @@ function SearchRate(props) {
             data={searchRateData}
             maintainAspectRatio={false}
             tooltipTitleCallback={formatTooltipLabel}
-            tooltipLabelCallback={formatTooltipValue}
+            tooltipLabelCallback={(ctx) => {
+              const pct = ctx.raw * 100;
+              const likelihood = ctx.raw < 0 ? 'less' : 'more';
+              const multiplier = 1 + ctx.raw;
+              const rounded = Math.abs(multiplier).toFixed(2);
+              return [
+                `${ctx.dataset.label} drivers are ${Math.abs(pct).toFixed(
+                  0
+                )}% ${likelihood} likely / ${rounded}× as likely`,
+                `to be searched as white drivers.`,
+              ];
+            }}
             legendPosition="bottom"
             pinMaxValue={false}
             modalConfig={{
