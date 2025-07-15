@@ -31,15 +31,15 @@ attrs==24.2.0
     # via
     #   jsonschema
     #   referencing
-awscli==1.36.17
+awscli==1.41.2
     # via -r requirements/dev/dev.in
 babel==2.16.0
     # via sphinx
-boto3==1.35.76
+boto3==1.39.2
     # via
     #   -c requirements/dev/../base/base.txt
     #   invoke-kubesae
-botocore==1.35.76
+botocore==1.39.2
     # via
     #   -c requirements/dev/../base/base.txt
     #   awscli
@@ -86,7 +86,7 @@ django==3.2.25
     #   django-debug-toolbar
 django-debug-toolbar==4.3.0
     # via -r requirements/dev/dev.in
-docutils==0.16
+docutils==0.19
     # via
     #   awscli
     #   rstcheck-core
@@ -146,7 +146,7 @@ kubernetes==31.0.0
     # via
     #   -r requirements/dev/dev.in
     #   openshift
-kubernetes-validate==1.30.0
+kubernetes-validate==1.33.1
     # via -r requirements/dev/dev.in
 markdown-it-py==3.0.0
     # via rich
@@ -251,7 +251,7 @@ rstcheck==6.2.4
     # via -r requirements/dev/dev.in
 rstcheck-core==1.2.1
     # via rstcheck
-s3transfer==0.10.1
+s3transfer==0.13.0
     # via
     #   -c requirements/dev/../base/base.txt
     #   awscli
