@@ -124,7 +124,7 @@ class LikelihoodStopView(APIView):
 
     def get(self, request, agency_id):
         # Build chart and table data
-        df = likelihood_stop_query(request=request, agency_id=agency_id, debug=True)
+        df = likelihood_stop_query(request=request, agency_id=agency_id, debug=False)
         # Don't include White stops in the chart
         chart_df = df[df["race"] != "White"].copy()
         # Extract only stop_rate_ratio values as an array
