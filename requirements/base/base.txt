@@ -14,9 +14,9 @@ billiard==4.2.0
     # via celery
 boto==2.49.0
     # via -r requirements/base/base.in
-boto3==1.39.2
+boto3==1.35.76
     # via -r requirements/base/base.in
-botocore==1.39.2
+botocore==1.35.76
     # via
     #   -r requirements/base/base.in
     #   boto3
@@ -140,7 +140,7 @@ requests==2.32.3
     # via
     #   -r requirements/base/base.in
     #   census
-s3transfer==0.13.0
+s3transfer==0.10.1
     # via boto3
 six==1.15.0
     # via
