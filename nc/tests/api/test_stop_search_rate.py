@@ -83,6 +83,31 @@ class TestGetACSPopulationData:
         assert data[data["race"] == "White"]["population"].iloc[0] == expected_white_pop
         assert data[data["race"] == "Black"]["population"].iloc[0] == expected_black_pop
 
+    def test_acs_data_no_data_found(self):
+        """Test census population data when no data exists for the given acs_id."""
+        # Don't create any NCCensusProfile records
+        data = get_acs_population_data(acs_id="nonexistent")
+        # Should return empty DataFrame with expected columns
+        assert data.shape == (0, 2)
+        assert list(data.columns) == ["race", "population"]
+        assert data.empty
+
+    def test_acs_data_no_data_found_with_year(self):
+        """Test census population data when no data exists for the given acs_id and year."""
+        # Create data for a different year
+        NCCensusProfileFactory(
+            acs_id="durham",
+            race="White",
+            population=100,
+            year=2020,
+        )
+        # Query for a year that doesn't exist
+        data = get_acs_population_data(acs_id="durham", year=2015)
+        # Should return empty DataFrame with expected columns
+        assert data.shape == (0, 2)
+        assert list(data.columns) == ["race", "population"]
+        assert data.empty
+
 
 @pytest.mark.django_db(databases=["traffic_stops_nc"])
 class TestGetStopCountData:
@@ -424,3 +449,23 @@ class TestLikelihoodStopView:
         stop_rate_ratio = round(stop_rate / baseline_rate, 2)
         assert pytest.approx(stop_rate_ratio) == 2.69
         assert black_drivers["stop_rate_ratio"] == pytest.approx(stop_rate_ratio)
+
+    def test_no_acs_data_empty_stop_percentages(self, client, durham, year_2020):
+        """Test likelihood of stop API view when no ACS data exists."""
+        # Create stop data but no ACS data
+        PersonFactory.create_batch(
+            size=21, race=DriverRace.BLACK, stop__agency=durham, stop__date=year_2020
+        )
+        PersonFactory.create_batch(
+            size=13, race=DriverRace.WHITE, stop__agency=durham, stop__date=year_2020
+        )
+        StopSummary.refresh()
+        url = reverse_querystring(
+            "nc:likelihood-of-stops", args=[durham.id], query_kwargs={"year": year_2020.year}
+        )
+        response = client.get(url, format="json")
+        assert response.status_code == 200
+        data = response.json()
+        # When no ACS data exists, stop_percentages should be empty
+        assert data["stop_percentages"] == []
+        assert data["table_data"] == []
