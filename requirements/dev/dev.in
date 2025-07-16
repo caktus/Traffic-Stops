@@ -12,7 +12,7 @@ cffi
 Jinja2
 openshift
 kubernetes
-kubernetes-validate==1.30
+kubernetes-validate~=1.32
 referencing
 jsonschema
 
@@ -24,7 +24,7 @@ sphinx-autobuild
 rstcheck
 
 # AWS tools
-awscli==1.36.17
+awscli==1.41.2
 
 django-debug-toolbar
 

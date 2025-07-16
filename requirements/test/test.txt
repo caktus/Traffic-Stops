@@ -8,7 +8,7 @@ black==25.1.0
     # via -r requirements/test/test.in
 cfgv==3.4.0
     # via pre-commit
-click==8.1.8
+click==8.1.7
     # via
     #   -c requirements/test/../base/base.txt
     #   black
