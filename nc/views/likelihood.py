@@ -44,6 +44,9 @@ def get_acs_population_data(acs_id: str, year: int = None) -> pd.DataFrame:
     else:
         # Get the average population for the acs_id
         qs = qs.values("race").annotate(population=Avg("population"))
+    if not qs.exists():
+        # Create empty DF with expected column names
+        qs = pd.DataFrame(qs, columns=["race", "population"])
     return pd.DataFrame(qs)
 
 
@@ -97,10 +100,16 @@ def likelihood_stop_query(request, agency_id, debug=True):
         left_on="driver_race_comb",
         right_on="race",
     )
-    # Calculate rates
-    df["stop_rate"] = df["stops"] / df["population"]
-    df["baseline_rate"] = df[df["race"] == "White"]["stop_rate"].iloc[0]
-    df["stop_rate_ratio"] = df["stop_rate"] / df["baseline_rate"]
+    if not df_acs.empty:
+        # Calculate rates
+        df["stop_rate"] = df["stops"] / df["population"]
+        df["baseline_rate"] = df[df["race"] == "White"]["stop_rate"].iloc[0]
+        df["stop_rate_ratio"] = df["stop_rate"] / df["baseline_rate"]
+    else:
+        # If no ACS data, chart will be empty
+        df["stop_rate"] = None
+        df["baseline_rate"] = None
+        df["stop_rate_ratio"] = None
     df.fillna(0, inplace=True)
     df.rename(columns={"driver_race_comb": "driver_race"}, inplace=True)
 
