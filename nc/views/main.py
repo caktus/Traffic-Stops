@@ -415,9 +415,9 @@ class AgencyTrafficStopsByPercentageView(APIView):
                 if col not in stops_df or year not in stops_df[col]:
                     continue
                 try:
-                    stops_df[col][year] = float(stops_df[col][year] / total_stops_for_year)
+                    stops_df.loc[year, col] = float(stops_df[col][year] / total_stops_for_year)
                 except ZeroDivisionError:
-                    stops_df[col][year] = 0
+                    stops_df.loc[year, col] = 0
 
         data = self.build_response(stops_df, unique_x_range)
         return Response(data=data, status=200)
@@ -1228,10 +1228,12 @@ class AgencySearchesByPercentageView(APIView):
                     total_search += search_df[c][year] or 0
                     total_stop += stops_df[c][year] or 0
                     try:
-                        search_df[c][year] = float(search_df[c][year]) / float(stops_df[c][year])
+                        search_df.loc[year, c] = float(search_df[c][year]) / float(
+                            search_df[c][year]
+                        )
                     except (ValueError, ZeroDivisionError):
-                        search_df[c][year] = 0
-            search_df["Average"][year] = total_search / total_stop
+                        search_df.loc[year, c] = 0
+            search_df.loc[year, "Average"] = total_search / total_stop
 
         data = self.build_response(search_df, unique_x_range)
         return Response(data=data, status=200)
@@ -1430,7 +1432,7 @@ class AgencySearchRateView(APIView):
                 except ZeroDivisionError:
                     purpose_rate = 0
                 if col in search_df and k in search_df[col]:
-                    search_df[col][k] = (
+                    search_df.loc[k, col] = (
                         (purpose_rate - base_rate) / base_rate if base_rate != 0 else 0
                     )
 
