@@ -30,7 +30,7 @@ def test_stop_date_after_august_excludes_july_stop(client, search_url, durham, j
         data={"agency": durham.pk, "stop_date_after": dt.date(2020, 8, 1)},
         format="json",
     )
-    stop_ids = set([stop["stop_id"] for stop in response.data["results"]])
+    stop_ids = {stop["stop_id"] for stop in response.data["results"]}
     assert july_person.stop.stop_id not in stop_ids
 
 
@@ -41,7 +41,7 @@ def test_stop_date_after_august_includes_august_stop(client, search_url, durham,
         data={"agency": durham.pk, "stop_date_after": dt.date(2020, 8, 1)},
         format="json",
     )
-    stop_ids = set([stop["stop_id"] for stop in response.data["results"]])
+    stop_ids = {stop["stop_id"] for stop in response.data["results"]}
     assert {august_person.stop.stop_id} == stop_ids
     assert august_person.stop.date == response.data["results"][0]["date"]
 
@@ -53,6 +53,6 @@ def test_stop_date_after_july_includes_both(client, search_url, durham, july_per
         data={"agency": durham.pk, "stop_date_after": dt.date(2020, 7, 1)},
         format="json",
     )
-    stop_ids = set([stop["stop_id"] for stop in response.data["results"]])
+    stop_ids = {stop["stop_id"] for stop in response.data["results"]}
     assert july_person.stop.stop_id in stop_ids
     assert august_person.stop.stop_id in stop_ids

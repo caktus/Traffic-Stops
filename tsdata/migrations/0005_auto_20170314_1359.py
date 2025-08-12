@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 import django.core.validators
 
 from django.db import migrations, models
@@ -46,6 +43,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name='topagencyfacts',
-            unique_together=set([('state_facts', 'rank')]),
+            unique_together={('state_facts', 'rank')},
         ),
     ]

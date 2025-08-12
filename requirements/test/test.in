@@ -3,12 +3,13 @@
 
 pyyaml
 isort
-pytest
-pytest-cov
-pytest-django
+pytest==8.3.3
+pytest-cov==6.0.0
 factory_boy
+pytest-django==4.9.0
 coverage
 # Linting
 flake8
 black
 pre-commit
+identify

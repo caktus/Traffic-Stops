@@ -1,5 +1,5 @@
 # base requirements.in
-django==3.2.25
+django==4.2.18
 celery==5.4.0
 census==0.8.24
 us
@@ -9,25 +9,26 @@ boto3==1.39.2
 botocore==1.39.2
 click==8.1.7
 # django-cache-machine is no longer used, remains for legacy migrations
-django-ckeditor==6.7.0
-django-click==2.3.0
+django-ckeditor-5
+django-click
 django-crispy-forms
 django-dotenv
 django-extensions
 django-filter
 django-memoize
-django-pgviews-redux==0.8.0
+
+django-pgviews-redux
 django-redis
-django-storages==1.13.2
-djangorestframework==3.12.4
+django-storages
+djangorestframework
 dj-database-url
-drf-extensions==0.7.1
-psycopg2==2.9.9
-brotli==1.1.0
+drf-extensions
+psycopg2
+brotli
 httpx[http2]
-requests==2.32.3
-urllib3==2.2.1
+requests
+urllib3
 six
 whitenoise
-pandas==2.2.2
-vine==5.1.0
+pandas
+vine
