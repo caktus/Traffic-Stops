@@ -7,7 +7,17 @@ RUN npm install --silent
 COPY frontend/ /code/
 RUN npm run build
 
-FROM python:3.12-slim-bullseye AS base
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm AS base
+
+# Enable bytecode compilation
+ENV UV_COMPILE_BYTECODE=1
+
+# Copy from the cache instead of linking since it's a mounted volume
+ENV UV_LINK_MODE=copy
+
+# Use a custom VIRTUAL_ENV with uv to avoid conflicts with local developer's
+# .venv/ while running tests in Docker
+ENV VIRTUAL_ENV=/venv
 
 # Create a group and user to run our app
 ARG APP_USER=appuser
@@ -32,15 +42,13 @@ RUN set -ex \
     && apt-get update && apt-get install -y --no-install-recommends $RUN_DEPS \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy in your requirements file
-# ADD requirements.txt /requirements.txt
-
-# OR, if you're using a directory for your requirements, copy everything (comment out the above and uncomment this if so):
-ADD requirements /requirements
-
 # Install build deps, then run `pip install`, then remove unneeded build deps all in a single step.
 # Correct the path to your production requirements file, if needed.
-RUN set -ex \
+ARG UV_OPTS="--no-dev --group deploy"
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    set -ex \
     && BUILD_DEPS=" \
     build-essential \
     libpcre3-dev \
@@ -48,10 +56,13 @@ RUN set -ex \
     git-core \
     " \
     && apt-get update && apt-get install -y --no-install-recommends $BUILD_DEPS \
-    && pip install -U -q pip-tools \
-    && pip-sync requirements/base/base.txt requirements/deploy/deploy.txt \
+    && uv venv $VIRTUAL_ENV \
+    && uv sync --active --locked --no-install-project $UV_OPTS \
     && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $BUILD_DEPS \
     && rm -rf /var/lib/apt/lists/*
+
+# Add uv venv to PATH
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 FROM base AS deploy
 
@@ -98,7 +109,7 @@ ENTRYPOINT ["/code/docker-entrypoint.sh"]
 # Start uWSGI
 CMD ["newrelic-admin", "run-program", "uwsgi", "--single-interpreter", "--enable-threads", "--show-config"]
 
-FROM python:3.12-slim-bullseye AS dev
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm AS dev
 
 ARG USERNAME=appuser
 ARG USER_UID=1000
