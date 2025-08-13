@@ -54,6 +54,11 @@ jobs:
           aws-region: us-east-2
           role-to-assume: arn:aws:iam::606178775542:role/GitHubActionsDeploy
           role-session-name: GitHubActionsDeploy
+      - name: Login to Docker
+        id: docker-login
+        run: |
+          echo "env is $ENV"
+          uv run inv $ENV aws.docker-login
       - name: Build image
         uses: docker/build-push-action@v6
         with:
