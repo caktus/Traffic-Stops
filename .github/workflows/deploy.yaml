@@ -13,6 +13,9 @@ jobs:
       id-token: write
       # This is required for actions/checkout
       contents: read
+      # This is needed for bobheadxi/deployments
+      actions: read
+      deployments: write
     env:
       ENV: staging
       GITHUB_ENV: https://staging.nccopwatch.org/
