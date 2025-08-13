@@ -45,6 +45,8 @@ jobs:
         run: |
           echo "env is $ENV"
           uv run inv $ENV image deploy --verbosity=0
+        env:
+          BUILDKIT_PROGRESS: plain
       - name: Update deployment status
         uses: bobheadxi/deployments@v1
         if: always()
