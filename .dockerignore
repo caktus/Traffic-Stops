@@ -21,3 +21,4 @@ deploy/
 nc/notebooks
 venv
 .venv
+bin/
