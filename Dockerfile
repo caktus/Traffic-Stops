@@ -7,7 +7,7 @@ RUN npm install --silent
 COPY frontend/ /code/
 RUN npm run build
 
-FROM ghcr.io/astral-sh/uv:python3.12-bullseye AS base
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm AS base
 
 # Enable bytecode compilation
 ENV UV_COMPILE_BYTECODE=1
@@ -33,6 +33,7 @@ RUN set -ex \
     libpcre3 \
     mime-support \
     postgresql-client-${POSTGRESQL_CLIENT_VERSION} \
+    libpq5 \
     vim \
     " \
     && seq 1 8 | xargs -I{} mkdir -p /usr/share/man/man{} \
@@ -109,7 +110,7 @@ ENTRYPOINT ["/code/docker-entrypoint.sh"]
 # Start uWSGI
 CMD ["newrelic-admin", "run-program", "uwsgi", "--single-interpreter", "--enable-threads", "--show-config"]
 
-FROM ghcr.io/astral-sh/uv:python3.12-bullseye AS dev
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm AS dev
 
 ARG USERNAME=appuser
 ARG USER_UID=1000
