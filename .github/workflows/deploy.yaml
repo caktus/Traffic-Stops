@@ -61,6 +61,7 @@ jobs:
           pull: true
           push: true
           tags: "${{ env.DOCKER_REPO }}:${{ env.DOCKER_TAG }}"
+          target: "deploy"
       - name: Deploy image
         run: |
           echo "env is $ENV"
