@@ -7,7 +7,7 @@ your local development system:
 
 - Python 3.12
 - NodeJS >= 12.6.0
-- `pip >= 8 or so <http://www.pip-installer.org/>`_
+- `Install uv <https://docs.astral.sh/uv/getting-started/installation/>`_
 - Postgres >= 16
 
 Getting Started (Docker 🐳)
@@ -22,7 +22,8 @@ pack for VS Code.
 2. **Install Python requirements:** Create virtual environment and install Python requirements::
 
     python3 -m venv /code/venv
-    make setup
+    uv python install
+    uv sync --locked
     (cd frontend; npm install)
 
 3. **Setup pre-commit:** Install pre-commit to enforce a variety of community standards::
@@ -85,10 +86,14 @@ To use ``psql`` locally, make sure you have the following env variables loaded
 To setup your local environment you should create a virtualenv and install the
 necessary requirements::
 
-    $ which python3.12  # make sure you have Python 3.10 installed
-    $ mkvirtualenv --python=`which python3.10` traffic-stops
-    (traffic-stops)$ pip install -U pip
-    (traffic-stops)$ make setup
+    $ uv python install
+    $ uv sync --locked
+
+Set up ``uv`` and ``direnv``::
+
+    echo "PATH_add .venv/bin/" >> .envrc
+    echo "uv sync --locked" >> .envrc
+    direnv allow
 
 Next, we'll set up our local environment variables. We use `django-dotenv
 <https://github.com/jpadilla/django-dotenv>`_ to help with this. It reads environment variables
