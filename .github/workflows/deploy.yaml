@@ -7,11 +7,16 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      # Allow GitHub's OIDC provider to create a JSON Web Token for every run
+      # https://github.com/aws-actions/configure-aws-credentials?tab=readme-ov-file#oidc-configuration
+      id-token: write
+      # This is required for actions/checkout
+      contents: read
     env:
       ENV: staging
       GITHUB_ENV: https://staging.nccopwatch.org/
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      DOCKER_REPO: 606178775542.dkr.ecr.us-east-2.amazonaws.com/traff-appli-gvyudgfsjhrz
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
     steps:
       - uses: actions/checkout@v5
@@ -37,18 +42,26 @@ jobs:
           step: start
           token: ${{ secrets.GITHUB_TOKEN }}
           env: ${{ env.ENV }}
-      - name: Login to Docker
-        id: docker-login
+      - name: Set DOCKER_TAG variable
+        run: |
+          echo DOCKER_TAG="$ENV-$(git rev-parse --short HEAD)" >> "$GITHUB_ENV"
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: us-east-2
+          role-to-assume: arn:aws:iam::606178775542:role/GitHubActionsDeploy
+          role-session-name: GitHubActionsDeploy
+      - name: Build image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          pull: true
+          push: true
+          tags: "${{ env.DOCKER_REPO }}:${{ env.DOCKER_TAG }}"
+      - name: Deploy image
         run: |
           echo "env is $ENV"
-          uv run inv $ENV aws.docker-login
-      - name: Build, tag, push, and deploy image
-        id: build-tag-push-deploy
-        run: |
-          echo "env is $ENV"
-          uv run inv $ENV image deploy --verbosity=0
-        env:
-          BUILDKIT_PROGRESS: plain
+          uv run inv $ENV deploy --tag=${{ env.DOCKER_TAG }} --verbosity=0
       - name: Update deployment status
         uses: bobheadxi/deployments@v1
         if: always()
