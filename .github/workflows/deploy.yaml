@@ -17,6 +17,8 @@ jobs:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
       - name: Set env vars (production)
         if: endsWith(github.ref, '/main')
         run: |
