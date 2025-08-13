@@ -2,7 +2,7 @@ name: deploy
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main, develop, CU-868em6j24_Switch-to-uv]
 
 jobs:
   deploy:
@@ -14,7 +14,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - name: Set env vars (production)
@@ -22,15 +22,12 @@ jobs:
         run: |
           echo "ENV=production" >> $GITHUB_ENV
           echo "ENV_URL=https://nccopwatch.org/" >> $GITHUB_ENV
-      - uses: actions/setup-python@v4
+      - uses: astral-sh/setup-uv@v6
         with:
-          python-version: '3.12'
-          cache: 'pip'
-          cache-dependency-path: 'requirements/*/*.txt'
+          enable-cache: true
       - name: Install dependencies
         run: |
-          python -m pip install pip-tools
-          pip-sync requirements/base/base.txt requirements/dev/dev.txt
+          uv sync --locked
       - name: Start deployment
         uses: bobheadxi/deployments@v1
         id: deployment
@@ -42,12 +39,12 @@ jobs:
         id: docker-login
         run: |
           echo "env is $ENV"
-          inv $ENV aws.docker-login
+          uv run inv $ENV aws.docker-login
       - name: Build, tag, push, and deploy image
         id: build-tag-push-deploy
         run: |
           echo "env is $ENV"
-          inv $ENV image deploy --verbosity=0
+          uv run inv $ENV image deploy --verbosity=0
       - name: Update deployment status
         uses: bobheadxi/deployments@v1
         if: always()
