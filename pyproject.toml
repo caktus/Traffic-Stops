@@ -67,10 +67,10 @@ src_paths = [ "nc", "traffic_stops", "tsdata" ]
 
 [dependency-groups]
 deploy = [
-    "newrelic==10.14.0",
-    "python3-memcached==1.51",
-    "sentry-sdk==2.32.0",
-    "uwsgi==2.0.30",
+    "newrelic>=10.14.0",
+    "python3-memcached>=1.51",
+    "sentry-sdk>=2.32.0",
+    "uwsgi>=2.0.30",
 ]
 dev = [
     "ansible>=10.7.0",

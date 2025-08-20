@@ -1064,14 +1064,14 @@ wheels = [
 
 [[package]]
 name = "newrelic"
-version = "10.14.0"
+version = "10.16.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/c7/c4/2d69e50fe693ed53263f58c83384d2bd719d67e69c3c96283a3961579ed8/newrelic-10.14.0.tar.gz", hash = "sha256:18e7e6fa1dd758ef3d1648e3b0f15c6b4d94271996dc129f630a4d7278309cf5", size = 1262384, upload-time = "2025-06-18T21:15:48.386Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/d4/71/07c41fd5e8c94e95216b000d00c3cf735f769cb406c0f33c6ff83b7b7418/newrelic-10.16.0.tar.gz", hash = "sha256:d20eb934380a88d787f93e037d2ccfd5a7c80e657db5bb2e645216eaafe32e26", size = 1267210, upload-time = "2025-08-14T22:23:47.619Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/88/d4/a660142bc4694d9516fbdb3e9703b9770638ec7c340205f1e00ea9c6eb9b/newrelic-10.14.0-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:658f8c12d3974b1ca0ec16c373dfb9cbb663453372ca3964ad92539c94479b67", size = 856550, upload-time = "2025-06-18T21:15:21.401Z" },
-    { url = "https://files.pythonhosted.org/packages/ee/b9/4b4fd1d93734b5886485a8417dba46b75a92c21511d94961abd9aad25b10/newrelic-10.14.0-cp312-cp312-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:448214f3f47cd5f620a5d649e810cd467c7edbbf3160f8d0f637e8385ba5e77d", size = 856209, upload-time = "2025-06-18T21:15:22.455Z" },
-    { url = "https://files.pythonhosted.org/packages/9b/98/9685dc4b55d682715cc25bd812baf0dc4eba565c0a87f824694eaeb2015b/newrelic-10.14.0-cp312-cp312-musllinux_1_2_aarch64.whl", hash = "sha256:856c1487f5c5b1d0e4b7df288e43cf18cccd8e7edc63162aba13f7c203e6255b", size = 854179, upload-time = "2025-06-18T21:15:23.61Z" },
-    { url = "https://files.pythonhosted.org/packages/ec/e0/929209ddff480cc132381ea63107a5f3a7343aec4720d3716c719acf5653/newrelic-10.14.0-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:74c32b4c6767d0d39875ea40f937562729ab32167e2d5c9d12ce79798704b124", size = 854045, upload-time = "2025-06-18T21:15:24.645Z" },
+    { url = "https://files.pythonhosted.org/packages/be/4b/ba14854270412686fdc331b1503b90554968e58d504297572bfc9cdaf3ad/newrelic-10.16.0-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:2f74301ed32ce625fb84c8bd0c079498dca603ff111d5baa2f59b6480ef7355b", size = 858772, upload-time = "2025-08-14T22:23:19.058Z" },
+    { url = "https://files.pythonhosted.org/packages/97/41/de8f0be9e285371cee22a8399840141ffb34ffa5462d31c80c5d7a951ed5/newrelic-10.16.0-cp312-cp312-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:3efef3b10f02a086d9009a80b020db8f0b1db5072075779c9facd5d2fe3bb916", size = 858430, upload-time = "2025-08-14T22:23:20.658Z" },
+    { url = "https://files.pythonhosted.org/packages/52/74/2fc1e2d96029b57397eb3e2fae9f5e5840af3b98e896834b7a584f614b98/newrelic-10.16.0-cp312-cp312-musllinux_1_2_aarch64.whl", hash = "sha256:8328f621f3683b28156cfa8e1648a56b894480bf4c4953cde7e659b1480ae1e9", size = 856401, upload-time = "2025-08-14T22:23:21.981Z" },
+    { url = "https://files.pythonhosted.org/packages/2a/42/fb73714fbf105b0c96faea68d17149dfecaa0209a6354b6a6d67c77ef65f/newrelic-10.16.0-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:07f65faed0a9aa40695e6e6ce4c943ca9c9643fc848c2344bb26665a65893a80", size = 856270, upload-time = "2025-08-14T22:23:23.407Z" },
 ]
 
 [[package]]
@@ -1542,15 +1542,15 @@ wheels = [
 
 [[package]]
 name = "sentry-sdk"
-version = "2.32.0"
+version = "2.35.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "certifi" },
     { name = "urllib3" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/10/59/eb90c45cb836cf8bec973bba10230ddad1c55e2b2e9ffa9d7d7368948358/sentry_sdk-2.32.0.tar.gz", hash = "sha256:9016c75d9316b0f6921ac14c8cd4fb938f26002430ac5be9945ab280f78bec6b", size = 334932, upload-time = "2025-06-27T08:10:02.89Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/31/83/055dc157b719651ef13db569bb8cf2103df11174478649735c1b2bf3f6bc/sentry_sdk-2.35.0.tar.gz", hash = "sha256:5ea58d352779ce45d17bc2fa71ec7185205295b83a9dbb5707273deb64720092", size = 343014, upload-time = "2025-08-14T17:11:20.223Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/01/a1/fc4856bd02d2097324fb7ce05b3021fb850f864b83ca765f6e37e92ff8ca/sentry_sdk-2.32.0-py2.py3-none-any.whl", hash = "sha256:6cf51521b099562d7ce3606da928c473643abe99b00ce4cb5626ea735f4ec345", size = 356122, upload-time = "2025-06-27T08:10:01.424Z" },
+    { url = "https://files.pythonhosted.org/packages/36/3d/742617a7c644deb0c1628dcf6bb2d2165ab7c6aab56fe5222758994007f8/sentry_sdk-2.35.0-py2.py3-none-any.whl", hash = "sha256:6e0c29b9a5d34de8575ffb04d289a987ff3053cf2c98ede445bea995e3830263", size = 363806, upload-time = "2025-08-14T17:11:18.29Z" },
 ]
 
 [[package]]
@@ -1807,10 +1807,10 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 deploy = [
-    { name = "newrelic", specifier = "==10.14.0" },
-    { name = "python3-memcached", specifier = "==1.51" },
-    { name = "sentry-sdk", specifier = "==2.32.0" },
-    { name = "uwsgi", specifier = "==2.0.30" },
+    { name = "newrelic", specifier = ">=10.14.0" },
+    { name = "python3-memcached", specifier = ">=1.51" },
+    { name = "sentry-sdk", specifier = ">=2.32.0" },
+    { name = "uwsgi", specifier = ">=2.0.30" },
 ]
 dev = [
     { name = "ansible", specifier = ">=10.7.0" },
