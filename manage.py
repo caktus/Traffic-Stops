@@ -2,10 +2,6 @@
 import os
 import sys
 
-import dotenv
-
-dotenv.read_dotenv()
-
 if __name__ == "__main__":
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "traffic_stops.settings")
 

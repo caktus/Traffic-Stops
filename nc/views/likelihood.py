@@ -107,10 +107,14 @@ def likelihood_stop_query(request, agency_id, debug=True):
         df["stop_rate_ratio"] = df["stop_rate"] / df["baseline_rate"]
     else:
         # If no ACS data, chart will be empty
-        df["stop_rate"] = None
-        df["baseline_rate"] = None
-        df["stop_rate_ratio"] = None
-    df.fillna(0, inplace=True)
+        df["stop_rate"] = 0.0
+        df["baseline_rate"] = 0.0
+        df["stop_rate_ratio"] = 0.0
+
+    # Ensure numeric columns are properly typed
+    df["stop_rate"] = pd.to_numeric(df["stop_rate"], errors="coerce").fillna(0)
+    df["baseline_rate"] = pd.to_numeric(df["baseline_rate"], errors="coerce").fillna(0)
+    df["stop_rate_ratio"] = pd.to_numeric(df["stop_rate_ratio"], errors="coerce").fillna(0)
     df.rename(columns={"driver_race_comb": "driver_race"}, inplace=True)
 
     # Ensure driver_race column follows this order

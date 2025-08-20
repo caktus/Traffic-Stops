@@ -279,8 +279,8 @@ class StopSummary(pg.ReadOnlyMaterializedView):
     id = models.PositiveIntegerField(primary_key=True)
     date = models.DateField()
     agency = models.ForeignKey("Agency", on_delete=models.DO_NOTHING)
-    stop_purpose = models.PositiveSmallIntegerField(choices=StopPurpose.choices)
-    stop_purpose_group = models.CharField(choices=StopPurposeGroup.choices, max_length=32)
+    stop_purpose = models.PositiveSmallIntegerField(choices=StopPurpose)
+    stop_purpose_group = models.CharField(choices=StopPurposeGroup, max_length=32)
     driver_arrest = models.BooleanField()
     engage_force = models.BooleanField()
     driver_searched = models.BooleanField()
@@ -289,7 +289,7 @@ class StopSummary(pg.ReadOnlyMaterializedView):
     officer_id = models.CharField(max_length=15)
     driver_race = models.CharField(max_length=2, choices=RACE_CHOICES)
     driver_ethnicity = models.CharField(max_length=2, choices=ETHNICITY_CHOICES)
-    driver_race_comb = models.CharField(max_length=2, choices=DriverRace.choices)
+    driver_race_comb = models.CharField(max_length=2, choices=DriverRace)
     count = models.IntegerField()
 
     class Meta:
@@ -395,9 +395,9 @@ class ContrabandSummary(pg.ReadOnlyMaterializedView):
     date = models.DateField(db_column="stop_date")
     agency = models.ForeignKey("Agency", on_delete=models.DO_NOTHING)
     officer_id = models.CharField(max_length=15)
-    stop_purpose_group = models.CharField(choices=StopPurposeGroup.choices, max_length=32)
+    stop_purpose_group = models.CharField(choices=StopPurposeGroup, max_length=32)
     driver_race_comb = models.CharField(
-        max_length=2, choices=DriverRace.choices, db_column="driver_race"
+        max_length=2, choices=DriverRace, db_column="driver_race"
     )
     driver_gender = models.CharField(max_length=8, choices=GENDER_CHOICES)
     driver_searched = models.BooleanField()
