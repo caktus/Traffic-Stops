@@ -3,7 +3,7 @@ name = "traffic_stops"
 version = "1.23.0"
 description = "Website to monitor and identify racial profiling practices by North Carolina law enforcement agencies"
 readme = "README.rst"
-requires-python = "~=3.12.0"
+requires-python = "~=3.13.0"
 dependencies = [
     "boto==2.49.0",
     "boto3>=1.40.13",

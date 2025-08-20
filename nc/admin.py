@@ -153,5 +153,3 @@ class NCCensusProfileAdmin(admin.ModelAdmin):
     @admin.display(ordering="population_percent")
     def population_pct(self, obj):
         return f"{obj.population_percent:.2%}"
-
-

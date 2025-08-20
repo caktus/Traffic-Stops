@@ -396,9 +396,7 @@ class ContrabandSummary(pg.ReadOnlyMaterializedView):
     agency = models.ForeignKey("Agency", on_delete=models.DO_NOTHING)
     officer_id = models.CharField(max_length=15)
     stop_purpose_group = models.CharField(choices=StopPurposeGroup, max_length=32)
-    driver_race_comb = models.CharField(
-        max_length=2, choices=DriverRace, db_column="driver_race"
-    )
+    driver_race_comb = models.CharField(max_length=2, choices=DriverRace, db_column="driver_race")
     driver_gender = models.CharField(max_length=8, choices=GENDER_CHOICES)
     driver_searched = models.BooleanField()
     driver_arrest = models.BooleanField()
