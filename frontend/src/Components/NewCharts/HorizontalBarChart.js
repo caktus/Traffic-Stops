@@ -38,6 +38,7 @@ export default function HorizontalBarChart({
   tickStyle = 'percent',
   stepSize = 0.5,
   modalConfig = {},
+  skipNull = false,
 }) {
   const tickCallback = function tickCallback(val) {
     if (tickStyle === 'percent') {
@@ -49,6 +50,7 @@ export default function HorizontalBarChart({
     responsive: true,
     maintainAspectRatio,
     indexAxis: 'y',
+    skipNull,
     scales: {
       x: {
         stacked: xStacked,
