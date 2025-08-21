@@ -1229,7 +1229,7 @@ class AgencySearchesByPercentageView(APIView):
                     total_stop += stops_df[c][year] or 0
                     try:
                         search_df.loc[year, c] = float(search_df[c][year]) / float(
-                            search_df[c][year]
+                            stops_df[c][year]
                         )
                     except (ValueError, ZeroDivisionError):
                         search_df.loc[year, c] = 0
