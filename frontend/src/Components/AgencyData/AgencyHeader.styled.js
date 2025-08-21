@@ -10,6 +10,10 @@ import {
 export const AgencyHeader = styled.div`
   box-shadow: ${(props) => props.theme.shadows.depth1};
   padding: 0.5em 3em;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: ${(props) => props.theme.colors.white};
 
   @media (${smallerThanDesktop}) {
     padding: 0.5em 1em;
