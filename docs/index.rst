@@ -28,6 +28,8 @@ Contents:
    dev-setup
    data-import
    api
+   census
+   deploy
 
 
 Indices and tables

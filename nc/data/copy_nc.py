@@ -14,7 +14,7 @@ CLEAN_DATABASE = """
 # NC_COPY_INSTRUCTIONS:
 # KEY: Filename that will be found on the file system.
 # VALUE: The SQL COPY statement.
-# The SQL COPY statement is used with psycopg2's expert_copy which requires the FROM statement to be STDIN
+# The SQL COPY statement is used with psycopg3's copy method which requires the FROM statement to be STDIN
 NC_COPY_INSTRUCTIONS = {
     "Stop.csv": "COPY nc_stop (stop_id, agency_description, date, purpose, action, driver_arrest, passenger_arrest, encounter_force, engage_force, officer_injury, driver_injury, passenger_injury, officer_id, stop_location, stop_city) FROM STDIN WITH  DELIMITER ',' NULL AS '' CSV HEADER FORCE NOT NULL officer_id, stop_city, stop_location",
     "PERSON.csv": "COPY nc_person (person_id, stop_id, type, age, gender, ethnicity, race) FROM STDIN WITH DELIMITER ',' NULL AS '' CSV HEADER FORCE NOT NULL ethnicity, gender, race",

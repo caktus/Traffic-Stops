@@ -19,8 +19,6 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_extensions.key_constructor import bits
-from rest_framework_extensions.key_constructor.constructors import DefaultObjectKeyConstructor
 
 from nc import serializers
 from nc.constants import (
@@ -86,13 +84,6 @@ GROUP_DEFAULTS = {
 }
 
 SEARCH_TYPE_CHOICES = dict(SEARCH_TYPE_CHOICES_TUPLES)
-
-
-class QueryKeyConstructor(DefaultObjectKeyConstructor):
-    params_query = bits.QueryParamsKeyBit(["officer", "from", "to"])
-
-
-query_cache_key_func = QueryKeyConstructor()
 
 
 def get_date_range(request):

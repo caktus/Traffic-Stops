@@ -7,14 +7,14 @@ from nc import models
 
 
 class AgencyFactory(factory.django.DjangoModelFactory):
-    class Meta(object):
+    class Meta:
         model = models.Agency
 
     name = factory.Sequence(lambda n: "Agency %03d" % n)
 
 
 class PersonFactory(factory.django.DjangoModelFactory):
-    class Meta(object):
+    class Meta:
         model = models.Person
 
     person_id = factory.Sequence(lambda x: x)
@@ -26,7 +26,7 @@ class PersonFactory(factory.django.DjangoModelFactory):
 
 
 class StopFactory(factory.django.DjangoModelFactory):
-    class Meta(object):
+    class Meta:
         model = models.Stop
 
     stop_id = factory.Sequence(lambda x: x)
@@ -49,7 +49,7 @@ class StopFactory(factory.django.DjangoModelFactory):
 
 
 class SearchFactory(factory.django.DjangoModelFactory):
-    class Meta(object):
+    class Meta:
         model = models.Search
 
     search_id = factory.Sequence(lambda x: x)
@@ -59,7 +59,7 @@ class SearchFactory(factory.django.DjangoModelFactory):
 
 
 class ContrabandFactory(factory.django.DjangoModelFactory):
-    class Meta(object):
+    class Meta:
         model = models.Contraband
 
     contraband_id = factory.Sequence(lambda x: x)
@@ -69,7 +69,7 @@ class ContrabandFactory(factory.django.DjangoModelFactory):
 
 
 class NCCensusProfileFactory(factory.django.DjangoModelFactory):
-    class Meta(object):
+    class Meta:
         model = models.NCCensusProfile
 
     acs_id = factory.Sequence(lambda x: x)

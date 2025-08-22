@@ -294,14 +294,18 @@ def copy_from(destination, nc_csv_path):
         agency_path = Path(nc_csv_path)
         with agency_path.open() as fh:
             logger.info(f"COPY {nc_csv_path} into the database")
-            cur.copy_expert(copy_nc.NC_AGENCY_COPY_INSTRUCTIONS, fh)
+            with cur.copy(copy_nc.NC_AGENCY_COPY_INSTRUCTIONS) as copy:
+                while data := fh.read(8192):
+                    copy.write(data)
         # datasets
         path = Path(destination)
         for p in path.glob("*.csv"):
             if p.name in copy_nc.NC_COPY_INSTRUCTIONS.keys():
                 with p.open() as fh:
                     logger.info(f"COPY {p.name} into the database")
-                    cur.copy_expert(copy_nc.NC_COPY_INSTRUCTIONS[p.name], fh)
+                    with cur.copy(copy_nc.NC_COPY_INSTRUCTIONS[p.name]) as copy:
+                        while data := fh.read(8192):
+                            copy.write(data)
         logger.info("Finalizing import (this will take a LONG time...)")
         cur.execute(copy_nc.FINALIZE_COPY)
         logger.info("ANALYZE")

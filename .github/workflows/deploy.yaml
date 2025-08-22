@@ -2,7 +2,7 @@ name: deploy
 
 on:
   push:
-    branches: [main, develop, CU-868em6j24_Switch-to-uv2]
+    branches: [main, develop, CU-868em67g4_Upgrade-to-Django-52]
 
 jobs:
   deploy:
