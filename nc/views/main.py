@@ -280,6 +280,19 @@ class DriverStopsViewSet(viewsets.ReadOnlyModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_class = DriverStopsFilter
 
+    def list(self, request, *args, **kwargs):
+        response = super().list(request, *args, **kwargs)
+        if not response.data["results"]:
+            # No stops were found. Add the agency's last_reported_stop to the
+            # response data
+            try:
+                agency = Agency.objects.get(id=request.GET.get("agency"))
+            except Agency.DoesNotExist:
+                pass
+            else:
+                response.data["last_reported_stop"] = agency.last_reported_stop
+        return response
+
 
 class StateFactsViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = StateFacts.objects.all()
