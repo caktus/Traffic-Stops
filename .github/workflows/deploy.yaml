@@ -2,35 +2,42 @@ name: deploy
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main, develop, CU-868em6j24_Switch-to-uv2]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      # Allow GitHub's OIDC provider to create a JSON Web Token for every run
+      # https://github.com/aws-actions/configure-aws-credentials?tab=readme-ov-file#oidc-configuration
+      id-token: write
+      # This is required for actions/checkout
+      contents: read
+      # This is needed for bobheadxi/deployments
+      actions: read
+      deployments: write
     env:
       ENV: staging
       GITHUB_ENV: https://staging.nccopwatch.org/
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      DOCKER_REPO: 606178775542.dkr.ecr.us-east-2.amazonaws.com/traff-appli-gvyudgfsjhrz
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
       - name: Set env vars (production)
         if: endsWith(github.ref, '/main')
         run: |
           echo "ENV=production" >> $GITHUB_ENV
           echo "ENV_URL=https://nccopwatch.org/" >> $GITHUB_ENV
-      - uses: actions/setup-python@v4
+      - uses: astral-sh/setup-uv@v6
         with:
-          python-version: '3.12'
-          cache: 'pip'
-          cache-dependency-path: 'requirements/*/*.txt'
+          enable-cache: true
       - name: Install dependencies
         run: |
-          python -m pip install pip-tools
-          pip-sync requirements/base/base.txt requirements/dev/dev.txt
+          uv sync --locked
       - name: Start deployment
         uses: bobheadxi/deployments@v1
         id: deployment
@@ -38,16 +45,32 @@ jobs:
           step: start
           token: ${{ secrets.GITHUB_TOKEN }}
           env: ${{ env.ENV }}
+      - name: Set DOCKER_TAG variable
+        run: |
+          echo DOCKER_TAG="$ENV-$(git rev-parse --short HEAD)" >> "$GITHUB_ENV"
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: us-east-2
+          role-to-assume: arn:aws:iam::606178775542:role/GitHubActionsDeploy
+          role-session-name: GitHubActionsDeploy
       - name: Login to Docker
         id: docker-login
         run: |
           echo "env is $ENV"
-          inv $ENV aws.docker-login
-      - name: Build, tag, push, and deploy image
-        id: build-tag-push-deploy
+          uv run inv $ENV aws.docker-login
+      - name: Build image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          pull: true
+          push: true
+          tags: "${{ env.DOCKER_REPO }}:${{ env.DOCKER_TAG }}"
+          target: "deploy"
+      - name: Deploy image
         run: |
           echo "env is $ENV"
-          inv $ENV image deploy --verbosity=0
+          uv run inv $ENV deploy --tag=${{ env.DOCKER_TAG }} --verbosity=0
       - name: Update deployment status
         uses: bobheadxi/deployments@v1
         if: always()
