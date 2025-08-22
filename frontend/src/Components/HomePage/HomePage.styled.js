@@ -37,6 +37,7 @@ export const MainContent = styled.div`
   flex: 1;
   display: flex;
   flex-direction: row;
+  column-gap: 2em;
 
   @media (${smallerThanTabletLandscape}) {
     flex-direction: column;
@@ -45,9 +46,7 @@ export const MainContent = styled.div`
 `;
 
 export const About = styled.aside`
-  width: 381px;
-  margin-right: 3em;
-
+  flex: 1;
   @media (${smallerThanTabletLandscape}) {
     margin: 0;
     width: 100%;
@@ -137,13 +136,7 @@ export const ViewAllIcon = styled(FJIcon)`
 `;
 
 export const DeptCTA = styled.div`
-  @media (${smallerThanTabletLandscape}) {
-    width: 90%;
-    margin: 2em auto;
-  }
-`;
-
-export const StopCTA = styled.div`
+  flex: 1;
   margin-top: 2em;
   @media (${smallerThanTabletLandscape}) {
     width: 90%;
@@ -151,8 +144,17 @@ export const StopCTA = styled.div`
   }
 `;
 
+export const StopCTA = styled.div`
+  flex: 1;
+  margin-top: 2em;
+  @media (${smallerThanTabletLandscape}) {
+    width: 90%;
+    margin: 0 auto 2em;
+  }
+`;
+
 export const ButtonWrapper = styled.div`
-  width: 360px;
+  max-width: 360px;
   margin: 2em 0;
   @media (${smallerThanTabletLandscape}) {
     width: 90%;

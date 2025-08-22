@@ -126,79 +126,75 @@ function HomePage() {
           </S.AboutContent>
         </S.About>
 
-        <S.SubContent>
-          <S.DeptCTA>
-            <S.SubHeading>View Stop + Search Data by Department</S.SubHeading>
-            <P size={SIZES[1]}>Choose a police or sheriff’s department to see:</P>
-            <P size={SIZES[1]}>- Stops and search rates over time</P>
-            <P size={SIZES[1]}>- Stops and searches broken down by race / ethnicity</P>
-            <P size={SIZES[1]}>
-              - Use of force during stops and how frequently contraband was found
-            </P>
-            <S.SearchWrapper>
-              <DepartmentSearch
-                showIndexList
-                navigateOnSelect
-                placeholder="Search for a police or sheriff's department..."
-              />
-            </S.SearchWrapper>
-            <S.ViewAllDepts onClick={() => history.push(AGENCY_LIST_SLUG)}>
-              View all departments
-              <S.ViewAllIcon
-                icon={ICONS.arrowRight}
-                fill={theme.colors.primaryDark}
+        <S.DeptCTA>
+          <S.SubHeading>View Data by Department</S.SubHeading>
+          <P size={SIZES[1]}>Choose a police or sheriff’s department to see:</P>
+          <P size={SIZES[1]}>- Stops and search rates over time</P>
+          <P size={SIZES[1]}>- Stops and searches broken down by race / ethnicity</P>
+          <P size={SIZES[1]}>- Use of force during stops and how frequently contraband was found</P>
+          <S.SearchWrapper>
+            <DepartmentSearch
+              showIndexList
+              navigateOnSelect
+              placeholder="Search for a police or sheriff's department..."
+            />
+          </S.SearchWrapper>
+          <S.ViewAllDepts onClick={() => history.push(AGENCY_LIST_SLUG)}>
+            View all departments
+            <S.ViewAllIcon
+              icon={ICONS.arrowRight}
+              fill={theme.colors.primaryDark}
+              height={25}
+              width={25}
+            />
+          </S.ViewAllDepts>
+          <S.ButtonWrapper>
+            <FjButton
+              variant="positive"
+              border={`2px solid ${theme.colors.primary}`}
+              {...ChartHeaderStyles.ButtonInlines}
+              onClick={() => history.push(`${STATEWIDE_DATA}`)}
+            >
+              <ChartHeaderStyles.Icon
+                icon={ICONS.info}
                 height={25}
                 width={25}
+                fill={theme.colors.white}
               />
-            </S.ViewAllDepts>
-            <S.ButtonWrapper>
-              <FjButton
-                variant="positive"
-                border={`2px solid ${theme.colors.primary}`}
-                {...ChartHeaderStyles.ButtonInlines}
-                onClick={() => history.push(`${STATEWIDE_DATA}`)}
-              >
-                <ChartHeaderStyles.Icon
-                  icon={ICONS.info}
-                  height={25}
-                  width={25}
+              View all statewide data
+            </FjButton>
+          </S.ButtonWrapper>
+        </S.DeptCTA>
+        <S.StopCTA>
+          <S.SubHeading>Find a Stop</S.SubHeading>
+          <P size={SIZES[1]}>
+            Have you or someone you know been subjected to an unfair stop or search?
+          </P>
+          <P size={SIZES[1]}>
+            Enter the stop information to view all data associated with that particular officer.
+          </P>
+          <S.ButtonWrapper>
+            <FjButton
+              onClick={() => history.push(FIND_A_STOP_SLUG)}
+              variant="positive"
+              bg={theme.colors.secondary}
+              width="100%"
+              py="2"
+              fontSize="3"
+              fontWeight="bold"
+            >
+              <S.ButtonInner>
+                FIND A STOP
+                <S.ButtonIcon
+                  icon={ICONS.arrowRight}
                   fill={theme.colors.white}
+                  width={32}
+                  height={32}
                 />
-                View all statewide data
-              </FjButton>
-            </S.ButtonWrapper>
-          </S.DeptCTA>
-          <S.StopCTA>
-            <S.SubHeading>Find a Stop</S.SubHeading>
-            <P size={SIZES[1]}>
-              Have you or someone you know been subjected to an unfair stop or search?
-            </P>
-            <P size={SIZES[1]}>
-              Enter the stop information to view all data associated with that particular officer.
-            </P>
-            <S.ButtonWrapper>
-              <FjButton
-                onClick={() => history.push(FIND_A_STOP_SLUG)}
-                variant="positive"
-                bg={theme.colors.secondary}
-                width="100%"
-                py="2"
-                fontSize="3"
-                fontWeight="bold"
-              >
-                <S.ButtonInner>
-                  FIND A STOP
-                  <S.ButtonIcon
-                    icon={ICONS.arrowRight}
-                    fill={theme.colors.white}
-                    width={32}
-                    height={32}
-                  />
-                </S.ButtonInner>
-              </FjButton>
-            </S.ButtonWrapper>
-          </S.StopCTA>
-        </S.SubContent>
+              </S.ButtonInner>
+            </FjButton>
+          </S.ButtonWrapper>
+        </S.StopCTA>
       </S.MainContent>
     </S.HomePage>
   );
