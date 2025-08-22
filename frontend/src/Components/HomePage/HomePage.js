@@ -128,7 +128,7 @@ function HomePage() {
 
         <S.SubContent>
           <S.DeptCTA>
-            <S.SubHeading>View Stop + Search Data by Department</S.SubHeading>
+            <S.SubHeading>View Data by Department</S.SubHeading>
             <P size={SIZES[1]}>Choose a police or sheriff’s department to see:</P>
             <P size={SIZES[1]}>- Stops and search rates over time</P>
             <P size={SIZES[1]}>- Stops and searches broken down by race / ethnicity</P>

@@ -144,10 +144,12 @@ export const DeptCTA = styled.div`
 `;
 
 export const StopCTA = styled.div`
-  margin-top: 2em;
+  margin: 4em 0;
+  background: ${(props) => props.theme.colors.greySemi};
+  padding: 1em 2em 0.5em;
   @media (${smallerThanTabletLandscape}) {
     width: 90%;
-    margin: 2em auto;
+    margin: 4em auto 2em;
   }
 `;
 
