@@ -55,7 +55,10 @@ function AgencyHeader({
       {agencyHeaderOpen && (
         <S.AgencyHeader>
           <S.SubHeaderNavRow>{!showCompareDepartments && <BackButton />}</S.SubHeaderNavRow>
-          <S.SubHeaderContentRow flexDirection={showCompareDepartments ? 'column' : 'row'}>
+          <S.SubHeaderContentRow
+            flexDirection={showCompareDepartments ? 'column' : 'row'}
+            justifyContent="space-between"
+          >
             <S.EntityDetails>
               {officerId ? (
                 <>
