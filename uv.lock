@@ -1881,7 +1881,7 @@ dev = [
     { name = "invoke-kubesae", specifier = ">=0.1.0" },
     { name = "ipython", specifier = ">=8.32.0" },
     { name = "isort", specifier = ">=6.0.0" },
-    { name = "kubernetes", specifier = "~=32.0.1" },
+    { name = "kubernetes", specifier = "==32.*" },
     { name = "kubernetes-validate", specifier = "~=1.32.0" },
     { name = "openshift", specifier = ">=0.13.2" },
     { name = "pre-commit", specifier = ">=4.1.0" },
