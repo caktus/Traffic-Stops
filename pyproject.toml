@@ -84,7 +84,7 @@ dev = [
     "invoke-kubesae>=0.1.0",
     "ipython>=8.32.0",
     "isort>=6.0.0",
-    "kubernetes==32.0.0",
+    "kubernetes~=32.0.1",
     "kubernetes-validate~=1.32.0",
     "openshift>=0.13.2",
     "pre-commit>=4.1.0",
