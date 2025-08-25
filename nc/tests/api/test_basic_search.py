@@ -89,7 +89,7 @@ def test_age_adjusted(client, search_url, durham):
     age = 18
     # Create 5 stops with people within the expected age range
     people = [factories.PersonFactory(stop__agency=durham, age=i) for i in range(age - 2, age + 3)]
-    # Create 2 stops with people outside the expected age range and should not
+    # Create 2 stops with people outside the expected age range. These should not
     # be included in the search results
     factories.PersonFactory(stop__agency=durham, age=age - 3)
     factories.PersonFactory(stop__agency=durham, age=age + 3)
