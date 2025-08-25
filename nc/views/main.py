@@ -284,6 +284,15 @@ class DriverStopsViewSet(viewsets.ReadOnlyModelViewSet):
                         "entered": adjusted[0],
                         "adjusted": adjusted[1],
                     }
+        else:
+            # No stops were found. Add the agency's last_reported_stop to the
+            # response data
+            try:
+                agency = Agency.objects.get(id=request.GET.get("agency"))
+            except Agency.DoesNotExist:
+                pass
+            else:
+                response.data["last_reported_stop"] = agency.last_reported_stop
         return response
 
 

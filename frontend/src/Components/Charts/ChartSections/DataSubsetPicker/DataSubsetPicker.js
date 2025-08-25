@@ -5,9 +5,18 @@ import * as S from './DataSubsetPicker.styled';
 import Dropdown from '../../../Elements/Dropdown/Dropdown';
 import { SIZES, COLORS, WEIGHTS } from '../../../../styles/StyledComponents/Typography';
 
-function DataSubsetPicker({ options, value, onChange, label, dropUp, dropDown }) {
+function DataSubsetPicker({
+  options,
+  value,
+  onChange,
+  label,
+  dropUp,
+  dropDown,
+  labelOnLeft,
+  dropdownWidth,
+}) {
   return (
-    <S.DataSubsetPicker>
+    <S.DataSubsetPicker labelOnLeft={labelOnLeft}>
       {label && (
         <S.Label size={SIZES[0]} color={COLORS[1]} weight={WEIGHTS[1]}>
           {label}
@@ -19,6 +28,7 @@ function DataSubsetPicker({ options, value, onChange, label, dropUp, dropDown })
         options={options}
         dropUp={dropUp}
         dropDown={dropDown}
+        width={dropdownWidth}
       />
     </S.DataSubsetPicker>
   );

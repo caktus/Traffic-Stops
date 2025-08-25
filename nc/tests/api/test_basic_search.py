@@ -46,6 +46,8 @@ def test_response_person_fields(client, search_url, durham):
         "stop_action": person.stop.get_action_display(),
     }
     assert result == expected
+    # 'last_reported_stop' should only be included if no matching stops were found
+    assert "last_reported_stop" not in response.data
     # 'age' should only be included if the user entered an age
     assert "age" not in response.data
     # 'start_date' should only be included if the user entered a start date
@@ -65,6 +67,18 @@ def test_race_filtering(client, search_url, durham, race):
     person_ids = [r["person_id"] for r in response.data["results"]]
     assert p1.pk in person_ids, data
     assert p2.pk not in person_ids, data
+
+
+@pytest.mark.django_db(databases=["traffic_stops_nc"])
+def test_no_stops_found(client, search_url):
+    """Ensure the agency's last_reported_stop is included in the response if
+    no stops are found.
+    """
+    agency = factories.AgencyFactory(last_reported_stop=fake.past_date())
+    response = client.get(search_url, data={"agency": agency.pk}, format="json")
+    assert response.status_code == status.HTTP_200_OK
+    assert response.data.get("results") == []
+    assert response.data.get("last_reported_stop") == agency.last_reported_stop
 
 
 @pytest.mark.django_db(databases=["traffic_stops_nc"])

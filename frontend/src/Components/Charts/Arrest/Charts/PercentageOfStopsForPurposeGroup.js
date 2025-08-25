@@ -54,18 +54,21 @@ function PercentageOfStopsForStopPurposeGroup(props) {
         };
         const data = {
           labels: Object.keys(colors),
-          datasets: [
-            {
-              axis: 'y',
-              label: 'All',
-              data: res.data.arrest_percentages.map((d) => d.data),
+          datasets: res.data.arrest_percentages.map((d, index) => {
+            const label =
+              d.stop_purpose === 'Regulatory and Equipment'
+                ? 'Regulatory Equipment'
+                : d.stop_purpose;
+            return {
+              label,
+              data: Array.from({ length: 3 }, (el, i) => (i === index ? d.data : el)),
               fill: false,
-              backgroundColor: Object.values(colors),
-              borderColor: Object.values(colors),
-              hoverBackgroundColor: Object.values(colors),
+              backgroundColor: colors[label],
+              borderColor: colors[label],
+              hoverBackgroundColor: colors[label],
               borderWidth: 1,
-            },
-          ],
+            };
+          }),
         };
         setArrestData(data);
       })
@@ -138,8 +141,8 @@ function PercentageOfStopsForStopPurposeGroup(props) {
         <HorizontalBarChart
           title={graphTitle}
           data={arrestData}
-          displayLegend={false}
           tooltipLabelCallback={formatTooltipValue}
+          displayStopPurposeTooltips
           modalConfig={{
             tableHeader: graphTitle,
             tableSubheader: getBarChartModalSubHeading(
@@ -148,6 +151,7 @@ function PercentageOfStopsForStopPurposeGroup(props) {
             agencyName,
             chartTitle: getBarChartModalSubHeading(graphTitle),
           }}
+          skipNull
         />
       </ChartContainer>
     </S.ChartSection>
