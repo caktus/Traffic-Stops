@@ -3,6 +3,8 @@ import datetime
 import factory
 import factory.fuzzy
 
+from django.utils.timezone import localtime
+
 from nc import models
 
 
@@ -46,6 +48,8 @@ class StopFactory(factory.django.DjangoModelFactory):
         if extracted:
             day = 1 if self.date.month == 2 else self.date.day
             self.date = self.date.replace(year=extracted, day=day)
+            if localtime(self.date).year != extracted:
+                self.date += datetime.timedelta(1)
 
 
 class SearchFactory(factory.django.DjangoModelFactory):
