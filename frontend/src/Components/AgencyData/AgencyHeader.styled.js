@@ -74,10 +74,6 @@ export const AgencyTitle = styled(H2)`
   font-size: 18px;
 `;
 
-export const ReportedDate = styled(P)`
-  display: inline;
-`;
-
 export const Other = styled(P)`
   font-size: 14px;
 `;
