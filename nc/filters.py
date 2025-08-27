@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django.db.models import Q
 from django_filters import rest_framework as filters
 
@@ -22,6 +24,7 @@ class DriverStopsFilter(filters.FilterSet):
     stop_action = filters.MultipleChoiceFilter(
         label="Stop action", choices=models.ACTION_CHOICES, method="filter_stop_action"
     )
+    age = filters.NumberFilter(method="filter_age")
 
     def filter_agency(self, queryset, name, value):
         return queryset.filter(stop__agency_id=value)
@@ -31,9 +34,17 @@ class DriverStopsFilter(filters.FilterSet):
         end_date = value.stop
         query = Q()
         if start_date:
-            query &= Q(stop__date__gte=start_date)
+            # Adjust it to 2 days earlier
+            adjusted_start_date = start_date - timedelta(2)
+            query &= Q(stop__date__gte=adjusted_start_date)
+            if self.request:
+                self.request.adjusted_start_date = start_date.date(), adjusted_start_date.date()
         if end_date:
-            query &= Q(stop__date__lte=end_date)
+            # Adjust it to 2 days later
+            adjusted_end_date = end_date + timedelta(2)
+            query &= Q(stop__date__lte=adjusted_end_date)
+            if self.request:
+                self.request.adjusted_end_date = end_date.date(), adjusted_end_date.date()
         return queryset.filter(query)
 
     def filter_officer(self, queryset, name, value):
@@ -44,6 +55,14 @@ class DriverStopsFilter(filters.FilterSet):
 
     def filter_stop_action(self, queryset, name, value):
         return queryset.filter(stop__action__in=value)
+
+    def filter_age(self, queryset, name, value):
+        # Instead of searching for the exact age specified, search for age +/- 2 years
+        value = int(value)
+        age_range = max(value - 2, 0), value + 2
+        if self.request:
+            self.request.adjusted_age = value, age_range
+        return queryset.filter(age__gte=age_range[0], age__lte=age_range[1])
 
     class Meta:
         model = models.Person

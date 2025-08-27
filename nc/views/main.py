@@ -273,7 +273,18 @@ class DriverStopsViewSet(viewsets.ReadOnlyModelViewSet):
 
     def list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs)
-        if not response.data["results"]:
+        if response.data["results"]:
+            # If the user entered an age or date range, add the values entered
+            # and the adjusted values to the response, so they can be included
+            # in a message on the frontend
+            for field in ("age", "start_date", "end_date"):
+                adjusted = getattr(request, f"adjusted_{field}", None)
+                if adjusted:
+                    response.data[field] = {
+                        "entered": adjusted[0],
+                        "adjusted": adjusted[1],
+                    }
+        else:
             # No stops were found. Add the agency's last_reported_stop to the
             # response data
             try:

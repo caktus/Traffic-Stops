@@ -13,7 +13,7 @@ nc_timezone = pytz.timezone(settings.NC_TIME_ZONE)
 
 @pytest.fixture
 def july_person(durham):
-    stop_date = nc_timezone.localize(dt.datetime(2020, 7, 31, 20, 26))
+    stop_date = nc_timezone.localize(dt.datetime(2020, 7, 29, 20, 26))
     return factories.PersonFactory(stop__agency=durham, stop__date=stop_date)
 
 
