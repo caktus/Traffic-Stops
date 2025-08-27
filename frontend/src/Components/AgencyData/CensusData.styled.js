@@ -65,6 +65,14 @@ export const CensusRow = styled.ul`
   }
 `;
 
+export const CensusRowMobile = styled.ul`
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  list-style-type: none;
+`;
+
 export const CensusDatum = styled.li`
   display: flex;
   flex-direction: column;

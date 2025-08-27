@@ -181,6 +181,7 @@ function SearchRate(props) {
       census. A Stop Rate Ratio of 1.0 (or 100%) indicates equal stop likelihood across
       groups, while values above or below 1.0 suggest disparities. ${subjectObserving()}`;
     }
+    return '';
   };
 
   const getBarChartModalHeading = (title) => {

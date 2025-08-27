@@ -81,18 +81,16 @@ function AgencyHeader({
               )}
               <P size={SIZES[0]} color={COLORS[0]} weight={WEIGHTS[0]}>
                 {lastReportedStop()} {agencyDetails.last_reported_stop && 'on'}
-                <S.ReportedDate size={SIZES[0]} color={COLORS[0]} weight={WEIGHTS[1]}>
+                <strong>
                   {' '}
-                  <S.ReportedDate size={SIZES[0]} color={COLORS[0]} weight={WEIGHTS[1]}>
-                    {agencyDetails.last_reported_stop
-                      ? new Intl.DateTimeFormat('en-US', {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric',
-                        }).format(new Date(agencyDetails.last_reported_stop))
-                      : 'Unknown'}
-                  </S.ReportedDate>
-                </S.ReportedDate>
+                  {agencyDetails.last_reported_stop
+                    ? new Intl.DateTimeFormat('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                      }).format(new Date(agencyDetails.last_reported_stop))
+                    : 'Unknown'}
+                </strong>
               </P>
             </S.EntityDetails>
             <CensusData

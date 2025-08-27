@@ -1,4 +1,4 @@
-export const tooltipLanguage = (stopCause) => {
+const tooltipLanguage = (stopCause) => {
   const regEquip =
     'The "Regulatory and Equipment" category is comprised of: Vehicle Equipment Violations, Vehicle Regulatory Violations, Other Motor Vehicle Violations and Seat Belt Violations.';
   const definitions = {
@@ -32,3 +32,5 @@ export const tooltipLanguage = (stopCause) => {
   };
   return definitions[stopCause];
 };
+
+export default tooltipLanguage;

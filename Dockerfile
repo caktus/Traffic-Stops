@@ -1,4 +1,4 @@
-FROM node:18.17.0-bullseye-slim AS static_files
+FROM node:22.18.0-bullseye-slim AS static_files
 
 WORKDIR /code
 ENV PATH=/code/node_modules/.bin:$PATH
@@ -164,8 +164,10 @@ RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/
     # docker
     && curl https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor | tee /etc/apt/trusted.gpg.d/docker.gpg >/dev/null \
     && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/trusted.gpg.d/docker.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null \
-    # nodejs
-    && sh -c 'echo "deb https://deb.nodesource.com/node_18.x $(lsb_release -cs) main" > /etc/apt/sources.list.d/nodesource.list' \
+    # nodejs (https://github.com/nodesource/distributions/wiki/Repository-Manual-Installation#debian-systems)
+    && mkdir -p /etc/apt/keyrings \
+    && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
+    && sh -c 'echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_22.x nodistro main" > /etc/apt/sources.list.d/nodesource.list' \
     && wget --quiet -O- https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add - \
     # PostgreSQL
     && sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list' \
