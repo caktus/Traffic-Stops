@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { Line } from 'react-chartjs-2';
-import { tooltipLanguage } from '../../util/tooltipLanguage';
+import tooltipLanguage from '../../util/tooltipLanguage';
 import { usePopper } from 'react-popper';
 import styled from 'styled-components';
 import DataLoading from '../Charts/ChartPrimitives/DataLoading';

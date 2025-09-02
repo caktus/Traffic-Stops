@@ -6,7 +6,7 @@ Stops project. To begin you should have the following applications installed on
 your local development system:
 
 - Python 3.13
-- NodeJS >= 12.6.0
+- NodeJS >= 22
 - `Install uv <https://docs.astral.sh/uv/getting-started/installation/>`_
 - Postgres >= 16
 
