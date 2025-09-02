@@ -2,7 +2,7 @@ import { Bar } from 'react-chartjs-2';
 import DataLoading from '../Charts/ChartPrimitives/DataLoading';
 import React, { useRef, useState } from 'react';
 import { usePopper } from 'react-popper';
-import { tooltipLanguage } from '../../util/tooltipLanguage';
+import tooltipLanguage from '../../util/tooltipLanguage';
 import styled from 'styled-components';
 import ChartModal from './ChartModal';
 import { EmptyMessage } from '../Charts/ChartSections/EmptyChartMessage';

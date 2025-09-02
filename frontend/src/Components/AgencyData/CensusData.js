@@ -76,12 +76,10 @@ export default function CensusData({ agencyDetails, showCompareDepartments }) {
         <summary>
           <S.CensusTitleMobile>CENSUS DEMOGRAPHICS</S.CensusTitleMobile>
         </summary>
-        <p>
-          {censusData()}
-          <a href={ABOUT_SLUG}>
-            Sourced from most recent U.S. Census Bureau. See About page for more info.
-          </a>
-        </p>
+        <S.CensusRowMobile>{censusData()}</S.CensusRowMobile>
+        <a href={ABOUT_SLUG}>
+          Sourced from most recent U.S. Census Bureau. See About page for more info.
+        </a>
       </S.CensusDemographicsMobile>
     </>
   );
