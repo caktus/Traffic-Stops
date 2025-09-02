@@ -1,9 +1,7 @@
-version: '3.4'
-
 services:
   django:
     image: trafficstops_app:latest
-    command: ["uwsgi", "--show-config"]
+    command: [ "uwsgi", "--show-config" ]
     environment:
       DJANGO_MANAGEPY_MIGRATE: "on"
     env_file:
@@ -17,7 +15,7 @@ services:
       - "8000:8000"
   worker:
     image: trafficstops_app:latest
-    command: ["celery", "--app=traffic_stops", "worker", "-l", "info"]
+    command: [ "celery", "--app=traffic_stops", "worker", "-l", "info" ]
     env_file:
       - .docker.env
     links:
@@ -28,7 +26,7 @@ services:
       - mailhog
   beat:
     image: trafficstops_app:latest
-    command: ["celery", "--app=traffic_stops", "beat", "--pidfile=/tmp/celerybeat.pid", "--schedule=/tmp/celerybeat-schedule", "-l", "info"]
+    command: [ "celery", "--app=traffic_stops", "beat", "--pidfile=/tmp/celerybeat.pid", "--schedule=/tmp/celerybeat-schedule", "-l", "info" ]
     env_file:
       - .docker.env
     links:
@@ -44,7 +42,7 @@ services:
       POSTGRES_HOST_AUTH_METHOD: trust
       POSTGRES_DB: traffic_stops
       DATABASE_URL: postgres://postgres@127.0.0.1:5432/traffic_stops
-    image: postgres:12-alpine
+    image: postgres:16-alpine
     ports:
       - "9051:5432"
     volumes:

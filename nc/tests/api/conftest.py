@@ -17,4 +17,14 @@ def facts_url():
 
 @pytest.fixture
 def durham():
-    return factories.AgencyFactory(name="Durham")
+    return factories.AgencyFactory(name="Durham", census_profile_id="durham")
+
+
+@pytest.fixture
+def raleigh():
+    return factories.AgencyFactory(name="Raleigh", census_profile_id="raleigh")
+
+
+@pytest.fixture
+def nc_state():
+    return factories.AgencyFactory(name="NC", census_profile_id="nc", id=-1)

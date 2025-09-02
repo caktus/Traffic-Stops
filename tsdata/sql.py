@@ -36,7 +36,7 @@ def get_sql_statements(cursor, select_sql):
     cursor.execute(select_sql, params=None)
     sql = ""
     for row in cursor.fetchall():
-        sql += "{}\n".format(row[0])
+        sql += f"{row[0]}\n"
     return sql
 
 

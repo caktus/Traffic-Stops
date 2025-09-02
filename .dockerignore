@@ -20,3 +20,5 @@ deploy/
 .github
 nc/notebooks
 venv
+.venv
+bin/

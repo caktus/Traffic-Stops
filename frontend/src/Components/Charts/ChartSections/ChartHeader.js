@@ -13,7 +13,7 @@ import { ICONS } from '../../../img/icons/Icon';
 // Children
 import ShareList from './ShareList';
 
-function ChartHeader({ chartTitle, handleViewData, shareProps }) {
+function ChartHeader({ chartTitle, handleViewData, shareProps, hideActions }) {
   const theme = useTheme();
   const [shareOpen, setShareOpen] = useState(false);
   const officerId = useOfficerId();
@@ -29,32 +29,34 @@ function ChartHeader({ chartTitle, handleViewData, shareProps }) {
         {officerId && <OfficerBadge officerId={officerId} />}
       </S.TitleWrapper>
 
-      <S.ButtonsWrapper>
-        {handleViewData && (
-          <Button
-            variant="neutral"
-            border={`2px solid ${theme.colors.primary}`}
-            {...S.ButtonInlines}
-            onClick={handleViewData}
-          >
-            <S.Icon icon={ICONS.view} height={25} width={25} fill={theme.colors.primary} />
-            View Data
-          </Button>
-        )}
-        {shareOpen ? (
-          <ShareList {...shareProps} onPressHandler={handleShare} />
-        ) : (
-          <Button
-            variant="positive"
-            border={`2px solid ${theme.colors.primary}`}
-            {...S.ButtonInlines}
-            onClick={handleShare}
-          >
-            <S.Icon icon={ICONS.share} height={25} width={25} fill={theme.colors.white} />
-            Share Graph
-          </Button>
-        )}
-      </S.ButtonsWrapper>
+      {!hideActions && (
+        <S.ButtonsWrapper>
+          {handleViewData && (
+            <Button
+              variant="neutral"
+              border={`2px solid ${theme.colors.primary}`}
+              {...S.ButtonInlines}
+              onClick={handleViewData}
+            >
+              <S.Icon icon={ICONS.view} height={25} width={25} fill={theme.colors.primary} />
+              View Data
+            </Button>
+          )}
+          {shareOpen ? (
+            <ShareList {...shareProps} onPressHandler={handleShare} />
+          ) : (
+            <Button
+              variant="positive"
+              border={`2px solid ${theme.colors.primary}`}
+              {...S.ButtonInlines}
+              onClick={handleShare}
+            >
+              <S.Icon icon={ICONS.share} height={25} width={25} fill={theme.colors.white} />
+              Share Graph
+            </Button>
+          )}
+        </S.ButtonsWrapper>
+      )}
     </S.ChartHeader>
   );
 }

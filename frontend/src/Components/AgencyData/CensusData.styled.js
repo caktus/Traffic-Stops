@@ -30,7 +30,6 @@ export const CensusTitleMobile = styled.span`
 
 export const CensusDemographics = styled.div`
   display: flex;
-  flex: 1;
   flex-direction: column;
 
   @media (${phoneOnly}) {

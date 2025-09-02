@@ -1,5 +1,5 @@
-from caching.base import CachingManager, CachingMixin
 from django.db import models
+from django.db.models.functions import ExtractYear
 from django.utils.html import format_html
 from django_pgviews import view as pg
 
@@ -7,16 +7,26 @@ from tsdata.models import CensusProfile
 
 
 class StopPurpose(models.IntegerChoices):
-    SPEED_LIMIT_VIOLATION = 1, "Speed Limit Violation"  # Safety Violation
-    STOP_LIGHT_SIGN_VIOLATION = 2, "Stop Light/Sign Violation"  # Safety Violation
-    DRIVING_WHILE_IMPAIRED = 3, "Driving While Impaired"  # Safety Violation
-    SAFE_MOVEMENT_VIOLATION = 4, "Safe Movement Violation"  # Safety Violation
-    VEHICLE_EQUIPMENT_VIOLATION = 5, "Vehicle Equipment Violation"  # Regulatory and Equipment
-    VEHICLE_REGULATORY_VIOLATION = 6, "Vehicle Regulatory Violation"  # Regulatory and Equipment
-    OTHER_MOTOR_VEHICLE_VIOLATION = 9, "Other Motor Vehicle Violation"  # Regulatory and Equipment
-    SEAT_BELT_VIOLATION = 7, "Seat Belt Violation"  # Regulatory and Equipment
+    # Safety Violation
+    SPEED_LIMIT_VIOLATION = 1, "Speed Limit Violation"
+    STOP_LIGHT_SIGN_VIOLATION = 2, "Stop Light/Sign Violation"
+    DRIVING_WHILE_IMPAIRED = 3, "Driving While Impaired"
+    SAFE_MOVEMENT_VIOLATION = 4, "Safe Movement Violation"
+    # Regulatory and Equipment
+    VEHICLE_EQUIPMENT_VIOLATION = 5, "Vehicle Equipment Violation"
+    VEHICLE_REGULATORY_VIOLATION = 6, "Vehicle Regulatory Violation"
+    OTHER_MOTOR_VEHICLE_VIOLATION = 9, "Other Motor Vehicle Violation"
+    SEAT_BELT_VIOLATION = 7, "Seat Belt Violation"
+    # Other
     INVESTIGATION = 8, "Investigation"  # Other
     CHECKPOINT = 10, "Checkpoint"  # Other
+
+    @classmethod
+    def get_by_label(cls, label):
+        if label:
+            for purpose in cls:
+                if purpose.label == label:
+                    return purpose
 
 
 class StopPurposeGroup(models.TextChoices):
@@ -123,7 +133,7 @@ SEARCH_BASIS_CHOICES = (
 )
 
 
-class Stop(CachingMixin, models.Model):
+class Stop(models.Model):
     stop_id = models.PositiveIntegerField(primary_key=True)
     agency_description = models.CharField(max_length=100)
     agency = models.ForeignKey("Agency", null=True, related_name="stops", on_delete=models.CASCADE)
@@ -141,10 +151,8 @@ class Stop(CachingMixin, models.Model):
     stop_location = models.CharField(max_length=15)  # todo: keys
     stop_city = models.CharField(max_length=20)
 
-    objects = CachingManager()
 
-
-class Person(CachingMixin, models.Model):
+class Person(models.Model):
     person_id = models.IntegerField(primary_key=True)
     stop = models.ForeignKey(Stop, on_delete=models.CASCADE)
     type = models.CharField(max_length=2, choices=PERSON_TYPE_CHOICES)
@@ -153,10 +161,8 @@ class Person(CachingMixin, models.Model):
     ethnicity = models.CharField(max_length=2, choices=ETHNICITY_CHOICES)
     race = models.CharField(max_length=2, choices=RACE_CHOICES)
 
-    objects = CachingManager()
 
-
-class Search(CachingMixin, models.Model):
+class Search(models.Model):
     search_id = models.IntegerField(primary_key=True)
     stop = models.ForeignKey(Stop, on_delete=models.CASCADE)
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
@@ -169,10 +175,8 @@ class Search(CachingMixin, models.Model):
     personal_property_siezed = models.BooleanField(default=False)
     other_property_sized = models.BooleanField(default=False)
 
-    objects = CachingManager()
 
-
-class Contraband(CachingMixin, models.Model):
+class Contraband(models.Model):
     contraband_id = models.IntegerField(primary_key=True)
     search = models.ForeignKey(Search, on_delete=models.CASCADE)
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
@@ -188,28 +192,22 @@ class Contraband(CachingMixin, models.Model):
     weapons = models.FloatField(default=0, null=True)
     dollar_amount = models.FloatField(default=0, null=True)
 
-    objects = CachingManager()
 
-
-class SearchBasis(CachingMixin, models.Model):
+class SearchBasis(models.Model):
     search_basis_id = models.IntegerField(primary_key=True)
     search = models.ForeignKey(Search, on_delete=models.CASCADE)
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
     stop = models.ForeignKey(Stop, on_delete=models.CASCADE)
     basis = models.CharField(max_length=4, choices=SEARCH_BASIS_CHOICES)
 
-    objects = CachingManager()
 
-
-class Agency(CachingMixin, models.Model):
+class Agency(models.Model):
     name = models.CharField(max_length=255)
     # link to CensusProfile (no cross-database foreign key)
     census_profile_id = models.CharField(max_length=16, blank=True, default="")
     last_reported_stop = models.DateField(null=True)
 
-    objects = CachingManager()
-
-    class Meta(object):
+    class Meta:
         verbose_name_plural = "Agencies"
 
     def __str__(self):
@@ -218,7 +216,11 @@ class Agency(CachingMixin, models.Model):
     @property
     def census_profile(self):
         if self.census_profile_id:
-            profile = CensusProfile.objects.get(id=self.census_profile_id)
+            profile = (
+                CensusProfile.objects.filter(acs_id=self.census_profile_id)
+                .order_by("-year")
+                .first()
+            )
             return profile.get_census_dict()
         else:
             return dict()
@@ -277,8 +279,8 @@ class StopSummary(pg.ReadOnlyMaterializedView):
     id = models.PositiveIntegerField(primary_key=True)
     date = models.DateField()
     agency = models.ForeignKey("Agency", on_delete=models.DO_NOTHING)
-    stop_purpose = models.PositiveSmallIntegerField(choices=StopPurpose.choices)
-    stop_purpose_group = models.CharField(choices=StopPurposeGroup.choices, max_length=32)
+    stop_purpose = models.PositiveSmallIntegerField(choices=StopPurpose)
+    stop_purpose_group = models.CharField(choices=StopPurposeGroup, max_length=32)
     driver_arrest = models.BooleanField()
     engage_force = models.BooleanField()
     driver_searched = models.BooleanField()
@@ -287,12 +289,18 @@ class StopSummary(pg.ReadOnlyMaterializedView):
     officer_id = models.CharField(max_length=15)
     driver_race = models.CharField(max_length=2, choices=RACE_CHOICES)
     driver_ethnicity = models.CharField(max_length=2, choices=ETHNICITY_CHOICES)
-    driver_race_comb = models.CharField(max_length=2, choices=DriverRace.choices)
+    driver_race_comb = models.CharField(max_length=2, choices=DriverRace)
     count = models.IntegerField()
 
     class Meta:
         managed = False
         indexes = [
+            models.Index(fields=["agency"]),
+            models.Index(fields=["date"]),
+            models.Index(
+                ExtractYear("date").desc(),
+                name="stopsummary_year_desc_idx",
+            ),
             models.Index(fields=["agency", "officer_id", "search_type"]),
             models.Index(fields=["agency", "date"]),
             models.Index(fields=["engage_force"]),
@@ -387,10 +395,8 @@ class ContrabandSummary(pg.ReadOnlyMaterializedView):
     date = models.DateField(db_column="stop_date")
     agency = models.ForeignKey("Agency", on_delete=models.DO_NOTHING)
     officer_id = models.CharField(max_length=15)
-    stop_purpose_group = models.CharField(choices=StopPurposeGroup.choices, max_length=32)
-    driver_race_comb = models.CharField(
-        max_length=2, choices=DriverRace.choices, db_column="driver_race"
-    )
+    stop_purpose_group = models.CharField(choices=StopPurposeGroup, max_length=32)
+    driver_race_comb = models.CharField(max_length=2, choices=DriverRace, db_column="driver_race")
     driver_gender = models.CharField(max_length=8, choices=GENDER_CHOICES)
     driver_searched = models.BooleanField()
     driver_arrest = models.BooleanField()
@@ -438,3 +444,36 @@ class ResourceFile(models.Model):
         if self.file:
             return f"{self.file.name} for {self.resource.title}"
         return f"Resource file for {self.resource.title}"
+
+
+class NCCensusProfile(models.Model):
+    class GeographyChoices(models.TextChoices):
+        STATE = "state", "State"
+        COUNTY = "county", "County"
+        PLACE = "place", "Place"
+
+    acs_id = models.CharField(verbose_name="ACS ID", max_length=32)
+    location = models.CharField(max_length=64)
+    geography = models.CharField(max_length=16, choices=GeographyChoices.choices)
+    year = models.PositiveIntegerField(default=2018)
+    source = models.CharField(max_length=64)
+    race = models.CharField(max_length=32)
+    population = models.BigIntegerField()
+    population_total = models.BigIntegerField()
+    population_percent = models.FloatField()
+
+    class Meta:
+        verbose_name = "NC Census Profile"
+        verbose_name_plural = "NC Census Profiles"
+
+    def __str__(self):
+        return f"{self.location} {self.race} people ({self.geography})"
+
+
+class Race(models.TextChoices):
+    ASIAN = "Asian"
+    BLACK = "Black"
+    HISPANIC = "Hispanic"
+    NATIVE_AMERICAN = "Native American"
+    OTHER = "Other"
+    WHITE = "White"

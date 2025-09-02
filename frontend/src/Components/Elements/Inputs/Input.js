@@ -27,35 +27,56 @@ function _renderIcon(inputRef, icon, { iconPosition, invertIcon, iconStyles }) {
   );
 }
 
-function FJInput({
-  type = 'text',
-  label,
-  errors = [],
-  loading,
-  icon,
-  iconPosition,
-  invertIcon,
-  iconStyles,
-  required,
-  optional,
-  helpText,
-  ...props
-}) {
-  const inputRef = React.createRef();
-  function _getPaddingProps(iconPos) {
-    const paddingProps = {
-      py: 2,
-      px: 3,
-    };
-    if (iconPos === iconPositions.LEFT) {
-      paddingProps['pl'] = 5;
-    } else if (iconPos === iconPositions.RIGHT) {
-      paddingProps['pr'] = 5;
+const FJInput = React.forwardRef(
+  (
+    {
+      type = 'text',
+      label,
+      errors = [],
+      loading,
+      icon,
+      iconPosition,
+      invertIcon,
+      iconStyles,
+      required,
+      optional,
+      helpText,
+      ...props
+    },
+    ref
+  ) => {
+    function _getPaddingProps(iconPos) {
+      const paddingProps = {
+        py: 2,
+        px: 3,
+      };
+      if (iconPos === iconPositions.LEFT) {
+        paddingProps['pl'] = 5;
+      } else if (iconPos === iconPositions.RIGHT) {
+        paddingProps['pr'] = 5;
+      }
+      return paddingProps;
     }
-    return paddingProps;
-  }
 
-  if (type === 'textarea') {
+    if (type === 'textarea') {
+      return (
+        <Styled.Wrapper>
+          {label && (
+            <Input.Label errors={errors} py="2">
+              {label}{' '}
+              <Styled.LableSpan required={required} optional={optional}>
+                {required && '(required)'}
+                {optional && '(optional)'}
+              </Styled.LableSpan>
+            </Input.Label>
+          )}
+          <TextArea {...props} />
+          <Input.Errors errors={errors} />
+          {helpText && <Styled.HelpText>{helpText}</Styled.HelpText>}
+        </Styled.Wrapper>
+      );
+    }
+
     return (
       <Styled.Wrapper>
         {label && (
@@ -67,52 +88,35 @@ function FJInput({
             </Styled.LableSpan>
           </Input.Label>
         )}
-        <TextArea {...props} />
+        <Input
+          type={type}
+          ref={ref}
+          icon={
+            icon
+              ? (iconProps) =>
+                  _renderIcon(ref, icon, {
+                    ...iconProps,
+                    iconPosition,
+                    invertIcon,
+                    iconStyles,
+                  })
+              : null
+          }
+          errors={errors}
+          {..._getPaddingProps(iconPosition)}
+          color="text"
+          border="standard"
+          borderColor="primary"
+          borderRadius="standard"
+          fontSize="2"
+          {...props}
+        />
         <Input.Errors errors={errors} />
         {helpText && <Styled.HelpText>{helpText}</Styled.HelpText>}
       </Styled.Wrapper>
     );
   }
-
-  return (
-    <Styled.Wrapper>
-      {label && (
-        <Input.Label errors={errors} py="2">
-          {label}{' '}
-          <Styled.LableSpan required={required} optional={optional}>
-            {required && '(required)'}
-            {optional && '(optional)'}
-          </Styled.LableSpan>
-        </Input.Label>
-      )}
-      <Input
-        type={type}
-        ref={inputRef}
-        icon={
-          icon
-            ? (iconProps) =>
-                _renderIcon(inputRef, icon, {
-                  ...iconProps,
-                  iconPosition,
-                  invertIcon,
-                  iconStyles,
-                })
-            : null
-        }
-        errors={errors}
-        {..._getPaddingProps(iconPosition)}
-        color="text"
-        border="standard"
-        borderColor="primary"
-        borderRadius="standard"
-        fontSize="2"
-        {...props}
-      />
-      <Input.Errors errors={errors} />
-      {helpText && <Styled.HelpText>{helpText}</Styled.HelpText>}
-    </Styled.Wrapper>
-  );
-}
+);
 
 FJInput.propTypes = {
   type: PropTypes.string,

@@ -80,10 +80,10 @@ def compute_dataset_facts(Agency, Stop, state_key, Search=None, override_start_d
     state_facts = StateFacts.objects.get(state_key=state_key)
 
     facts = [
-        "Timeframe: %s - %s" % (first_stop_time_str, last_stop_time_str),
-        "Stops: {:,}".format(state_facts.total_stops),
-        "Searches: {:,}".format(state_facts.total_searches),
-        "Agencies: {:,}".format(state_facts.total_agencies),
+        f"Timeframe: {first_stop_time_str} - {last_stop_time_str}",
+        f"Stops: {state_facts.total_stops:,}",
+        f"Searches: {state_facts.total_searches:,}",
+        f"Agencies: {state_facts.total_agencies:,}",
         "",
         "Top 5:",
     ]
@@ -91,7 +91,7 @@ def compute_dataset_facts(Agency, Stop, state_key, Search=None, override_start_d
     top_agencies = Agency.objects.annotate(num_stops=Count("stops")).order_by("-num_stops")[:5]
     rank = 1
     for agency in top_agencies:
-        facts.append("Id {}: {} {:,}".format(agency.id, agency.name, agency.num_stops))
+        facts.append(f"Id {agency.id}: {agency.name} {agency.num_stops:,}")
         TopAgencyFacts.objects.filter(state_facts=state_facts, rank=rank).update(
             agency_id=agency.id,
             stops=agency.num_stops,

@@ -11,7 +11,7 @@ import NewModal from '../../../NewCharts/NewModal';
 import { ChartContainer } from '../../ChartSections/ChartsCommon.styled';
 import createTableData from '../../../../util/createTableData';
 import DataSubsetPicker from '../../ChartSections/DataSubsetPicker/DataSubsetPicker';
-import { RACE_TABLE_COLUMNS, STOP_PURPOSE_GROUPS } from '../../chartUtils';
+import { RACE_TABLE_COLUMNS, STOP_PURPOSE_GROUPS, STOP_PURPOSE_COLORS } from '../../chartUtils';
 
 const graphTitle = 'Percentage of Searches Leading to Arrest by Stop Purpose Group ';
 
@@ -49,24 +49,27 @@ function PercentageOfSearchesForStopPurposeGroup(props) {
       .get(url)
       .then((res) => {
         const colors = {
-          'Safety Violation': '#5F0F40',
-          'Regulatory Equipment': '#E36414',
-          Other: '#0F4C5C',
+          'Safety Violation': STOP_PURPOSE_COLORS.safteyViolation,
+          'Regulatory Equipment': STOP_PURPOSE_COLORS.regulatoryEquipment,
+          Other: STOP_PURPOSE_COLORS.other,
         };
         const data = {
           labels: Object.keys(colors),
-          datasets: [
-            {
-              axis: 'y',
-              label: 'All',
-              data: res.data.arrest_percentages.map((d) => d.data),
+          datasets: res.data.arrest_percentages.map((d, index) => {
+            const label =
+              d.stop_purpose === 'Regulatory and Equipment'
+                ? 'Regulatory Equipment'
+                : d.stop_purpose;
+            return {
+              label,
+              data: Array.from({ length: 3 }, (el, i) => (i === index ? d.data : el)),
               fill: false,
-              backgroundColor: Object.values(colors),
-              borderColor: Object.values(colors),
-              hoverBackgroundColor: Object.values(colors),
+              backgroundColor: colors[label],
+              borderColor: colors[label],
+              hoverBackgroundColor: colors[label],
               borderWidth: 1,
-            },
-          ],
+            };
+          }),
         };
         setArrestData(data);
       })
@@ -139,8 +142,8 @@ function PercentageOfSearchesForStopPurposeGroup(props) {
         <HorizontalBarChart
           title={graphTitle}
           data={arrestData}
-          displayLegend={false}
           tooltipLabelCallback={formatTooltipValue}
+          displayStopPurposeTooltips
           modalConfig={{
             tableHeader: graphTitle,
             tableSubheader: getBarChartModalSubHeading(
@@ -149,6 +152,7 @@ function PercentageOfSearchesForStopPurposeGroup(props) {
             agencyName,
             chartTitle: getBarChartModalSubHeading(graphTitle),
           }}
+          skipNull
         />
       </ChartContainer>
     </S.ChartSection>

@@ -9,7 +9,7 @@ import axios from '../../../../Services/Axios';
 import useOfficerId from '../../../../Hooks/useOfficerId';
 import NewModal from '../../../NewCharts/NewModal';
 import { ChartContainer } from '../../ChartSections/ChartsCommon.styled';
-import { CONTRABAND_TYPES_TABLE_COLUMNS } from '../../chartUtils';
+import { CONTRABAND_TYPES_TABLE_COLUMNS, CONTRANBAND_TYPE_COLORS } from '../../chartUtils';
 
 const graphTitle = 'Percentage of Stops Leading to Arrest by Discovered Contraband Type';
 
@@ -60,7 +60,13 @@ function PercentageOfStopsPerContrabandType(props) {
             total: Object.values(dataCounts).reduce((a, b) => a + b, 0),
           });
         });
-        const colors = ['#9FD356', '#3C91E6', '#EFCEFA', '#2F4858', '#A653F4'];
+        const colors = [
+          CONTRANBAND_TYPE_COLORS.alcohol,
+          CONTRANBAND_TYPE_COLORS.drugs,
+          CONTRANBAND_TYPE_COLORS.money,
+          CONTRANBAND_TYPE_COLORS.other,
+          CONTRANBAND_TYPE_COLORS.weapons,
+        ];
         const data = {
           labels: ['Alcohol', 'Drugs', 'Money', 'Other', 'Weapons'],
           datasets: [

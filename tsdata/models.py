@@ -32,7 +32,7 @@ class Dataset(models.Model):
     report_email_2 = models.EmailField(blank=True)
 
     def __str__(self):
-        return "{}: {}".format(self.get_state_display(), self.name)
+        return f"{self.get_state_display()}: {self.name}"
 
     @property
     def agency_model(self):
@@ -53,15 +53,17 @@ class Import(models.Model):
     successful = models.BooleanField(default=False)
 
     def __str__(self):
-        return "Import of {}".format(self.dataset)
+        return f"Import of {self.dataset}"
 
 
 class CensusProfile(models.Model):
-    id = models.CharField("ID", primary_key=True, max_length=16)
+    id = models.AutoField(primary_key=True)
+    acs_id = models.CharField(max_length=16)
     location = models.CharField(max_length=255)
     geography = models.CharField(max_length=16, choices=GEOGRAPHY_CHOICES)
     state = models.CharField(max_length=2)
     source = models.CharField(max_length=255)
+    year = models.PositiveSmallIntegerField(default=2018)
     white = models.PositiveIntegerField(default=0)
     black = models.PositiveIntegerField(default=0)
     native_american = models.PositiveIntegerField(default=0)
@@ -86,6 +88,7 @@ class CensusProfile(models.Model):
             hispanic=self.hispanic,
             non_hispanic=self.non_hispanic,
             total=self.total,
+            year=self.year,
         )
 
 
@@ -99,7 +102,7 @@ class StateFacts(models.Model):
     end_date = models.CharField(max_length=20, default="")
 
     def __str__(self):
-        return "Facts for state %s" % self.state_key
+        return f"Facts for state {self.state_key}"
 
     class Meta:
         verbose_name_plural = "state facts"
@@ -113,7 +116,7 @@ class TopAgencyFacts(models.Model):
     name = models.CharField(max_length=255, default="")
 
     def __str__(self):
-        return "Facts for state %s agency %s" % (self.state_facts.state_key, self.name)
+        return f"Facts for state {self.state_facts.state_key} agency {self.name}"
 
     class Meta:
         unique_together = (("state_facts", "rank"),)

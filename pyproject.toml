@@ -1,3 +1,36 @@
+[project]
+name = "traffic_stops"
+version = "1.23.0"
+description = "Website to monitor and identify racial profiling practices by North Carolina law enforcement agencies"
+readme = "README.rst"
+requires-python = "~=3.13.0"
+dependencies = [
+    "boto==2.49.0",
+    "boto3>=1.40.13",
+    "botocore>=1.40.13",
+    "brotli>=1.1.0",
+    "celery>=5.5.0",
+    "census>=0.8.24",
+    "click>=8.2.0",
+    "dj-database-url>=3.0.0",
+    "django>=5.2.0",
+    "django-ckeditor-5>=0.2.15",
+    "django-click>=2.4.1",
+    "django-crispy-forms>=2.4.0",
+    "django-filter>=25.1",
+    "django-memoize>=2.3.1",
+    "django-pgviews-redux>=0.11.0",
+    "django-redis>=5.4.0",
+    "django-storages>=1.14.4",
+    "djangorestframework>=3.16",
+    "httpx[http2]>=0.28.1",
+    "pandas>=2.3",
+    "psycopg>=3.2.9",
+    "requests>=2.32.3",
+    "us>=3.2.0",
+    "whitenoise>=6.9.0",
+]
+
 [tool.black]
 line-length = 100
 target-version = ['py38']
@@ -31,3 +64,38 @@ use_parentheses = true
 line_length = 100
 lines_between_types = 1
 src_paths = [ "nc", "traffic_stops", "tsdata" ]
+
+[dependency-groups]
+deploy = [
+    "newrelic>=10.14.0",
+    "python3-memcached>=1.51",
+    "sentry-sdk>=2.32.0",
+    "uwsgi>=2.0.30",
+]
+dev = [
+    "ansible>=10.7.0",
+    "awscli>=1.41.2",
+    "black>=25.1.0",
+    "coverage>=7.10.4",
+    "django-debug-toolbar>=5.0.1",
+    "django-extensions>=3.2.3",
+    "factory-boy>=3.3.3",
+    "flake8>=7.1.1",
+    "invoke-kubesae>=0.1.0",
+    "ipython>=8.32.0",
+    "isort>=6.0.0",
+    "kubernetes==32.*",
+    "kubernetes-validate~=1.32.0",
+    "openshift>=0.13.2",
+    "pre-commit>=4.1.0",
+    "pytest>=8.3.3",
+    "pytest-cov>=6.0.0",
+    "pytest-django>=4.9.0",
+    "pyyaml>=6.0.2",
+    "sphinx>=5.3.0",
+    "sphinx-autobuild>=2024.10.3",
+    "troposphere>=4.9.0",
+    # Python 3.13 is not supported by urllib3 2.4.0
+    # https://github.com/crate/crate-python/issues/708
+    "urllib3<2.4.0",
+]

@@ -48,17 +48,39 @@ export const STOP_PURPOSE_TYPES = [
 ];
 
 export const STOP_TYPE_COLORS = [
-  '#ff7da8',
-  '#c1d670',
-  '#f9c86e',
-  '#74bd5b',
-  '#74db9d',
-  '#ad8de0',
-  '#dba7ed',
-  '#ff916d',
-  '#4abdc4',
-  '#f1ed39',
+  '#E60032',
+  '#06D6A0',
+  '#8352F4',
+  '#FAE500',
+  '#027979',
+  '#E37C1C',
+  '#4153F6',
+  '#B40895',
+  '#0D3B66',
 ];
+
+export const DEMOGRAPHICS_COLORS = {
+  white: '#1282A2',
+  black: '#551DC3',
+  hispanic: '#D24B76',
+  asian: '#F9DC4E',
+  nativeAmerican: '#24BC7D',
+  other: '#999999',
+};
+
+export const CONTRANBAND_TYPE_COLORS = {
+  alcohol: '#24BC7D',
+  drugs: '#1282A2',
+  money: '#D24B76',
+  other: '#999999',
+  weapons: '#551DC3',
+};
+
+export const STOP_PURPOSE_COLORS = {
+  safteyViolation: '#A4284F',
+  regulatoryEquipment: '#FF8133',
+  other: '#999999',
+};
 
 export const STATIC_LEGEND_KEYS = RACES.map((r) => ({
   value: r,
@@ -224,6 +246,33 @@ export const CONTRABAND_TYPES_TABLE_COLUMNS = [
   },
 ];
 
+export const LIKELIHOOD_OF_STOP_TABLE_COLUMNS = [
+  {
+    Header: 'Driver Race',
+    accessor: 'race',
+  },
+  {
+    Header: 'Population',
+    accessor: 'population',
+  },
+  {
+    Header: 'Stops',
+    accessor: 'stops',
+  },
+  {
+    Header: 'Stop Rate',
+    accessor: 'stop_rate',
+  },
+  {
+    Header: 'Basline Rate',
+    accessor: 'baseline_rate',
+  },
+  {
+    Header: 'Stop Rate Ratio',
+    accessor: 'stop_rate_ratio',
+  },
+];
+
 export const STOP_REASON_TABLE_COLUMNS = [
   {
     Header: 'Year',
@@ -232,10 +281,6 @@ export const STOP_REASON_TABLE_COLUMNS = [
   {
     Header: 'Stop-reason',
     accessor: 'purpose',
-  },
-  {
-    Header: 'White*',
-    accessor: 'white',
   },
   {
     Header: 'Black*',

@@ -8,6 +8,7 @@ export const Alert = styled.div`
   margin-bottom: 20px;
   font-weight: bolder;
   font-size: 22px;
+  z-index: 11;
 `;
 
 export const CompareAlert = styled(Alert)`

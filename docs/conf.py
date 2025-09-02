@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 #
 # NC Traffic Stops documentation build configuration file, created by
 # sphinx-quickstart on Sat Sep  6 15:13:52 2014.

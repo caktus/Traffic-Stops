@@ -110,12 +110,14 @@ function App() {
                       </ChartStateProvider>
                     )}
                     {showCompare && !agencyId && (
-                      <div style={{ width: '50%', padding: 20 }}>
-                        <S.SubHeading>Search for Additional Departments to Compare</S.SubHeading>
-                        <DepartmentSearch
-                          onChange={(d) => updateAgencyId(d)}
-                          placeholder="Search for a police or sheriff's department..."
-                        />
+                      <div style={{ width: '50%' }}>
+                        <div style={{ padding: 20, position: 'sticky', top: 0 }}>
+                          <S.SubHeading>Search for Additional Departments to Compare</S.SubHeading>
+                          <DepartmentSearch
+                            onChange={(d) => updateAgencyId(d)}
+                            placeholder="Search for a police or sheriff's department..."
+                          />
+                        </div>
                       </div>
                     )}
                   </div>

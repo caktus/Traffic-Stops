@@ -20,7 +20,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "ENGINE": "django.db.backends.postgresql",
         "NAME": "traffic_stops",
         "USER": "",
         "PASSWORD": "",
@@ -28,7 +28,7 @@ DATABASES = {
         "PORT": "",
     },
     "traffic_stops_nc": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "ENGINE": "django.db.backends.postgresql",
         "NAME": "traffic_stops_nc",
         "USER": "",
         "PASSWORD": "",
@@ -92,7 +92,6 @@ LANGUAGE_CODE = "en-us"
 
 USE_I18N = True
 
-USE_L10N = True
 
 USE_TZ = True
 
@@ -117,9 +116,14 @@ MEDIA_URL = "/media/"
 MEDIA_STORAGE_BUCKET_NAME = os.getenv("MEDIA_STORAGE_BUCKET_NAME", "")
 MEDIA_LOCATION = os.getenv("MEDIA_LOCATION", "")
 MEDIA_S3_CUSTOM_DOMAIN = os.getenv("MEDIA_S3_CUSTOM_DOMAIN", "")
-DEFAULT_FILE_STORAGE = os.getenv(
-    "DEFAULT_FILE_STORAGE", "django.core.files.storage.FileSystemStorage"
-)
+STORAGES = {
+    "default": {
+        "BACKEND": os.getenv("DEFAULT_FILE_STORAGE", "django.core.files.storage.FileSystemStorage")
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
+    },
+}
 AWS_DEFAULT_ACL = os.getenv("AWS_DEFAULT_ACL")
 AWS_S3_SIGNATURE_VERSION = os.getenv("AWS_S3_SIGNATURE_VERSION", "s3v4")
 AWS_S3_REGION_NAME = os.getenv("AWS_S3_REGION_NAME", "us-east-2")
@@ -146,7 +150,6 @@ TEMPLATES = [
                 "django.template.context_processors.tz",
                 "django.template.context_processors.request",
                 "django.contrib.messages.context_processors.messages",
-                "dealer.contrib.django.context_processor",
             ],
         },
     },
@@ -185,7 +188,7 @@ INSTALLED_APPS = [
     "django_filters",
     "rest_framework",
     "django_pgviews",
-    "ckeditor",
+    "django_ckeditor_5",
     # Custom apps
     "tsdata",
     "nc",
@@ -251,16 +254,6 @@ LOGGING = {
             "level": "DEBUG",
             "propagate": False,
         },
-        "caching": {
-            "handlers": ["console"],
-            "level": "DEBUG",
-            "propagate": False,
-        },
-        "caching.invalidation": {
-            "handlers": ["console"],
-            "level": "INFO",
-            "propagate": False,
-        },
         "celery": {
             "level": "INFO",
             "handlers": ["console"],
@@ -316,9 +309,10 @@ X_FRAME_OPTIONS = "DENY"
 LOGIN_URL = "account_login"
 LOGIN_REDIRECT_URL = "home"
 
-REST_FRAMEWORK_EXTENSIONS = {"DEFAULT_CACHE_RESPONSE_TIMEOUT": 60 * 60 * 24 * 60}  # 60 days
-
-CACHE_COUNT_TIMEOUT = 60 * 60 * 24 * 60  # 60 days
+# Cache settings
+CACHE_CLOUDFRONT_DISTRIBUTION_ID = os.getenv("CACHE_CLOUDFRONT_DISTRIBUTION_ID", "")
+CACHE_BASICAUTH_USERNAME = os.getenv("CACHE_BASICAUTH_USERNAME", "")
+CACHE_BASICAUTH_PASSWORD = os.getenv("CACHE_BASICAUTH_PASSWORD", "")
 CACHE_HOST = os.getenv("CACHE_HOST", "")
 if "redis" in CACHE_HOST:
     CACHES = {
@@ -337,6 +331,8 @@ else:
             "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
         },
     }
+
+BROKER_URL = os.getenv("BROKER_URL", "redis://redis:6379/0")
 
 CENSUS_API_KEY = os.getenv("CENSUS_API_KEY", "")
 
@@ -359,4 +355,140 @@ NC_FTP_PASSWORD = os.environ.get("NC_FTP_PASSWORD", "")
 # Contact us Email
 CONTACT_US_EMAILS = os.getenv("CONTACT_US_EMAILS", "forwardjustice-team@caktusgroup.com").split(":")
 
-CKEDITOR_BASEPATH = "/static/ckeditor/ckeditor/"
+customColorPalette = [
+    {"color": "hsl(4, 90%, 58%)", "label": "Red"},
+    {"color": "hsl(340, 82%, 52%)", "label": "Pink"},
+    {"color": "hsl(291, 64%, 42%)", "label": "Purple"},
+    {"color": "hsl(262, 52%, 47%)", "label": "Deep Purple"},
+    {"color": "hsl(231, 48%, 48%)", "label": "Indigo"},
+    {"color": "hsl(207, 90%, 54%)", "label": "Blue"},
+]
+CKEDITOR_5_CONFIGS = {
+    "default": {
+        "toolbar": [
+            "heading",
+            "|",
+            "bold",
+            "italic",
+            "link",
+            "bulletedList",
+            "numberedList",
+            "blockQuote",
+            "imageUpload",
+        ],
+    },
+    "extends": {
+        "blockToolbar": [
+            "paragraph",
+            "heading1",
+            "heading2",
+            "heading3",
+            "|",
+            "bulletedList",
+            "numberedList",
+            "|",
+            "blockQuote",
+        ],
+        "toolbar": [
+            "heading",
+            "|",
+            "outdent",
+            "indent",
+            "|",
+            "bold",
+            "italic",
+            "link",
+            "underline",
+            "strikethrough",
+            "code",
+            "subscript",
+            "superscript",
+            "highlight",
+            "|",
+            "codeBlock",
+            "sourceEditing",
+            "insertImage",
+            "bulletedList",
+            "numberedList",
+            "todoList",
+            "|",
+            "blockQuote",
+            "imageUpload",
+            "|",
+            "fontSize",
+            "fontFamily",
+            "fontColor",
+            "fontBackgroundColor",
+            "mediaEmbed",
+            "removeFormat",
+            "insertTable",
+        ],
+        "image": {
+            "toolbar": [
+                "imageTextAlternative",
+                "|",
+                "imageStyle:alignLeft",
+                "imageStyle:alignRight",
+                "imageStyle:alignCenter",
+                "imageStyle:side",
+                "|",
+            ],
+            "styles": [
+                "full",
+                "side",
+                "alignLeft",
+                "alignRight",
+                "alignCenter",
+            ],
+        },
+        "table": {
+            "contentToolbar": [
+                "tableColumn",
+                "tableRow",
+                "mergeTableCells",
+                "tableProperties",
+                "tableCellProperties",
+            ],
+            "tableProperties": {
+                "borderColors": customColorPalette,
+                "backgroundColors": customColorPalette,
+            },
+            "tableCellProperties": {
+                "borderColors": customColorPalette,
+                "backgroundColors": customColorPalette,
+            },
+        },
+        "heading": {
+            "options": [
+                {"model": "paragraph", "title": "Paragraph", "class": "ck-heading_paragraph"},
+                {
+                    "model": "heading1",
+                    "view": "h1",
+                    "title": "Heading 1",
+                    "class": "ck-heading_heading1",
+                },
+                {
+                    "model": "heading2",
+                    "view": "h2",
+                    "title": "Heading 2",
+                    "class": "ck-heading_heading2",
+                },
+                {
+                    "model": "heading3",
+                    "view": "h3",
+                    "title": "Heading 3",
+                    "class": "ck-heading_heading3",
+                },
+            ]
+        },
+    },
+    "list": {
+        "properties": {
+            "styles": "true",
+            "startIndex": "true",
+            "reversed": "true",
+        }
+    },
+}
+
+CKEDITOR_5_FILE_STORAGE = "traffic_stops.storages.MediaBoto3Storage"

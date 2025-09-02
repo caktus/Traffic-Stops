@@ -18,7 +18,7 @@ class ACSTests(TestCase):
     ]
 
     def test_nc_variables(self):
-        acs_obj = acs.ACS("", "NC")
+        acs_obj = acs.ACS(key="", state_abbr="NC", year=2020)
         self.assertCountEqual(acs_obj.race_variables.values(), self.expected_race_variables)
         self.assertCountEqual(
             acs_obj.variables,
@@ -40,4 +40,4 @@ class ACSTests(TestCase):
 
     def test_other_state(self):
         with self.assertRaises(KeyError):
-            acs.ACS("", "NY")
+            acs.ACS(key="", state_abbr="NY", year=2020)

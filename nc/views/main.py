@@ -10,25 +10,28 @@ import pandas as pd
 from dateutil import relativedelta
 from django.conf import settings
 from django.core.mail import send_mail
-from django.db.models import Case, Count, F, Q, Sum, Value, When
+from django.db.models import Count, Q, Sum
 from django.db.models.functions import ExtractYear
 from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page, never_cache
+from django.views.decorators.cache import never_cache
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_extensions.cache.decorators import cache_response
-from rest_framework_extensions.key_constructor import bits
-from rest_framework_extensions.key_constructor.constructors import DefaultObjectKeyConstructor
 
 from nc import serializers
+from nc.constants import (
+    CONTRABAND_TYPE_COLS,
+    DEFAULT_RENAME_COLUMNS,
+    DEMOGRAPHICS_COLORS_BG,
+    DEMOGRAPHICS_COLORS_BORDER,
+    STOP_PURPOSE_COLORS,
+)
 from nc.filters import DriverStopsFilter
 from nc.models import SEARCH_TYPE_CHOICES as SEARCH_TYPE_CHOICES_TUPLES
 from nc.models import (
     Agency,
-    Contraband,
     ContrabandSummary,
     Person,
     Resource,
@@ -83,16 +86,6 @@ GROUP_DEFAULTS = {
 SEARCH_TYPE_CHOICES = dict(SEARCH_TYPE_CHOICES_TUPLES)
 
 
-class QueryKeyConstructor(DefaultObjectKeyConstructor):
-    params_query = bits.QueryParamsKeyBit(["officer", "from", "to"])
-
-
-query_cache_key_func = QueryKeyConstructor()
-
-
-CACHE_TIMEOUT = settings.CACHE_COUNT_TIMEOUT
-
-
 def get_date_range(request):
     # Only filter is from and to values are found and are valid
     date_precision = "year"
@@ -113,30 +106,12 @@ def get_date_range(request):
     return date_precision, date_range
 
 
-DEFAULT_RENAME_COLUMNS = {
-    "White": "white",
-    "Black": "black",
-    "Hispanic": "hispanic",
-    "Asian": "asian",
-    "Native American": "native_american",
-    "Other": "other",
-}
-
-CONTRABAND_TYPE_COLS = {
-    "Alcohol": "alcohol",
-    "Drugs": "drugs",
-    "Money": "money",
-    "Other": "other",
-    "Weapons": "weapons",
-}
-
-
 def create_table_data_response(qs, pivot_columns=None, value_key=None, rename_columns=None):
     rename_cols = rename_columns if rename_columns else DEFAULT_RENAME_COLUMNS
     pivot_cols = pivot_columns if pivot_columns else ["driver_race_comb"]
     table_data = []
 
-    if qs.count() > 0:
+    if qs.exists():
         pivot_df = (
             pd.DataFrame(qs)
             .pivot(index="year", columns=pivot_cols, values=value_key)
@@ -220,14 +195,12 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
             results.add(**data)
 
     @action(detail=True, methods=["get"])
-    @cache_response(key_func=query_cache_key_func)
     def stops(self, request, pk=None):
         results = GroupedData(by="year", defaults=GROUP_DEFAULTS)
         self.query(results, group_by=("year", "driver_race", "driver_ethnicity"))
         return Response(results.flatten())
 
     @action(detail=True, methods=["get"])
-    @cache_response(key_func=query_cache_key_func)
     def stops_by_reason(self, request, pk=None):
         response = {}
         # stops
@@ -245,7 +218,6 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(response)
 
     @action(detail=True, methods=["get"])
-    @cache_response(key_func=query_cache_key_func)
     def use_of_force(self, request, pk=None):
         results = GroupedData(by="year", defaults=GROUP_DEFAULTS)
         q = Q(search_type__isnull=False) & Q(engage_force="t")
@@ -253,7 +225,6 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(results.flatten())
 
     @action(detail=True, methods=["get"])
-    @cache_response(key_func=query_cache_key_func)
     def searches(self, request, pk=None):
         results = GroupedData(by="year", defaults=GROUP_DEFAULTS)
         q = Q(search_type__isnull=False)
@@ -261,7 +232,6 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(results.flatten())
 
     @action(detail=True, methods=["get"])
-    @cache_response(key_func=query_cache_key_func)
     def searches_by_type(self, request, pk=None):
         results = GroupedData(by=("search_type", "year"), defaults=GROUP_DEFAULTS)
         q = Q(search_type__isnull=False)
@@ -276,80 +246,6 @@ class AgencyViewSet(viewsets.ReadOnlyModelViewSet):
             filter_=q,
         )
         return Response(results.flatten())
-
-    @action(detail=True, methods=["get"])
-    @cache_response(key_func=query_cache_key_func)
-    def contraband_hit_rate(self, request, pk=None):
-        response = {}
-        # searches
-        results = GroupedData(by="year", defaults=GROUP_DEFAULTS)
-        q = Q(search_type__isnull=False)
-        self.query(results, group_by=("year", "driver_race", "driver_ethnicity"), filter_=q)
-        response["searches"] = results.flatten()
-
-        # contraband
-        results = GroupedData(by="year", defaults=GROUP_DEFAULTS)
-        q = Q(contraband_found=True)
-        self.query(results, group_by=("year", "driver_race", "driver_ethnicity"), filter_=q)
-        response["contraband"] = results.flatten()
-
-        # # contraband types
-        qs = Contraband.objects.filter(stop__agency=self.get_object(), person__type="D")
-        # # filter down by officer if supplied
-        officer = self.request.query_params.get("officer", None)
-        if officer:
-            qs = qs.filter(stop__officer_id=officer)
-        qs = qs.annotate(
-            year=ExtractYear("stop__date"),
-            driver_race=F("person__race"),
-            driver_ethnicity=F("person__ethnicity"),
-            drugs_found=Case(
-                When(
-                    Q(ounces__gt=0)
-                    | Q(pounds__gt=0)
-                    | Q(dosages__gt=0)
-                    | Q(grams__gt=0)
-                    | Q(kilos__gt=0),
-                    then=Value(True),
-                ),
-                default=Value(False),
-            ),
-            alcohol_found=Case(
-                When(Q(pints__gt=0) | Q(gallons__gt=0), then=Value(True)), default=Value(False)
-            ),
-            money_found=Case(When(Q(money__gt=0), then=Value(True)), default=Value(False)),
-            weapons_found=Case(When(Q(weapons__gt=0), then=Value(True)), default=Value(False)),
-            other_found=Case(When(Q(dollar_amount__gt=0), then=Value(True)), default=Value(False)),
-        )
-
-        results = GroupedData(by=("contraband_type", "year"), defaults=GROUP_DEFAULTS)
-        # group by specified fields and order by year
-        group_by = ("year", "driver_ethnicity", "driver_race")
-        for contraband_type in CONTRABAND_CHOICES.values():
-            field_name = f"{contraband_type.lower()}_found"
-            type_qs = (
-                qs.filter(**{field_name: True})
-                .values(*group_by)
-                .order_by("year")
-                .annotate(contraband_type_count=Count(field_name))
-            )
-            for contraband in type_qs:
-                data = {
-                    "year": contraband["year"],
-                    "contraband_type": contraband_type,
-                }
-                if "driver_race" in group_by:
-                    # The 'Hispanic' ethnicity option is now being aggregated into its
-                    # own race category, and its count excluded from the other counts.
-                    if contraband["driver_ethnicity"] == "H":
-                        race = GROUPS.get("H", "H")
-                    else:
-                        race = GROUPS.get(contraband["driver_race"], contraband["driver_race"])
-                    data.setdefault(race, 0)
-                    data[race] += contraband["contraband_type_count"]
-                results.add(**data)
-        response["contraband_types"] = results.flatten()
-        return Response(response)
 
 
 class DriverStopsViewSet(viewsets.ReadOnlyModelViewSet):
@@ -374,6 +270,19 @@ class DriverStopsViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.PersonStopSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = DriverStopsFilter
+
+    def list(self, request, *args, **kwargs):
+        response = super().list(request, *args, **kwargs)
+        if not response.data["results"]:
+            # No stops were found. Add the agency's last_reported_stop to the
+            # response data
+            try:
+                agency = Agency.objects.get(id=request.GET.get("agency"))
+            except Agency.DoesNotExist:
+                pass
+            else:
+                response.data["last_reported_stop"] = agency.last_reported_stop
+        return response
 
 
 class StateFactsViewSet(viewsets.ReadOnlyModelViewSet):
@@ -437,43 +346,42 @@ class AgencyTrafficStopsByPercentageView(APIView):
                 {
                     "label": "White",
                     "data": get_values("White"),
-                    "borderColor": "#02bcbb",
-                    "backgroundColor": "#80d9d8",
+                    "borderColor": DEMOGRAPHICS_COLORS_BORDER["white"],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BORDER["white"],
                 },
                 {
                     "label": "Black",
                     "data": get_values("Black"),
-                    "borderColor": "#8879fc",
-                    "backgroundColor": "#beb4fa",
+                    "borderColor": DEMOGRAPHICS_COLORS_BORDER["black"],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BORDER["black"],
                 },
                 {
                     "label": "Hispanic",
                     "data": get_values("Hispanic"),
-                    "borderColor": "#9c0f2e",
-                    "backgroundColor": "#ca8794",
+                    "borderColor": DEMOGRAPHICS_COLORS_BORDER["hispanic"],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BORDER["hispanic"],
                 },
                 {
                     "label": "Asian",
                     "data": get_values("Asian"),
-                    "borderColor": "#ffe066",
-                    "backgroundColor": "#ffeeb2",
+                    "borderColor": DEMOGRAPHICS_COLORS_BORDER["asian"],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BORDER["asian"],
                 },
                 {
                     "label": "Native American",
                     "data": get_values("Native American"),
-                    "borderColor": "#0c3a66",
-                    "backgroundColor": "#8598ac",
+                    "borderColor": DEMOGRAPHICS_COLORS_BORDER["native_american"],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BORDER["native_american"],
                 },
                 {
                     "label": "Other",
                     "data": get_values("Other"),
-                    "borderColor": "#9e7b9b",
-                    "backgroundColor": "#cab6c7",
+                    "borderColor": DEMOGRAPHICS_COLORS_BORDER["other"],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BORDER["other"],
                 },
             ],
         }
 
-    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         stop_qs = StopSummary.objects.all().annotate(year=ExtractYear("date"))
 
@@ -511,9 +419,9 @@ class AgencyTrafficStopsByPercentageView(APIView):
                 if col not in stops_df or year not in stops_df[col]:
                     continue
                 try:
-                    stops_df[col][year] = float(stops_df[col][year] / total_stops_for_year)
+                    stops_df.loc[year, col] = float(stops_df[col][year] / total_stops_for_year)
                 except ZeroDivisionError:
-                    stops_df[col][year] = 0
+                    stops_df.loc[year, col] = 0
 
         data = self.build_response(stops_df, unique_x_range)
         return Response(data=data, status=200)
@@ -535,43 +443,42 @@ class AgencyTrafficStopsByCountView(APIView):
                 {
                     "label": "White",
                     "data": get_values("White"),
-                    "borderColor": "#02bcbb",
-                    "backgroundColor": "#80d9d8",
+                    "borderColor": DEMOGRAPHICS_COLORS_BORDER["white"],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BG["white"],
                 },
                 {
                     "label": "Black",
                     "data": get_values("Black"),
-                    "borderColor": "#8879fc",
-                    "backgroundColor": "#beb4fa",
+                    "borderColor": DEMOGRAPHICS_COLORS_BORDER["black"],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BG["black"],
                 },
                 {
                     "label": "Hispanic",
                     "data": get_values("Hispanic"),
-                    "borderColor": "#9c0f2e",
-                    "backgroundColor": "#ca8794",
+                    "borderColor": DEMOGRAPHICS_COLORS_BORDER["hispanic"],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BG["hispanic"],
                 },
                 {
                     "label": "Asian",
                     "data": get_values("Asian"),
-                    "borderColor": "#ffe066",
-                    "backgroundColor": "#ffeeb2",
+                    "borderColor": DEMOGRAPHICS_COLORS_BORDER["asian"],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BG["asian"],
                 },
                 {
                     "label": "Native American",
                     "data": get_values("Native American"),
-                    "borderColor": "#0c3a66",
-                    "backgroundColor": "#8598ac",
+                    "borderColor": DEMOGRAPHICS_COLORS_BORDER["native_american"],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BG["native_american"],
                 },
                 {
                     "label": "Other",
                     "data": get_values("Other"),
-                    "borderColor": "#9e7b9b",
-                    "backgroundColor": "#cab6c7",
+                    "borderColor": DEMOGRAPHICS_COLORS_BORDER["other"],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BG["other"],
                 },
             ],
         }
 
-    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         date_precision, date_range = get_date_range(request)
 
@@ -617,7 +524,6 @@ class AgencyStopPurposeGroupView(APIView):
         else:
             return [0] * years_len
 
-    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         date_precision, date_range = get_date_range(request)
         qs = StopSummary.objects.all()
@@ -658,20 +564,20 @@ class AgencyStopPurposeGroupView(APIView):
                 {
                     "label": StopPurposeGroup.SAFETY_VIOLATION,
                     "data": self.get_values(df, StopPurposeGroup.SAFETY_VIOLATION, years_len),
-                    "borderColor": "#5F0F40",
-                    "backgroundColor": "#5F0F40",
+                    "borderColor": STOP_PURPOSE_COLORS["saftey_violation"],
+                    "backgroundColor": STOP_PURPOSE_COLORS["saftey_violation"],
                 },
                 {
                     "label": StopPurposeGroup.REGULATORY_EQUIPMENT,
                     "data": self.get_values(df, StopPurposeGroup.REGULATORY_EQUIPMENT, years_len),
-                    "borderColor": "#E36414",
-                    "backgroundColor": "#E36414",
+                    "borderColor": STOP_PURPOSE_COLORS["regulatory_equipment"],
+                    "backgroundColor": STOP_PURPOSE_COLORS["regulatory_equipment"],
                 },
                 {
                     "label": StopPurposeGroup.OTHER,
                     "data": self.get_values(df, StopPurposeGroup.OTHER, years_len),
-                    "borderColor": "#0F4C5C",
-                    "backgroundColor": "#0F4C5C",
+                    "borderColor": STOP_PURPOSE_COLORS["other"],
+                    "backgroundColor": STOP_PURPOSE_COLORS["other"],
                 },
             ],
         }
@@ -691,43 +597,42 @@ class AgencyStopGroupByPurposeView(APIView):
                 {
                     "label": "White",
                     "data": get_values("White"),
-                    "borderColor": "#02bcbb",
-                    "backgroundColor": "#80d9d8",
+                    "borderColor": DEMOGRAPHICS_COLORS_BORDER["white"],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BG["white"],
                 },
                 {
                     "label": "Black",
                     "data": get_values("Black"),
-                    "borderColor": "#8879fc",
-                    "backgroundColor": "#beb4fa",
+                    "borderColor": DEMOGRAPHICS_COLORS_BORDER["black"],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BG["black"],
                 },
                 {
                     "label": "Hispanic",
                     "data": get_values("Hispanic"),
-                    "borderColor": "#9c0f2e",
-                    "backgroundColor": "#ca8794",
+                    "borderColor": DEMOGRAPHICS_COLORS_BORDER["hispanic"],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BG["hispanic"],
                 },
                 {
                     "label": "Asian",
                     "data": get_values("Asian"),
-                    "borderColor": "#ffe066",
-                    "backgroundColor": "#ffeeb2",
+                    "borderColor": DEMOGRAPHICS_COLORS_BORDER["asian"],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BG["asian"],
                 },
                 {
                     "label": "Native American",
                     "data": get_values("Native American"),
-                    "borderColor": "#0c3a66",
-                    "backgroundColor": "#8598ac",
+                    "borderColor": DEMOGRAPHICS_COLORS_BORDER["native_american"],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BG["native_american"],
                 },
                 {
                     "label": "Other",
                     "data": get_values("Other"),
-                    "borderColor": "#9e7b9b",
-                    "backgroundColor": "#cab6c7",
+                    "borderColor": DEMOGRAPHICS_COLORS_BORDER["other"],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BG["other"],
                 },
             ],
         }
 
-    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         date_precision, date_range = get_date_range(request)
         qs = StopSummary.objects.all()
@@ -805,7 +710,6 @@ class AgencyStopGroupByPurposeView(APIView):
 
 
 class AgencyContrabandView(APIView):
-    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         year = request.GET.get("year", None)
 
@@ -868,7 +772,6 @@ class AgencyContrabandView(APIView):
 
 
 class AgencyContrabandTypesView(APIView):
-    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         year = request.GET.get("year", None)
 
@@ -978,7 +881,6 @@ class AgencyContrabandStopPurposeView(APIView):
             ],
         }
 
-    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         year = request.GET.get("year", None)
 
@@ -1130,7 +1032,6 @@ class AgencyContrabandGroupedStopPurposeView(APIView):
             data.append(group)
         return data
 
-    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         year = request.GET.get("year", None)
 
@@ -1199,7 +1100,6 @@ class AgencyContrabandGroupedStopPurposeView(APIView):
 
 
 class AgencyContrabandStopGroupByPurposeModalView(APIView):
-    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         grouped_stop_purpose = request.GET.get("grouped_stop_purpose")
         contraband_type = request.GET.get("contraband_type")
@@ -1245,49 +1145,42 @@ class AgencySearchesByPercentageView(APIView):
                 {
                     "label": "White",
                     "data": get_values("White"),
-                    "borderColor": "#02bcbb",
-                    "backgroundColor": "#80d9d8",
+                    "borderColor": DEMOGRAPHICS_COLORS_BORDER["white"],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BG["white"],
                 },
                 {
                     "label": "Black",
                     "data": get_values("Black"),
-                    "borderColor": "#8879fc",
-                    "backgroundColor": "#beb4fa",
+                    "borderColor": DEMOGRAPHICS_COLORS_BORDER["black"],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BG["black"],
                 },
                 {
                     "label": "Hispanic",
                     "data": get_values("Hispanic"),
-                    "borderColor": "#9c0f2e",
-                    "backgroundColor": "#ca8794",
+                    "borderColor": DEMOGRAPHICS_COLORS_BORDER["hispanic"],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BG["hispanic"],
                 },
                 {
                     "label": "Asian",
                     "data": get_values("Asian"),
-                    "borderColor": "#ffe066",
-                    "backgroundColor": "#ffeeb2",
+                    "borderColor": DEMOGRAPHICS_COLORS_BORDER["asian"],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BG["asian"],
                 },
                 {
                     "label": "Native American",
                     "data": get_values("Native American"),
-                    "borderColor": "#0c3a66",
-                    "backgroundColor": "#8598ac",
+                    "borderColor": DEMOGRAPHICS_COLORS_BORDER["native_american"],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BG["native_american"],
                 },
                 {
                     "label": "Other",
                     "data": get_values("Other"),
-                    "borderColor": "#9e7b9b",
-                    "backgroundColor": "#cab6c7",
-                },
-                {
-                    "label": "Average",
-                    "data": get_values("Average"),
-                    "borderColor": "#6e6e6e",
-                    "backgroundColor": "#888888",
+                    "borderColor": DEMOGRAPHICS_COLORS_BORDER["other"],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BG["other"],
                 },
             ],
         }
 
-    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         stop_qs = StopSummary.objects.all().annotate(year=ExtractYear("date"))
 
@@ -1339,10 +1232,12 @@ class AgencySearchesByPercentageView(APIView):
                     total_search += search_df[c][year] or 0
                     total_stop += stops_df[c][year] or 0
                     try:
-                        search_df[c][year] = float(search_df[c][year]) / float(stops_df[c][year])
+                        search_df.loc[year, c] = float(search_df[c][year]) / float(
+                            stops_df[c][year]
+                        )
                     except (ValueError, ZeroDivisionError):
-                        search_df[c][year] = 0
-            search_df["Average"][year] = total_search / total_stop
+                        search_df.loc[year, c] = 0
+            search_df.loc[year, "Average"] = total_search / total_stop
 
         data = self.build_response(search_df, unique_x_range)
         return Response(data=data, status=200)
@@ -1364,43 +1259,42 @@ class AgencySearchesByCountView(APIView):
                 {
                     "label": "White",
                     "data": get_values("White"),
-                    "borderColor": "#02bcbb",
-                    "backgroundColor": "#80d9d8",
+                    "borderColor": DEMOGRAPHICS_COLORS_BORDER["white"],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BG["white"],
                 },
                 {
                     "label": "Black",
                     "data": get_values("Black"),
-                    "borderColor": "#8879fc",
-                    "backgroundColor": "#beb4fa",
+                    "borderColor": DEMOGRAPHICS_COLORS_BORDER["black"],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BG["black"],
                 },
                 {
                     "label": "Hispanic",
                     "data": get_values("Hispanic"),
-                    "borderColor": "#9c0f2e",
-                    "backgroundColor": "#ca8794",
+                    "borderColor": DEMOGRAPHICS_COLORS_BORDER["hispanic"],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BG["hispanic"],
                 },
                 {
                     "label": "Asian",
                     "data": get_values("Asian"),
-                    "borderColor": "#ffe066",
-                    "backgroundColor": "#ffeeb2",
+                    "borderColor": DEMOGRAPHICS_COLORS_BORDER["asian"],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BG["asian"],
                 },
                 {
                     "label": "Native American",
                     "data": get_values("Native American"),
-                    "borderColor": "#0c3a66",
-                    "backgroundColor": "#8598ac",
+                    "borderColor": DEMOGRAPHICS_COLORS_BORDER["native_american"],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BG["native_american"],
                 },
                 {
                     "label": "Other",
                     "data": get_values("Other"),
-                    "borderColor": "#9e7b9b",
-                    "backgroundColor": "#cab6c7",
+                    "borderColor": DEMOGRAPHICS_COLORS_BORDER["other"],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BG["other"],
                 },
             ],
         }
 
-    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         date_precision, date_range = get_date_range(request)
 
@@ -1449,46 +1343,30 @@ class AgencySearchRateView(APIView):
                     average = 0
                 values.insert(0, average)
                 return values
-
             return [0] * (len(labels) + 1)
+
+        # Only return non-white races in response
+        included_races = [
+            "Black",
+            "Hispanic",
+            "Asian",
+            "Native American",
+            "Other",
+        ]
 
         return {
             "labels": ["Average"] + list(labels.values()),
             "datasets": [
                 {
-                    "label": "Black",
-                    "data": get_values("Black"),
-                    "borderColor": "#8879fc",
-                    "backgroundColor": "#beb4fa",
-                },
-                {
-                    "label": "Hispanic",
-                    "data": get_values("Hispanic"),
-                    "borderColor": "#9c0f2e",
-                    "backgroundColor": "#ca8794",
-                },
-                {
-                    "label": "Asian",
-                    "data": get_values("Asian"),
-                    "borderColor": "#ffe066",
-                    "backgroundColor": "#ffeeb2",
-                },
-                {
-                    "label": "Native American",
-                    "data": get_values("Native American"),
-                    "borderColor": "#0c3a66",
-                    "backgroundColor": "#8598ac",
-                },
-                {
-                    "label": "Other",
-                    "data": get_values("Other"),
-                    "borderColor": "#9e7b9b",
-                    "backgroundColor": "#cab6c7",
-                },
+                    "label": race,
+                    "data": get_values(race),
+                    "borderColor": DEMOGRAPHICS_COLORS_BORDER[race.lower().replace(" ", "_")],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BORDER[race.lower().replace(" ", "_")],
+                }
+                for race in included_races
             ],
         }
 
-    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         stop_qs = StopSummary.objects.all().annotate(year=ExtractYear("date"))
         search_qs = StopSummary.objects.filter(search_type__isnull=False).annotate(
@@ -1558,7 +1436,7 @@ class AgencySearchRateView(APIView):
                 except ZeroDivisionError:
                     purpose_rate = 0
                 if col in search_df and k in search_df[col]:
-                    search_df[col][k] = (
+                    search_df.loc[k, col] = (
                         (purpose_rate - base_rate) / base_rate if base_rate != 0 else 0
                     )
 
@@ -1580,43 +1458,42 @@ class AgencyUseOfForceView(APIView):
                 {
                     "label": "White",
                     "data": get_values("White"),
-                    "borderColor": "#02bcbb",
-                    "backgroundColor": "#80d9d8",
+                    "borderColor": DEMOGRAPHICS_COLORS_BORDER["white"],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BORDER["white"],
                 },
                 {
                     "label": "Black",
                     "data": get_values("Black"),
-                    "borderColor": "#8879fc",
-                    "backgroundColor": "#beb4fa",
+                    "borderColor": DEMOGRAPHICS_COLORS_BORDER["black"],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BORDER["black"],
                 },
                 {
                     "label": "Hispanic",
                     "data": get_values("Hispanic"),
-                    "borderColor": "#9c0f2e",
-                    "backgroundColor": "#ca8794",
+                    "borderColor": DEMOGRAPHICS_COLORS_BORDER["hispanic"],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BORDER["hispanic"],
                 },
                 {
                     "label": "Asian",
                     "data": get_values("Asian"),
-                    "borderColor": "#ffe066",
-                    "backgroundColor": "#ffeeb2",
+                    "borderColor": DEMOGRAPHICS_COLORS_BORDER["asian"],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BORDER["asian"],
                 },
                 {
                     "label": "Native American",
                     "data": get_values("Native American"),
-                    "borderColor": "#0c3a66",
-                    "backgroundColor": "#8598ac",
+                    "borderColor": DEMOGRAPHICS_COLORS_BORDER["native_american"],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BORDER["native_american"],
                 },
                 {
                     "label": "Other",
                     "data": get_values("Other"),
-                    "borderColor": "#9e7b9b",
-                    "backgroundColor": "#cab6c7",
+                    "borderColor": DEMOGRAPHICS_COLORS_BORDER["other"],
+                    "backgroundColor": DEMOGRAPHICS_COLORS_BORDER["other"],
                 },
             ],
         }
 
-    @method_decorator(cache_page(CACHE_TIMEOUT))
     def get(self, request, agency_id):
         qs = StopSummary.objects.filter(search_type__isnull=False, engage_force="t").annotate(
             year=ExtractYear("date")
@@ -1642,496 +1519,4 @@ class AgencyUseOfForceView(APIView):
         ).fillna(value=0)
         df = pd.DataFrame(pivot_df)
         data = self.build_response(df, unique_x_range)
-        return Response(data=data, status=200)
-
-
-class AgencyArrestsPercentageOfStopsView(APIView):
-    @method_decorator(cache_page(CACHE_TIMEOUT))
-    def get(self, request, agency_id):
-        year = request.GET.get("year", None)
-
-        qs = StopSummary.objects.all()
-
-        agency_id = int(agency_id)
-        if agency_id != -1:
-            qs = qs.filter(agency_id=agency_id)
-        officer = request.query_params.get("officer", None)
-        if officer:
-            qs = qs.filter(officer_id=officer)
-
-        arrest_qs = qs
-        if year:
-            arrest_qs = arrest_qs.annotate(year=ExtractYear("date")).filter(year=year)
-
-        arrest_qs = arrest_qs.values("driver_race_comb", "driver_arrest", "count")
-
-        # Build charts data
-        df = pd.DataFrame(arrest_qs)
-        columns = ["White", "Black", "Hispanic", "Asian", "Native American", "Other"]
-        percentages = [0] * len(columns)
-
-        if arrest_qs.count() > 0:
-            for i, c in enumerate(columns):
-                driver_arrest_cond = (df["driver_race_comb"] == c) & df["driver_arrest"]
-                filtered_df = df[driver_arrest_cond]
-
-                arrests_count = filtered_df["count"].sum()
-                stops_count = df[df["driver_race_comb"] == c]["count"].sum()
-                percentages[i] = np.nan_to_num(arrests_count / stops_count)
-
-        # Build modal table data
-        table_data_qs = (
-            qs.filter(driver_arrest=True)
-            .values("driver_race_comb")
-            .annotate(stop_count=Sum("count"))
-            .annotate(year=ExtractYear("date"))
-        )
-
-        table_data = create_table_data_response(table_data_qs, value_key="stop_count")
-        data = {"arrest_percentages": percentages, "table_data": table_data}
-        return Response(data=data, status=200)
-
-
-class AgencyArrestsPercentageOfSearchesView(APIView):
-    @method_decorator(cache_page(CACHE_TIMEOUT))
-    def get(self, request, agency_id):
-        year = request.GET.get("year", None)
-
-        qs = StopSummary.objects.all()
-
-        agency_id = int(agency_id)
-        if agency_id != -1:
-            qs = qs.filter(agency_id=agency_id)
-        officer = request.query_params.get("officer", None)
-        if officer:
-            qs = qs.filter(officer_id=officer)
-
-        arrest_qs = qs
-        if year:
-            arrest_qs = arrest_qs.annotate(year=ExtractYear("date")).filter(year=year)
-
-        arrest_qs = arrest_qs.values(
-            "driver_race_comb", "driver_arrest", "driver_searched", "count"
-        )
-
-        # Build charts data
-        df = pd.DataFrame(arrest_qs)
-        columns = ["White", "Black", "Hispanic", "Asian", "Native American", "Other"]
-        percentages = [0] * len(columns)
-
-        if arrest_qs.count() > 0:
-            for i, c in enumerate(columns):
-                arrest_cond = (df["driver_race_comb"] == c) & df["driver_arrest"]
-                arrests_count = df[arrest_cond]["count"].sum()
-
-                searched_cond = (df["driver_race_comb"] == c) & df["driver_searched"]
-                searches_count = df[searched_cond]["count"].sum()
-                percentages[i] = np.nan_to_num(arrests_count / searches_count)
-
-        # Build modal table data
-        table_data_qs = (
-            qs.filter(driver_arrest=True)
-            .values("driver_race_comb")
-            .annotate(
-                stop_count=Sum("count"),
-                year=ExtractYear("date"),
-            )
-        )
-
-        table_data = create_table_data_response(table_data_qs, value_key="stop_count")
-        data = {"arrest_percentages": percentages, "table_data": table_data}
-        return Response(data=data, status=200)
-
-
-class AgencyCountOfStopsAndArrests(APIView):
-    @method_decorator(cache_page(CACHE_TIMEOUT))
-    def get(self, request, agency_id):
-        year = request.GET.get("year", None)
-
-        qs = StopSummary.objects.all()
-
-        agency_id = int(agency_id)
-        if agency_id != -1:
-            qs = qs.filter(agency_id=agency_id)
-        officer = request.query_params.get("officer", None)
-        if officer:
-            qs = qs.filter(officer_id=officer)
-
-        arrest_qs = qs
-        if year:
-            arrest_qs = arrest_qs.annotate(year=ExtractYear("date")).filter(year=year)
-
-        arrest_qs = arrest_qs.values(
-            "driver_race_comb", "driver_arrest", "driver_searched", "count"
-        )
-
-        # Build charts data
-        df = pd.DataFrame(arrest_qs)
-        columns = ["White", "Black", "Hispanic", "Asian", "Native American", "Other"]
-        not_arrested_group = {"data": [0] * len(columns)}
-        arrested_group = {"data": [0] * len(columns)}
-
-        if arrest_qs.count() > 0:
-            for i, c in enumerate(columns):
-                not_arrest_cond = (df["driver_race_comb"] == c) & ~df["driver_arrest"]
-                not_arrested_group["data"][i] = df[not_arrest_cond]["count"].sum()
-
-            for i, c in enumerate(columns):
-                arrest_cond = (df["driver_race_comb"] == c) & df["driver_arrest"]
-                arrested_group["data"][i] = df[arrest_cond]["count"].sum()
-
-        chart_data = [arrested_group, not_arrested_group]
-
-        # Build modal table data
-        table_data_qs = (
-            qs.filter(driver_arrest=True)
-            .values("driver_race_comb")
-            .annotate(
-                stop_count=Sum("count"),
-                year=ExtractYear("date"),
-            )
-        )
-
-        table_data = create_table_data_response(table_data_qs, value_key="stop_count")
-        data = {"arrest_counts": chart_data, "table_data": table_data}
-        return Response(data=data, status=200)
-
-
-class AgencyArrestsPercentageOfStopsByGroupPurposeView(APIView):
-    @method_decorator(cache_page(CACHE_TIMEOUT))
-    def get(self, request, agency_id):
-        year = request.GET.get("year", None)
-        grouped_stop_purpose = request.GET.get("grouped_stop_purpose", None)
-
-        qs = StopSummary.objects.all()
-
-        agency_id = int(agency_id)
-        if agency_id != -1:
-            qs = qs.filter(agency_id=agency_id)
-        officer = request.query_params.get("officer", None)
-        if officer:
-            qs = qs.filter(officer_id=officer)
-
-        arrests_qs = qs
-        if year:
-            arrests_qs = arrests_qs.annotate(year=ExtractYear("date")).filter(year=year)
-
-        arrests_qs = arrests_qs.values("stop_purpose_group", "driver_arrest", "count")
-
-        # Build charts data
-        arrest_percentages_df = pd.DataFrame(arrests_qs).fillna(value=0)
-        arrest_percentages = []
-        stop_purpose_types = [
-            StopPurposeGroup.SAFETY_VIOLATION,
-            StopPurposeGroup.REGULATORY_EQUIPMENT,
-            StopPurposeGroup.OTHER,
-        ]
-
-        if "modal" in request.GET and grouped_stop_purpose:
-            table_data_qs = (
-                qs.filter(driver_arrest=True, stop_purpose_group=grouped_stop_purpose)
-                .values("driver_race_comb")
-                .annotate(year=ExtractYear("date"))
-                .annotate(stop_count=Sum("count"))
-            )
-            table_data = create_table_data_response(table_data_qs, value_key="stop_count")
-            return Response(data={"table_data": table_data}, status=200)
-
-        if arrests_qs.count() > 0:
-            for stop_purpose in stop_purpose_types:
-                group = {
-                    "stop_purpose": " ".join(
-                        [name.title() for name in stop_purpose.name.split("_")]
-                    ),
-                    "data": 0,
-                }
-                filtered_df = arrest_percentages_df[
-                    arrest_percentages_df["stop_purpose_group"] == stop_purpose.value
-                ]
-                stop_count = filtered_df["count"].sum()
-                arrest_found_count = filtered_df["driver_arrest"].sum()
-                group["data"] = np.nan_to_num(arrest_found_count / stop_count)
-
-                arrest_percentages.append(group)
-
-        data = {
-            "arrest_percentages": arrest_percentages,
-        }
-        return Response(data=data, status=200)
-
-
-class AgencyArrestsPercentageOfStopsPerStopPurposeView(APIView):
-    @method_decorator(cache_page(CACHE_TIMEOUT))
-    def get(self, request, agency_id):
-        year = request.GET.get("year", None)
-        stop_purpose_type = request.GET.get("stop_purpose_type", None)
-
-        qs = StopSummary.objects.all()
-
-        agency_id = int(agency_id)
-        if agency_id != -1:
-            qs = qs.filter(agency_id=agency_id)
-        officer = request.query_params.get("officer", None)
-        if officer:
-            qs = qs.filter(officer_id=officer)
-
-        if "modal" in request.GET and stop_purpose_type:
-            purpose = stop_purpose_type.replace(" ", "_").replace("/", "_").upper()
-            table_data_qs = (
-                qs.filter(driver_arrest=True, stop_purpose=StopPurpose[purpose])
-                .values("driver_race_comb")
-                .annotate(year=ExtractYear("date"))
-                .annotate(stop_count=Sum("count"))
-            )
-            table_data = create_table_data_response(table_data_qs, value_key="stop_count")
-            return Response(data={"table_data": table_data}, status=200)
-
-        arrests_qs = qs
-        if year:
-            arrests_qs = arrests_qs.annotate(year=ExtractYear("date")).filter(year=year)
-
-        arrests_qs = arrests_qs.values("stop_purpose", "driver_arrest", "count")
-
-        # Build charts data
-        arrest_percentages_df = pd.DataFrame(arrests_qs).fillna(value=0)
-        arrest_percentages = []
-        stop_purpose_types = StopPurpose.choices
-
-        if arrests_qs.count() > 0:
-            for stop_purpose in stop_purpose_types:
-                group = {
-                    "stop_purpose": " ".join([name.title() for name in stop_purpose[1].split("_")]),
-                    "data": 0,
-                }
-                filtered_df = arrest_percentages_df[
-                    arrest_percentages_df["stop_purpose"] == stop_purpose[0]
-                ]
-
-                stop_count = filtered_df["count"].sum()
-                arrest_found_count = filtered_df["driver_arrest"].sum()
-                group["data"] = np.nan_to_num(arrest_found_count / stop_count)
-
-                arrest_percentages.append(group)
-
-        data = {
-            "labels": [sp[1] for sp in stop_purpose_types],
-            "arrest_percentages": arrest_percentages,
-        }
-
-        return Response(data=data, status=200)
-
-
-class AgencyArrestsPercentageOfSearchesByGroupPurposeView(APIView):
-    @method_decorator(cache_page(CACHE_TIMEOUT))
-    def get(self, request, agency_id):
-        year = request.GET.get("year", None)
-        grouped_stop_purpose = request.GET.get("grouped_stop_purpose", None)
-
-        qs = StopSummary.objects.all()
-
-        agency_id = int(agency_id)
-        if agency_id != -1:
-            qs = qs.filter(agency_id=agency_id)
-        officer = request.query_params.get("officer", None)
-        if officer:
-            qs = qs.filter(officer_id=officer)
-
-        arrests_qs = qs
-        if year:
-            arrests_qs = arrests_qs.annotate(year=ExtractYear("date")).filter(year=year)
-
-        arrests_qs = arrests_qs.values(
-            "stop_purpose_group", "driver_arrest", "driver_searched", "count"
-        )
-
-        # Build charts data
-        arrest_percentages_df = pd.DataFrame(arrests_qs).fillna(value=0)
-        arrest_percentages = []
-        stop_purpose_types = [
-            StopPurposeGroup.SAFETY_VIOLATION,
-            StopPurposeGroup.REGULATORY_EQUIPMENT,
-            StopPurposeGroup.OTHER,
-        ]
-
-        if "modal" in request.GET and grouped_stop_purpose:
-            table_data_qs = (
-                qs.filter(
-                    driver_searched=True,
-                    driver_arrest=True,
-                    stop_purpose_group=grouped_stop_purpose,
-                )
-                .values("driver_race_comb")
-                .annotate(year=ExtractYear("date"))
-                .annotate(stop_count=Sum("count"))
-            )
-            table_data = create_table_data_response(table_data_qs, value_key="stop_count")
-            return Response(data={"table_data": table_data}, status=200)
-
-        if arrests_qs.count() > 0:
-            for stop_purpose in stop_purpose_types:
-                group = {
-                    "stop_purpose": " ".join(
-                        [name.title() for name in stop_purpose.name.split("_")]
-                    ),
-                    "data": 0,
-                }
-                filtered_df = arrest_percentages_df[
-                    arrest_percentages_df["stop_purpose_group"] == stop_purpose.value
-                ]
-                arrest_found_count = filtered_df[filtered_df["driver_arrest"]]["count"].sum()
-                search_count = filtered_df[filtered_df["driver_searched"]]["count"].sum()
-
-                group["data"] = np.nan_to_num(arrest_found_count / search_count)
-
-                arrest_percentages.append(group)
-
-        data = {
-            "arrest_percentages": arrest_percentages,
-        }
-        return Response(data=data, status=200)
-
-
-class AgencyArrestsPercentageOfSearchesPerStopPurposeView(APIView):
-    @method_decorator(cache_page(CACHE_TIMEOUT))
-    def get(self, request, agency_id):
-        year = request.GET.get("year", None)
-        stop_purpose_type = request.GET.get("stop_purpose_type", None)
-
-        qs = StopSummary.objects.all()
-
-        agency_id = int(agency_id)
-        if agency_id != -1:
-            qs = qs.filter(agency_id=agency_id)
-        officer = request.query_params.get("officer", None)
-        if officer:
-            qs = qs.filter(officer_id=officer)
-
-        if "modal" in request.GET and stop_purpose_type:
-            purpose = stop_purpose_type.replace(" ", "_").replace("/", "_").upper()
-            table_data_qs = (
-                qs.filter(
-                    driver_searched=True, driver_arrest=True, stop_purpose=StopPurpose[purpose]
-                )
-                .values("driver_race_comb")
-                .annotate(year=ExtractYear("date"))
-                .annotate(stop_count=Sum("count"))
-            )
-            table_data = create_table_data_response(table_data_qs, value_key="stop_count")
-            return Response(data={"table_data": table_data}, status=200)
-
-        arrests_qs = qs
-        if year:
-            arrests_qs = arrests_qs.annotate(year=ExtractYear("date")).filter(year=year)
-
-        arrests_qs = arrests_qs.values("stop_purpose", "driver_arrest", "driver_searched", "count")
-
-        # Build charts data
-        arrest_percentages_df = pd.DataFrame(arrests_qs).fillna(value=0)
-        arrest_percentages = []
-        stop_purpose_types = StopPurpose.choices
-
-        if arrests_qs.count() > 0:
-            for stop_purpose in stop_purpose_types:
-                group = {
-                    "stop_purpose": " ".join([name.title() for name in stop_purpose[1].split("_")]),
-                    "data": 0,
-                }
-                filtered_df = arrest_percentages_df[
-                    arrest_percentages_df["stop_purpose"] == stop_purpose[0]
-                ]
-
-                arrest_found_count = filtered_df[filtered_df["driver_arrest"]]["count"].sum()
-                search_count = filtered_df[filtered_df["driver_searched"]]["count"].sum()
-                group["data"] = np.nan_to_num(arrest_found_count / search_count)
-
-                arrest_percentages.append(group)
-
-        data = {
-            "labels": [sp[1] for sp in stop_purpose_types],
-            "arrest_percentages": arrest_percentages,
-            "table_data": [],
-        }
-
-        return Response(data=data, status=200)
-
-
-class AgencyArrestsPercentageOfStopsPerContrabandTypeView(APIView):
-    @method_decorator(cache_page(CACHE_TIMEOUT))
-    def get(self, request, agency_id):
-        year = request.GET.get("year", None)
-
-        qs = ContrabandSummary.objects.all()
-
-        agency_id = int(agency_id)
-        if agency_id != -1:
-            qs = qs.filter(agency_id=agency_id)
-        officer = request.query_params.get("officer", None)
-        if officer:
-            qs = qs.filter(officer_id=officer)
-
-        arrests_qs = qs
-        if year:
-            arrests_qs = arrests_qs.annotate(year=ExtractYear("date")).filter(year=year)
-
-        arrests_qs = arrests_qs.values("contraband_type", "driver_arrest").annotate(
-            contraband_found_count=Count(
-                "contraband_id", distinct=True, filter=Q(contraband_found=True)
-            )
-        )
-
-        # Build charts data
-        arrest_percentages_df = pd.DataFrame(arrests_qs).fillna(value=0)
-        columns = ["Alcohol", "Drugs", "Money", "Other", "Weapons"]
-        arrest_percentages = [0] * len(columns)
-
-        if arrests_qs.count() > 0:
-            for i, contraband in enumerate(columns):
-                filtered_df = arrest_percentages_df[
-                    arrest_percentages_df["contraband_type"] == contraband
-                ]
-
-                arrest_found_count = filtered_df[filtered_df["driver_arrest"]][
-                    "contraband_found_count"
-                ].sum()
-                stop_count = filtered_df["contraband_found_count"].sum()
-                arrest_percentages[i] = np.nan_to_num(arrest_found_count / stop_count)
-
-        table_data_qs = (
-            qs.filter(driver_arrest=True)
-            .values("contraband_type")
-            .annotate(
-                contraband_found_count=Count(
-                    "contraband_id", distinct=True, filter=Q(contraband_found=True)
-                )
-            )
-            .annotate(year=ExtractYear("date"))
-        )
-        table_data = create_table_data_response(
-            table_data_qs,
-            pivot_columns=["contraband_type"],
-            value_key="contraband_found_count",
-            rename_columns=CONTRABAND_TYPE_COLS,
-        )
-
-        data = {
-            "arrest_percentages": arrest_percentages,
-            "table_data": table_data,
-        }
-
-        return Response(data=data, status=200)
-
-
-class AgencyStopsYearRange(APIView):
-    def get(self, request, agency_id):
-        qs = StopSummary.objects.annotate(year=ExtractYear("date"))
-
-        agency_id = int(agency_id)
-        if agency_id != -1:
-            qs = qs.filter(agency_id=agency_id)
-        officer = request.query_params.get("officer", None)
-        if officer:
-            qs = qs.filter(officer_id=officer)
-
-        year_range = qs.order_by("-year").values_list("year", flat=True).distinct("year")
-        data = {"year_range": year_range}
         return Response(data=data, status=200)

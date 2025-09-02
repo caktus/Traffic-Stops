@@ -35,7 +35,7 @@ def pod_stats(c):
 @invoke.task
 def ansible_playbook(c, name, extra="", verbosity=1):
     with c.cd("deploy/"):
-        c.run(f"ansible-playbook {name} {extra} -{'v'*verbosity}")
+        c.run(f"ansible-playbook {name} {extra} -{'v' * verbosity}")
 
 
 @invoke.task

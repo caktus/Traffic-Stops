@@ -23,63 +23,53 @@ admin_database_password: !vault |
 #                        provisioning with aws-web-stacks.
 # ----------------------------------------------------------------------------
 
-stack_name: "{{ app_name }}-stack"
+# Parameters
+cloudformation_stack_database_engine_version: "16.6"
+cloudformation_stack_database_parameter_group_family: postgres16
 
-cloudformation_stack:
-  region: "{{ aws_region }}"
-  stack_name: "{{ stack_name }}"
-  template_bucket: "aws-web-stacks-{{ app_name }}"
-  # Webstacks required variable
-  template_local_path: '{{ playbook_dir + "/stack/eks-no-nat.yml" }}'
-  create_changeset: true
-  termination_protection: true
+# Find tag:
+# https://github.com/caktus/k8s-caktus-backup/pkgs/container/k8s-caktus-backup
+k8s_hosting_services_image_tag: 0.7.0-postgres16
 
-  template_parameters:
-    PrimaryAZ: "{{ aws_region }}a"
-    SecondaryAZ: "{{ aws_region }}b"
-    DesiredScale: 2
-    MaxScale: 4
-    UseAES256Encryption: "true"
-    CustomerManagedCmkArn: ""
-    ContainerInstanceType: t3a.medium
-    ContainerVolumeSize: 40
-    DatabaseAllocatedStorage: 100
-    DatabaseClass: db.t3.large
-    DatabaseEngineVersion: "12"
-    DatabaseParameterGroupFamily: postgres12
-    DatabaseMultiAZ: "false"
-    DatabaseUser: "{{ app_name }}_admin"
-    DatabasePassword: "{{ admin_database_password }}"
-    DatabaseName: "{{ app_name }}"
-    DomainName: nccopwatch.org
-    DomainNameAlternates: ""
-    AssetsCloudFrontDomain: files.nccopwatch.org
-    AssetsCloudFrontCertArn: arn:aws:acm:us-east-1:606178775542:certificate/379950bb-4b29-4308-8418-122674fe1076
-    AssetsUseCloudFront: "true"
-  tags:
-    Environment: "{{ app_name }}"
-
-# Install Descheduler to attempt to spread out pods again after node failures
-k8s_install_descheduler: yes
-# You must set the k8s_descheduler_chart_version to match the Kubernetes
-# node version (0.23.x -> K8s 1.23.x); see:
-# https://github.com/kubernetes-sigs/descheduler#compatibility-matrix
-k8s_descheduler_chart_version: v0.25.2
-# See values.yaml for options:
-# https://github.com/kubernetes-sigs/descheduler/blob/master/charts/descheduler/values.yaml#L63
-k8s_descheduler_release_values:
-  deschedulerPolicy:
-    strategies:
-      # During upgrades or reboots, don't pre-emptively drain a node.
-      RemovePodsViolatingNodeTaints:
-        enabled: false
+cloudformation_stack_state: present
+cloudformation_stack_profile: '{{ aws_profile }}'
+cloudformation_stack_region: '{{ aws_region }}'
+cloudformation_stack_name: "{{ app_name }}-stack"
+cloudformation_stack_termination_protection: true
+cloudformation_stack_template_bucket: "aws-web-stacks-{{ app_name }}"
+cloudformation_stack_template_local_path: '{{ playbook_dir + "/stack/eks-no-nat.yml" }}'
+cloudformation_stack_template_parameters:
+  PrimaryAZ: "{{ aws_region }}a"
+  SecondaryAZ: "{{ aws_region }}b"
+  DesiredScale: 2
+  MaxScale: 4
+  UseAES256Encryption: "true"
+  CustomerManagedCmkArn: ""
+  ContainerInstanceType: t3a.large
+  ContainerVolumeSize: 40
+  DatabaseAllocatedStorage: 100
+  DatabaseClass: db.t4g.xlarge
+  DatabaseEngineVersion: "{{ cloudformation_stack_database_engine_version }}"
+  DatabaseParameterGroupFamily: "{{ cloudformation_stack_database_parameter_group_family }}"
+  DatabaseBackupRetentionDays: 2
+  DatabaseMultiAZ: "false"
+  DatabaseUser: "{{ app_name }}_admin"
+  DatabasePassword: "{{ admin_database_password }}"
+  DatabaseName: "{{ app_name }}"
+  DomainName: nccopwatch.org
+  DomainNameAlternates: ""
+  AssetsCloudFrontDomain: files.nccopwatch.org
+  AssetsCloudFrontCertArn: arn:aws:acm:us-east-1:606178775542:certificate/379950bb-4b29-4308-8418-122674fe1076
+  AssetsUseCloudFront: "true"
+cloudformation_stack_tags:
+  Environment: "{{ app_name }}"
 
 # ----------------------------------------------------------------------------
 # caktus.k8s-web-cluster: An Ansible role to help configure Kubernetes
 #                         clusters for web apps.
 # ----------------------------------------------------------------------------
 
-k8s_cluster_name: "{{ cloudformation_stack.stack_name }}-cluster"
+k8s_cluster_name: "{{ cloudformation_stack_name }}-cluster"
 k8s_context: "arn:aws:eks:us-east-2:606178775542:cluster/{{ k8s_cluster_name }}"
 k8s_cluster_type: aws
 
@@ -94,9 +84,9 @@ k8s_iam_users: [copelco]
 # Pin ingress-nginx and cert-manager to current versions so future upgrades of this
 # role will not upgrade these charts without your intervention:
 # https://github.com/kubernetes/ingress-nginx/releases
-k8s_ingress_nginx_chart_version: "4.4.2"
+k8s_ingress_nginx_chart_version: "4.12.3"
 # https://github.com/jetstack/cert-manager/releases
-k8s_cert_manager_chart_version: "v1.11.1"
+k8s_cert_manager_chart_version: "v1.17.2"
 # AWS only:
 # Use the newer load balancer type (NLB). DO NOT edit k8s_aws_load_balancer_type after
 # creating your Service.
@@ -106,11 +96,8 @@ k8s_aws_load_balancer_type: nlb
 # caktus.k8s-hosting-services: Logging and monitoring configuration
 # ----------------------------------------------------------------------------
 
-k8s_papertrail_logspout_destination: "syslog+tls://logs2.papertrailapp.com:20851"
-k8s_papertrail_logspout_memory_limit: 128Mi
-
 # New Relic Account: forwardjustice-team@caktusgroup.com
-k8s_newrelic_chart_version: "5.0.4"
+k8s_newrelic_chart_version: "6.0.10"
 k8s_newrelic_logging_enabled: true
 k8s_newrelic_license_key: !vault |
   $ANSIBLE_VAULT;1.1;AES256
@@ -120,3 +107,18 @@ k8s_newrelic_license_key: !vault |
   3163313364666132340a636330353366613061306361303737303332383431336263323135393232
   65303530343134383464616561383139643263326661636133316534303934346438643366666663
   3136353834393937356364356235393236643835663965643532
+
+# Install Descheduler to attempt to spread out pods again after node failures
+k8s_install_descheduler: yes
+# You must set the k8s_descheduler_chart_version to match the Kubernetes
+# node version (0.23.x -> K8s 1.23.x); see:
+# https://github.com/kubernetes-sigs/descheduler#compatibility-matrix
+k8s_descheduler_chart_version: v0.32.2
+# See values.yaml for options:
+# https://github.com/kubernetes-sigs/descheduler/blob/master/charts/descheduler/values.yaml#L63
+k8s_descheduler_release_values:
+  deschedulerPolicy:
+    strategies:
+      # During upgrades or reboots, don't pre-emptively drain a node.
+      RemovePodsViolatingNodeTaints:
+        enabled: false
