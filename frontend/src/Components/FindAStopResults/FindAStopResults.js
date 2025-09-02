@@ -56,6 +56,9 @@ function FindAStopResults() {
   const [stops, setStops] = useState([]);
   const [loading, setLoading] = useState(false);
   const [lastReportedStop, setLastReportedStop] = useState(null);
+  const [age, setAge] = useState(null);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
 
   useEffect(() => {
     async function _fetchStops() {
@@ -75,6 +78,39 @@ function FindAStopResults() {
         } else {
           setLastReportedStop(null);
         }
+        if (data.start_date) {
+          setStartDate({
+            entered: new Intl.DateTimeFormat('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+            }).format(new Date(data.start_date.entered)),
+            adjusted: new Intl.DateTimeFormat('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+            }).format(new Date(data.start_date.adjusted)),
+          });
+        } else {
+          setStartDate(null);
+        }
+        if (data.end_date) {
+          setEndDate({
+            entered: new Intl.DateTimeFormat('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+            }).format(new Date(data.end_date.entered)),
+            adjusted: new Intl.DateTimeFormat('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+            }).format(new Date(data.end_date.adjusted)),
+          });
+        } else {
+          setEndDate(null);
+        }
+        setAge(data.age);
       } catch (e) {
         // eslint-disable-next-line no-console
         console.warn(e);
@@ -107,6 +143,22 @@ function FindAStopResults() {
             {stops.length === MAX_STOPS_RESULTS
               ? `Returned maximum number of results (${MAX_STOPS_RESULTS}). Try limiting your search`
               : `${stops.length} results found`}
+          </P>
+        )}
+        {!loading && age && (
+          <P size={SIZES[0]} color={COLORS[0]}>
+            You entered {age.entered} for Age but we used {age.adjusted[0]} - {age.adjusted[1]}{' '}
+            instead.
+          </P>
+        )}
+        {!loading && startDate && (
+          <P size={SIZES[0]} color={COLORS[0]}>
+            You entered {startDate.entered} for Start Date but we used {startDate.adjusted} instead.
+          </P>
+        )}
+        {!loading && endDate && (
+          <P size={SIZES[0]} color={COLORS[0]}>
+            You entered {endDate.entered} for End Date but we used {endDate.adjusted} instead.
           </P>
         )}
       </S.Heading>

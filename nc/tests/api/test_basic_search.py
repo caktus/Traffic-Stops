@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 import faker
 import pytest
 
@@ -44,7 +46,14 @@ def test_response_person_fields(client, search_url, durham):
         "stop_action": person.stop.get_action_display(),
     }
     assert result == expected
+    # 'last_reported_stop' should only be included if no matching stops were found
     assert "last_reported_stop" not in response.data
+    # 'age' should only be included if the user entered an age
+    assert "age" not in response.data
+    # 'start_date' should only be included if the user entered a start date
+    assert "start_date" not in response.data
+    # 'end_date' should only be included if the user entered an end date
+    assert "end_date" not in response.data
 
 
 @pytest.mark.django_db(databases=["traffic_stops_nc"])
@@ -70,3 +79,63 @@ def test_no_stops_found(client, search_url):
     assert response.status_code == status.HTTP_200_OK
     assert response.data.get("results") == []
     assert response.data.get("last_reported_stop") == agency.last_reported_stop
+
+
+@pytest.mark.django_db(databases=["traffic_stops_nc"])
+def test_age_adjusted(client, search_url, durham):
+    """Ensure people aged + or - 2 years of the age the user entered are included
+    in search results.
+    """
+    age = 18
+    # Create 5 stops with people within the expected age range
+    people = [factories.PersonFactory(stop__agency=durham, age=i) for i in range(age - 2, age + 3)]
+    # Create 2 stops with people outside the expected age range. These should not
+    # be included in the search results
+    factories.PersonFactory(stop__agency=durham, age=age - 3)
+    factories.PersonFactory(stop__agency=durham, age=age + 3)
+
+    response = client.get(search_url, data={"agency": durham.pk, "age": age}, format="json")
+
+    assert len(response.data["results"]) == len(people)
+    stop_ids = {stop["stop_id"] for stop in response.data["results"]}
+    assert {p.stop.stop_id for p in people} == stop_ids
+    # 'age' should be included in the response data, with the entered age and
+    # the adjusted age range
+    assert response.data["age"] == {"entered": age, "adjusted": (age - 2, age + 2)}
+
+
+@pytest.mark.django_db(databases=["traffic_stops_nc"])
+def test_stop_date_range_adjusted(client, search_url, durham):
+    """Ensure the date range entered by the user is adjusted such that the start_date
+    is 2 days earlier and end_date is 2 days later.
+    """
+    start_date = fake.past_date()
+    end_date = fake.past_date(start_date=start_date)
+    # Create some stops within the expected date range
+    dates = (
+        [start_date, end_date]
+        + [start_date - timedelta(d) for d in [1, 2]]
+        + [end_date + timedelta(d) for d in [1, 2]]
+    )
+    people = [factories.PersonFactory(stop__agency=durham, stop__date=d) for d in dates]
+    # Create 2 stops outside the expected date range. These should not be included
+    # in the search results
+    factories.PersonFactory(stop__agency=durham, stop__date=start_date - timedelta(3))
+    factories.PersonFactory(stop__agency=durham, stop__date=end_date + timedelta(3))
+
+    response = client.get(
+        search_url,
+        data={"agency": durham.pk, "stop_date_after": start_date, "stop_date_before": end_date},
+        format="json",
+    )
+
+    assert len(response.data["results"]) == len(people)
+    stop_ids = {stop["stop_id"] for stop in response.data["results"]}
+    assert {p.stop.stop_id for p in people} == stop_ids
+    # 'start_date' and 'end_date' should be included in the response data, with
+    # the entered and adjusted date for each
+    assert response.data["start_date"] == {
+        "entered": start_date,
+        "adjusted": start_date - timedelta(2),
+    }
+    assert response.data["end_date"] == {"entered": end_date, "adjusted": end_date + timedelta(2)}
