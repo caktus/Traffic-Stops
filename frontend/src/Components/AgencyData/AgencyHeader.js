@@ -3,6 +3,7 @@ import { useTheme } from 'styled-components';
 import { AnimatePresence } from 'framer-motion';
 import * as S from './AgencyHeader.styled';
 import { P, SIZES, WEIGHTS, COLORS } from '../../styles/StyledComponents/Typography';
+import { phoneOnly } from '../../styles/breakpoints';
 
 // Routing
 import { useHistory, useParams } from 'react-router-dom';
@@ -18,6 +19,7 @@ import BackButton from '../Elements/BackButton';
 import Button from '../Elements/Button';
 import * as ChartHeaderStyles from '../Charts/ChartSections/ChartHeader.styled';
 import CensusData from './CensusData';
+import DataSubsetPicker from '../Charts/ChartSections/DataSubsetPicker/DataSubsetPicker';
 
 function AgencyHeader({
   agencyHeaderOpen,
@@ -25,6 +27,9 @@ function AgencyHeader({
   toggleShowCompare,
   showCompareDepartments,
   showCloseButton,
+  yearRange,
+  year,
+  handleYearSelect,
 }) {
   const history = useHistory();
   const { agencyId } = useParams();
@@ -50,7 +55,10 @@ function AgencyHeader({
       {agencyHeaderOpen && (
         <S.AgencyHeader>
           <S.SubHeaderNavRow>{!showCompareDepartments && <BackButton />}</S.SubHeaderNavRow>
-          <S.SubHeaderContentRow flexDirection={showCompareDepartments ? 'column' : 'row'}>
+          <S.SubHeaderContentRow
+            flexDirection={showCompareDepartments ? 'column' : 'row'}
+            justifyContent="space-between"
+          >
             <S.EntityDetails>
               {officerId ? (
                 <>
@@ -92,42 +100,57 @@ function AgencyHeader({
               showCompareDepartments={showCompareDepartments}
             />
           </S.SubHeaderContentRow>
-          {!showCloseButton && (
-            <S.AgencyHeaderButton>
-              <Button
-                variant="positive"
-                border={`2px solid ${theme.colors.primary}`}
-                {...ChartHeaderStyles.ButtonInlines}
-                onClick={() => toggleShowCompare()}
-              >
-                <ChartHeaderStyles.Icon
-                  icon={showCompareDepartments ? ICONS.checkboxFilled : ICONS.checkboxEmpty}
-                  height={25}
-                  width={25}
-                  fill={theme.colors.white}
-                />
-                Compare Departments
-              </Button>
-            </S.AgencyHeaderButton>
-          )}
-          {showCloseButton && (
-            <S.AgencyHeaderButton>
-              <Button
-                variant="positive"
-                border={`2px solid ${theme.colors.primary}`}
-                {...ChartHeaderStyles.ButtonInlines}
-                onClick={() => toggleShowCompare()}
-              >
-                <ChartHeaderStyles.Icon
-                  icon={ICONS.close}
-                  height={25}
-                  width={25}
-                  fill={theme.colors.white}
-                />
-                Close
-              </Button>
-            </S.AgencyHeaderButton>
-          )}
+          <S.SubHeaderContentRow
+            flexDirection="row"
+            justifyContent="space-between"
+            breakpoint={phoneOnly}
+          >
+            <DataSubsetPicker
+              label="Year"
+              value={year}
+              onChange={handleYearSelect}
+              options={yearRange}
+              dropDown
+              labelOnLeft
+              dropdownWidth="100px"
+            />
+            {!showCloseButton && (
+              <S.AgencyHeaderButton>
+                <Button
+                  variant="positive"
+                  border={`2px solid ${theme.colors.primary}`}
+                  {...ChartHeaderStyles.ButtonInlines}
+                  onClick={() => toggleShowCompare()}
+                >
+                  <ChartHeaderStyles.Icon
+                    icon={showCompareDepartments ? ICONS.checkboxFilled : ICONS.checkboxEmpty}
+                    height={25}
+                    width={25}
+                    fill={theme.colors.white}
+                  />
+                  Compare Departments
+                </Button>
+              </S.AgencyHeaderButton>
+            )}
+            {showCloseButton && (
+              <S.AgencyHeaderButton>
+                <Button
+                  variant="positive"
+                  border={`2px solid ${theme.colors.primary}`}
+                  {...ChartHeaderStyles.ButtonInlines}
+                  onClick={() => toggleShowCompare()}
+                >
+                  <ChartHeaderStyles.Icon
+                    icon={ICONS.close}
+                    height={25}
+                    width={25}
+                    fill={theme.colors.white}
+                  />
+                  Close
+                </Button>
+              </S.AgencyHeaderButton>
+            )}
+          </S.SubHeaderContentRow>
         </S.AgencyHeader>
       )}
     </AnimatePresence>

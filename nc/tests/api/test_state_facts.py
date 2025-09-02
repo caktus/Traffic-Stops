@@ -1,11 +1,12 @@
-import factory
 import pytest
 
 from django.conf import settings
+from faker import Faker
 
 from tsdata.models import StateFacts
 
 pytestmark = pytest.mark.django_db
+fake = Faker()
 
 
 @pytest.mark.parametrize(
@@ -21,10 +22,10 @@ pytestmark = pytest.mark.django_db
 )
 def test_state_facts(client, facts_url, attr):
     facts = StateFacts.objects.get(state_key=settings.NC_KEY)  # always exists
-    facts.total_stops = factory.Faker("random_number", digits=9).generate()
-    facts.total_stops_millions = factory.Faker("random_number", digits=2).generate()
-    facts.total_searches = factory.Faker("random_number", digits=5).generate()
-    facts.total_agencies = factory.Faker("random_number", digits=3).generate()
+    facts.total_stops = fake.random_number(digits=9)
+    facts.total_stops_millions = fake.random_number(digits=2)
+    facts.total_searches = fake.random_number(digits=5)
+    facts.total_agencies = fake.random_number(digits=3)
     facts.start_date = "Jan 1, 2000"
     facts.end_date = "Jan 1, 2020"
     facts.save()

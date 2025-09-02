@@ -8,13 +8,11 @@ import sys
 from pathlib import Path
 
 from django.conf import settings
-from django.core.cache import cache
 from django.core.mail import EmailMessage
 from django.db import connections, transaction
 
 from nc.data import copy_nc
-from nc.models import Agency, Search, Stop, StopSummary
-from nc.prime_cache import run as prime_cache_run
+from nc.models import Agency, ContrabandSummary, Search, Stop, StopSummary
 from tsdata.dataset_facts import compute_dataset_facts
 from tsdata.sql import drop_constraints_and_indexes
 from tsdata.utils import call, download_and_unzip_data, line_count, unzip_data
@@ -85,9 +83,6 @@ def run(url, destination=None, zip_path=None, min_stop_id=None, max_stop_id=None
     copy_from(destination, nc_agency_csv)
     logger.info("NC Data Import Complete")
 
-    # Clear the query cache to get rid of NC queries made on old data
-    cache.clear()
-
     # fix landing page data
     facts = compute_dataset_facts(
         Agency, Stop, settings.NC_KEY, Search=Search, override_start_date=override_start_date
@@ -95,13 +90,20 @@ def run(url, destination=None, zip_path=None, min_stop_id=None, max_stop_id=None
     logger.info("NC dataset facts: %r", facts)
 
     # update materialized view
-    logger.info("Updating materialized view")
+    logger.info("Updating materialized views")
     StopSummary.refresh()
-    logger.info("Materialized view updated")
+    ContrabandSummary.refresh()
+    logger.info("Materialized views updated")
 
     # prime the query cache for large NC agencies
     if prime_cache:
-        prime_cache_run()
+        from nc.tasks import prime_all_endpoints
+
+        prime_all_endpoints.delay(
+            clear_cache=True,
+            skip_agencies=False,
+            skip_officers=True,
+        )
 
 
 def truncate_input_data(destination, min_stop_id, max_stop_id):
@@ -157,8 +159,8 @@ def to_standard_csv(input_path, output_path):
         quoting=csv.QUOTE_MINIMAL,
         skipinitialspace=False,
     )
-    with open(input_path, "rt") as input:
-        with open(output_path, "wt") as output:
+    with open(input_path) as input:
+        with open(output_path, "w") as output:
             reader = csv.reader(input, dialect="nc_data_in")
             writer = csv.writer(output, dialect="nc_data_out")
             headings_written = False
@@ -184,20 +186,20 @@ def convert_to_csv(destination):
             continue
         csv_path = data_path.replace(".txt", ".csv")
         if os.path.exists(csv_path):
-            logger.info("{} already exists, skipping csv conversion".format(csv_path))
+            logger.info(f"{csv_path} already exists, skipping csv conversion")
             continue
-        logger.info("Converting {} > {}".format(data_path, csv_path))
+        logger.info(f"Converting {data_path} > {csv_path}")
         # Edit source data .txt file in-place to remove NUL bytes
         # (only seen in Stop.txt)
-        call([r"sed -i 's/\x0//g' {}".format(data_path)], shell=True)
+        call([rf"sed -i 's/\x0//g' {data_path}"], shell=True)
         to_standard_csv(data_path, csv_path)
         data_count = line_count(data_path)
         csv_count = line_count(csv_path)
         if data_count == (csv_count - 1):
-            logger.debug("CSV line count matches original data file: {}".format(data_count))
+            logger.debug(f"CSV line count matches original data file: {data_count}")
         else:
-            logger.error("DAT {}".format(data_count))
-            logger.error("CSV {}".format(csv_count))
+            logger.error(f"DAT {data_count}")
+            logger.error(f"CSV {csv_count}")
 
 
 def update_nc_agencies(nc_csv_path, destination):
@@ -292,14 +294,18 @@ def copy_from(destination, nc_csv_path):
         agency_path = Path(nc_csv_path)
         with agency_path.open() as fh:
             logger.info(f"COPY {nc_csv_path} into the database")
-            cur.copy_expert(copy_nc.NC_AGENCY_COPY_INSTRUCTIONS, fh)
+            with cur.copy(copy_nc.NC_AGENCY_COPY_INSTRUCTIONS) as copy:
+                while data := fh.read(8192):
+                    copy.write(data)
         # datasets
         path = Path(destination)
         for p in path.glob("*.csv"):
             if p.name in copy_nc.NC_COPY_INSTRUCTIONS.keys():
                 with p.open() as fh:
                     logger.info(f"COPY {p.name} into the database")
-                    cur.copy_expert(copy_nc.NC_COPY_INSTRUCTIONS[p.name], fh)
+                    with cur.copy(copy_nc.NC_COPY_INSTRUCTIONS[p.name]) as copy:
+                        while data := fh.read(8192):
+                            copy.write(data)
         logger.info("Finalizing import (this will take a LONG time...)")
         cur.execute(copy_nc.FINALIZE_COPY)
         logger.info("ANALYZE")

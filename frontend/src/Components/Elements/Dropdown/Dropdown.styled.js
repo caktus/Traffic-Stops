@@ -16,7 +16,7 @@ export const DropdownHeader = styled.div`
   color: ${(props) => props.theme.colors.text};
   background: ${(props) => props.theme.colors.white};
   min-height: 48px;
-  width: 260px;
+  width: ${(props) => props.width || '260px'};
 `;
 
 export const IconWrapper = styled.div`

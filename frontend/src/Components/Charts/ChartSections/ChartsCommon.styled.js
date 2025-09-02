@@ -35,7 +35,6 @@ export const ChartWarning = styled.div`
 export const ChartSubsection = styled.div`
   display: flex;
   flex-direction: ${(props) => (props.showCompare ? 'column' : 'row')};
-  flex: 1;
 
   @media (${smallerThanDesktop}) {
     flex-direction: column;
@@ -65,9 +64,6 @@ export const PieSection = styled.div`
   display: flex;
   flex-direction: column;
   align-items: ${(props) => (props.alignItems ? props.alignItems : 'center')};
-  width: ${(props) => (props.zoomed ? '90%' : '33%')};
-  margin: 0 auto;
-  height: auto;
 
   @media (${smallerThanDesktop}) {
     flex-direction: row;
@@ -146,31 +142,8 @@ export const LegendBeside = styled.div`
   }
 `;
 
-export const NoBaseSearches = styled.div`
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  height: 100%;
-  padding: 2em;
-  text-align: center;
-`;
-
-export const NoBaseLink = styled.span`
-  cursor: pointer;
-  color: ${(p) => p.theme.colors.primaryDark};
-`;
-
-export const LegendSection = styled.div`
-  margin-top: 2em;
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-  width: 100%;
-  flex: 0;
-
-  @media (${smallerThanDesktop}) {
-    width: 100%;
-  }
+export const ChartContainer = styled.div`
+  min-height: 400px;
+  height: 600px;
+  ${(props) => props.override};
 `;

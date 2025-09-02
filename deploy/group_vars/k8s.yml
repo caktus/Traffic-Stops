@@ -18,6 +18,8 @@ RepositoryURL: "606178775542.dkr.ecr.us-east-2.amazonaws.com"
 k8s_auth_host: "{{ ClusterEndpoint }}"
 k8s_auth_ssl_ca_cert: "k8s_auth_ssl_ca_cert.txt"
 k8s_namespace: "{{ app_name }}-{{ env_name }}"
+k8s_kubeconfig: "{{ playbook_dir + '/.kube/config' }}"
+k8s_context: "arn:aws:eks:us-east-2:606178775542:cluster/{{ k8s_cluster_name }}"
 
 k8s_ingress_certificate_issuer: letsencrypt-production
 
@@ -40,7 +42,7 @@ k8s_collectstatic_enabled: false
 
 # Auxillary pod configuration:
 k8s_worker_enabled: true
-k8s_worker_replicas: 1
+k8s_worker_replicas: 2
 k8s_worker_celery_app: "traffic_stops"
 k8s_worker_command:
   - newrelic-admin
@@ -51,6 +53,15 @@ k8s_worker_command:
   - worker
   - --loglevel=info
 k8s_worker_beat_enabled: true
+k8s_worker_beat_command:
+  - celery
+  - --app={{ k8s_worker_celery_app }}
+  - --workdir=/code
+  - beat
+  - --loglevel=info
+  # Avoid setting PID file that might get stale in case of a hard crash (StatefulSet will ensure only 1 copy is ever running)
+  - --pidfile=
+  - --schedule=/data/schedulefile.db
 k8s_memcached_enabled: false
 k8s_redis_enabled: true
 
@@ -94,6 +105,9 @@ env_email_host_password: !vault |
   31326137623163613135346565346632623661303839653038333866363565623865363766326465
   3232353563333332396133636565626662366332356638303166
 env_email_use_tls: "true"
+# Basic auth
+env_basicauth_username: ""
+env_basicauth_password: ""
 
 k8s_environment_variables:
   CONTAINER_IMAGE_TAG: "{{ k8s_container_image_tag }}"
@@ -106,6 +120,9 @@ k8s_environment_variables:
   ALLOWED_HOSTS: "{{ k8s_domain_names[0] }}"
   ENVIRONMENT: "{{ env_name }}"
   CACHE_HOST: "{{ env_cache_host }}"
+  CACHE_CLOUDFRONT_DISTRIBUTION_ID: "{{ env_cache_cloudfront_distribution_id }}"
+  CACHE_BASICAUTH_USERNAME: "{{ env_basicauth_username }}"
+  CACHE_BASICAUTH_PASSWORD: "{{ env_basicauth_password }}"
   BROKER_URL: "{{ env_broker_url }}"
   # *** Uploaded media
   DEFAULT_FILE_STORAGE: "{{ env_default_file_storage }}"

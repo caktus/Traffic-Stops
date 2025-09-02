@@ -32,6 +32,55 @@ export const AVERAGE = {
   label: 'Average for all drivers',
   selected: true,
 };
+export const STOP_PURPOSE_GROUPS = ['Safety Violation', 'Regulatory and Equipment', 'Other'];
+
+export const STOP_PURPOSE_TYPES = [
+  'Speed Limit Violation',
+  'Stop Light/Sign Violation',
+  'Driving While Impaired',
+  'Safe Movement Violation',
+  'Vehicle Equipment Violation',
+  'Vehicle Regulatory Violation',
+  'Other Motor Vehicle Violation',
+  'Seat Belt Violation',
+  'Investigation',
+  'Checkpoint',
+];
+
+export const STOP_TYPE_COLORS = [
+  '#E60032',
+  '#06D6A0',
+  '#8352F4',
+  '#FAE500',
+  '#027979',
+  '#E37C1C',
+  '#4153F6',
+  '#B40895',
+  '#0D3B66',
+];
+
+export const DEMOGRAPHICS_COLORS = {
+  white: '#1282A2',
+  black: '#551DC3',
+  hispanic: '#D24B76',
+  asian: '#F9DC4E',
+  nativeAmerican: '#24BC7D',
+  other: '#999999',
+};
+
+export const CONTRANBAND_TYPE_COLORS = {
+  alcohol: '#24BC7D',
+  drugs: '#1282A2',
+  money: '#D24B76',
+  other: '#999999',
+  weapons: '#551DC3',
+};
+
+export const STOP_PURPOSE_COLORS = {
+  safteyViolation: '#A4284F',
+  regulatoryEquipment: '#FF8133',
+  other: '#999999',
+};
 
 export const STATIC_LEGEND_KEYS = RACES.map((r) => ({
   value: r,
@@ -130,3 +179,131 @@ export const reduceEthnicityByYears = (data, yearsSet, ethnicGroups = RACES) => 
   });
   return yearData;
 };
+
+export const RACE_TABLE_COLUMNS = [
+  {
+    Header: 'Year',
+    accessor: 'year', // accessor is the "key" in the data
+  },
+  {
+    Header: 'White*',
+    accessor: 'white',
+  },
+  {
+    Header: 'Black*',
+    accessor: 'black',
+  },
+  {
+    Header: 'Native American*',
+    accessor: 'native_american',
+  },
+  {
+    Header: 'Asian*',
+    accessor: 'asian',
+  },
+  {
+    Header: 'Other*',
+    accessor: 'other',
+  },
+  {
+    Header: 'Hispanic',
+    accessor: 'hispanic',
+  },
+  {
+    Header: 'Total',
+    accessor: 'total',
+  },
+];
+
+export const CONTRABAND_TYPES_TABLE_COLUMNS = [
+  {
+    Header: 'Year',
+    accessor: 'year', // accessor is the "key" in the data
+  },
+  {
+    Header: 'Alcohol*',
+    accessor: 'alcohol',
+  },
+  {
+    Header: 'Drugs*',
+    accessor: 'drugs',
+  },
+  {
+    Header: 'Money*',
+    accessor: 'money',
+  },
+  {
+    Header: 'Other*',
+    accessor: 'other',
+  },
+  {
+    Header: 'Weapons*',
+    accessor: 'weapons',
+  },
+  {
+    Header: 'Total',
+    accessor: 'total',
+  },
+];
+
+export const LIKELIHOOD_OF_STOP_TABLE_COLUMNS = [
+  {
+    Header: 'Driver Race',
+    accessor: 'race',
+  },
+  {
+    Header: 'Population',
+    accessor: 'population',
+  },
+  {
+    Header: 'Stops',
+    accessor: 'stops',
+  },
+  {
+    Header: 'Stop Rate',
+    accessor: 'stop_rate',
+  },
+  {
+    Header: 'Basline Rate',
+    accessor: 'baseline_rate',
+  },
+  {
+    Header: 'Stop Rate Ratio',
+    accessor: 'stop_rate_ratio',
+  },
+];
+
+export const STOP_REASON_TABLE_COLUMNS = [
+  {
+    Header: 'Year',
+    accessor: 'year',
+  },
+  {
+    Header: 'Stop-reason',
+    accessor: 'purpose',
+  },
+  {
+    Header: 'Black*',
+    accessor: 'black',
+  },
+  {
+    Header: 'Hispanic',
+    accessor: 'hispanic',
+  },
+  {
+    Header: 'Asian*',
+    accessor: 'asian',
+  },
+  {
+    Header: 'Native American*',
+    accessor: 'native_american',
+  },
+  {
+    Header: 'Other*',
+    accessor: 'other',
+  },
+  {
+    Header: 'Total',
+    accessor: 'total',
+  },
+];

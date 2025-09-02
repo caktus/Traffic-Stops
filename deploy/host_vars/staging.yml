@@ -7,6 +7,7 @@ env_contact_us_emails:
   - forwardjustice-team@caktusgroup.com
 
 env_media_location: "staging/"
+env_cache_cloudfront_distribution_id: E2OFFI0H5HY2N8
 
 database_password: !vault |
   $ANSIBLE_VAULT;1.1;AES256
@@ -16,6 +17,19 @@ database_password: !vault |
   3263343333363130630a373033353533613064653033623138313334623537383037356262383662
   36613231353732663637316637383061376566663466373865356539626539376161
 
+env_basicauth_username: forwardjustice
+# Update `k8s_container_htpasswd` below if this password changes. I wasn't able to
+# manually hash the password and get it to work.
+# https://httpd.apache.org/docs/2.4/misc/password_encryptions.html
+# https://docs.ansible.com/ansible/latest/collections/ansible/builtin/password_hash_filter.html
+# My failed attempt: "{{ env_basicauth_username }}:{SHA}{{ env_basicauth_password | hash('sha1') | b64encode }}"
+env_basicauth_password: !vault |
+  $ANSIBLE_VAULT;1.1;AES256
+  64363233356237323034303932306231333765383966306639663465323664643065386635626464
+  3463303836643531613363636239646463383936383837380a316463386662656238653439353431
+  66616461386237636538366165613332306538623038343936316366613832343636313433326534
+  3565623766653963620a333937333535376666346165343036623964623037343461316135663230
+  3662
 k8s_container_htpasswd: !vault |
   $ANSIBLE_VAULT;1.1;AES256
   31356461656536343532333632356338616462346436386566643438376237333935373531633762

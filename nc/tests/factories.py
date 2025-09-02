@@ -3,42 +3,32 @@ import datetime
 import factory
 import factory.fuzzy
 
+from django.utils.timezone import localtime
+
 from nc import models
 
 
-class ViewRefreshFactory(factory.django.DjangoModelFactory):
-    """
-    Refresh materialized view after object creation so tests don't have to
-    manually invoke this functionality.
-    """
-
-    @factory.post_generation
-    def refresh_view(obj, create, extracted, **kwargs):
-        models.StopSummary.refresh()
-        models.ContrabandSummary.refresh()
-
-
-class AgencyFactory(ViewRefreshFactory):
-    class Meta(object):
+class AgencyFactory(factory.django.DjangoModelFactory):
+    class Meta:
         model = models.Agency
 
     name = factory.Sequence(lambda n: "Agency %03d" % n)
 
 
-class PersonFactory(ViewRefreshFactory):
-    class Meta(object):
+class PersonFactory(factory.django.DjangoModelFactory):
+    class Meta:
         model = models.Person
 
     person_id = factory.Sequence(lambda x: x)
     stop = factory.SubFactory("nc.tests.factories.StopFactory")
     age = factory.fuzzy.FuzzyInteger(16, 100)
     race = factory.fuzzy.FuzzyChoice(x[0] for x in models.RACE_CHOICES)
-    ethnicity = factory.fuzzy.FuzzyChoice(x[0] for x in models.ETHNICITY_CHOICES)
+    ethnicity = models.DriverEthnicity.NON_HISPANIC
     type = "D"
 
 
-class StopFactory(ViewRefreshFactory):
-    class Meta(object):
+class StopFactory(factory.django.DjangoModelFactory):
+    class Meta:
         model = models.Stop
 
     stop_id = factory.Sequence(lambda x: x)
@@ -58,10 +48,12 @@ class StopFactory(ViewRefreshFactory):
         if extracted:
             day = 1 if self.date.month == 2 else self.date.day
             self.date = self.date.replace(year=extracted, day=day)
+            if localtime(self.date).year != extracted:
+                self.date += datetime.timedelta(1)
 
 
-class SearchFactory(ViewRefreshFactory):
-    class Meta(object):
+class SearchFactory(factory.django.DjangoModelFactory):
+    class Meta:
         model = models.Search
 
     search_id = factory.Sequence(lambda x: x)
@@ -70,11 +62,22 @@ class SearchFactory(ViewRefreshFactory):
     type = factory.fuzzy.FuzzyChoice(x[0] for x in models.SEARCH_TYPE_CHOICES)
 
 
-class ContrabandFactory(ViewRefreshFactory):
-    class Meta(object):
+class ContrabandFactory(factory.django.DjangoModelFactory):
+    class Meta:
         model = models.Contraband
 
     contraband_id = factory.Sequence(lambda x: x)
     search = factory.SubFactory(SearchFactory)
     person = factory.SubFactory(PersonFactory)
     stop = factory.SubFactory(StopFactory)
+
+
+class NCCensusProfileFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = models.NCCensusProfile
+
+    acs_id = factory.Sequence(lambda x: x)
+    location = factory.Faker("city")
+    source = "ACS"
+    population_total = factory.fuzzy.FuzzyInteger(1000, 100000)
+    population_percent = factory.fuzzy.FuzzyFloat(0.0, 1.0)
