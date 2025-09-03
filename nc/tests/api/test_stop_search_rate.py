@@ -349,6 +349,27 @@ class TestLikelihoodStopQuery:
         assert black_stop_rate_ratio == black_stop_rate / white_stop_rate
         assert round(black_stop_rate_ratio, 4) == 2.6923
 
+    def test_population_zero(self, rf, durham, year_2020):
+        """Ensure the stop_rate and stop_rate_ratio for a race are both 0 if the
+        population is 0.
+        """
+        NCCensusProfileFactory(acs_id="durham", race="Asian", population=0, year=year_2020.year)
+        NCCensusProfileFactory(acs_id="durham", race="White", population=1000, year=year_2020.year)
+        PersonFactory.create_batch(
+            size=17, race=DriverRace.ASIAN, stop__agency=durham, stop__date=year_2020
+        )
+        PersonFactory.create_batch(
+            size=26, race=DriverRace.WHITE, stop__agency=durham, stop__date=year_2020
+        )
+        StopSummary.refresh()
+        url = reverse_querystring(
+            "nc:likelihood-of-stops", args=[durham.id], query_kwargs={"year": year_2020.year}
+        )
+        df = likelihood_stop_query(request=rf.get(url), agency_id=durham.id)
+        asian_drivers = df[df["race"] == "Asian"]
+        assert asian_drivers.iloc[0]["stop_rate"] == 0
+        assert asian_drivers.iloc[0]["stop_rate_ratio"] == 0
+
 
 @pytest.mark.django_db(databases=["traffic_stops_nc"])
 class TestLikelihoodStopView:

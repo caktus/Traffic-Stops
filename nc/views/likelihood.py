@@ -1,4 +1,5 @@
 import django_filters
+import numpy as np
 import pandas as pd
 
 from django.db.models import Avg, Sum
@@ -102,7 +103,9 @@ def likelihood_stop_query(request, agency_id, debug=True):
     )
     if not df_acs.empty:
         # Calculate rates
-        df["stop_rate"] = df["stops"] / df["population"]
+        # If population is 0 for a race, its stop_rate will be `inf`, which will
+        # cause a ValueError when serializing to JSON. Update it to 0 in such cases
+        df["stop_rate"] = (df["stops"] / df["population"]).replace(np.inf, 0)
         df["baseline_rate"] = df[df["race"] == "White"]["stop_rate"].iloc[0]
         df["stop_rate_ratio"] = df["stop_rate"] / df["baseline_rate"]
     else:
