@@ -103,7 +103,13 @@ function SearchRate(props) {
           DEMOGRAPHICS_COLORS.other,
         ];
         const data = {
-          labels: ['Black', 'Hispanic', 'Asian', 'Native American', 'Other'],
+          labels: res.data.stop_percentages_races || [
+            'Black',
+            'Hispanic',
+            'Asian',
+            'Native American',
+            'Other',
+          ],
           datasets: [
             {
               axis: 'y',
