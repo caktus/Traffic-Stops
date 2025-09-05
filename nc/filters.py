@@ -32,19 +32,21 @@ class DriverStopsFilter(filters.FilterSet):
     def filter_stop_date(self, queryset, name, value):
         start_date = value.start
         end_date = value.stop
+        adjusted_start_date = adjusted_end_date = None
         query = Q()
         if start_date:
             # Adjust it to 2 days earlier
             adjusted_start_date = start_date - timedelta(2)
             query &= Q(stop__date__gte=adjusted_start_date)
-            if self.request:
-                self.request.adjusted_start_date = start_date.date(), adjusted_start_date.date()
         if end_date:
             # Adjust it to 2 days later
             adjusted_end_date = end_date + timedelta(2)
             query &= Q(stop__date__lte=adjusted_end_date)
-            if self.request:
-                self.request.adjusted_end_date = end_date.date(), adjusted_end_date.date()
+        if self.request and (adjusted_start_date or adjusted_end_date):
+            self.request.adjusted_date_range = [
+                adjusted_start_date and adjusted_start_date.date(),
+                adjusted_end_date and adjusted_end_date.date(),
+            ]
         return queryset.filter(query)
 
     def filter_officer(self, queryset, name, value):
@@ -61,7 +63,7 @@ class DriverStopsFilter(filters.FilterSet):
         value = int(value)
         age_range = max(value - 2, 0), value + 2
         if self.request:
-            self.request.adjusted_age = value, age_range
+            self.request.adjusted_age = age_range
         return queryset.filter(age__gte=age_range[0], age__lte=age_range[1])
 
     class Meta:
