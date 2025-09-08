@@ -77,3 +77,18 @@ export const LineChartWithPieContainer = styled.div`
 export const PieContainer = styled.div`
   width: 300px;
 `;
+
+export const Tooltip = styled.div`
+  background: #333;
+  color: white;
+  font-weight: bold;
+  padding: 4px 8px;
+  font-size: 13px;
+  border-radius: 4px;
+  visibility: hidden;
+  z-index: 5;
+
+  &[data-show='true'] {
+    visibility: visible;
+  }
+`;

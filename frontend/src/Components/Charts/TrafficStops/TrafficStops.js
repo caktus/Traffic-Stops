@@ -8,10 +8,13 @@ import TrafficStopsStyled, {
   PieWrapper,
   StopGroupsContainer,
   SwitchContainer,
+  Tooltip,
 } from './TrafficStops.styled';
 import * as S from '../ChartSections/ChartsCommon.styled';
 import { useTheme } from 'styled-components';
 import cloneDeep from 'lodash.clonedeep';
+import { usePopper } from 'react-popper';
+import tooltipLanguage from '../../../util/tooltipLanguage';
 
 // Util
 import {
@@ -678,6 +681,31 @@ function TrafficStops(props) {
     return `Traffic Stops by Percentage for ${subject} since ${stopsByPercentageData.labels[0]}`;
   };
 
+  const [tooltipText, setTooltipText] = useState('');
+  const [tooltipReferenceElement, setTooltipReferenceElement] = useState(null);
+  const [popperElement, setPopperElement] = useState(null);
+  const { styles, attributes } = usePopper(tooltipReferenceElement, popperElement, {
+    placement: 'top-start',
+    modifiers: [
+      {
+        name: 'offset',
+        options: {
+          offset: [0, 5],
+        },
+      },
+    ],
+  });
+
+  const showTooltip = (key) => {
+    setTooltipText(tooltipLanguage(key === 'Regulatory/Equipment' ? 'Regulatory Equipment' : key));
+    popperElement.setAttribute('data-show', true);
+  };
+
+  const hideTooltip = () => {
+    setTooltipText('');
+    popperElement.removeAttribute('data-show');
+  };
+
   return (
     <TrafficStopsStyled>
       {/* Traffic Stops by Percentage */}
@@ -838,6 +866,13 @@ function TrafficStops(props) {
         </LineChartWithPieContainer>
       </S.ChartSection>
       <S.ChartSection marginTop={5} id="stops_by_purpose_and_count">
+        <Tooltip
+          ref={setPopperElement}
+          style={{ ...styles.popper, width: '300px' }}
+          {...attributes.popper}
+        >
+          {tooltipText}
+        </Tooltip>
         <ChartHeader
           chartTitle="Traffic Stops By Stop Purpose and Race Count"
           handleViewData={showGroupedStopPurposeModal}
@@ -873,17 +908,22 @@ function TrafficStops(props) {
         </SwitchContainer>
         <div style={{ marginTop: '1em' }}>
           <P weight={WEIGHTS[1]}>Toggle graphs:</P>
-          <div style={{ display: 'flex', gap: '10px', flexDirection: 'row', flexWrap: 'wrap' }}>
+          <div
+            style={{ display: 'flex', gap: '10px', flexDirection: 'row', flexWrap: 'wrap' }}
+            ref={setTooltipReferenceElement}
+          >
             {visibleStopsGroupedByPurpose.map((vg, i) => (
-              <Checkbox
-                height={25}
-                width={25}
-                label={vg.title}
-                value={vg.key}
-                key={i}
-                checked={vg.visible}
-                onChange={toggleGroupedPurposeGraphs}
-              />
+              <div onMouseEnter={() => showTooltip(vg.title)} onMouseLeave={hideTooltip}>
+                <Checkbox
+                  height={25}
+                  width={25}
+                  label={vg.title}
+                  value={vg.key}
+                  key={i}
+                  checked={vg.visible}
+                  onChange={toggleGroupedPurposeGraphs}
+                />
+              </div>
             ))}
           </div>
         </div>

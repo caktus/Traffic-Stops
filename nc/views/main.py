@@ -19,8 +19,6 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_extensions.key_constructor import bits
-from rest_framework_extensions.key_constructor.constructors import DefaultObjectKeyConstructor
 
 from nc import serializers
 from nc.constants import (
@@ -86,13 +84,6 @@ GROUP_DEFAULTS = {
 }
 
 SEARCH_TYPE_CHOICES = dict(SEARCH_TYPE_CHOICES_TUPLES)
-
-
-class QueryKeyConstructor(DefaultObjectKeyConstructor):
-    params_query = bits.QueryParamsKeyBit(["officer", "from", "to"])
-
-
-query_cache_key_func = QueryKeyConstructor()
 
 
 def get_date_range(request):
@@ -279,6 +270,30 @@ class DriverStopsViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.PersonStopSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = DriverStopsFilter
+
+    def list(self, request, *args, **kwargs):
+        response = super().list(request, *args, **kwargs)
+        if response.data["results"]:
+            # If the user entered an age or date range, add the values entered
+            # and the adjusted values to the response, so they can be included
+            # in a message on the frontend
+            for field in ("age", "start_date", "end_date"):
+                adjusted = getattr(request, f"adjusted_{field}", None)
+                if adjusted:
+                    response.data[field] = {
+                        "entered": adjusted[0],
+                        "adjusted": adjusted[1],
+                    }
+        else:
+            # No stops were found. Add the agency's last_reported_stop to the
+            # response data
+            try:
+                agency = Agency.objects.get(id=request.GET.get("agency"))
+            except Agency.DoesNotExist:
+                pass
+            else:
+                response.data["last_reported_stop"] = agency.last_reported_stop
+        return response
 
 
 class StateFactsViewSet(viewsets.ReadOnlyModelViewSet):

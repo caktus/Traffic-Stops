@@ -55,6 +55,10 @@ function FindAStopResults() {
 
   const [stops, setStops] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [lastReportedStop, setLastReportedStop] = useState(null);
+  const [age, setAge] = useState(null);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
 
   useEffect(() => {
     async function _fetchStops() {
@@ -63,6 +67,50 @@ function FindAStopResults() {
         const { data } = await axios.get(`${FIND_A_STOP_URL}${search}`);
         setStops(data.results);
         setLoading(false);
+        if (data.last_reported_stop) {
+          setLastReportedStop(
+            new Intl.DateTimeFormat('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+            }).format(new Date(data.last_reported_stop))
+          );
+        } else {
+          setLastReportedStop(null);
+        }
+        if (data.start_date) {
+          setStartDate({
+            entered: new Intl.DateTimeFormat('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+            }).format(new Date(data.start_date.entered)),
+            adjusted: new Intl.DateTimeFormat('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+            }).format(new Date(data.start_date.adjusted)),
+          });
+        } else {
+          setStartDate(null);
+        }
+        if (data.end_date) {
+          setEndDate({
+            entered: new Intl.DateTimeFormat('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+            }).format(new Date(data.end_date.entered)),
+            adjusted: new Intl.DateTimeFormat('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+            }).format(new Date(data.end_date.adjusted)),
+          });
+        } else {
+          setEndDate(null);
+        }
+        setAge(data.age);
       } catch (e) {
         // eslint-disable-next-line no-console
         console.warn(e);
@@ -97,6 +145,22 @@ function FindAStopResults() {
               : `${stops.length} results found`}
           </P>
         )}
+        {!loading && age && (
+          <P size={SIZES[0]} color={COLORS[0]}>
+            You entered {age.entered} for Age but we used {age.adjusted[0]} - {age.adjusted[1]}{' '}
+            instead.
+          </P>
+        )}
+        {!loading && startDate && (
+          <P size={SIZES[0]} color={COLORS[0]}>
+            You entered {startDate.entered} for Start Date but we used {startDate.adjusted} instead.
+          </P>
+        )}
+        {!loading && endDate && (
+          <P size={SIZES[0]} color={COLORS[0]}>
+            You entered {endDate.entered} for End Date but we used {endDate.adjusted} instead.
+          </P>
+        )}
       </S.Heading>
       <S.TableContainer>
         {loading && <TableSkeleton />}
@@ -109,6 +173,7 @@ function FindAStopResults() {
                 this department
               </S.DeptLink>{' '}
               reported stops within your date range?
+              {lastReportedStop && ` Its last reported stop was on ${lastReportedStop}.`}
             </P>
           </S.NoResults>
         )}

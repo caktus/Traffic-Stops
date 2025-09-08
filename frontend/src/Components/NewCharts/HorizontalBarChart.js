@@ -2,7 +2,7 @@ import { Bar } from 'react-chartjs-2';
 import DataLoading from '../Charts/ChartPrimitives/DataLoading';
 import React, { useRef, useState } from 'react';
 import { usePopper } from 'react-popper';
-import { tooltipLanguage } from '../../util/tooltipLanguage';
+import tooltipLanguage from '../../util/tooltipLanguage';
 import styled from 'styled-components';
 import ChartModal from './ChartModal';
 import { EmptyMessage } from '../Charts/ChartSections/EmptyChartMessage';
@@ -38,6 +38,7 @@ export default function HorizontalBarChart({
   tickStyle = 'percent',
   stepSize = 0.5,
   modalConfig = {},
+  skipNull = false,
 }) {
   const tickCallback = function tickCallback(val) {
     if (tickStyle === 'percent') {
@@ -49,6 +50,7 @@ export default function HorizontalBarChart({
     responsive: true,
     maintainAspectRatio,
     indexAxis: 'y',
+    skipNull,
     scales: {
       x: {
         stacked: xStacked,
