@@ -6,12 +6,7 @@ import * as S from '../ChartSections/ChartsCommon.styled';
 import { RACE_TABLE_COLUMNS, SEARCH_TYPE_DEFAULT, SEARCH_TYPES } from '../chartUtils';
 
 // State
-import useDataset, {
-  AGENCY_DETAILS,
-  SEARCHES,
-  SEARCHES_BY_TYPE,
-  STOPS,
-} from '../../../Hooks/useDataset';
+import useDataset, { SEARCHES, SEARCHES_BY_TYPE, STOPS } from '../../../Hooks/useDataset';
 
 // Hooks
 import useTableModal from '../../../Hooks/useTableModal';
@@ -29,13 +24,12 @@ import axios from '../../../Services/Axios';
 import { ChartContainer } from '../ChartSections/ChartsCommon.styled';
 
 function Searches(props) {
-  const { agencyId } = props;
+  const { agencyId, agencyName } = props;
 
   const officerId = useOfficerId();
 
   useDataset(agencyId, STOPS);
   useDataset(agencyId, SEARCHES);
-  const [chartState] = useDataset(agencyId, SEARCHES_BY_TYPE);
 
   useEffect(() => {
     if (window.location.hash) {
@@ -138,7 +132,7 @@ function Searches(props) {
   };
 
   const getLineChartModalHeading = (title, showStopPurpose = false) => {
-    let subject = chartState.data[AGENCY_DETAILS].name;
+    let subject = agencyName;
     if (officerId) {
       subject = `Officer ${officerId}`;
     }
@@ -189,7 +183,7 @@ function Searches(props) {
               tableSubheader: getLineChartModalSubHeading(
                 'Shows the percent of stops that led to searches, broken down by race/ethnicity'
               ),
-              agencyName: chartState.data[AGENCY_DETAILS].name,
+              agencyName,
               chartTitle: getLineChartModalHeading('Searches By Percentage', false),
             }}
           />
@@ -234,7 +228,7 @@ function Searches(props) {
               tableSubheader: getLineChartModalSubHeading(
                 `Shows the number of searches performed ${subjectObserving()}, broken down by search type and race / ethnicity`
               ),
-              agencyName: chartState.data[AGENCY_DETAILS].name,
+              agencyName,
               chartTitle: getLineChartModalHeading('Searches By Count', true),
             }}
           />
