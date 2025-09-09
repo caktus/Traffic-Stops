@@ -14,7 +14,6 @@ import {
 } from '../chartUtils';
 
 // Hooks
-import useMetaTags from '../../../Hooks/useMetaTags';
 import useTableModal from '../../../Hooks/useTableModal';
 
 // State
@@ -48,7 +47,6 @@ function Contraband(props) {
     }
   }, []);
 
-  const renderMetaTags = useMetaTags();
   const [renderTableModal] = useTableModal();
 
   const initContrabandData = {
@@ -537,7 +535,6 @@ function Contraband(props) {
 
   return (
     <ContrabandStyled>
-      {renderMetaTags()}
       {renderTableModal()}
       <details>
         <summary style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>

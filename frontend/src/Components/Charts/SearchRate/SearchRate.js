@@ -11,7 +11,6 @@ import useDataset, {
 
 // Hooks
 import useOfficerId from '../../../Hooks/useOfficerId';
-import useMetaTags from '../../../Hooks/useMetaTags';
 import useTableModal from '../../../Hooks/useTableModal';
 
 // Constants
@@ -43,7 +42,6 @@ function SearchRate(props) {
   const [stopRateData, setStopRateData] = useState(initStopRateData);
   const [noACSData, setNoACSData] = useState(false);
 
-  const renderMetaTags = useMetaTags();
   const [renderTableModal, { openModal }] = useTableModal();
 
   // eslint-disable-next-line no-unused-vars
@@ -198,7 +196,6 @@ function SearchRate(props) {
 
   return (
     <SearchRateStyled>
-      {renderMetaTags()}
       {renderTableModal()}
       <S.ChartSection>
         <ChartHeader

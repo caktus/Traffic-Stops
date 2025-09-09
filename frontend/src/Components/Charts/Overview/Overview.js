@@ -15,9 +15,6 @@ import {
 } from '../chartUtils';
 import * as slugs from '../../../Routes/slugs';
 
-// Hooks
-import useMetaTags from '../../../Hooks/useMetaTags';
-
 // Data
 import useDataset, {
   AGENCY_DETAILS,
@@ -58,8 +55,6 @@ function Overview(props) {
   const [trafficStopsData, setTrafficStopsData] = useState(initChartData);
   const [searchesData, setSearchesData] = useState(initChartData);
   const [useOfForceData, setUseOfForceData] = useState(initChartData);
-
-  const renderMetaTags = useMetaTags();
 
   const subjectObserving = () => {
     if (officerId) {
@@ -182,7 +177,6 @@ function Overview(props) {
 
   return (
     <OverviewStyled>
-      {renderMetaTags()}
       <ChartHeader
         chartTitle="Overview"
         shareProps={{

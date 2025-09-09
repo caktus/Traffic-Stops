@@ -16,7 +16,6 @@ import {
 import useDataset, { AGENCY_DETAILS, USE_OF_FORCE } from '../../../Hooks/useDataset';
 
 // Hooks
-import useMetaTags from '../../../Hooks/useMetaTags';
 import useTableModal from '../../../Hooks/useTableModal';
 
 // Children
@@ -50,7 +49,6 @@ function UseOfForce(props) {
     ],
   });
 
-  const renderMetaTags = useMetaTags();
   const [renderTableModal, { openModal }] = useTableModal();
 
   const subjectObserving = () => {
@@ -136,7 +134,6 @@ function UseOfForce(props) {
 
   return (
     <UseOfForceStyled>
-      {renderMetaTags()}
       {renderTableModal()}
       <S.ChartSection>
         <ChartHeader chartTitle="Use of Force" handleViewData={handleViewData} />
