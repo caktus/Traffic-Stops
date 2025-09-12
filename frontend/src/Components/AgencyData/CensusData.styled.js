@@ -42,6 +42,7 @@ export const CensusDemographicsMobile = styled.details`
 
   @media (${phoneOnly}) {
     display: block;
+    margin-bottom: 10px;
   }
 `;
 
