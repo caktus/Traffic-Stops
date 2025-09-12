@@ -159,4 +159,11 @@ class LikelihoodStopView(APIView):
             "stop_percentages": stop_percentages,
             "table_data": table_data.to_dict(orient="records"),
         }
+
+        if stop_percentages and len(stop_percentages) < 5:
+            # We have stop percentages, but not for all races. Add the list of
+            # races with stop percentages to the response, so we'll know which
+            # ones to display in the chart on the frontend
+            data["stop_percentages_races"] = chart_df["race"]
+
         return Response(data=data, status=200)

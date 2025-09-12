@@ -393,6 +393,7 @@ class TestLikelihoodStopView:
         # Stop rate ratio should be 0.6 for black drivers, or black drivers are
         # 60% more likely to be pulled over than white drivers
         assert data["stop_percentages"] == [0.62]
+        assert data["stop_percentages_races"] == ["Black"]
         table_data = data["table_data"]
         # Two rows for white and black drivers
         assert len(table_data) == 2
@@ -438,6 +439,7 @@ class TestLikelihoodStopView:
         assert response.status_code == 200
         data = response.json()
         assert data["stop_percentages"] == [1.69, -0.35]
+        assert data["stop_percentages_races"] == ["Black", "Asian"]
         table_data = data["table_data"]
         # Three rows for white, black, and asian drivers
         assert len(table_data) == 3
@@ -490,3 +492,4 @@ class TestLikelihoodStopView:
         # When no ACS data exists, stop_percentages should be empty
         assert data["stop_percentages"] == []
         assert data["table_data"] == []
+        assert "stop_percentages_races" not in data
