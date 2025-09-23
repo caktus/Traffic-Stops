@@ -55,6 +55,8 @@ function FindAStopResults() {
 
   const [stops, setStops] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [lastReportedStop, setLastReportedStop] = useState(null);
+  const [extraResultsMessage, setExtraResultsMessage] = useState('');
 
   useEffect(() => {
     async function _fetchStops() {
@@ -63,6 +65,18 @@ function FindAStopResults() {
         const { data } = await axios.get(`${FIND_A_STOP_URL}${search}`);
         setStops(data.results);
         setLoading(false);
+        if (data.last_reported_stop) {
+          setLastReportedStop(
+            new Intl.DateTimeFormat('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+            }).format(new Date(data.last_reported_stop))
+          );
+        } else {
+          setLastReportedStop(null);
+        }
+        setExtraResultsMessage(data.extra_results_message || '');
       } catch (e) {
         // eslint-disable-next-line no-console
         console.warn(e);
@@ -94,7 +108,9 @@ function FindAStopResults() {
           <P size={SIZES[0]} color={COLORS[0]}>
             {stops.length === MAX_STOPS_RESULTS
               ? `Returned maximum number of results (${MAX_STOPS_RESULTS}). Try limiting your search`
-              : `${stops.length} results found`}
+              : `${stops.length} results found` +
+                (extraResultsMessage &&
+                  ` ${extraResultsMessage}. We show you extra results in case the officer made a mistake in their report or your search details had an error.`)}
           </P>
         )}
       </S.Heading>
@@ -109,6 +125,7 @@ function FindAStopResults() {
                 this department
               </S.DeptLink>{' '}
               reported stops within your date range?
+              {lastReportedStop && ` Its last reported stop was on ${lastReportedStop}.`}
             </P>
           </S.NoResults>
         )}

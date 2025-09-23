@@ -3,6 +3,7 @@ import { useTheme } from 'styled-components';
 import { AnimatePresence } from 'framer-motion';
 import * as S from './AgencyHeader.styled';
 import { P, SIZES, WEIGHTS, COLORS } from '../../styles/StyledComponents/Typography';
+import { phoneOnly } from '../../styles/breakpoints';
 
 // Routing
 import { useHistory, useParams } from 'react-router-dom';
@@ -54,7 +55,10 @@ function AgencyHeader({
       {agencyHeaderOpen && (
         <S.AgencyHeader>
           <S.SubHeaderNavRow>{!showCompareDepartments && <BackButton />}</S.SubHeaderNavRow>
-          <S.SubHeaderContentRow flexDirection={showCompareDepartments ? 'column' : 'row'}>
+          <S.SubHeaderContentRow
+            flexDirection={showCompareDepartments ? 'column' : 'row'}
+            justifyContent="space-between"
+          >
             <S.EntityDetails>
               {officerId ? (
                 <>
@@ -77,18 +81,16 @@ function AgencyHeader({
               )}
               <P size={SIZES[0]} color={COLORS[0]} weight={WEIGHTS[0]}>
                 {lastReportedStop()} {agencyDetails.last_reported_stop && 'on'}
-                <S.ReportedDate size={SIZES[0]} color={COLORS[0]} weight={WEIGHTS[1]}>
+                <strong>
                   {' '}
-                  <S.ReportedDate size={SIZES[0]} color={COLORS[0]} weight={WEIGHTS[1]}>
-                    {agencyDetails.last_reported_stop
-                      ? new Intl.DateTimeFormat('en-US', {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric',
-                        }).format(new Date(agencyDetails.last_reported_stop))
-                      : 'Unknown'}
-                  </S.ReportedDate>
-                </S.ReportedDate>
+                  {agencyDetails.last_reported_stop
+                    ? new Intl.DateTimeFormat('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                      }).format(new Date(agencyDetails.last_reported_stop))
+                    : 'Unknown'}
+                </strong>
               </P>
             </S.EntityDetails>
             <CensusData
@@ -96,49 +98,57 @@ function AgencyHeader({
               showCompareDepartments={showCompareDepartments}
             />
           </S.SubHeaderContentRow>
-          <DataSubsetPicker
-            label="Year"
-            value={year}
-            onChange={handleYearSelect}
-            options={yearRange}
-            dropDown
-          />
-          {!showCloseButton && (
-            <S.AgencyHeaderButton>
-              <Button
-                variant="positive"
-                border={`2px solid ${theme.colors.primary}`}
-                {...ChartHeaderStyles.ButtonInlines}
-                onClick={() => toggleShowCompare()}
-              >
-                <ChartHeaderStyles.Icon
-                  icon={showCompareDepartments ? ICONS.checkboxFilled : ICONS.checkboxEmpty}
-                  height={25}
-                  width={25}
-                  fill={theme.colors.white}
-                />
-                Compare Departments
-              </Button>
-            </S.AgencyHeaderButton>
-          )}
-          {showCloseButton && (
-            <S.AgencyHeaderButton>
-              <Button
-                variant="positive"
-                border={`2px solid ${theme.colors.primary}`}
-                {...ChartHeaderStyles.ButtonInlines}
-                onClick={() => toggleShowCompare()}
-              >
-                <ChartHeaderStyles.Icon
-                  icon={ICONS.close}
-                  height={25}
-                  width={25}
-                  fill={theme.colors.white}
-                />
-                Close
-              </Button>
-            </S.AgencyHeaderButton>
-          )}
+          <S.SubHeaderContentRow
+            flexDirection="row"
+            justifyContent="space-between"
+            breakpoint={phoneOnly}
+          >
+            <DataSubsetPicker
+              label="Year"
+              value={year}
+              onChange={handleYearSelect}
+              options={yearRange}
+              dropDown
+              labelOnLeft
+              dropdownWidth="100px"
+            />
+            {!showCloseButton && (
+              <S.AgencyHeaderButton>
+                <Button
+                  variant="positive"
+                  border={`2px solid ${theme.colors.primary}`}
+                  {...ChartHeaderStyles.ButtonInlines}
+                  onClick={() => toggleShowCompare()}
+                >
+                  <ChartHeaderStyles.Icon
+                    icon={showCompareDepartments ? ICONS.checkboxFilled : ICONS.checkboxEmpty}
+                    height={25}
+                    width={25}
+                    fill={theme.colors.white}
+                  />
+                  Compare Departments
+                </Button>
+              </S.AgencyHeaderButton>
+            )}
+            {showCloseButton && (
+              <S.AgencyHeaderButton>
+                <Button
+                  variant="positive"
+                  border={`2px solid ${theme.colors.primary}`}
+                  {...ChartHeaderStyles.ButtonInlines}
+                  onClick={() => toggleShowCompare()}
+                >
+                  <ChartHeaderStyles.Icon
+                    icon={ICONS.close}
+                    height={25}
+                    width={25}
+                    fill={theme.colors.white}
+                  />
+                  Close
+                </Button>
+              </S.AgencyHeaderButton>
+            )}
+          </S.SubHeaderContentRow>
         </S.AgencyHeader>
       )}
     </AnimatePresence>

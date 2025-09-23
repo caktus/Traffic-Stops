@@ -17,9 +17,13 @@ import ChartRoutes from '../Charts/ChartRoutes';
 import { CompareAlertBox } from '../Elements/Alert/Alert';
 import { YEARS_DEFAULT } from '../Charts/chartUtils';
 import axios from '../../Services/Axios';
+import useOfficerId from '../../Hooks/useOfficerId';
+import MetaTags from '../Charts/ChartSections/MetaTags';
 
 function AgencyData(props) {
   let { agencyId } = useParams();
+  const officerId = useOfficerId();
+
   if (props.agencyId) {
     agencyId = props.agencyId;
   }
@@ -32,6 +36,9 @@ function AgencyData(props) {
   const [yearRange, setYearRange] = useState([YEARS_DEFAULT]);
   const [year, setYear] = useState(YEARS_DEFAULT);
   const [yearIdx, setYearIdx] = useState(null);
+
+  const _getEntityReference = () =>
+    officerId ? `Officer ${officerId}` : chartState?.data[AGENCY_DETAILS]?.name;
 
   useEffect(() => {
     if (chartState.data[AGENCY_DETAILS]) setSidebarOpen(true);
@@ -59,6 +66,7 @@ function AgencyData(props) {
 
   return (
     <S.AgencyData data-testid="AgencyData" {...props}>
+      <MetaTags entityReference={_getEntityReference()} />
       {props.showCompare && !props.agencyId && <CompareAlertBox />}
       <AgencyHeader
         agencyHeaderOpen={agencyHeaderOpen}

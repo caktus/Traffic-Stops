@@ -30,7 +30,6 @@ export const CensusTitleMobile = styled.span`
 
 export const CensusDemographics = styled.div`
   display: flex;
-  flex: 1;
   flex-direction: column;
 
   @media (${phoneOnly}) {
@@ -43,6 +42,7 @@ export const CensusDemographicsMobile = styled.details`
 
   @media (${phoneOnly}) {
     display: block;
+    margin-bottom: 10px;
   }
 `;
 
@@ -64,6 +64,14 @@ export const CensusRow = styled.ul`
   @media (${smallerThanTabletLandscape}) {
     height: 100px;
   }
+`;
+
+export const CensusRowMobile = styled.ul`
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  list-style-type: none;
 `;
 
 export const CensusDatum = styled.li`

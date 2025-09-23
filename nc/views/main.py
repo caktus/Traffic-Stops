@@ -19,8 +19,6 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_extensions.key_constructor import bits
-from rest_framework_extensions.key_constructor.constructors import DefaultObjectKeyConstructor
 
 from nc import serializers
 from nc.constants import (
@@ -86,13 +84,6 @@ GROUP_DEFAULTS = {
 }
 
 SEARCH_TYPE_CHOICES = dict(SEARCH_TYPE_CHOICES_TUPLES)
-
-
-class QueryKeyConstructor(DefaultObjectKeyConstructor):
-    params_query = bits.QueryParamsKeyBit(["officer", "from", "to"])
-
-
-query_cache_key_func = QueryKeyConstructor()
 
 
 def get_date_range(request):
@@ -279,6 +270,37 @@ class DriverStopsViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.PersonStopSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = DriverStopsFilter
+
+    def list(self, request, *args, **kwargs):
+        response = super().list(request, *args, **kwargs)
+        if response.data["results"]:
+            # If the user entered an age and/or date range, add a message indicating
+            # the adjusted search parameters
+            message_parts = []
+            age_range = getattr(request, "adjusted_age", None)
+            date_range = getattr(request, "adjusted_date_range", None)
+            if age_range:
+                message_parts.append(f"with drivers aged {age_range[0]}-{age_range[1]}")
+            if date_range:
+                date_range = [i and i.strftime("%B %d, %Y") for i in date_range]
+                if all(date_range):
+                    message_parts.append(f"between {date_range[0]} and {date_range[1]}")
+                elif date_range[0]:
+                    message_parts.append(f"after {date_range[0]}")
+                else:
+                    message_parts.append(f"before {date_range[1]}")
+            if message_parts:
+                response.data["extra_results_message"] = " ".join(message_parts)
+        else:
+            # No stops were found. Add the agency's last_reported_stop to the
+            # response data
+            try:
+                agency = Agency.objects.get(id=request.GET.get("agency"))
+            except Agency.DoesNotExist:
+                pass
+            else:
+                response.data["last_reported_stop"] = agency.last_reported_stop
+        return response
 
 
 class StateFactsViewSet(viewsets.ReadOnlyModelViewSet):

@@ -67,7 +67,6 @@ Create PostgreSQL database
 
 3. Create environment-specific databases, e.g.::
 
-```sql
     CREATE ROLE trafficstops_staging WITH LOGIN NOSUPERUSER INHERIT CREATEDB NOCREATEROLE NOREPLICATION PASSWORD '<password>';
     CREATE DATABASE trafficstops_staging;
     GRANT CONNECT ON DATABASE trafficstops_staging TO trafficstops_staging;
@@ -75,7 +74,6 @@ Create PostgreSQL database
     CREATE DATABASE trafficstops_staging_nc;
     GRANT CONNECT ON DATABASE trafficstops_staging_nc TO trafficstops_staging;
     GRANT ALL PRIVILEGES ON DATABASE trafficstops_staging_nc TO trafficstops_staging;
-```
 
 
 Configure cluster for deploying web applications

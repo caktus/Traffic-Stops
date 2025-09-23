@@ -3,15 +3,10 @@ import SearchRateStyled from './SearchRate.styled';
 import * as S from '../ChartSections/ChartsCommon.styled';
 
 // Data
-import useDataset, {
-  AGENCY_DETAILS,
-  LIKELIHOOD_OF_SEARCH,
-  LIKELIHOOD_OF_STOP,
-} from '../../../Hooks/useDataset';
+import { LIKELIHOOD_OF_SEARCH, LIKELIHOOD_OF_STOP } from '../../../Hooks/useDataset';
 
 // Hooks
 import useOfficerId from '../../../Hooks/useOfficerId';
-import useMetaTags from '../../../Hooks/useMetaTags';
 import useTableModal from '../../../Hooks/useTableModal';
 
 // Constants
@@ -30,11 +25,8 @@ import { ChartContainer } from '../ChartSections/ChartsCommon.styled';
 import { useChartState } from '../../../Context/chart-state';
 
 function SearchRate(props) {
-  const { agencyId, yearRange, year } = props;
+  const { agencyId, agencyName, yearRange, year } = props;
   const officerId = useOfficerId();
-
-  const [searchChartState] = useDataset(agencyId, LIKELIHOOD_OF_SEARCH, AGENCY_DETAILS);
-  const [stopChartState] = useDataset(agencyId, LIKELIHOOD_OF_STOP, AGENCY_DETAILS);
 
   const initSearchRateData = { labels: [], datasets: [], loading: true };
   const [searchRateData, setSearchRateData] = useState(initSearchRateData);
@@ -43,7 +35,6 @@ function SearchRate(props) {
   const [stopRateData, setStopRateData] = useState(initStopRateData);
   const [noACSData, setNoACSData] = useState(false);
 
-  const renderMetaTags = useMetaTags();
   const [renderTableModal, { openModal }] = useTableModal();
 
   // eslint-disable-next-line no-unused-vars
@@ -103,7 +94,13 @@ function SearchRate(props) {
           DEMOGRAPHICS_COLORS.other,
         ];
         const data = {
-          labels: ['Black', 'Hispanic', 'Asian', 'Native American', 'Other'],
+          labels: res.data.stop_percentages_races || [
+            'Black',
+            'Hispanic',
+            'Asian',
+            'Native American',
+            'Other',
+          ],
           datasets: [
             {
               axis: 'y',
@@ -181,10 +178,11 @@ function SearchRate(props) {
       census. A Stop Rate Ratio of 1.0 (or 100%) indicates equal stop likelihood across
       groups, while values above or below 1.0 suggest disparities. ${subjectObserving()}`;
     }
+    return '';
   };
 
   const getBarChartModalHeading = (title) => {
-    let subject = searchChartState.data[AGENCY_DETAILS].name;
+    let subject = agencyName;
     if (officerId) {
       subject = `Officer ${officerId}`;
     }
@@ -197,7 +195,6 @@ function SearchRate(props) {
 
   return (
     <SearchRateStyled>
-      {renderMetaTags()}
       {renderTableModal()}
       <S.ChartSection>
         <ChartHeader
@@ -253,7 +250,7 @@ function SearchRate(props) {
             modalConfig={{
               tableHeader: 'Likelihood of Stop',
               tableSubheader: getBarChartModalSubHeading('stop'),
-              agencyName: stopChartState.data[AGENCY_DETAILS].name,
+              agencyName,
               chartTitle: getBarChartModalHeading('Likelihood of Stop'),
             }}
           />
@@ -304,7 +301,7 @@ function SearchRate(props) {
             modalConfig={{
               tableHeader: 'Likelihood of Search',
               tableSubheader: getBarChartModalSubHeading('search'),
-              agencyName: searchChartState.data[AGENCY_DETAILS].name,
+              agencyName,
               chartTitle: getBarChartModalHeading('Likelihood of Search'),
             }}
           />

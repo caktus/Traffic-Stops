@@ -10,6 +10,10 @@ import {
 export const AgencyHeader = styled.div`
   box-shadow: ${(props) => props.theme.shadows.depth1};
   padding: 0.5em 3em;
+  position: sticky;
+  top: 0;
+  z-index: 9;
+  background: ${(props) => props.theme.colors.white};
 
   @media (${smallerThanDesktop}) {
     padding: 0.5em 1em;
@@ -54,7 +58,8 @@ export const SubHeaderContentRow = styled.div`
   display: flex;
   flex: 1;
   flex-direction: ${(props) => props.flexDirection || 'row'};
-  @media (${smallerThanDesktop}) {
+  justify-content: ${(props) => props.justifyContent || 'flex-start'};
+  @media (${(props) => props.breakpoint || smallerThanDesktop}) {
     flex-direction: column;
   }
 `;
@@ -67,10 +72,6 @@ export const EntityDetails = styled.div`
 
 export const AgencyTitle = styled(H2)`
   font-size: 18px;
-`;
-
-export const ReportedDate = styled(P)`
-  display: inline;
 `;
 
 export const Other = styled(P)`

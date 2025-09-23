@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import ArrestsStyled from './Arrests.styles';
 
 // Hooks
-import useMetaTags from '../../../Hooks/useMetaTags';
 import useTableModal from '../../../Hooks/useTableModal';
 
 // Children
@@ -22,7 +21,6 @@ function Arrests(props) {
   const [togglePercentageOfStops, setTogglePercentageOfStops] = useState(true);
   const [togglePercentageOfSearches, setTogglePercentageOfSearches] = useState(true);
 
-  const renderMetaTags = useMetaTags();
   const [renderTableModal] = useTableModal();
 
   useEffect(() => {
@@ -59,7 +57,6 @@ function Arrests(props) {
 
   return (
     <ArrestsStyled>
-      {renderMetaTags()}
       {renderTableModal()}
       <PercentageOfStops {...props} year={year} />
       <PercentageOfSearches {...props} year={year} />

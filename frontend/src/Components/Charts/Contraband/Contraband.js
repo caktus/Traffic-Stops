@@ -14,11 +14,7 @@ import {
 } from '../chartUtils';
 
 // Hooks
-import useMetaTags from '../../../Hooks/useMetaTags';
 import useTableModal from '../../../Hooks/useTableModal';
-
-// State
-import useDataset, { AGENCY_DETAILS } from '../../../Hooks/useDataset';
 
 // Children
 import { P, WEIGHTS } from '../../../styles/StyledComponents/Typography';
@@ -37,10 +33,9 @@ import { ChartContainer } from '../ChartSections/ChartsCommon.styled';
 const STOP_PURPOSE_TYPES = ['Safety Violation', 'Regulatory and Equipment', 'Other'];
 
 function Contraband(props) {
-  const { agencyId, yearRange, year } = props;
+  const { agencyId, agencyName, yearRange, year } = props;
 
   const officerId = useOfficerId();
-  const [chartState] = useDataset(agencyId, AGENCY_DETAILS);
 
   useEffect(() => {
     if (window.location.hash) {
@@ -48,7 +43,6 @@ function Contraband(props) {
     }
   }, []);
 
-  const renderMetaTags = useMetaTags();
   const [renderTableModal] = useTableModal();
 
   const initContrabandData = {
@@ -524,7 +518,7 @@ function Contraband(props) {
   const getBarChartModalSubHeading = (title) => `${title} ${subjectObserving()}.`;
 
   const getBarChartModalHeading = (title) => {
-    let subject = chartState.data[AGENCY_DETAILS].name;
+    let subject = agencyName;
     if (officerId) {
       subject = `Officer ${officerId}`;
     }
@@ -537,7 +531,6 @@ function Contraband(props) {
 
   return (
     <ContrabandStyled>
-      {renderMetaTags()}
       {renderTableModal()}
       <details>
         <summary style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
@@ -582,7 +575,7 @@ function Contraband(props) {
           <NewModal
             tableHeader='Contraband "Hit Rate"'
             tableSubheader="Shows what number of searches led to the discovery of illegal items by race/ethnicity."
-            agencyName={chartState.data[AGENCY_DETAILS].name}
+            agencyName={agencyName}
             tableData={contrabandData.tableData}
             csvData={contrabandData.csvData}
             columns={RACE_TABLE_COLUMNS}
@@ -602,7 +595,7 @@ function Contraband(props) {
               tableSubheader: getBarChartModalSubHeading(
                 'Shows what percentage of searches led to the discovery of illegal items by race/ethnicity'
               ),
-              agencyName: chartState.data[AGENCY_DETAILS].name,
+              agencyName,
               chartTitle: getBarChartModalHeading('Contraband "Hit Rate"'),
             }}
           />
@@ -625,7 +618,7 @@ function Contraband(props) {
         <NewModal
           tableHeader='Contraband "Hit Rate" Grouped By Stop Purpose'
           tableSubheader="Shows what number of searches led to the discovery of illegal items by race/ethnicity and original stop purpose."
-          agencyName={chartState.data[AGENCY_DETAILS].name}
+          agencyName={agencyName}
           tableData={contrabandStopPurposeModalData.tableData}
           csvData={contrabandStopPurposeModalData.csvData}
           columns={RACE_TABLE_COLUMNS}
@@ -654,7 +647,7 @@ function Contraband(props) {
               tableSubheader: getBarChartModalSubHeading(
                 'Shows what number of searches led to the discovery of illegal items by race/ethnicity and original stop purpose'
               ),
-              agencyName: chartState.data[AGENCY_DETAILS].name,
+              agencyName,
               chartTitle: getBarChartModalHeading('Contraband "Hit Rate" Grouped By Stop Purpose'),
             }}
           />
@@ -673,7 +666,7 @@ function Contraband(props) {
           <NewModal
             tableHeader='Contraband "Hit Rate" by type'
             tableSubheader="Shows what number of searches discovered specific types of illegal items."
-            agencyName={chartState.data[AGENCY_DETAILS].name}
+            agencyName={agencyName}
             tableData={contrabandTypesData.tableData}
             csvData={contrabandTypesData.csvData}
             columns={CONTRABAND_TYPES_TABLE_COLUMNS}
@@ -693,7 +686,7 @@ function Contraband(props) {
               tableSubheader: getBarChartModalSubHeading(
                 'Shows what number of searches discovered specific types of illegal items'
               ),
-              agencyName: chartState.data[AGENCY_DETAILS].name,
+              agencyName,
               chartTitle: getBarChartModalHeading('Contraband "Hit Rate" by type'),
             }}
           />
@@ -718,7 +711,7 @@ function Contraband(props) {
         <NewModal
           tableHeader='Contraband "Hit Rate" by Type grouped by Stop Purpose'
           tableSubheader="Shows the specific types of illegal items discovered in searches by race and initial stop type."
-          agencyName={chartState.data[AGENCY_DETAILS].name}
+          agencyName={agencyName}
           tableData={groupedContrabandStopPurposeModalData.tableData}
           csvData={groupedContrabandStopPurposeModalData.csvData}
           columns={RACE_TABLE_COLUMNS}
@@ -776,7 +769,7 @@ function Contraband(props) {
                 tableSubheader: getBarChartModalSubHeading(
                   'Shows the specific types of illegal items discovered in searches by race and initial stop type'
                 ),
-                agencyName: chartState.data[AGENCY_DETAILS].name,
+                agencyName,
                 chartTitle: getBarChartModalHeading(
                   'Contraband "Hit Rate" by Type grouped by Safety Violation'
                 ),
@@ -800,7 +793,7 @@ function Contraband(props) {
                 tableSubheader: getBarChartModalSubHeading(
                   'Shows the specific types of illegal items discovered in searches by race and initial stop type'
                 ),
-                agencyName: chartState.data[AGENCY_DETAILS].name,
+                agencyName,
                 chartTitle: getBarChartModalHeading(
                   'Contraband "Hit Rate" by Type grouped by Regulatory/Equipment'
                 ),
@@ -826,7 +819,7 @@ function Contraband(props) {
                 tableSubheader: getBarChartModalSubHeading(
                   'Shows the specific types of illegal items discovered in searches by race and initial stop type'
                 ),
-                agencyName: chartState.data[AGENCY_DETAILS].name,
+                agencyName,
                 chartTitle: getBarChartModalHeading(
                   'Contraband "Hit Rate" by Type grouped by Other'
                 ),

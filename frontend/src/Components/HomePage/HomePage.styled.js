@@ -37,6 +37,7 @@ export const MainContent = styled.div`
   flex: 1;
   display: flex;
   flex-direction: row;
+  column-gap: 2em;
 
   @media (${smallerThanTabletLandscape}) {
     flex-direction: column;
@@ -45,11 +46,11 @@ export const MainContent = styled.div`
 `;
 
 export const About = styled.aside`
-  width: 381px;
-  margin-right: 3em;
-
+  flex: 1;
+  margin-bottom: 2em;
   @media (${smallerThanTabletLandscape}) {
-    margin: 0;
+    margin-bottom: 0;
+    margin-left: -4px;
     width: 100%;
   }
 `;
@@ -64,8 +65,9 @@ export const AboutImage = styled.img`
 export const AboutContent = styled.div`
   min-height: 400px;
   background: ${(p) => p.theme.colors.greyLight};
-  box-shadow: 0px 0px 1px rgba(48, 49, 51, 0.05), 0px 2px 4px rgba(48, 49, 51, 0.1);
+  box-shadow: 0px 2px 4px ${(p) => p.theme.colors.purple};
   padding: 2.5em 2em 2em 2em;
+  margin-left: 4px;
 `;
 
 export const AboutHeading = styled(H2)`
@@ -137,22 +139,27 @@ export const ViewAllIcon = styled(FJIcon)`
 `;
 
 export const DeptCTA = styled.div`
+  flex: 1;
+  margin: 2em 0;
+  padding: 1em 2em 0.5em;
+  background: ${(props) => props.theme.colors.greySemi};
   @media (${smallerThanTabletLandscape}) {
-    width: 90%;
     margin: 2em auto;
   }
 `;
 
 export const StopCTA = styled.div`
-  margin-top: 2em;
+  flex: 1;
+  margin: 2em 0;
+  padding: 1em 2em 0.5em;
+  background: ${(props) => props.theme.colors.grey};
   @media (${smallerThanTabletLandscape}) {
-    width: 90%;
-    margin: 2em auto;
+    margin: 0 auto 2em;
   }
 `;
 
 export const ButtonWrapper = styled.div`
-  width: 360px;
+  max-width: 360px;
   margin: 2em 0;
   @media (${smallerThanTabletLandscape}) {
     width: 90%;
