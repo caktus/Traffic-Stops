@@ -112,10 +112,20 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STATIC_URL = "/static/"
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-MEDIA_URL = "/media/"
 MEDIA_STORAGE_BUCKET_NAME = os.getenv("MEDIA_STORAGE_BUCKET_NAME", "")
 MEDIA_LOCATION = os.getenv("MEDIA_LOCATION", "")
 MEDIA_S3_CUSTOM_DOMAIN = os.getenv("MEDIA_S3_CUSTOM_DOMAIN", "")
+
+# Set MEDIA_URL based on whether we're using S3 storage
+if MEDIA_S3_CUSTOM_DOMAIN:
+    # When using S3 with custom domain, construct the full URL
+    MEDIA_URL = f"https://{MEDIA_S3_CUSTOM_DOMAIN}/"
+    if MEDIA_LOCATION:
+        MEDIA_URL += f"{MEDIA_LOCATION}/"
+else:
+    # Fall back to local media serving
+    MEDIA_URL = "/media/"
+
 STORAGES = {
     "default": {
         "BACKEND": os.getenv("DEFAULT_FILE_STORAGE", "django.core.files.storage.FileSystemStorage")
