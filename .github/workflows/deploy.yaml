@@ -2,7 +2,7 @@ name: deploy
 
 on:
   push:
-    branches: [main, develop, CU-868em67g4_Upgrade-to-Django-52]
+    branches: [main, develop, 366-broken-resource-links]
 
 jobs:
   deploy:
