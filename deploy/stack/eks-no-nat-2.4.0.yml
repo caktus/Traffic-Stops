@@ -50,6 +50,14 @@ Conditions:
     - !Equals
       - !Ref 'DatabaseReplication'
       - 'true'
+  UseCustomAMI: !Not
+    - !Equals
+      - !Ref 'CustomEKSAMI'
+      - ''
+  UseCustomAMIType: !Not
+    - !Equals
+      - !Ref 'CustomAMIImageType'
+      - ''
   EitherCacheCondition: !Or
     - !Condition 'UsingMemcached'
     - !Condition 'UsingRedis'
@@ -193,6 +201,15 @@ Metadata:
           - RedisNumCacheClusters
           - RedisSnapshotRetentionLimit
           - RedisAutomaticFailover
+      - Label:
+          default: Elastic Kubernetes Service (EKS)
+        Parameters:
+          - EnableEksEncryptionConfig
+          - EksPublicAccessCidrs
+          - EksClusterName
+          - CustomEKSAMI
+          - CustomAMIImageType
+          - EksClusterVersion
     ParameterLabels:
       AdministratorIPAddress:
         default: Admin IP Address
@@ -210,6 +227,10 @@ Metadata:
         default: Instance Type
       ContainerVolumeSize:
         default: Root Volume Size
+      CustomAMIImageType:
+        default: Custom AMI Image Type
+      CustomEKSAMI:
+        default: Custom EKS AMI
       CustomerManagedCmkArn:
         default: Customer managed key ARN
       DatabaseAllocatedStorage:
@@ -609,6 +630,14 @@ Parameters:
     Default: '20'
     Description: Size of instance EBS root volume (in GB)
     Type: Number
+  CustomAMIImageType:
+    Default: ''
+    Description: The image type to match the custom AMI. E.g., AL2023_x86_64_STANDARD, AL2_x86_64
+    Type: String
+  CustomEKSAMI:
+    Default: ''
+    Description: Custom AMI ID for EKS node group
+    Type: String
   CustomerManagedCmkArn:
     Default: ''
     Description: KMS CMK ARN to encrypt stack resources (except for public buckets).
@@ -1587,10 +1616,14 @@ Resources:
     DependsOn:
       - EksCluster
     Properties:
+      AmiType: !If
+        - UseCustomAMIType
+        - !Ref 'CustomAMIImageType'
+        - !Ref 'AWS::NoValue'
       ClusterName: !Ref 'EksCluster'
-      DiskSize: !Ref 'ContainerVolumeSize'
-      InstanceTypes:
-        - !Ref 'ContainerInstanceType'
+      LaunchTemplate:
+        Id: !Ref 'NodegroupLaunchTemplate'
+        Version: !GetAtt 'NodegroupLaunchTemplate.LatestVersionNumber'
       NodeRole: !GetAtt 'ContainerInstanceRole.Arn'
       ScalingConfig:
         DesiredSize: !Ref 'DesiredScale'
@@ -1602,6 +1635,29 @@ Resources:
       Tags:
         Key: Value
     Type: AWS::EKS::Nodegroup
+  NodegroupLaunchTemplate:
+    Properties:
+      LaunchTemplateData:
+        BlockDeviceMappings:
+          - DeviceName: /dev/xvda
+            Ebs:
+              DeleteOnTermination: true
+              Encrypted: !Ref 'UseAES256Encryption'
+              KmsKeyId: !If
+                - CmkArnCondition
+                - !Ref 'CustomerManagedCmkArn'
+                - !Ref 'AWS::NoValue'
+              VolumeSize: !Ref 'ContainerVolumeSize'
+              VolumeType: gp3
+        ImageId: !If
+          - UseCustomAMI
+          - !Ref 'CustomEKSAMI'
+          - !Ref 'AWS::NoValue'
+        InstanceType: !Ref 'ContainerInstanceType'
+        MetadataOptions:
+          HttpPutResponseHopLimit: 3
+          HttpTokens: required
+    Type: AWS::EC2::LaunchTemplate
   PrivateAssetsBucket:
     DeletionPolicy: Retain
     Properties:

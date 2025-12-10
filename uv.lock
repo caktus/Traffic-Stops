@@ -473,16 +473,16 @@ wheels = [
 
 [[package]]
 name = "django"
-version = "5.2.5"
+version = "5.2.8"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "asgiref" },
     { name = "sqlparse" },
     { name = "tzdata", marker = "sys_platform == 'win32'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/62/9b/779f853c3d2d58b9e08346061ff3e331cdec3fe3f53aae509e256412a593/django-5.2.5.tar.gz", hash = "sha256:0745b25681b129a77aae3d4f6549b62d3913d74407831abaa0d9021a03954bae", size = 10859748, upload-time = "2025-08-06T08:26:29.978Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/05/a2/933dbbb3dd9990494960f6e64aca2af4c0745b63b7113f59a822df92329e/django-5.2.8.tar.gz", hash = "sha256:23254866a5bb9a2cfa6004e8b809ec6246eba4b58a7589bc2772f1bcc8456c7f", size = 10849032, upload-time = "2025-11-05T14:07:32.778Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/9d/6e/98a1d23648e0085bb5825326af17612ecd8fc76be0ce96ea4dc35e17b926/django-5.2.5-py3-none-any.whl", hash = "sha256:2b2ada0ee8a5ff743a40e2b9820d1f8e24c11bac9ae6469cd548f0057ea6ddcd", size = 8302999, upload-time = "2025-08-06T08:26:23.562Z" },
+    { url = "https://files.pythonhosted.org/packages/5e/3d/a035a4ee9b1d4d4beee2ae6e8e12fe6dee5514b21f62504e22efcbd9fb46/django-5.2.8-py3-none-any.whl", hash = "sha256:37e687f7bd73ddf043e2b6b97cfe02fcbb11f2dbb3adccc6a2b18c6daa054d7f", size = 8289692, upload-time = "2025-11-05T14:07:28.761Z" },
 ]
 
 [[package]]
@@ -1003,7 +1003,7 @@ wheels = [
 
 [[package]]
 name = "kubernetes-validate"
-version = "1.32.0"
+version = "1.33.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "importlib-resources" },
@@ -1013,9 +1013,9 @@ dependencies = [
     { name = "referencing" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/83/63/d67b1df4971f3f869098ffb0895e9dc72612769fe3319068cf73cbbf6d18/kubernetes_validate-1.32.0.tar.gz", hash = "sha256:192837fdc2c191652501fe268dda34253dfacae0034505a51b0a3884d159361d", size = 7909598, upload-time = "2025-01-28T10:03:42.038Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/f1/65/6ca340bd0acf560f81519e7fc8ae6fc4658872fbcd93158f8c3cf0b3b348/kubernetes_validate-1.33.1.tar.gz", hash = "sha256:53635bf66a5e04901209ae7f6aff0e8c19efa145cc9a90872344c92a31353a99", size = 8819459, upload-time = "2025-06-11T13:09:35.576Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/98/19/a45e98e8a462e402de2df5873e53c25fcd0dbfe067a861370be697ac1dea/kubernetes_validate-1.32.0-py3-none-any.whl", hash = "sha256:0d5610622bd9c8fdea67f114faf4dc71fda755c9640e58a1ad9f4bc13c8b7751", size = 16333406, upload-time = "2025-06-12T20:46:13.982Z" },
+    { url = "https://files.pythonhosted.org/packages/b6/1c/79fa67f473225bf52c752cdd16c73c11127908a8adb190687633cf9f61d9/kubernetes_validate-1.33.1-py3-none-any.whl", hash = "sha256:fd910cff492ea32c85b8733fedd31dd0cf582925d3b3a3e73ceda1876f87bdcb", size = 18231087, upload-time = "2025-06-11T13:09:32.123Z" },
 ]
 
 [[package]]
@@ -1844,7 +1844,7 @@ requires-dist = [
     { name = "census", specifier = ">=0.8.24" },
     { name = "click", specifier = ">=8.2.0" },
     { name = "dj-database-url", specifier = ">=3.0.0" },
-    { name = "django", specifier = ">=5.2.0" },
+    { name = "django", specifier = ">=5.2.8" },
     { name = "django-ckeditor-5", specifier = ">=0.2.15" },
     { name = "django-click", specifier = ">=2.4.1" },
     { name = "django-crispy-forms", specifier = ">=2.4.0" },
@@ -1882,7 +1882,7 @@ dev = [
     { name = "ipython", specifier = ">=8.32.0" },
     { name = "isort", specifier = ">=6.0.0" },
     { name = "kubernetes", specifier = "==32.*" },
-    { name = "kubernetes-validate", specifier = "~=1.32.0" },
+    { name = "kubernetes-validate", specifier = "~=1.33.0" },
     { name = "openshift", specifier = ">=0.13.2" },
     { name = "pre-commit", specifier = ">=4.1.0" },
     { name = "pytest", specifier = ">=8.3.3" },
