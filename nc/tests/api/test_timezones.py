@@ -1,9 +1,10 @@
 import datetime as dt
 
+from zoneinfo import ZoneInfo
+
 import pytest
 
 from django.conf import settings
-from zoneinfo import ZoneInfo
 
 from nc.tests import factories
 

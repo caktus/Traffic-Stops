@@ -1,10 +1,11 @@
 import math
 
+from zoneinfo import ZoneInfo
+
 from django.conf import settings
 from django.core.exceptions import FieldDoesNotExist
 from django.db.models import Count
 from memoize import delete_memoized, memoize
-from zoneinfo import ZoneInfo
 
 from .models import StateFacts, TopAgencyFacts
 

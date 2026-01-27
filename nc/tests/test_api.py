@@ -1,10 +1,11 @@
 import datetime
 
+from zoneinfo import ZoneInfo
+
 from django.conf import settings
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
-from zoneinfo import ZoneInfo
 
 from nc.models import PURPOSE_CHOICES, RACE_CHOICES, SEARCH_TYPE_CHOICES, StopSummary
 from nc.tests import factories

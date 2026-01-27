@@ -17,20 +17,14 @@ class StateDatasetRouter:
     def db_for_read(self, model, **hints):
         """Return state DB if model's app name is a database"""
         state_db = self._db_name(model)
-        if state_db in settings.DATABASES:
-            name = state_db
-        else:
-            name = "default"
+        name = state_db if state_db in settings.DATABASES else "default"
         logger.debug(f"db_for_read({state_db}): {name}")
         return name
 
     def db_for_write(self, model, **hints):
         """Return state DB if model's app name is a database"""
         state_db = self._db_name(model)
-        if state_db in settings.DATABASES:
-            name = state_db
-        else:
-            name = "default"
+        name = state_db if state_db in settings.DATABASES else "default"
         logger.debug(f"db_for_write({state_db}): {name}")
         return name
 
