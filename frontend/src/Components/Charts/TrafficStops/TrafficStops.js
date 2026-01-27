@@ -28,7 +28,6 @@ import {
   STOP_TYPES,
   RACE_TABLE_COLUMNS,
   STOP_REASON_TABLE_COLUMNS,
-  STOP_PURPOSE_COLORS,
 } from '../chartUtils';
 
 // State
@@ -119,24 +118,11 @@ function TrafficStops(props) {
     loading: true,
   });
 
-  const purposeGroupedPieLabels = ['Safety Violation', 'Regulatory and Equipment', 'Other'];
-  const purposeGroupedPieColors = [
-    STOP_PURPOSE_COLORS.safteyViolation,
-    STOP_PURPOSE_COLORS.regulatoryEquipment,
-    STOP_PURPOSE_COLORS.other,
-  ];
-  const purposeGroupedPieConfig = {
-    backgroundColor: purposeGroupedPieColors,
-    borderColor: purposeGroupedPieColors,
-    hoverBackgroundColor: purposeGroupedPieColors,
-    borderWidth: 1,
-  };
   const [stopPurposeGroupedPieData, setStopPurposeGroupedPieData] = useState({
-    labels: purposeGroupedPieLabels,
+    labels: [],
     datasets: [
       {
         data: [],
-        ...purposeGroupedPieConfig,
       },
     ],
   });
@@ -382,10 +368,18 @@ function TrafficStops(props) {
     };
 
     const data = [];
+    const labels = [];
+    const backgroundColor = [];
+    const borderColor = [];
     if (ds.labels && ds.labels.length) {
       const safety = getValues(ds.datasets[0].data);
       const regulatory = getValues(ds.datasets[1].data);
       const other = getValues(ds.datasets[2].data);
+      ds.datasets.forEach((i) => {
+        labels.push(i.label);
+        backgroundColor.push(i.backgroundColor);
+        borderColor.push(i.borderColor);
+      });
       const total = safety + regulatory + other;
 
       const normalize = (n) => ((n / total) * 100).toFixed(4);
@@ -397,11 +391,14 @@ function TrafficStops(props) {
       }
     }
     setStopPurposeGroupedPieData({
-      labels: purposeGroupedPieLabels,
+      labels,
       datasets: [
         {
           data,
-          ...purposeGroupedPieConfig,
+          backgroundColor,
+          borderColor,
+          hoverBackgroundColor: backgroundColor,
+          borderWidth: 1,
         },
       ],
     });
