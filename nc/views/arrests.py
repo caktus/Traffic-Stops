@@ -100,7 +100,9 @@ def arrest_query(request, agency_id, group_by, debug=False):
     df["stop_arrest_rate"] = df.arrest_count / df.stop_count
     df["search_arrest_rate"] = df.arrest_count / df.search_count
     df["stop_without_arrest_count"] = df["stop_count"] - df["arrest_count"]
-    df.fillna(0, inplace=True)
+    # Only fill numeric columns to avoid TypeError with string columns
+    numeric_cols = df.select_dtypes(include=["number"]).columns
+    df[numeric_cols] = df[numeric_cols].fillna(0)
     if "driver_race_comb" in group_by:
         # Add custom sortable driver race column
         columns = ["White", "Black", "Hispanic", "Asian", "Native American", "Other"]
@@ -165,7 +167,9 @@ def contraband_query(request, agency_id, group_by, debug=False):
         df.contraband_and_driver_arrest_count / df.contraband_count
     )
     df["driver_stop_arrest_rate"] = df.contraband_and_driver_arrest_count / df.stop_count
-    df.fillna(0, inplace=True)
+    # Only fill numeric columns to avoid TypeError with string columns
+    numeric_cols = df.select_dtypes(include=["number"]).columns
+    df[numeric_cols] = df[numeric_cols].fillna(0)
     if "driver_race_comb" in group_by:
         # Add custom sortable driver race column
         columns = ["White", "Black", "Hispanic", "Asian", "Native American", "Other"]
