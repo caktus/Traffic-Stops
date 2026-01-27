@@ -80,9 +80,11 @@ dev = [
     "factory-boy>=3.3.3",
     "invoke-kubesae>=0.1.0",
     "ipython>=8.32.0",
+    "jupyterlab>=4.5.3",
     "kubernetes==32.*",
     "kubernetes-validate~=1.33.0",
     "openshift>=0.13.2",
+    "plotly>=6.5.2",
     "pre-commit>=4.1.0",
     "pytest>=8.3.3",
     "pytest-cov>=6.0.0",
@@ -91,5 +93,6 @@ dev = [
     "ruff>=0.14.14",
     "sphinx>=5.3.0",
     "sphinx-autobuild>=2024.10.3",
+    "sqlalchemy>=2.0.46",
     "troposphere>=4.9.0",
 ]
