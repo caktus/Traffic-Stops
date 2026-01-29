@@ -21,7 +21,7 @@ Id,Agency Name,GEOID
 19,Banner Elk Police Department,1600000US3703500
 20,Beaufort County Sheriff's Office,0500000US37013
 21,Beech Mountain Police Department,1600000US3704510
-22,Belmont Police Department,
+22,Belmont Police Department,1600000US3704840
 23,Bertie County Sheriff's Office,0500000US37015
 24,Biltmore Forest Police Department,1600000US3705880
 25,Biscoe Police Department,1600000US3706000
@@ -33,7 +33,7 @@ Id,Agency Name,GEOID
 31,Brunswick County Sheriff's Office,0500000US37019
 32,Buncombe County Sheriff's Office,0500000US37021
 33,Bunn Police Department,1600000US3708860
-34,Burgaw Police Department,
+34,Burgaw Police Department,1600000US3708960
 35,Burke County Sheriff's Office,0500000US37023
 36,Burlington Police Department,1600000US3709060
 37,Butner Public Safety,1600000US3709360
@@ -74,7 +74,7 @@ Id,Agency Name,GEOID
 72,Davidson County Sheriff's Office,0500000US37057
 73,Davidson Police Department,1600000US3716400
 74,Davie County Sheriff's Office,0500000US37059
-75,DHHS Police - Black Mountain,
+75,DHHS Police - Black Mountain,160XX00US3706140
 76,Duck Police Department,1600000US3718060
 77,Dunn Police Department,1600000US3718320
 78,Duplin County Sheriff's Office,0500000US37061
@@ -119,7 +119,7 @@ Id,Agency Name,GEOID
 117,Hickory Police Department,1600000US3731060
 118,Highlands Police Department,1600000US3731360
 119,High Point Police Department,1600000US3731400
-120,Hillsborough Police Department,
+120,Hillsborough Police Department,1600000US3731620
 121,Hoke County Sheriff's Office,0500000US37093
 122,Holden Beach Police Department,1600000US3731960
 123,Holly Ridge Police Department,1600000US3732180
@@ -141,7 +141,7 @@ Id,Agency Name,GEOID
 139,Kings Mountain Police Department,1600000US3735880
 140,Kinston Police Department,1600000US3735920
 141,Kitty Hawk Police Department,1600000US3736060
-142,Knightdale Police Department,
+142,Knightdale Police Department,1600000US3736080
 143,Kure Beach Police Department,1600000US3736220
 144,Lake Lure Police Department,1600000US3736500
 145,Laurinburg Police Department,1600000US3737220
@@ -160,7 +160,7 @@ Id,Agency Name,GEOID
 158,Maggie Valley Police Department,1600000US3740600
 159,Manteo Police Department,1600000US3741060
 160,Marshall Police Department,1600000US3741580
-161,Mars Hill Police Department,
+161,Mars Hill Police Department,1600000US3741620
 162,Martin County Sheriff's Office,0500000US37117
 163,Matthews Police Department,1600000US3741960
 164,Mayodan Police Department,1600000US3742060
@@ -248,7 +248,7 @@ Id,Agency Name,GEOID
 246,Scotland County Sheriff's Office,0500000US37165
 247,Seven Devils Police Department,1600000US3760505
 248,Shallotte Police Department,1600000US3760800
-249,Sharpsburg Police Department,
+249,Sharpsburg Police Department,1600000US3761060
 250,Shelby Police Department,1600000US3761200
 251,SHP - Motor Carrier Enforcement Section,
 252,Smithfield Police Department,1600000US3762520
@@ -275,7 +275,7 @@ Id,Agency Name,GEOID
 273,Topsail Beach Police Department,1600000US3768040
 274,Transylvania County Sheriff's Office,0500000US37175
 275,Troutman Police Department,1600000US3768500
-276,Tryon Police Department,
+276,Tryon Police Department,1600000US3768580
 277,Tyrrell County Sheriff's Office,0500000US37177
 278,UNC Asheville University Police Department,
 279,UNC Chapel Hill University Police Department,
@@ -315,11 +315,28 @@ Id,Agency Name,GEOID
 313,Yancey County Sheriff's Office,0500000US37199
 314,Youngsville Police Department,1600000US3776200
 315,Zebulon Police Department,1600000US3776220
-316,Forest City Police Department,
-317,Black Mountain Police Department,
-318,Chadbourn Police Department,
-319,Dobson Police Department,
-320,East Spencer Police Department,
-321,Elon Police Department,
-322,Spring Hope Police Department,
-323,Waynesville Police Department,
+316,Forest City Police Department,1600000US3724080
+317,Black Mountain Police Department,1600000US3706140
+318,Chadbourn Police Department,1600000US3711640
+319,Dobson Police Department,1600000US3717340
+320,East Spencer Police Department,1600000US3719860
+321,Elon Police Department,1600000US3721095
+322,Spring Hope Police Department,1600000US3764160
+323,Waynesville Police Department,1600000US3771500
+324,Beulaville Police Department,1600000US3705660
+325,Burnsville Police Department,1600000US3709140
+326,Emerald Isle Police Department,1600000US3721160
+327,Graham County Sheriff's Office,0500000US37075
+328,Louisburg Police Department,1600000US3739360
+329,Maiden Police Department,1600000US3740660
+330,NC State Port Authority Division 1,
+331,NC State Port Authority Division 2,
+332,Nashville Police Department,1600000US3746000
+333,North Carolina Department of Insurance,
+334,Pikeville Police Department,1600000US3751780
+335,Seagrove Police Department,1600000US3760080
+336,Warsaw Police Department,1600000US3771160
+337,Wendell Police Department,1600000US3771860
+338,Whiteville Police Department,1600000US3773660
+339,Winterville Police Department,1600000US3775060
+340,Woodfin Police Department,1600000US3775280
