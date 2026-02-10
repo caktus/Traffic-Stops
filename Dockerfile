@@ -36,7 +36,6 @@ RUN set -ex \
     vim \
     " \
     && seq 1 8 | xargs -I{} mkdir -p /usr/share/man/man{} \
-    #&& apt-get update && apt-get -y install wget gnupg2 lsb-release \
     && apt-get update && apt-get -y upgrade && apt-get -y install wget gnupg2 lsb-release \
     && sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list' \
     && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
