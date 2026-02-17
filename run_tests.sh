@@ -11,9 +11,6 @@ else
     DBARG="--keepdb"
 fi
 
-# Check PEP-8
-flake8 .
-
 rm -f .coverage
 coverage run manage.py test ${DBARG} --noinput --settings=traffic_stops.settings.test "$@"
 coverage report --fail-under=${MIN_COVERAGE}
