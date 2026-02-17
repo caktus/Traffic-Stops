@@ -86,9 +86,37 @@ k8s_iam_users: [copelco]
 # Pin ingress-nginx and cert-manager to current versions so future upgrades of this
 # role will not upgrade these charts without your intervention:
 # https://github.com/kubernetes/ingress-nginx/releases
-k8s_ingress_nginx_chart_version: "4.13.0"
+k8s_ingress_nginx_chart_version: "4.14.1"
 # https://github.com/jetstack/cert-manager/releases
 k8s_cert_manager_chart_version: "v1.18"
+k8s_cert_manager_solvers:
+  - selector:
+      # Use *dnsZones* (not dnsNames) to match on any subdomain. Note that individual
+      # _acme-challenge CNAME records will still need to be created for each subdomain, e.g.:
+      #
+      # Production:
+      #   _acme-challenge.nccopwatch.org CNAME _acme-challenge.acme.nccopwatch.org
+      #   _acme-challenge.www.nccopwatch.org CNAME _acme-challenge.www.acme.nccopwatch.org
+      #
+      # Staging:
+      #   _acme-challenge.staging.nccopwatch.org CNAME _acme-challenge.acme.nccopwatch.org
+      #
+      # https://cert-manager.io/docs/reference/api-docs/#acme.cert-manager.io/v1.CertificateDNSNameSelector
+      # (Unlike the documentation, we prefer different values for each CNAME to avoid the
+      # potential for conflicts when attempting to solve multiple challenges simultaneously.)
+      dnsZones:
+        - nccopwatch.org
+    dns01:
+      # Follow CNAMEs (use delegation) so we can provide access only to a less privileged DNS zone:
+      # https://cert-manager.io/docs/configuration/acme/dns01/#delegated-domains-for-dns01
+      cnameStrategy: Follow
+      route53:
+        region: us-east-2 # What is this used for? Zones are global...
+        # acme.nccopwatch.org access granted by container instance role
+        hostedZoneID: Z0716299GIIMBNJ5C3G8
+  # Keep HTTP-01 solver as a fallback in case of DNS issues.
+  # https://cert-manager.io/docs/configuration/acme/#adding-multiple-solver-types
+  - "{{ k8s_cert_manager_http01_solver }}"
 # AWS only:
 # Use the newer load balancer type (NLB). DO NOT edit k8s_aws_load_balancer_type after
 # creating your Service.
