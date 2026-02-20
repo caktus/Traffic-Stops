@@ -39,7 +39,7 @@ def test_media_url_configuration(custom_domain, media_location, expected_url):
 
         importlib.reload(base)
 
-        assert base.MEDIA_URL == expected_url
+        assert expected_url == base.MEDIA_URL
 
 
 def test_media_url_with_s3_storage():

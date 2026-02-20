@@ -223,7 +223,7 @@ class Agency(models.Model):
             )
             return profile.get_census_dict()
         else:
-            return dict()
+            return {}
 
 
 STOP_SUMMARY_VIEW_SQL = f"""

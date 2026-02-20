@@ -96,7 +96,7 @@ def test_stop_date_range_and_age_adjusted(
         + [start_date - timedelta(d) for d in [1, 2]]
         + [end_date + timedelta(d) for d in [1, 2]]
     )
-    people = [
+    [
         factories.PersonFactory(
             stop__agency=durham, stop__date=d, age=fake.random_int(age - 2, age + 2)
         )
