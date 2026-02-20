@@ -97,5 +97,5 @@ dev = [
     "troposphere>=4.9.0",
     # Python 3.13 is not supported by urllib3 2.4.0
     # https://github.com/crate/crate-python/issues/708
-    "urllib3<2.4.0",
+    "urllib3<2.7.0",
 ]
