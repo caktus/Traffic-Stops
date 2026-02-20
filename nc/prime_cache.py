@@ -114,7 +114,7 @@ def get_group_urls(agency_id: int, officer_id: int = None) -> list[str]:
 
 
 @contextmanager
-def client() -> Generator[httpx.Client, None, None]:
+def client() -> Generator[httpx.Client]:
     """Return a configured HTTPX client for cache priming"""
     # Attempt to match Browser behavior
     headers = {

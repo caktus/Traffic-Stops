@@ -1438,12 +1438,14 @@ class AgencySearchRateView(APIView):
             return float(0)
 
         for col in columns:
-            for k, v in purpose_choices.items():
-                base_searches, base_stops = get_val(search_df, "White", k), get_val(
-                    stops_df, "White", k
+            for k, _v in purpose_choices.items():
+                base_searches, base_stops = (
+                    get_val(search_df, "White", k),
+                    get_val(stops_df, "White", k),
                 )
-                purpose_searches, purpose_stops = get_val(search_df, col, k), get_val(
-                    stops_df, col, k
+                purpose_searches, purpose_stops = (
+                    get_val(search_df, col, k),
+                    get_val(stops_df, col, k),
                 )
                 try:
                     base_rate = base_searches / base_stops

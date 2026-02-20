@@ -13,7 +13,7 @@ dependencies = [
     "census>=0.8.24",
     "click>=8.2.0",
     "dj-database-url>=3.0.0",
-    "django>=5.2.8",
+    "django>=5.2.8,<6.0",
     "django-ckeditor-5>=0.2.15",
     "django-click>=2.4.1",
     "django-crispy-forms>=2.4.0",
@@ -31,39 +31,38 @@ dependencies = [
     "whitenoise>=6.9.0",
 ]
 
-[tool.black]
+[tool.ruff]
 line-length = 100
-target-version = ['py38']
-include = '\.pyi?$'
-exclude = '''
-/(
-    \.eggs
-  | \.git
-  | \.hg
-  | \.mypy_cache
-  | \.tox
-  | \.venv
-  | _build
-  | build
-  | dist
-  | env
-  | htmlcov
-  | node_modules
-  | public
-  | venv
-  | migrations
-)/
-'''
+target-version = "py313"
+extend-exclude = [
+    ".eggs",
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".tox",
+    ".venv",
+    "_build",
+    "build",
+    "dist",
+    "env",
+    "htmlcov",
+    "node_modules",
+    "public",
+    "venv",
+    "migrations",
+]
 
-[tool.isort]
-py_version = 38
-profile = "black"
-multi_line_output = 3
-include_trailing_comma = true
-use_parentheses = true
-line_length = 100
-lines_between_types = 1
-src_paths = [ "nc", "traffic_stops", "tsdata" ]
+[tool.ruff.lint]
+ignore = [
+    "E501",  # line too long, handled by formatter
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["nc", "traffic_stops", "tsdata"]
+lines-between-types = 1
+
+[tool.ruff.format]
+quote-style = "double"
 
 [dependency-groups]
 deploy = [
@@ -75,27 +74,29 @@ deploy = [
 dev = [
     "ansible>=10.7.0",
     "awscli>=1.41.2",
-    "black>=25.1.0",
     "coverage>=7.10.4",
     "django-debug-toolbar>=5.0.1",
     "django-extensions>=3.2.3",
     "factory-boy>=3.3.3",
-    "flake8>=7.1.1",
     "invoke-kubesae>=0.1.0",
     "ipython>=8.32.0",
-    "isort>=6.0.0",
+    "jupyterlab>=4.5.3",
     "kubernetes==32.*",
     "kubernetes-validate~=1.33.0",
     "openshift>=0.13.2",
+    "plotly>=6.5.2",
     "pre-commit>=4.1.0",
     "pytest>=8.3.3",
     "pytest-cov>=6.0.0",
     "pytest-django>=4.9.0",
     "pyyaml>=6.0.2",
+    "ruff>=0.14.14",
     "sphinx>=5.3.0",
     "sphinx-autobuild>=2024.10.3",
+    "sqlalchemy>=2.0.46",
     "troposphere>=4.9.0",
     # Python 3.13 is not supported by urllib3 2.4.0
     # https://github.com/crate/crate-python/issues/708
+    # https://github.com/aws/containers-roadmap/issues/2638
     "urllib3<2.4.0",
 ]

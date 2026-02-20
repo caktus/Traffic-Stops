@@ -12,7 +12,7 @@ class DatasetFactory(factory.django.DjangoModelFactory):
     name = factory.Sequence(lambda n: "Dataset %d" % n)
     url = factory.LazyAttribute(lambda obj: f"https://example.com/{obj.state}")
     date_received = factory.fuzzy.FuzzyDateTime(
-        datetime.datetime(2008, 1, 1, 0, 0, tzinfo=datetime.timezone.utc)
+        datetime.datetime(2008, 1, 1, 0, 0, tzinfo=datetime.UTC)
     )
 
     class Meta:
