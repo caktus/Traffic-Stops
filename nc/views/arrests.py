@@ -97,12 +97,9 @@ def arrest_query(request, agency_id, group_by, debug=False):
         df = pd.DataFrame(
             qs, columns=list(qs.query.values_select) + list(qs.query.annotation_select)
         )
-    df["stop_arrest_rate"] = (
-        (df.arrest_count / df.stop_count).fillna(0).replace([np.inf, -np.inf], 0)
-    )
-    df["search_arrest_rate"] = (
-        (df.arrest_count / df.search_count).fillna(0).replace([np.inf, -np.inf], 0)
-    )
+    df["stop_arrest_rate"] = df.arrest_count / df.stop_count
+    # search_count can be 0 (no searches) so inf is still possible
+    df["search_arrest_rate"] = (df.arrest_count / df.search_count).replace([np.inf, -np.inf], 0)
     df["stop_without_arrest_count"] = df["stop_count"] - df["arrest_count"]
     # Only fill numeric columns to avoid TypeError with string columns
     numeric_cols = df.select_dtypes(include=["number"]).columns
@@ -167,14 +164,10 @@ def contraband_query(request, agency_id, group_by, debug=False):
     stop_df = arrest_query(request, agency_id, group_by=("agency_id",))
     df["stop_count"] = stop_df.iloc[0]["stop_count"] if not stop_df.empty else 0
     df["driver_contraband_arrest_rate"] = (
-        (df.contraband_and_driver_arrest_count / df.contraband_count)
-        .fillna(0)
-        .replace([np.inf, -np.inf], 0)
-    )
-    df["driver_stop_arrest_rate"] = (
-        (df.contraband_and_driver_arrest_count / df.stop_count)
-        .fillna(0)
-        .replace([np.inf, -np.inf], 0)
+        df.contraband_and_driver_arrest_count / df.contraband_count
+    ).replace([np.inf, -np.inf], 0)
+    df["driver_stop_arrest_rate"] = (df.contraband_and_driver_arrest_count / df.stop_count).replace(
+        [np.inf, -np.inf], 0
     )
     # Only fill numeric columns to avoid TypeError with string columns
     numeric_cols = df.select_dtypes(include=["number"]).columns
