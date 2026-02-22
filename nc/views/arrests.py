@@ -96,9 +96,10 @@ def arrest_query(request, agency_id, group_by, debug=False):
         df = pd.DataFrame(
             qs, columns=list(qs.query.values_select) + list(qs.query.annotation_select)
         )
-    # Calculate rates
-    df["stop_arrest_rate"] = df.arrest_count / df.stop_count
-    df["search_arrest_rate"] = df.arrest_count / df.search_count
+    # Calculate rates; fillna(0) handles NaN (0/0 or x/None), replace handles inf (x/0)
+    _safe = [float("inf"), float("-inf")]
+    df["stop_arrest_rate"] = (df.arrest_count / df.stop_count).fillna(0).replace(_safe, 0)
+    df["search_arrest_rate"] = (df.arrest_count / df.search_count).fillna(0).replace(_safe, 0)
     df["stop_without_arrest_count"] = df["stop_count"] - df["arrest_count"]
     # Only fill numeric columns to avoid TypeError with string columns
     numeric_cols = df.select_dtypes(include=["number"]).columns
