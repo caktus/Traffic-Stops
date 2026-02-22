@@ -426,7 +426,7 @@ class AgencyTrafficStopsByPercentageView(APIView):
         stop_pivot_df = stops_df.pivot(
             index=date_precision, columns="driver_race_comb", values="count"
         ).fillna(value=0)
-        stops_df = pd.DataFrame(stop_pivot_df)
+        stops_df = pd.DataFrame(stop_pivot_df).astype(float)
 
         columns = ["White", "Black", "Hispanic", "Asian", "Native American", "Other"]
         for year in unique_x_range:
@@ -1233,13 +1233,13 @@ class AgencySearchesByPercentageView(APIView):
         search_pivot_df = search_df.pivot(
             index=date_precision, columns="driver_race_comb", values="count"
         ).fillna(value=0)
-        search_df = pd.DataFrame(search_pivot_df)
-        search_df["Average"] = pd.Series([0] * len(unique_x_range))
+        search_df = pd.DataFrame(search_pivot_df).astype(float)
+        search_df["Average"] = pd.Series([0.0] * len(unique_x_range))
 
         stop_pivot_df = stops_df.pivot(
             index=date_precision, columns="driver_race_comb", values="count"
         ).fillna(value=0)
-        stops_df = pd.DataFrame(stop_pivot_df)
+        stops_df = pd.DataFrame(stop_pivot_df).astype(float)
 
         columns = ["White", "Black", "Hispanic", "Asian", "Native American", "Other"]
         for year in unique_x_range:
@@ -1255,7 +1255,7 @@ class AgencySearchesByPercentageView(APIView):
                         )
                     except (ValueError, ZeroDivisionError):
                         search_df.loc[year, c] = 0
-            search_df.loc[year, "Average"] = total_search / total_stop
+            search_df.loc[year, "Average"] = total_search / total_stop if total_stop else 0.0
 
         data = self.build_response(search_df, unique_x_range)
         return Response(data=data, status=200)
