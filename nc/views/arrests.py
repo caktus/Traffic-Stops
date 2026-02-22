@@ -1,4 +1,5 @@
 import django_filters
+import numpy as np
 import pandas as pd
 
 from django.db.models import Count, Q, Sum
@@ -96,10 +97,15 @@ def arrest_query(request, agency_id, group_by, debug=False):
         df = pd.DataFrame(
             qs, columns=list(qs.query.values_select) + list(qs.query.annotation_select)
         )
-    # Calculate rates; fillna(0) handles NaN (0/0 or x/None), replace handles inf (x/0)
-    _safe = [float("inf"), float("-inf")]
-    df["stop_arrest_rate"] = (df.arrest_count / df.stop_count).fillna(0).replace(_safe, 0)
-    df["search_arrest_rate"] = (df.arrest_count / df.search_count).fillna(0).replace(_safe, 0)
+    # SQL Sum() returns None (no matching rows) → object dtype in pandas 3.0; convert first
+    for col in ("stop_count", "search_count", "arrest_count"):
+        df[col] = pd.to_numeric(df[col], errors="coerce")
+    df["stop_arrest_rate"] = (
+        (df.arrest_count / df.stop_count).fillna(0).replace([np.inf, -np.inf], 0)
+    )
+    df["search_arrest_rate"] = (
+        (df.arrest_count / df.search_count).fillna(0).replace([np.inf, -np.inf], 0)
+    )
     df["stop_without_arrest_count"] = df["stop_count"] - df["arrest_count"]
     # Only fill numeric columns to avoid TypeError with string columns
     numeric_cols = df.select_dtypes(include=["number"]).columns
@@ -163,11 +169,19 @@ def contraband_query(request, agency_id, group_by, debug=False):
     # Query stop counts
     stop_df = arrest_query(request, agency_id, group_by=("agency_id",))
     df["stop_count"] = stop_df.iloc[0]["stop_count"] if not stop_df.empty else 0
-    # Calculate rates
+    # SQL Count() returns integers; convert to float so division produces float64, not object
+    for col in ("contraband_count", "contraband_and_driver_arrest_count"):
+        df[col] = pd.to_numeric(df[col], errors="coerce")
     df["driver_contraband_arrest_rate"] = (
-        df.contraband_and_driver_arrest_count / df.contraband_count
+        (df.contraband_and_driver_arrest_count / df.contraband_count)
+        .fillna(0)
+        .replace([np.inf, -np.inf], 0)
     )
-    df["driver_stop_arrest_rate"] = df.contraband_and_driver_arrest_count / df.stop_count
+    df["driver_stop_arrest_rate"] = (
+        (df.contraband_and_driver_arrest_count / df.stop_count)
+        .fillna(0)
+        .replace([np.inf, -np.inf], 0)
+    )
     # Only fill numeric columns to avoid TypeError with string columns
     numeric_cols = df.select_dtypes(include=["number"]).columns
     df[numeric_cols] = df[numeric_cols].fillna(0)

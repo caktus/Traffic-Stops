@@ -426,7 +426,7 @@ class AgencyTrafficStopsByPercentageView(APIView):
         stop_pivot_df = stops_df.pivot(
             index=date_precision, columns="driver_race_comb", values="count"
         ).fillna(value=0)
-        stops_df = pd.DataFrame(stop_pivot_df).astype(float)
+        stops_df = stop_pivot_df.astype(float)
 
         columns = ["White", "Black", "Hispanic", "Asian", "Native American", "Other"]
         for year in unique_x_range:
@@ -1233,13 +1233,13 @@ class AgencySearchesByPercentageView(APIView):
         search_pivot_df = search_df.pivot(
             index=date_precision, columns="driver_race_comb", values="count"
         ).fillna(value=0)
-        search_df = pd.DataFrame(search_pivot_df).astype(float)
-        search_df["Average"] = pd.Series([0.0] * len(unique_x_range))
+        search_df = search_pivot_df.astype(float)
+        search_df["Average"] = 0.0
 
         stop_pivot_df = stops_df.pivot(
             index=date_precision, columns="driver_race_comb", values="count"
         ).fillna(value=0)
-        stops_df = pd.DataFrame(stop_pivot_df).astype(float)
+        stops_df = stop_pivot_df.astype(float)
 
         columns = ["White", "Black", "Hispanic", "Asian", "Native American", "Other"]
         for year in unique_x_range:
