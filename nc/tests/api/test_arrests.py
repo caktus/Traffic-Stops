@@ -97,6 +97,19 @@ class TestArrests:
         response = client.get(url, data={}, format="json")
         assert response.status_code == 200
 
+    def test_no_arrests_no_nan(self, client, durham):
+        """A stop with no arrest must not produce NaN in stop_arrest_rate (#arrest_count coalesce)"""
+        PersonFactory(
+            race=DriverRace.BLACK,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=durham,
+            stop__driver_arrest=False,
+        )
+        StopSummary.refresh()
+        url = reverse("nc:arrests-percentage-of-stops", args=[durham.id])
+        response = client.get(url, data={}, format="json")
+        assert response.status_code == 200
+
     def test_year_range(self, client, durham):
         """Officer pages should only include stops from that officer"""
         PersonFactory(stop__date="2020-01-15", stop__agency=durham)
