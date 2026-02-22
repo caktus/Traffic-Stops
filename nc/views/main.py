@@ -1416,12 +1416,12 @@ class AgencySearchRateView(APIView):
         search_pivot_df = search_df.pivot(
             index="stop_purpose", columns="driver_race_comb", values="count"
         ).fillna(value=0)
-        search_df = pd.DataFrame(search_pivot_df)
+        search_df = search_pivot_df.astype(float)
 
         stop_pivot_df = stops_df.pivot(
             index="stop_purpose", columns="driver_race_comb", values="count"
         ).fillna(value=0)
-        stops_df = pd.DataFrame(stop_pivot_df)
+        stops_df = stop_pivot_df.astype(float)
 
         columns = ["Black", "Hispanic", "Asian", "Native American", "Other"]
         purpose_choices = {e.value: e.label for e in StopPurpose}

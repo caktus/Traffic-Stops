@@ -46,3 +46,17 @@ class TestSearchesByPercentage:
         for dataset in response.json()["datasets"]:
             for value in dataset["data"]:
                 assert value == value, f"NaN found in dataset '{dataset['label']}'"
+
+
+@pytest.mark.django_db(databases=["traffic_stops_nc"])
+class TestSearchRate:
+    def test_single_race_no_type_error(self, client, durham):
+        """A single-race dataset must not raise TypeError when calculating search rate (#395)"""
+        person = PersonFactory(
+            race=DriverRace.BLACK, ethnicity=DriverEthnicity.NON_HISPANIC, stop__agency=durham
+        )
+        SearchFactory(stop=person.stop, person=person)
+        StopSummary.refresh()
+        url = reverse("nc:search-rate", args=[durham.id])
+        response = client.get(url)
+        assert response.status_code == 200
