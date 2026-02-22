@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 
 from django.db.models import Count, Q, Sum
-from django.db.models.functions import ExtractYear
+from django.db.models.functions import Coalesce, ExtractYear
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -88,8 +88,8 @@ def arrest_query(request, agency_id, group_by, debug=False):
     # Perform query with SQL aggregations
     qs = filter_set.qs.values(*group_by).annotate(
         stop_count=Sum("count"),
-        search_count=Sum("count", filter=Q(driver_searched=True)),
-        arrest_count=Sum("count", filter=Q(driver_arrest=True)),
+        search_count=Coalesce(Sum("count", filter=Q(driver_searched=True)), 0),
+        arrest_count=Coalesce(Sum("count", filter=Q(driver_arrest=True)), 0),
     )
     df = pd.DataFrame(qs)
     if df.empty:
@@ -97,9 +97,6 @@ def arrest_query(request, agency_id, group_by, debug=False):
         df = pd.DataFrame(
             qs, columns=list(qs.query.values_select) + list(qs.query.annotation_select)
         )
-    # SQL Sum() returns None (no matching rows) → object dtype in pandas 3.0; convert first
-    for col in ("stop_count", "search_count", "arrest_count"):
-        df[col] = pd.to_numeric(df[col], errors="coerce")
     df["stop_arrest_rate"] = (
         (df.arrest_count / df.stop_count).fillna(0).replace([np.inf, -np.inf], 0)
     )
@@ -169,9 +166,6 @@ def contraband_query(request, agency_id, group_by, debug=False):
     # Query stop counts
     stop_df = arrest_query(request, agency_id, group_by=("agency_id",))
     df["stop_count"] = stop_df.iloc[0]["stop_count"] if not stop_df.empty else 0
-    # SQL Count() returns integers; convert to float so division produces float64, not object
-    for col in ("contraband_count", "contraband_and_driver_arrest_count"):
-        df[col] = pd.to_numeric(df[col], errors="coerce")
     df["driver_contraband_arrest_rate"] = (
         (df.contraband_and_driver_arrest_count / df.contraband_count)
         .fillna(0)
