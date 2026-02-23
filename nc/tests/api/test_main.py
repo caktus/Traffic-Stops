@@ -9,7 +9,7 @@ from nc.tests.factories import PersonFactory, SearchFactory
 @pytest.mark.django_db(databases=["traffic_stops_nc"])
 class TestStopsByPercentage:
     def test_single_race_no_type_error(self, client, durham):
-        """A single-race dataset must not raise TypeError when calculating percentages (#392)"""
+        """A single-race dataset must not raise TypeError when calculating percentages"""
         PersonFactory(
             race=DriverRace.BLACK, ethnicity=DriverEthnicity.NON_HISPANIC, stop__agency=durham
         )
@@ -22,7 +22,7 @@ class TestStopsByPercentage:
 @pytest.mark.django_db(databases=["traffic_stops_nc"])
 class TestSearchesByPercentage:
     def test_single_race_no_type_error(self, client, durham):
-        """A single-race dataset must not raise TypeError when calculating search rates (#393)"""
+        """A single-race dataset must not raise TypeError when calculating search rates"""
         person = PersonFactory(
             race=DriverRace.BLACK, ethnicity=DriverEthnicity.NON_HISPANIC, stop__agency=durham
         )
@@ -32,8 +32,8 @@ class TestSearchesByPercentage:
         response = client.get(url)
         assert response.status_code == 200
 
-    def test_zero_stops_no_nan_in_response(self, client, durham):
-        """Zero total stops must not produce NaN values in the JSON response (#394)"""
+    def test_searches_no_nan_in_response(self, client, durham):
+        """Zero total stops must not produce NaN values in the JSON response"""
         person = PersonFactory(
             race=DriverRace.BLACK, ethnicity=DriverEthnicity.NON_HISPANIC, stop__agency=durham
         )
@@ -51,7 +51,7 @@ class TestSearchesByPercentage:
 @pytest.mark.django_db(databases=["traffic_stops_nc"])
 class TestSearchRate:
     def test_single_race_no_type_error(self, client, durham):
-        """A single-race dataset must not raise TypeError when calculating search rate (#395)"""
+        """A single-race dataset must not raise TypeError when calculating search rate"""
         person = PersonFactory(
             race=DriverRace.BLACK, ethnicity=DriverEthnicity.NON_HISPANIC, stop__agency=durham
         )
