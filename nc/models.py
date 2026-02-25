@@ -429,6 +429,133 @@ class ContrabandSummary(pg.ReadOnlyMaterializedView):
         ]
 
 
+LIKELIHOOD_OF_STOP_SUMMARY_SQL = """
+    WITH acs AS (
+        SELECT
+            acs_id AS census_profile_id,
+            race AS driver_race,
+            AVG(population)::integer AS population,
+            AVG(population_total)::integer AS total_population
+        FROM nc_nccensusprofile
+        GROUP BY 1, 2
+    ),
+    agency_yearly_stops AS (
+        SELECT
+            'agency' AS level,
+            agency.id::text AS group_id,
+            agency.name AS group_name,
+            agency.census_profile_id,
+            EXTRACT('year' FROM summary.date)::integer AS year,
+            summary.driver_race_comb AS driver_race,
+            SUM(summary.count) AS stops
+        FROM nc_stopsummary summary
+        JOIN nc_agency agency ON summary.agency_id = agency.id
+        WHERE agency.census_profile_id != ''
+        GROUP BY 1, 2, 3, 4, 5, 6
+    ),
+    county_yearly_stops AS (
+        SELECT
+            'county' AS level,
+            county.id AS group_id,
+            county.county_name AS group_name,
+            county.census_profile_id,
+            EXTRACT('year' FROM summary.date)::integer AS year,
+            summary.driver_race_comb AS driver_race,
+            SUM(summary.count) AS stops
+        FROM nc_stopsummary summary
+        JOIN nc_agency agency ON summary.agency_id = agency.id
+        JOIN nc_county county ON agency.county_id = county.id
+        WHERE county.census_profile_id != ''
+        GROUP BY 1, 2, 3, 4, 5, 6
+    ),
+    all_yearly_stops AS (
+        SELECT * FROM agency_yearly_stops
+        UNION ALL
+        SELECT * FROM county_yearly_stops
+    ),
+    stops_with_pop AS (
+        SELECT
+            s.level,
+            s.group_id,
+            s.group_name,
+            s.census_profile_id,
+            s.year,
+            s.driver_race,
+            acs.population,
+            acs.total_population,
+            s.stops,
+            s.stops::float / NULLIF(acs.population, 0) AS stop_rate
+        FROM all_yearly_stops s
+        JOIN acs ON (
+            acs.census_profile_id = s.census_profile_id
+            AND acs.driver_race = s.driver_race
+        )
+        WHERE acs.total_population > 10000
+          AND (acs.population > 100 OR s.driver_race = 'White')
+    ),
+    with_baseline AS (
+        SELECT
+            p.*,
+            COALESCE(w.stop_rate, 0) AS baseline_rate,
+            CASE WHEN COALESCE(w.stop_rate, 0) > 0
+                THEN (p.stop_rate - w.stop_rate) / w.stop_rate
+                ELSE 0
+            END AS stop_rate_ratio,
+            CASE WHEN COALESCE(w.stop_rate, 0) > 0
+                THEN ABS(p.stop_rate / w.stop_rate)
+                ELSE 0
+            END AS times_likely
+        FROM stops_with_pop p
+        LEFT JOIN stops_with_pop w ON (
+            w.driver_race = 'White'
+            AND p.level = w.level
+            AND p.group_id = w.group_id
+            AND p.year = w.year
+        )
+    )
+    SELECT
+        ROW_NUMBER() OVER () AS id,
+        level,
+        group_id,
+        group_name,
+        census_profile_id,
+        year,
+        driver_race,
+        population,
+        total_population,
+        stops,
+        stop_rate,
+        baseline_rate,
+        stop_rate_ratio,
+        times_likely
+    FROM with_baseline;
+"""
+
+
+class LikelihoodOfStopSummary(pg.View):
+    """Comparative stop likelihood data by agency and county, with population filters."""
+
+    sql = LIKELIHOOD_OF_STOP_SUMMARY_SQL
+
+    id = models.BigIntegerField(primary_key=True)
+    level = models.CharField(max_length=8)  # 'agency' or 'county'
+    group_id = models.CharField(max_length=16)
+    group_name = models.CharField(max_length=255)
+    census_profile_id = models.CharField(max_length=32)
+    year = models.IntegerField()
+    driver_race = models.CharField(max_length=20)
+    population = models.IntegerField()
+    total_population = models.IntegerField()
+    stops = models.BigIntegerField()
+    stop_rate = models.FloatField()
+    baseline_rate = models.FloatField()
+    stop_rate_ratio = models.FloatField()
+    times_likely = models.FloatField()
+
+    class Meta:
+        managed = False
+
+
 class Resource(models.Model):
     created_date = models.DateTimeField(auto_now_add=True, editable=False)
     publication_date = models.DateField(null=True, blank=True, editable=True)

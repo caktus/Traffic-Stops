@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from nc.constants import STATEWIDE
-from nc.models import Agency, NCCensusProfile, StopSummary
+from nc.models import Agency, LikelihoodOfStopSummary, NCCensusProfile, StopSummary
 
 
 class StopSummaryFilterSet(django_filters.FilterSet):
@@ -167,3 +167,66 @@ class LikelihoodStopView(APIView):
             data["stop_percentages_races"] = chart_df["race"]
 
         return Response(data=data, status=200)
+
+
+def likelihood_comparison(level="agency", year=None):
+    """
+    Query LikelihoodOfStopSummary view for comparative stop likelihood data.
+
+    Args:
+        level: "agency" or "county"
+        year: optional year to filter to
+
+    Returns:
+        DataFrame with columns: level, group_id, group_name, census_profile_id,
+        driver_race, population, total_population, stops, stop_rate,
+        baseline_rate, stop_rate_ratio, times_likely, agency_name_race
+    """
+    qs = LikelihoodOfStopSummary.objects.filter(level=level)
+    if year:
+        qs = qs.filter(year=year)
+    df = pd.DataFrame(
+        qs.values(
+            "level",
+            "group_id",
+            "group_name",
+            "census_profile_id",
+            "year",
+            "driver_race",
+            "population",
+            "total_population",
+            "stops",
+            "stop_rate",
+            "baseline_rate",
+            "stop_rate_ratio",
+            "times_likely",
+        )
+    )
+    if df.empty:
+        return df
+
+    if not year:
+        # Average across years to match the original notebook behavior
+        df = (
+            df.groupby(["level", "group_id", "group_name", "census_profile_id", "driver_race"])
+            .agg({"population": "first", "total_population": "first", "stops": "mean"})
+            .reset_index()
+        )
+        df["stops"] = df["stops"].astype(int)
+        df["stop_rate"] = df["stops"] / df["population"].replace(0, np.nan)
+        # Recompute baseline from White stop rate per group
+        white = df[df["driver_race"] == "White"][["group_id", "stop_rate"]].rename(
+            columns={"stop_rate": "baseline_rate"}
+        )
+        df = df.merge(white, on="group_id", how="left")
+        df["stop_rate_ratio"] = (df["stop_rate"] - df["baseline_rate"]) / df[
+            "baseline_rate"
+        ].replace(0, np.nan)
+        df["times_likely"] = (df["stop_rate"] / df["baseline_rate"].replace(0, np.nan)).abs()
+        df["stop_rate"] = df["stop_rate"].fillna(0)
+        df["baseline_rate"] = df["baseline_rate"].fillna(0)
+        df["stop_rate_ratio"] = df["stop_rate_ratio"].fillna(0)
+        df["times_likely"] = df["times_likely"].fillna(0)
+
+    df["agency_name_race"] = df["group_name"] + " - " + df["driver_race"]
+    return df.sort_values("times_likely", ascending=False).reset_index(drop=True)
