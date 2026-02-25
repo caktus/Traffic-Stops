@@ -15,6 +15,15 @@ class AgencyFactory(factory.django.DjangoModelFactory):
     name = factory.Sequence(lambda n: "Agency %03d" % n)
 
 
+class CountyFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = models.County
+
+    id = factory.Sequence(lambda n: f"37{n:03d}")
+    county_name = factory.Sequence(lambda n: "County %03d" % n)
+    census_profile_id = factory.LazyAttribute(lambda o: f"0500000US{o.id}")
+
+
 class PersonFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = models.Person

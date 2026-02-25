@@ -201,10 +201,26 @@ class SearchBasis(models.Model):
     basis = models.CharField(max_length=4, choices=SEARCH_BASIS_CHOICES)
 
 
+class County(models.Model):
+    id = models.CharField(max_length=5, primary_key=True)  # 5-digit FIPS code, e.g. "37063"
+    county_name = models.CharField(max_length=100)
+    census_profile_id = models.CharField(
+        max_length=32, blank=True, default=""
+    )  # e.g. "0500000US37063"
+
+    class Meta:
+        verbose_name_plural = "Counties"
+        ordering = ["county_name"]
+
+    def __str__(self):
+        return self.county_name
+
+
 class Agency(models.Model):
     name = models.CharField(max_length=255)
     # link to CensusProfile (no cross-database foreign key)
     census_profile_id = models.CharField(max_length=16, blank=True, default="")
+    county = models.ForeignKey(County, null=True, blank=True, on_delete=models.SET_NULL)
     last_reported_stop = models.DateField(null=True)
 
     class Meta:
