@@ -23,6 +23,7 @@ dependencies = [
     "django-redis>=5.4.0",
     "django-storages>=1.14.4",
     "djangorestframework>=3.16",
+    "dotenv>=0.9.9",
     "httpx[http2]>=0.28.1",
     "pandas>=2.3",
     "psycopg>=3.2.9",

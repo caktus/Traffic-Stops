@@ -4,7 +4,7 @@ import pytest
 
 from nc.models import DriverEthnicity, DriverRace, StopSummary
 from nc.tests.factories import AgencyFactory, CountyFactory, NCCensusProfileFactory, PersonFactory
-from nc.views.likelihood import likelihood_comparison
+from nc.views.likelihood import county_agency_labels, likelihood_comparison
 
 
 @pytest.fixture
@@ -132,3 +132,16 @@ class TestLikelihoodComparison:
             "agency_name_race",
         }
         assert set(df.columns) == expected
+
+    def test_county_agency_labels(self, durham_agency, durham_county, year_2023):
+        """county_agency_labels returns a county FIPS → agency text mapping."""
+        _create_stops_and_census(durham_agency, durham_county, year_2023)
+        labels = county_agency_labels(race="Black", year=2023)
+        assert "37063" in labels.index
+        assert "Durham Police Department" in labels["37063"]
+
+    def test_county_agency_labels_empty_when_no_data(self):
+        """Returns empty Series when there are no stops."""
+        StopSummary.refresh()
+        labels = county_agency_labels(race="Black", year=2099)
+        assert labels.empty

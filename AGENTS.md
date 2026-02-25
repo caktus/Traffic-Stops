@@ -21,6 +21,7 @@ NC CopWatch is a data-driven application that implements a nightly ETL pipeline 
 - Run database migrations: `uv run ./migrate_all_dbs.sh`
 - Create superuser: `uv run manage.py createsuperuser`
 - You can run generic Python commands using `uv run <command>`
+- You can run generic Python code using `uv run python -c "<code>"`
 - The `frontend/` directory contains the React front end.
 - Install Node.js dependencies: `cd frontend && npm install`
 

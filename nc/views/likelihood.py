@@ -230,3 +230,45 @@ def likelihood_comparison(level="agency", year=None):
 
     df["agency_name_race"] = df["group_name"] + " - " + df["driver_race"]
     return df.sort_values("times_likely", ascending=False).reset_index(drop=True)
+
+
+def county_agency_labels(race: str, year: int = None, top_n: int = 3) -> pd.Series:
+    """
+    Return a Series mapping county 5-digit FIPS → top-N agency label string.
+
+    Useful for enriching county choropleth hover data with contributing agency context.
+
+    Args:
+        race: driver race (e.g. "Black", "Hispanic")
+        year: optional year filter; None averages across all years
+        top_n: number of top agencies (by stops) to show per county
+
+    Returns:
+        pd.Series indexed by county 5-digit FIPS (e.g. "37063") with values like
+        "Durham PD: 2.5x<br>Chapel Hill PD: 2.1x"
+    """
+    from nc.models import Agency
+
+    df_agency = likelihood_comparison(level="agency", year=year)
+    if df_agency.empty:
+        return pd.Series(dtype=str)
+
+    df_race = df_agency[df_agency["driver_race"] == race].copy()
+    if df_race.empty:
+        return pd.Series(dtype=str)
+
+    agency_county = pd.DataFrame(Agency.objects.exclude(county_id=None).values("id", "county_id"))
+    if agency_county.empty:
+        return pd.Series(dtype=str)
+
+    agency_county["id"] = agency_county["id"].astype(str)
+    df_race = df_race.merge(agency_county, left_on="group_id", right_on="id", how="left")
+    df_race = df_race.dropna(subset=["county_id"])
+
+    result = {}
+    for county_id, grp in df_race.groupby("county_id"):
+        top = grp.nlargest(top_n, "stops")
+        lines = [f"{row['group_name']}: {row['times_likely']:.1f}x" for _, row in top.iterrows()]
+        result[county_id] = "<br>".join(lines)
+
+    return pd.Series(result)
