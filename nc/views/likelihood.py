@@ -232,20 +232,28 @@ def likelihood_comparison(level="agency", year=None):
     return df.sort_values("times_likely", ascending=False).reset_index(drop=True)
 
 
-def county_agency_labels(race: str, year: int = None, top_n: int = 3) -> pd.DataFrame:
+def county_agency_labels(
+    race: str, year: int = None, top_n: int = 3, county_df: pd.DataFrame = None
+) -> pd.DataFrame:
     """
-    Return a DataFrame of top-N agencies per county with stop rate data.
+    Return a DataFrame of top-N agencies per county with stop rate data for all races.
 
     Useful for enriching county choropleth hover data and displaying as a table.
+    All races are included in the output so callers have enough data to independently
+    calculate county average stop-rate ratios without an additional database call.
 
     Args:
-        race: driver race (e.g. "Black", "Hispanic")
+        race: driver race used to rank the top-N agencies per county (e.g. "Black")
         year: optional year filter; None averages across all years
-        top_n: number of top agencies (by stops) to show per county
+        top_n: number of top agencies (by stops for ``race``) to show per county
+        county_df: pre-computed county comparison DataFrame from
+            ``likelihood_comparison(level="county")``;  if None, it is fetched
+            internally (passing it avoids a redundant database query)
 
     Returns:
-        DataFrame with columns: county_id, county_name, agency, population,
-        total_population, stops, stop_rate, times_likely, times_likely_county_average
+        DataFrame with columns: county_id, county_name, driver_race, agency,
+        population, total_population, stops, stop_rate, times_likely,
+        times_likely_county_average, county_population
     """
     from nc.models import Agency
 
@@ -253,6 +261,7 @@ def county_agency_labels(race: str, year: int = None, top_n: int = 3) -> pd.Data
         columns=[
             "county_id",
             "county_name",
+            "driver_race",
             "agency",
             "population",
             "total_population",
@@ -260,6 +269,7 @@ def county_agency_labels(race: str, year: int = None, top_n: int = 3) -> pd.Data
             "stop_rate",
             "times_likely",
             "times_likely_county_average",
+            "county_population",
         ]
     )
 
@@ -267,12 +277,8 @@ def county_agency_labels(race: str, year: int = None, top_n: int = 3) -> pd.Data
     if df_agency.empty:
         return _empty
 
-    df_race = df_agency[df_agency["driver_race"] == race].copy()
-    if df_race.empty:
+    if race not in df_agency["driver_race"].values:
         return _empty
-
-    # Also need White rows to compute county-level White baseline
-    df_white = df_agency[df_agency["driver_race"] == "White"].copy()
 
     agency_county = pd.DataFrame(
         Agency.objects.exclude(county_id=None).values("id", "county_id", "county__county_name")
@@ -282,41 +288,45 @@ def county_agency_labels(race: str, year: int = None, top_n: int = 3) -> pd.Data
 
     agency_county["id"] = agency_county["id"].astype(str)
 
-    # Join both race and White rows to county info
-    df_race = df_race.merge(agency_county, left_on="group_id", right_on="id", how="left")
-    df_race = df_race.dropna(subset=["county_id"])
-    df_white = df_white.merge(agency_county, left_on="group_id", right_on="id", how="left")
-    df_white = df_white.dropna(subset=["county_id"])
+    # Join all agency rows (all races) to county
+    df_all = df_agency.merge(agency_county, left_on="group_id", right_on="id", how="left")
+    df_all = df_all.dropna(subset=["county_id"])
 
-    # Compute county-level average times_likely from agency data:
-    # sum(race stops) / sum(race population) divided by sum(white stops) / sum(white population)
-    county_race_agg = df_race.groupby("county_id").agg(
-        total_stops=("stops", "sum"),
-        total_pop=("population", "sum"),
-    )
-    county_white_agg = df_white.groupby("county_id").agg(
-        white_stops=("stops", "sum"),
-        white_pop=("population", "sum"),
-    )
-    county_avg = county_race_agg.join(county_white_agg, how="inner")
-    county_avg["times_likely_county_average"] = (
-        county_avg["total_stops"] / county_avg["total_pop"].replace(0, np.nan)
-    ) / (county_avg["white_stops"] / county_avg["white_pop"].replace(0, np.nan))
-    county_avg["times_likely_county_average"] = county_avg["times_likely_county_average"].fillna(0)
+    # Determine which agencies are top-N per county ranked by stops for the specified race
+    df_race = df_all[df_all["driver_race"] == race]
+    top_agency_ids = {
+        county_id: set(grp.nlargest(top_n, "stops")["group_id"])
+        for county_id, grp in df_race.groupby("county_id")
+    }
+
+    # Use county-level comparison for times_likely_county_average so it matches
+    # the choropleth map exactly. Computing it from summed agency ACS populations
+    # produces a different denominator than the county ACS geography.
+    if county_df is None:
+        df_county = likelihood_comparison(level="county", year=year)
+    else:
+        df_county = county_df
+
+    county_times_likely = df_county[df_county["driver_race"] == race].set_index("group_id")[
+        "times_likely"
+    ]
+    # Build (county_id, driver_race) -> county ACS population lookup for all races
+    county_pop_lookup = df_county.set_index(["group_id", "driver_race"])["population"].to_dict()
 
     rows = []
-    for county_id, grp in df_race.groupby("county_id"):
-        top = grp.nlargest(top_n, "stops")
-        avg = (
-            county_avg.loc[county_id, "times_likely_county_average"]
-            if county_id in county_avg.index
-            else 0
-        )
-        for _, row in top.iterrows():
+    for county_id, grp in df_all.groupby("county_id"):
+        if county_id not in top_agency_ids:
+            continue
+        top_ids = top_agency_ids[county_id]
+        top_rows = grp[grp["group_id"].isin(top_ids)]
+        avg = county_times_likely.get(county_id, 0)
+        for _, row in top_rows.iterrows():
+            county_pop = county_pop_lookup.get((county_id, row["driver_race"]), 0)
             rows.append(
                 {
                     "county_id": county_id,
                     "county_name": row["county__county_name"],
+                    "driver_race": row["driver_race"],
                     "agency": row["group_name"],
                     "population": row["population"],
                     "total_population": row["total_population"],
@@ -324,6 +334,7 @@ def county_agency_labels(race: str, year: int = None, top_n: int = 3) -> pd.Data
                     "stop_rate": row["stop_rate"],
                     "times_likely": row["times_likely"],
                     "times_likely_county_average": avg,
+                    "county_population": county_pop,
                 }
             )
 

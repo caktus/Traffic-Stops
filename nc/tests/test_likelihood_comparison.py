@@ -1,5 +1,6 @@
 import datetime as dt
 
+import pandas as pd
 import pytest
 
 from nc.models import DriverEthnicity, DriverRace, StopSummary
@@ -142,6 +143,7 @@ class TestLikelihoodComparison:
         assert set(df.columns) == {
             "county_id",
             "county_name",
+            "driver_race",
             "agency",
             "population",
             "total_population",
@@ -149,9 +151,11 @@ class TestLikelihoodComparison:
             "stop_rate",
             "times_likely",
             "times_likely_county_average",
+            "county_population",
         }
         assert "37063" in df["county_id"].values
-        row = df[df["county_id"] == "37063"].iloc[0]
+        # Filter to Black rows for per-race assertions
+        row = df[(df["county_id"] == "37063") & (df["driver_race"] == "Black")].iloc[0]
         assert row["agency"] == "Durham Police Department"
         assert row["county_name"] == "Durham County"
         assert row["population"] > 0
@@ -159,6 +163,9 @@ class TestLikelihoodComparison:
         assert row["stop_rate"] > 0
         assert row["times_likely"] > 0
         assert row["times_likely_county_average"] > 0
+        assert row["county_population"] > 0
+        # White rows should also be present
+        assert "White" in df[df["county_id"] == "37063"]["driver_race"].values
 
     def test_county_agency_labels_empty_when_no_data(self):
         """Returns empty DataFrame when there are no stops."""
@@ -168,6 +175,7 @@ class TestLikelihoodComparison:
         assert set(df.columns) == {
             "county_id",
             "county_name",
+            "driver_race",
             "agency",
             "population",
             "total_population",
@@ -175,6 +183,7 @@ class TestLikelihoodComparison:
             "stop_rate",
             "times_likely",
             "times_likely_county_average",
+            "county_population",
         }
 
 
@@ -371,7 +380,7 @@ class TestCountyAggregation:
 
         durham_labels = df_labels[df_labels["county_id"] == "37063"]
         assert not durham_labels.empty
-        # All agencies in the same county share the same county average
+        # All rows in the same county share the same county average (regardless of race)
         avg = durham_labels["times_likely_county_average"].iloc[0]
         assert (durham_labels["times_likely_county_average"] == avg).all()
 
@@ -380,6 +389,108 @@ class TestCountyAggregation:
             (df_county["group_name"] == "Durham County") & (df_county["driver_race"] == "Black")
         ].iloc[0]
         assert avg == pytest.approx(county_black["times_likely"])
+
+    def test_times_likely_county_average_uses_county_acs_not_agency_sum(
+        self, durham_county, year_2023
+    ):
+        """
+        times_likely_county_average must use the county ACS population, not the
+        sum of agency ACS populations. The two differ in real data (a city's ACS
+        coverage is smaller than the whole county).
+
+        Agency ACS:  Black=3000, White=4000 each (total_pop=20000)
+        County ACS:  Black=8000, White=9000 (total_pop=40000)  <- different denominator
+
+        Sum-of-agency formula: (190/6000) / (100/8000) = 2.53x  (wrong)
+        County ACS formula:    (190/8000) / (100/9000) = 2.14x  (correct)
+        """
+        dpd = AgencyFactory(
+            name="Durham Police Department",
+            census_profile_id="1600000US3719000",
+            county=durham_county,
+        )
+        sheriff = AgencyFactory(
+            name="Durham County Sheriff's Office",
+            census_profile_id="1600000US3719001",
+            county=durham_county,
+        )
+        for acs_id, black_pop, white_pop in [
+            (dpd.census_profile_id, 3000, 4000),
+            (sheriff.census_profile_id, 3000, 4000),
+        ]:
+            NCCensusProfileFactory(
+                acs_id=acs_id,
+                race="Black",
+                population=black_pop,
+                population_total=20000,
+                year=year_2023.year,
+            )
+            NCCensusProfileFactory(
+                acs_id=acs_id,
+                race="White",
+                population=white_pop,
+                population_total=20000,
+                year=year_2023.year,
+            )
+        # County ACS uses different (larger) population counts
+        NCCensusProfileFactory(
+            acs_id=durham_county.census_profile_id,
+            race="Black",
+            population=8000,
+            population_total=40000,
+            year=year_2023.year,
+        )
+        NCCensusProfileFactory(
+            acs_id=durham_county.census_profile_id,
+            race="White",
+            population=9000,
+            population_total=40000,
+            year=year_2023.year,
+        )
+        PersonFactory.create_batch(
+            110,
+            race=DriverRace.BLACK,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=dpd,
+            stop__date=year_2023,
+        )
+        PersonFactory.create_batch(
+            50,
+            race=DriverRace.WHITE,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=dpd,
+            stop__date=year_2023,
+        )
+        PersonFactory.create_batch(
+            80,
+            race=DriverRace.BLACK,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=sheriff,
+            stop__date=year_2023,
+        )
+        PersonFactory.create_batch(
+            50,
+            race=DriverRace.WHITE,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=sheriff,
+            stop__date=year_2023,
+        )
+        StopSummary.refresh()
+
+        df_labels = county_agency_labels(race="Black", year=2023)
+        df_county = likelihood_comparison(level="county", year=2023)
+
+        durham_labels = df_labels[df_labels["county_id"] == "37063"]
+        county_black = df_county[
+            (df_county["group_name"] == "Durham County") & (df_county["driver_race"] == "Black")
+        ].iloc[0]
+
+        # times_likely_county_average must match the county comparison (county ACS denominator)
+        avg = durham_labels["times_likely_county_average"].iloc[0]
+        assert avg == pytest.approx(county_black["times_likely"])
+        # Confirm it equals (190/8000) / (100/9000) = 2.1375, not the agency-sum formula
+        expected = (190 / 8000) / (100 / 9000)
+        assert avg == pytest.approx(expected)
 
     def test_agency_rates_differ_from_county_rate(self, durham_county, year_2023):
         """
@@ -579,6 +690,180 @@ class TestCountyAggregation:
         # 110 Black / 5000 pop / (50 White / 5000 pop) = 2.2x
         assert durham_black["stops"] == 110
         assert durham_black["times_likely"] == pytest.approx(2.2)
+
+    def test_county_agency_labels_includes_all_races(self, durham_county, year_2023):
+        """
+        county_agency_labels returns rows for ALL races, not just the requested race.
+        The ``race`` parameter only controls which agencies are selected as top-N.
+        """
+        dpd = AgencyFactory(
+            name="Durham Police Department",
+            census_profile_id="1600000US3719000",
+            county=durham_county,
+        )
+        for acs_id in [dpd.census_profile_id]:
+            NCCensusProfileFactory(
+                acs_id=acs_id,
+                race="Black",
+                population=5000,
+                population_total=20000,
+                year=year_2023.year,
+            )
+            NCCensusProfileFactory(
+                acs_id=acs_id,
+                race="White",
+                population=5000,
+                population_total=20000,
+                year=year_2023.year,
+            )
+        NCCensusProfileFactory(
+            acs_id=durham_county.census_profile_id,
+            race="Black",
+            population=10000,
+            population_total=40000,
+            year=year_2023.year,
+        )
+        NCCensusProfileFactory(
+            acs_id=durham_county.census_profile_id,
+            race="White",
+            population=10000,
+            population_total=40000,
+            year=year_2023.year,
+        )
+        PersonFactory.create_batch(
+            50,
+            race=DriverRace.BLACK,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=dpd,
+            stop__date=year_2023,
+        )
+        PersonFactory.create_batch(
+            30,
+            race=DriverRace.WHITE,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=dpd,
+            stop__date=year_2023,
+        )
+        StopSummary.refresh()
+
+        df = county_agency_labels(race="Black", year=2023)
+        durham_rows = df[df["county_id"] == "37063"]
+        assert not durham_rows.empty
+        races_present = set(durham_rows["driver_race"].unique())
+        assert "Black" in races_present
+        assert "White" in races_present
+
+    def test_county_agency_labels_county_population_column(self, durham_county, year_2023):
+        """
+        county_population reflects the county-level ACS population for each race row,
+        not the agency-level ACS population.
+        """
+        dpd = AgencyFactory(
+            name="Durham Police Department",
+            census_profile_id="1600000US3719000",
+            county=durham_county,
+        )
+        # Agency ACS: 5000 Black, 5000 White
+        for race, pop in [("Black", 5000), ("White", 5000)]:
+            NCCensusProfileFactory(
+                acs_id=dpd.census_profile_id,
+                race=race,
+                population=pop,
+                population_total=20000,
+                year=year_2023.year,
+            )
+        # County ACS: 8000 Black, 9000 White  (different from agency)
+        for race, pop in [("Black", 8000), ("White", 9000)]:
+            NCCensusProfileFactory(
+                acs_id=durham_county.census_profile_id,
+                race=race,
+                population=pop,
+                population_total=40000,
+                year=year_2023.year,
+            )
+        PersonFactory.create_batch(
+            50,
+            race=DriverRace.BLACK,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=dpd,
+            stop__date=year_2023,
+        )
+        PersonFactory.create_batch(
+            30,
+            race=DriverRace.WHITE,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=dpd,
+            stop__date=year_2023,
+        )
+        StopSummary.refresh()
+
+        df = county_agency_labels(race="Black", year=2023)
+        durham = df[df["county_id"] == "37063"]
+
+        black_row = durham[durham["driver_race"] == "Black"].iloc[0]
+        white_row = durham[durham["driver_race"] == "White"].iloc[0]
+
+        # county_population uses county ACS (not agency ACS)
+        assert black_row["county_population"] == 8000
+        assert white_row["county_population"] == 9000
+        # population column still holds agency ACS
+        assert black_row["population"] == 5000
+        assert white_row["population"] == 5000
+
+    def test_county_agency_labels_accepts_county_df(self, durham_county, year_2023):
+        """
+        Passing county_df returns the same result as the default (which fetches it
+        internally), and avoids a redundant likelihood_comparison call.
+        """
+        dpd = AgencyFactory(
+            name="Durham Police Department",
+            census_profile_id="1600000US3719000",
+            county=durham_county,
+        )
+        for race, pop in [("Black", 5000), ("White", 5000)]:
+            NCCensusProfileFactory(
+                acs_id=dpd.census_profile_id,
+                race=race,
+                population=pop,
+                population_total=20000,
+                year=year_2023.year,
+            )
+        for race, pop in [("Black", 8000), ("White", 9000)]:
+            NCCensusProfileFactory(
+                acs_id=durham_county.census_profile_id,
+                race=race,
+                population=pop,
+                population_total=40000,
+                year=year_2023.year,
+            )
+        PersonFactory.create_batch(
+            50,
+            race=DriverRace.BLACK,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=dpd,
+            stop__date=year_2023,
+        )
+        PersonFactory.create_batch(
+            30,
+            race=DriverRace.WHITE,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=dpd,
+            stop__date=year_2023,
+        )
+        StopSummary.refresh()
+
+        df_county = likelihood_comparison(level="county", year=2023)
+        df_with = county_agency_labels(race="Black", year=2023, county_df=df_county)
+        df_without = county_agency_labels(race="Black", year=2023)
+
+        # Results should be identical regardless of whether county_df is provided
+        df_with_sorted = df_with.sort_values(["county_id", "driver_race", "agency"]).reset_index(
+            drop=True
+        )
+        df_without_sorted = df_without.sort_values(
+            ["county_id", "driver_race", "agency"]
+        ).reset_index(drop=True)
+        pd.testing.assert_frame_equal(df_with_sorted, df_without_sorted)
 
 
 @pytest.mark.django_db(databases=["default", "traffic_stops_nc"])
