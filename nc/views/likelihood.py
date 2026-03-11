@@ -232,11 +232,11 @@ def likelihood_comparison(level="agency", year=None):
     return df.sort_values("times_likely", ascending=False).reset_index(drop=True)
 
 
-def county_agency_labels(race: str, year: int = None, top_n: int = 3) -> pd.Series:
+def county_agency_labels(race: str, year: int = None, top_n: int = 3) -> pd.DataFrame:
     """
-    Return a Series mapping county 5-digit FIPS → top-N agency label string.
+    Return a DataFrame of top-N agencies per county with stop rate data.
 
-    Useful for enriching county choropleth hover data with contributing agency context.
+    Useful for enriching county choropleth hover data and displaying as a table.
 
     Args:
         race: driver race (e.g. "Black", "Hispanic")
@@ -244,31 +244,44 @@ def county_agency_labels(race: str, year: int = None, top_n: int = 3) -> pd.Seri
         top_n: number of top agencies (by stops) to show per county
 
     Returns:
-        pd.Series indexed by county 5-digit FIPS (e.g. "37063") with values like
-        "Durham PD: 2.5x<br>Chapel Hill PD: 2.1x"
+        DataFrame with columns: county_id, county_name, agency, stop_rate, times_likely
     """
     from nc.models import Agency
 
+    _empty = pd.DataFrame(
+        columns=["county_id", "county_name", "agency", "stop_rate", "times_likely"]
+    )
+
     df_agency = likelihood_comparison(level="agency", year=year)
     if df_agency.empty:
-        return pd.Series(dtype=str)
+        return _empty
 
     df_race = df_agency[df_agency["driver_race"] == race].copy()
     if df_race.empty:
-        return pd.Series(dtype=str)
+        return _empty
 
-    agency_county = pd.DataFrame(Agency.objects.exclude(county_id=None).values("id", "county_id"))
+    agency_county = pd.DataFrame(
+        Agency.objects.exclude(county_id=None).values("id", "county_id", "county__county_name")
+    )
     if agency_county.empty:
-        return pd.Series(dtype=str)
+        return _empty
 
     agency_county["id"] = agency_county["id"].astype(str)
     df_race = df_race.merge(agency_county, left_on="group_id", right_on="id", how="left")
     df_race = df_race.dropna(subset=["county_id"])
 
-    result = {}
+    rows = []
     for county_id, grp in df_race.groupby("county_id"):
         top = grp.nlargest(top_n, "stops")
-        lines = [f"{row['group_name']}: {row['times_likely']:.1f}x" for _, row in top.iterrows()]
-        result[county_id] = "<br>".join(lines)
+        for _, row in top.iterrows():
+            rows.append(
+                {
+                    "county_id": county_id,
+                    "county_name": row["county__county_name"],
+                    "agency": row["group_name"],
+                    "stop_rate": row["stop_rate"],
+                    "times_likely": row["times_likely"],
+                }
+            )
 
-    return pd.Series(result)
+    return pd.DataFrame(rows)
