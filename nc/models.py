@@ -465,6 +465,15 @@ LIKELIHOOD_OF_STOP_SUMMARY_SQL = """
         FROM nc_stopsummary summary
         JOIN nc_agency agency ON summary.agency_id = agency.id
         JOIN nc_county county ON agency.county_id = county.id
+        -- Only count stops from agencies whose own ACS geography passes the
+        -- population filter (mirrors the filter applied to agency-level rows).
+        -- This prevents small-city agencies (e.g. pop < 10 000) from inflating
+        -- the county aggregate while being absent from agency-level results.
+        JOIN acs agency_acs ON (
+            agency_acs.census_profile_id = agency.census_profile_id
+            AND agency_acs.driver_race = 'White'
+            AND agency_acs.total_population > 10000
+        )
         WHERE county.census_profile_id != ''
         GROUP BY 1, 2, 3, 4, 5, 6
     ),

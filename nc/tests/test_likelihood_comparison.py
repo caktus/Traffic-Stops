@@ -487,6 +487,99 @@ class TestCountyAggregation:
             sheriff_black["times_likely"] < county_black["times_likely"] < dpd_black["times_likely"]
         )
 
+    def test_small_city_agency_excluded_from_county_aggregate(self, durham_county, year_2023):
+        """
+        A small city agency (population < 10,000) is excluded from both
+        agency-level and county-level results. Without this fix the county
+        aggregate inflates by including stops from agencies that are invisible
+        at the agency level because they fail the population filter.
+
+        Sheriff (large, pop=10k):  110 Black + 50 White stops → 2.2x
+        Small city (pop=2k):        50 Black + 10 White stops → would inflate county
+        County should only reflect the Sheriff's stops (2.2x), not the small city's.
+        """
+        sheriff = AgencyFactory(
+            name="Durham County Sheriff's Office",
+            census_profile_id="1600000US3719001",
+            county=durham_county,
+        )
+        small_city = AgencyFactory(
+            name="Small City PD",
+            census_profile_id="1600000US3719002",
+            county=durham_county,
+        )
+        # Sheriff passes the population filter (total_population > 10,000)
+        for race, pop in [("Black", 5000), ("White", 5000)]:
+            NCCensusProfileFactory(
+                acs_id=sheriff.census_profile_id,
+                race=race,
+                population=pop,
+                population_total=20000,
+                year=year_2023.year,
+            )
+        # Small city fails the filter (total_population <= 10,000)
+        for race, pop in [("Black", 400), ("White", 1600)]:
+            NCCensusProfileFactory(
+                acs_id=small_city.census_profile_id,
+                race=race,
+                population=pop,
+                population_total=2000,
+                year=year_2023.year,
+            )
+        # County ACS
+        for race, pop in [("Black", 5000), ("White", 5000)]:
+            NCCensusProfileFactory(
+                acs_id=durham_county.census_profile_id,
+                race=race,
+                population=pop,
+                population_total=20000,
+                year=year_2023.year,
+            )
+        # Sheriff: 110 Black + 50 White
+        PersonFactory.create_batch(
+            110,
+            race=DriverRace.BLACK,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=sheriff,
+            stop__date=year_2023,
+        )
+        PersonFactory.create_batch(
+            50,
+            race=DriverRace.WHITE,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=sheriff,
+            stop__date=year_2023,
+        )
+        # Small city: 50 Black + 10 White — should NOT inflate county total
+        PersonFactory.create_batch(
+            50,
+            race=DriverRace.BLACK,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=small_city,
+            stop__date=year_2023,
+        )
+        PersonFactory.create_batch(
+            10,
+            race=DriverRace.WHITE,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=small_city,
+            stop__date=year_2023,
+        )
+        StopSummary.refresh()
+
+        # Small city should be absent from agency-level results (fails population filter)
+        df_agency = likelihood_comparison(level="agency", year=2023)
+        assert "Small City PD" not in df_agency["group_name"].values
+
+        # County aggregate should only include Sheriff's stops
+        df_county = likelihood_comparison(level="county", year=2023)
+        durham_black = df_county[
+            (df_county["group_name"] == "Durham County") & (df_county["driver_race"] == "Black")
+        ].iloc[0]
+        # 110 Black / 5000 pop / (50 White / 5000 pop) = 2.2x
+        assert durham_black["stops"] == 110
+        assert durham_black["times_likely"] == pytest.approx(2.2)
+
 
 @pytest.mark.django_db(databases=["default", "traffic_stops_nc"])
 class TestMatchesLikelihoodStopQuery:
