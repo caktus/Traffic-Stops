@@ -143,15 +143,22 @@ class TestLikelihoodComparison:
             "county_id",
             "county_name",
             "agency",
+            "population",
+            "total_population",
+            "stops",
             "stop_rate",
             "times_likely",
+            "times_likely_county_average",
         }
         assert "37063" in df["county_id"].values
         row = df[df["county_id"] == "37063"].iloc[0]
         assert row["agency"] == "Durham Police Department"
         assert row["county_name"] == "Durham County"
+        assert row["population"] > 0
+        assert row["stops"] > 0
         assert row["stop_rate"] > 0
         assert row["times_likely"] > 0
+        assert row["times_likely_county_average"] > 0
 
     def test_county_agency_labels_empty_when_no_data(self):
         """Returns empty DataFrame when there are no stops."""
@@ -162,8 +169,12 @@ class TestLikelihoodComparison:
             "county_id",
             "county_name",
             "agency",
+            "population",
+            "total_population",
+            "stops",
             "stop_rate",
             "times_likely",
+            "times_likely_county_average",
         }
 
 
@@ -277,6 +288,98 @@ class TestCountyAggregation:
 
         # County aggregate: Black drivers 1.9x more likely — between DPD (2.2x) and Sheriff (1.6x)
         assert black["times_likely"] == pytest.approx(1.9)
+
+    def test_county_agency_labels_times_likely_county_average(self, durham_county, year_2023):
+        """
+        times_likely_county_average in county_agency_labels should match the county-level
+        times_likely from likelihood_comparison(level='county').
+
+        DPD:    110 Black / 5000 pop (2.2x), Sheriff: 80 Black / 5000 pop (1.6x)
+        County average from agency data: 190/10000 / (100/10000) = 1.9x
+        """
+        dpd = AgencyFactory(
+            name="Durham Police Department",
+            census_profile_id="1600000US3719000",
+            county=durham_county,
+        )
+        sheriff = AgencyFactory(
+            name="Durham County Sheriff's Office",
+            census_profile_id="1600000US3719001",
+            county=durham_county,
+        )
+        for acs_id in [dpd.census_profile_id, sheriff.census_profile_id]:
+            NCCensusProfileFactory(
+                acs_id=acs_id,
+                race="Black",
+                population=5000,
+                population_total=20000,
+                year=year_2023.year,
+            )
+            NCCensusProfileFactory(
+                acs_id=acs_id,
+                race="White",
+                population=5000,
+                population_total=20000,
+                year=year_2023.year,
+            )
+        NCCensusProfileFactory(
+            acs_id=durham_county.census_profile_id,
+            race="Black",
+            population=10000,
+            population_total=40000,
+            year=year_2023.year,
+        )
+        NCCensusProfileFactory(
+            acs_id=durham_county.census_profile_id,
+            race="White",
+            population=10000,
+            population_total=40000,
+            year=year_2023.year,
+        )
+        PersonFactory.create_batch(
+            110,
+            race=DriverRace.BLACK,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=dpd,
+            stop__date=year_2023,
+        )
+        PersonFactory.create_batch(
+            50,
+            race=DriverRace.WHITE,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=dpd,
+            stop__date=year_2023,
+        )
+        PersonFactory.create_batch(
+            80,
+            race=DriverRace.BLACK,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=sheriff,
+            stop__date=year_2023,
+        )
+        PersonFactory.create_batch(
+            50,
+            race=DriverRace.WHITE,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=sheriff,
+            stop__date=year_2023,
+        )
+        StopSummary.refresh()
+
+        df_labels = county_agency_labels(race="Black", year=2023)
+        df_county = likelihood_comparison(level="county", year=2023)
+
+        durham_labels = df_labels[df_labels["county_id"] == "37063"]
+        assert not durham_labels.empty
+        # All agencies in the same county share the same county average
+        avg = durham_labels["times_likely_county_average"].iloc[0]
+        assert (durham_labels["times_likely_county_average"] == avg).all()
+
+        # The county average from agency data should match the county-level comparison
+        county_black = df_county[
+            (df_county["group_name"] == "Durham County") & (df_county["driver_race"] == "Black")
+        ].iloc[0]
+        assert avg == pytest.approx(county_black["times_likely"])
 
     def test_agency_rates_differ_from_county_rate(self, durham_county, year_2023):
         """
