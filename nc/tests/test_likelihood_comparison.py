@@ -1074,3 +1074,106 @@ class TestMatchesLikelihoodStopQuery:
         assert black_chart["stop_rate"] == pytest.approx(0.024)
         assert black_chart["stop_rate_ratio"] == pytest.approx(black_comp["times_likely"])
         assert black_chart["stop_rate_ratio"] == pytest.approx(2.0)
+
+
+# State ACS ID for North Carolina statewide census data
+STATE_ACS_ID = "0400000US37"
+
+
+@pytest.mark.django_db(databases=["default", "traffic_stops_nc"])
+class TestStatewideLevel:
+    """Statewide aggregates all stops in NC against the state ACS census population."""
+
+    def test_statewide_returns_data(self, year_2023):
+        """Statewide level returns rows grouped by race with correct stop rates."""
+        agency = AgencyFactory(name="Any Agency", census_profile_id="1600000US3719000")
+        # Black: 100 stops / 2,000,000 pop = 0.00005
+        # White:  50 stops / 6,000,000 pop = 0.00000833...
+        # times_likely for Black = 0.00005 / 0.00000833 = 6.0
+        NCCensusProfileFactory(
+            acs_id=STATE_ACS_ID,
+            race="Black",
+            population=2_000_000,
+            population_total=10_000_000,
+            year=year_2023.year,
+        )
+        NCCensusProfileFactory(
+            acs_id=STATE_ACS_ID,
+            race="White",
+            population=6_000_000,
+            population_total=10_000_000,
+            year=year_2023.year,
+        )
+        PersonFactory.create_batch(
+            100,
+            race=DriverRace.BLACK,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=agency,
+            stop__date=year_2023,
+        )
+        PersonFactory.create_batch(
+            50,
+            race=DriverRace.WHITE,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=agency,
+            stop__date=year_2023,
+        )
+        StopSummary.refresh()
+
+        df = likelihood_comparison(level="statewide", year=2023)
+        assert not df.empty
+        assert set(df["level"]) == {"statewide"}
+        assert df["group_name"].iloc[0] == "North Carolina"
+
+        black = df[df["driver_race"] == "Black"].iloc[0]
+        white = df[df["driver_race"] == "White"].iloc[0]
+
+        assert black["stops"] == 100
+        assert white["stops"] == 50
+        assert black["times_likely"] == pytest.approx(6.0, rel=0.01)
+        assert white["times_likely"] == pytest.approx(1.0)
+
+    def test_statewide_includes_all_agencies(self, year_2023):
+        """Statewide aggregates stops from all agencies, unlike agency level."""
+        agency_a = AgencyFactory(census_profile_id="1600000US3719000")
+        agency_b = AgencyFactory(census_profile_id="1600000US3719001")
+        NCCensusProfileFactory(
+            acs_id=STATE_ACS_ID,
+            race="Black",
+            population=2_000_000,
+            population_total=10_000_000,
+            year=year_2023.year,
+        )
+        NCCensusProfileFactory(
+            acs_id=STATE_ACS_ID,
+            race="White",
+            population=6_000_000,
+            population_total=10_000_000,
+            year=year_2023.year,
+        )
+        PersonFactory.create_batch(
+            40,
+            race=DriverRace.BLACK,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=agency_a,
+            stop__date=year_2023,
+        )
+        PersonFactory.create_batch(
+            60,
+            race=DriverRace.BLACK,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=agency_b,
+            stop__date=year_2023,
+        )
+        PersonFactory.create_batch(
+            30,
+            race=DriverRace.WHITE,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=agency_a,
+            stop__date=year_2023,
+        )
+        StopSummary.refresh()
+
+        df = likelihood_comparison(level="statewide", year=2023)
+        black = df[df["driver_race"] == "Black"].iloc[0]
+        assert black["stops"] == 100  # 40 + 60 from both agencies

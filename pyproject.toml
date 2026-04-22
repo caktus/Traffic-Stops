@@ -85,6 +85,7 @@ dev = [
     "jupyterlab>=4.5.3",
     "kubernetes==32.*",
     "kubernetes-validate~=1.33.0",
+    "marimo>=0.23.2",
     "openshift>=0.13.2",
     "plotly>=6.5.2",
     "pre-commit>=4.1.0",

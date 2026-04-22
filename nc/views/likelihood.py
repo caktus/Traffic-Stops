@@ -169,7 +169,7 @@ class LikelihoodStopView(APIView):
         return Response(data=data, status=200)
 
 
-def likelihood_comparison(level="agency", year=None):
+def likelihood_comparison(level="agency", year=None) -> pd.DataFrame:
     """
     Query LikelihoodOfStopSummary view for comparative stop likelihood data.
 

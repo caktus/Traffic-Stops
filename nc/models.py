@@ -477,10 +477,25 @@ LIKELIHOOD_OF_STOP_SUMMARY_SQL = """
         WHERE county.census_profile_id != ''
         GROUP BY 1, 2, 3, 4, 5, 6
     ),
+    statewide_yearly_stops AS (
+        -- Aggregate all stops statewide using the NC state ACS ID (0400000US37)
+        SELECT
+            'statewide' AS level,
+            '0400000US37' AS group_id,
+            'North Carolina' AS group_name,
+            '0400000US37' AS census_profile_id,
+            EXTRACT('year' FROM summary.date)::integer AS year,
+            summary.driver_race_comb AS driver_race,
+            SUM(summary.count) AS stops
+        FROM nc_stopsummary summary
+        GROUP BY 5, 6
+    ),
     all_yearly_stops AS (
         SELECT * FROM agency_yearly_stops
         UNION ALL
         SELECT * FROM county_yearly_stops
+        UNION ALL
+        SELECT * FROM statewide_yearly_stops
     ),
     stops_with_pop AS (
         SELECT
@@ -547,7 +562,7 @@ class LikelihoodOfStopSummary(pg.View):
     sql = LIKELIHOOD_OF_STOP_SUMMARY_SQL
 
     id = models.BigIntegerField(primary_key=True)
-    level = models.CharField(max_length=8)  # 'agency' or 'county'
+    level = models.CharField(max_length=16)  # 'agency', 'county', or 'statewide'
     group_id = models.CharField(max_length=16)
     group_name = models.CharField(max_length=255)
     census_profile_id = models.CharField(max_length=32)
