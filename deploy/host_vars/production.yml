@@ -100,3 +100,13 @@ k8s_hosting_services_aws_secret_access_key: !vault |
   6338393036373961333736646565306137666636623365616636
 k8s_hosting_services_database_url: "{{ env_database_url }}"
 k8s_hosting_services_healthcheck_url: https://hc-ping.com/c80a410a-f739-4613-9aa6-bda801e7cfdb
+
+# django-k8s app traefik ingress resources
+k8s_traefik_ingress_resources:
+  - name: "server-transport"
+    type: "root-spec"
+    resourceKind: "ServersTransport"
+    config:
+      forwardingTimeouts:
+        dialTimeout: "1800s"
+        idleTimeout: "1800s"
