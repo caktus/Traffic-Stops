@@ -18,11 +18,11 @@ def _():
 
     from dotenv import load_dotenv
 
-    django_project_dir = Path("../../..").resolve()
+    django_project_dir = Path(__file__).parent.joinpath("../../..").resolve()
 
     def load_envrc():
-        """VS Code's Jupyter extension doesn't support loading .envrc, so if you're
-        using VS Code, we load it here."""
+        """Load .envrc from the Django project root so environment variables are
+        available regardless of the working directory marimo is launched from."""
 
         envrc = django_project_dir / ".envrc"
         stream = StringIO()
@@ -36,6 +36,7 @@ def _():
         load_dotenv(stream=stream)
 
     load_envrc()
+
     return (django_project_dir,)
 
 
@@ -77,6 +78,25 @@ def _():
     return color_map, likelihood_comparison, pd, px
 
 
+@app.cell
+def _(mo):
+    from django.db.models.functions import ExtractYear
+
+    from nc.models import StopSummary
+
+    years = sorted(
+        StopSummary.objects.values_list(ExtractYear("date"), flat=True).distinct(),
+        reverse=True,
+    )
+    year_dropdown = mo.ui.dropdown(
+        options={"All": None, **{str(y): y for y in years}},
+        value="All",
+        label="Year",
+    )
+    year_dropdown
+    return (year_dropdown,)
+
+
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
@@ -88,8 +108,9 @@ def _(mo):
 
 
 @app.cell
-def _(color_map, likelihood_comparison, mo, pd, px):
-    df_statewide: pd.DataFrame = likelihood_comparison(level="statewide")
+def _(color_map, likelihood_comparison, mo, pd, px, year_dropdown):
+    selected_year = year_dropdown.value
+    df_statewide: pd.DataFrame = likelihood_comparison(level="statewide", year=selected_year)
 
     chart_df = df_statewide[df_statewide["driver_race"] != "White"].sort_values(
         "times_likely", ascending=False
@@ -129,12 +150,12 @@ def _(color_map, likelihood_comparison, mo, pd, px):
     table = mo.ui.table(table_df)
 
     mo.vstack([plot_statewide, table])
-    return
+    return (selected_year,)
 
 
 @app.cell
-def _(color_map, likelihood_comparison, mo, pd, px):
-    df_agency: pd.DataFrame = likelihood_comparison(level="agency")
+def _(color_map, likelihood_comparison, mo, pd, px, selected_year):
+    df_agency: pd.DataFrame = likelihood_comparison(level="agency", year=selected_year)
     curr_df = df_agency[df_agency["driver_race"] != "White"].head(20)
 
     fig = px.bar(
