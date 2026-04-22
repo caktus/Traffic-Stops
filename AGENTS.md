@@ -28,6 +28,9 @@ NC CopWatch is a data-driven application that implements a nightly ETL pipeline 
 ### Multiple Databases
 
 - The project uses multiple databases: `default` and `traffic_stops_nc`.
+- `django-pgviews-redux` manages PostgreSQL views and materialized views. Do **not** create Django migrations when modifying view SQL — the view schema is managed outside of the migrations system.
+- After changing a view's SQL in `models.py`, apply it to the database with: `uv run manage.py sync_pgviews --database=traffic_stops_nc`
+- To refresh a materialized view's data: `uv run manage.py refresh_pgviews --database=traffic_stops_nc`
 
 ### Running the Application
 
