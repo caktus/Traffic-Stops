@@ -209,10 +209,12 @@ def likelihood_comparison(level="agency", year=None) -> pd.DataFrame:
         # Average across years to match the original notebook behavior
         df = (
             df.groupby(["level", "group_id", "group_name", "census_profile_id", "driver_race"])
-            .agg({"population": "first", "total_population": "first", "stops": "mean"})
+            .agg({"population": "mean", "total_population": "mean", "stops": "mean"})
             .reset_index()
         )
         df["stops"] = df["stops"].astype(int)
+        df["population"] = df["population"].astype(int)
+        df["total_population"] = df["total_population"].astype(int)
         df["stop_rate"] = df["stops"] / df["population"].replace(0, np.nan)
         # Recompute baseline from White stop rate per group
         white = df[df["driver_race"] == "White"][["group_id", "stop_rate"]].rename(

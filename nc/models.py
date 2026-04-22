@@ -430,7 +430,9 @@ class ContrabandSummary(pg.ReadOnlyMaterializedView):
 
 
 LIKELIHOOD_OF_STOP_SUMMARY_SQL = """
-    WITH acs AS (
+    WITH acs_avg AS (
+        -- Averaged ACS data: used for population filter checks and as fallback
+        -- when no exact-year ACS row exists for a given stop year.
         SELECT
             acs_id AS census_profile_id,
             race AS driver_race,
@@ -438,6 +440,16 @@ LIKELIHOOD_OF_STOP_SUMMARY_SQL = """
             AVG(population_total)::integer AS total_population
         FROM nc_nccensusprofile
         GROUP BY 1, 2
+    ),
+    acs_by_year AS (
+        -- Per-year ACS data: used when an exact year match is available.
+        SELECT
+            acs_id AS census_profile_id,
+            year,
+            race AS driver_race,
+            population,
+            population_total AS total_population
+        FROM nc_nccensusprofile
     ),
     agency_yearly_stops AS (
         SELECT
@@ -469,7 +481,7 @@ LIKELIHOOD_OF_STOP_SUMMARY_SQL = """
         -- population filter (mirrors the filter applied to agency-level rows).
         -- This prevents small-city agencies (e.g. pop < 10 000) from inflating
         -- the county aggregate while being absent from agency-level results.
-        JOIN acs agency_acs ON (
+        JOIN acs_avg agency_acs ON (
             agency_acs.census_profile_id = agency.census_profile_id
             AND agency_acs.driver_race = 'White'
             AND agency_acs.total_population > 10000
@@ -505,17 +517,23 @@ LIKELIHOOD_OF_STOP_SUMMARY_SQL = """
             s.census_profile_id,
             s.year,
             s.driver_race,
-            acs.population,
-            acs.total_population,
+            -- Use exact-year ACS when available, fall back to averaged ACS
+            COALESCE(acs_year.population, acs_avg.population) AS population,
+            COALESCE(acs_year.total_population, acs_avg.total_population) AS total_population,
             s.stops,
-            s.stops::float / NULLIF(acs.population, 0) AS stop_rate
+            s.stops::float / NULLIF(COALESCE(acs_year.population, acs_avg.population), 0) AS stop_rate
         FROM all_yearly_stops s
-        JOIN acs ON (
-            acs.census_profile_id = s.census_profile_id
-            AND acs.driver_race = s.driver_race
+        JOIN acs_avg ON (
+            acs_avg.census_profile_id = s.census_profile_id
+            AND acs_avg.driver_race = s.driver_race
         )
-        WHERE acs.total_population > 10000
-          AND (acs.population > 100 OR s.driver_race = 'White')
+        LEFT JOIN acs_by_year acs_year ON (
+            acs_year.census_profile_id = s.census_profile_id
+            AND acs_year.driver_race = s.driver_race
+            AND acs_year.year = s.year
+        )
+        WHERE acs_avg.total_population > 10000
+          AND (acs_avg.population > 100 OR s.driver_race = 'White')
     ),
     with_baseline AS (
         SELECT

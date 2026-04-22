@@ -1177,3 +1177,113 @@ class TestStatewideLevel:
         df = likelihood_comparison(level="statewide", year=2023)
         black = df[df["driver_race"] == "Black"].iloc[0]
         assert black["stops"] == 100  # 40 + 60 from both agencies
+
+
+@pytest.mark.django_db(databases=["default", "traffic_stops_nc"])
+class TestACSPopulationByYear:
+    """
+    ACS population values should be year-specific when a year is requested,
+    and averaged across available ACS years when no year is specified.
+    """
+
+    def test_year_specific_population(self, year_2023):
+        """Year-filtered query uses ACS population for that year, not the average."""
+        agency = AgencyFactory()
+        year_2022 = dt.date(2022, 6, 1)
+        NCCensusProfileFactory(
+            acs_id=STATE_ACS_ID, race="Black", population=4000, population_total=11000, year=2022
+        )
+        NCCensusProfileFactory(
+            acs_id=STATE_ACS_ID, race="White", population=5000, population_total=11000, year=2022
+        )
+        NCCensusProfileFactory(
+            acs_id=STATE_ACS_ID, race="Black", population=6000, population_total=12000, year=2023
+        )
+        NCCensusProfileFactory(
+            acs_id=STATE_ACS_ID, race="White", population=5000, population_total=12000, year=2023
+        )
+        PersonFactory.create_batch(
+            60,
+            race=DriverRace.BLACK,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=agency,
+            stop__date=year_2023,
+        )
+        PersonFactory.create_batch(
+            30,
+            race=DriverRace.WHITE,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=agency,
+            stop__date=year_2023,
+        )
+        PersonFactory.create_batch(
+            40,
+            race=DriverRace.BLACK,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=agency,
+            stop__date=year_2022,
+        )
+        PersonFactory.create_batch(
+            20,
+            race=DriverRace.WHITE,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=agency,
+            stop__date=year_2022,
+        )
+        StopSummary.refresh()
+
+        df = likelihood_comparison(level="statewide", year=2023)
+        black = df[df["driver_race"] == "Black"].iloc[0]
+        assert black["population"] == 6000  # 2023 ACS, not avg (5000)
+        assert black["total_population"] == 12000
+
+    def test_all_years_population_is_average(self, year_2023):
+        """No-year query averages ACS population across available years."""
+        agency = AgencyFactory()
+        year_2022 = dt.date(2022, 6, 1)
+        NCCensusProfileFactory(
+            acs_id=STATE_ACS_ID, race="Black", population=4000, population_total=11000, year=2022
+        )
+        NCCensusProfileFactory(
+            acs_id=STATE_ACS_ID, race="White", population=5000, population_total=11000, year=2022
+        )
+        NCCensusProfileFactory(
+            acs_id=STATE_ACS_ID, race="Black", population=6000, population_total=12000, year=2023
+        )
+        NCCensusProfileFactory(
+            acs_id=STATE_ACS_ID, race="White", population=5000, population_total=12000, year=2023
+        )
+        PersonFactory.create_batch(
+            60,
+            race=DriverRace.BLACK,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=agency,
+            stop__date=year_2023,
+        )
+        PersonFactory.create_batch(
+            30,
+            race=DriverRace.WHITE,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=agency,
+            stop__date=year_2023,
+        )
+        PersonFactory.create_batch(
+            40,
+            race=DriverRace.BLACK,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=agency,
+            stop__date=year_2022,
+        )
+        PersonFactory.create_batch(
+            20,
+            race=DriverRace.WHITE,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=agency,
+            stop__date=year_2022,
+        )
+        StopSummary.refresh()
+
+        df = likelihood_comparison(level="statewide")
+        black = df[df["driver_race"] == "Black"].iloc[0]
+        assert black["population"] == 5000  # (4000 + 6000) / 2
+        assert black["total_population"] == 11500  # (11000 + 12000) / 2
