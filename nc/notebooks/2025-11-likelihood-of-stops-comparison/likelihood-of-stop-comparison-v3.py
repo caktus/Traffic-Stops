@@ -220,9 +220,9 @@ def _(
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ## Map of sheriff agencies
+    ## Sheriff agencies across NC
 
-    Interactive choropleth map showing the times-as-likely ratio for drivers by county. Uses [North Carolina State and County Boundary Polygons](https://www.nconemap.gov/datasets/NCEM-GIS::north-carolina-state-and-county-boundary-polygons/about) for county geometries. The GeoJSON uses 3-digit county FIPS (e.g. `"001"`), so `group_id` (5-digit, e.g. `"37001"`) is trimmed to match.
+    This interactive choropleth map illustrates how much more likely drivers of the selected races are to be pulled over by sheriff agencies in each county compared to white drivers. Uses [North Carolina State and County Boundary Polygons](https://www.nconemap.gov/datasets/NCEM-GIS::north-carolina-state-and-county-boundary-polygons/about) for county geometries. The GeoJSON uses 3-digit county FIPS (e.g. `"001"`), so `group_id` (5-digit, e.g. `"37001"`) is trimmed to match.
     """)
     return
 
