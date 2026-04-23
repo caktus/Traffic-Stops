@@ -3,18 +3,15 @@ import marimo
 __generated_with = "0.23.2"
 app = marimo.App(width="medium")
 
+with app.setup(hide_code=True):
+    import os
+    import sys
 
-@app.cell
-def _():
-    import marimo as mo
-
-    return (mo,)
-
-
-@app.cell
-def _():
     from io import StringIO
     from pathlib import Path
+
+    import pandas as pd
+    import plotly.express as px
 
     from dotenv import load_dotenv
 
@@ -36,13 +33,6 @@ def _():
         load_dotenv(stream=stream)
 
     load_envrc()
-    return (django_project_dir,)
-
-
-@app.cell
-def _(django_project_dir):
-    import os
-    import sys
 
     sys.path.insert(0, str(django_project_dir))
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "traffic_stops.settings.dev")
@@ -51,19 +41,8 @@ def _(django_project_dir):
     import django  # noqa
 
     django.setup()
-    return
-
-
-@app.cell
-def _():
-    import warnings
-
-    import pandas as pd
-    import plotly.express as px
 
     from nc.views.likelihood import likelihood_comparison
-
-    warnings.filterwarnings("ignore", category=FutureWarning, module="plotly")
 
     color_map = {
         "Asian": "#F9DC4E",
@@ -73,19 +52,26 @@ def _():
         "Other": "#999999",
         "White": "#1282A2",
     }
-    pd.set_option("display.max_rows", 500)
-    return color_map, likelihood_comparison, pd, px
 
 
-@app.cell
+@app.cell(hide_code=True)
+def _():
+    import marimo as mo
+
+    return (mo,)
+
+
+@app.cell(hide_code=True)
 def _(mo):
     from django.db.models.functions import ExtractYear
 
     from nc.models import StopSummary
 
-    years = sorted(
-        StopSummary.objects.values_list(ExtractYear("date"), flat=True).distinct(),
-        reverse=True,
+    years = list(
+        StopSummary.objects.annotate(year=ExtractYear("date"))
+        .values_list("year", flat=True)
+        .distinct()
+        .order_by("-year")
     )
     year_dropdown = mo.ui.dropdown(
         options={"All": None, **{str(y): y for y in years}},
@@ -112,16 +98,8 @@ def _(mo):
     return
 
 
-@app.cell
-def _(
-    color_map,
-    likelihood_comparison,
-    mo,
-    pd,
-    px,
-    race_multiselect,
-    year_dropdown,
-):
+@app.cell(hide_code=True)
+def _(mo, race_multiselect, year_dropdown):
     selected_year = year_dropdown.value
     selected_races = race_multiselect.value or None
     year_label = str(selected_year) if selected_year else "all years"
@@ -182,12 +160,8 @@ def _(mo):
 
 @app.cell
 def _(
-    color_map,
-    df_statewide,
-    likelihood_comparison,
+    df_statewide: pd.DataFrame,
     mo,
-    pd,
-    px,
     selected_races,
     selected_year,
     year_label,
@@ -239,6 +213,11 @@ def _(
     ]
     agency_table = mo.ui.table(curr_df[agency_table_cols].copy())
     mo.vstack([plot, agency_table])
+    return
+
+
+@app.cell
+def _():
     return
 
 
