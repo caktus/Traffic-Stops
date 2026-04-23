@@ -169,13 +169,17 @@ class LikelihoodStopView(APIView):
         return Response(data=data, status=200)
 
 
-def likelihood_comparison(level="agency", year=None) -> pd.DataFrame:
+def likelihood_comparison(
+    level="agency", year=None, races: list[str] | None = None
+) -> pd.DataFrame:
     """
     Query LikelihoodOfStopSummary view for comparative stop likelihood data.
 
     Args:
-        level: "agency" or "county"
+        level: "agency", "county", or "statewide"
         year: optional year to filter to
+        races: optional list of driver races to include (e.g. ["Black", "Hispanic"]);
+               None returns all races
 
     Returns:
         DataFrame with columns: level, group_id, group_name, census_profile_id,
@@ -231,6 +235,8 @@ def likelihood_comparison(level="agency", year=None) -> pd.DataFrame:
         df["times_likely"] = df["times_likely"].fillna(0)
 
     df["agency_name_race"] = df["group_name"] + " - " + df["driver_race"]
+    if races:
+        df = df[df["driver_race"].isin(races)]
     return df.sort_values("times_likely", ascending=False).reset_index(drop=True)
 
 

@@ -36,7 +36,6 @@ def _():
         load_dotenv(stream=stream)
 
     load_envrc()
-
     return (django_project_dir,)
 
 
@@ -93,8 +92,14 @@ def _(mo):
         value="All",
         label="Year",
     )
-    year_dropdown
-    return (year_dropdown,)
+    ALL_RACES = ["Asian", "Black", "Hispanic", "Native American", "Other", "White"]
+    race_multiselect = mo.ui.multiselect(
+        options=ALL_RACES,
+        value=[r for r in ALL_RACES if r != "White"],
+        label="Race",
+    )
+    mo.hstack([year_dropdown, race_multiselect])
+    return race_multiselect, year_dropdown
 
 
 @app.cell(hide_code=True)
@@ -108,9 +113,22 @@ def _(mo):
 
 
 @app.cell
-def _(color_map, likelihood_comparison, mo, pd, px, year_dropdown):
+def _(
+    color_map,
+    likelihood_comparison,
+    mo,
+    pd,
+    px,
+    race_multiselect,
+    year_dropdown,
+):
     selected_year = year_dropdown.value
-    df_statewide: pd.DataFrame = likelihood_comparison(level="statewide", year=selected_year)
+    selected_races = race_multiselect.value or None
+    year_label = str(selected_year) if selected_year else "all years"
+
+    df_statewide: pd.DataFrame = likelihood_comparison(
+        level="statewide", year=selected_year, races=selected_races
+    )
 
     chart_df = df_statewide[df_statewide["driver_race"] != "White"].sort_values(
         "times_likely", ascending=False
@@ -122,7 +140,7 @@ def _(color_map, likelihood_comparison, mo, pd, px, year_dropdown):
         y="times_likely",
         color="driver_race",
         color_discrete_map=color_map,
-        title="Statewide: Times as likely to be stopped as white drivers by race (all years)",
+        title=f"Statewide: Times as likely to be stopped as white drivers by race ({year_label})",
         labels={
             "times_likely": "Times as likely",
             "driver_race": "Race",
@@ -148,14 +166,35 @@ def _(color_map, likelihood_comparison, mo, pd, px, year_dropdown):
     ]
     table_df = df_statewide[table_cols].copy()
     table = mo.ui.table(table_df)
-
     mo.vstack([plot_statewide, table])
-    return (selected_year,)
+    return df_statewide, selected_races, selected_year, year_label
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Top 20: Agency-level comparison
+
+    This chart shows the top 20 agencies where drivers of the selected races are most likely to be stopped compared to white drivers. The dashed lines mark the statewide average for each race.
+    """)
+    return
 
 
 @app.cell
-def _(color_map, likelihood_comparison, mo, pd, px, selected_year):
-    df_agency: pd.DataFrame = likelihood_comparison(level="agency", year=selected_year)
+def _(
+    color_map,
+    df_statewide,
+    likelihood_comparison,
+    mo,
+    pd,
+    px,
+    selected_races,
+    selected_year,
+    year_label,
+):
+    df_agency: pd.DataFrame = likelihood_comparison(
+        level="agency", year=selected_year, races=selected_races
+    )
     curr_df = df_agency[df_agency["driver_race"] != "White"].head(20)
 
     fig = px.bar(
@@ -164,7 +203,7 @@ def _(color_map, likelihood_comparison, mo, pd, px, selected_year):
         y="times_likely",
         color="driver_race",
         color_discrete_map=color_map,
-        title="Top 20: Times as likely to be pulled over as white drivers (agency, all years)",
+        title=f"Top 20: Times as likely to be pulled over as white drivers (agency, {year_label})",
         labels={
             "times_likely": "Times as likely",
             "driver_race": "Race",
@@ -175,13 +214,31 @@ def _(color_map, likelihood_comparison, mo, pd, px, selected_year):
         height=600,
         category_orders={"agency_name_race": curr_df["agency_name_race"].tolist()},
     )
+    for race in selected_races or []:
+        row = df_statewide[df_statewide["driver_race"] == race]
+        if not row.empty:
+            fig.add_hline(
+                y=row.iloc[0]["times_likely"],
+                line_dash="dash",
+                line_color=color_map.get(race, "gray"),
+                annotation_text=f"NC Avg ({race})",
+                annotation_position="top right",
+            )
     plot = mo.ui.plotly(fig.update_yaxes(tickformat=",.1f").update_traces(textangle=0))
-    plot
-    return
 
-
-@app.cell
-def _():
+    agency_table_cols = [
+        "driver_race",
+        "population",
+        "total_population",
+        "stops",
+        "stop_rate",
+        "baseline_rate",
+        "stop_rate_ratio",
+        "times_likely",
+        "agency_name_race",
+    ]
+    agency_table = mo.ui.table(curr_df[agency_table_cols].copy())
+    mo.vstack([plot, agency_table])
     return
 
 

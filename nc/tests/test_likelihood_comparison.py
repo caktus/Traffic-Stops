@@ -1287,3 +1287,24 @@ class TestACSPopulationByYear:
         black = df[df["driver_race"] == "Black"].iloc[0]
         assert black["population"] == 5000  # (4000 + 6000) / 2
         assert black["total_population"] == 11500  # (11000 + 12000) / 2
+
+
+@pytest.mark.django_db(databases=["default", "traffic_stops_nc"])
+class TestRaceFilter:
+    """likelihood_comparison races= argument filters results to the specified races."""
+
+    def test_race_filter_excludes_other_races(self, durham_agency, durham_county, year_2023):
+        _create_stops_and_census(durham_agency, durham_county, year_2023)
+        df = likelihood_comparison(level="agency", year=2023, races=["Black"])
+        assert set(df["driver_race"]) == {"Black"}
+
+    def test_race_filter_none_returns_all_races(self, durham_agency, durham_county, year_2023):
+        _create_stops_and_census(durham_agency, durham_county, year_2023)
+        df = likelihood_comparison(level="agency", year=2023, races=None)
+        assert "Black" in df["driver_race"].values
+        assert "White" in df["driver_race"].values
+
+    def test_race_filter_multiple_races(self, durham_agency, durham_county, year_2023):
+        _create_stops_and_census(durham_agency, durham_county, year_2023)
+        df = likelihood_comparison(level="agency", year=2023, races=["Black", "White"])
+        assert set(df["driver_race"]) == {"Black", "White"}
