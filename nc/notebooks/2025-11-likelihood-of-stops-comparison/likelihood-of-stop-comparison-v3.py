@@ -80,13 +80,13 @@ def _(mo):
         label="Year",
     )
     ALL_RACES = ["Asian", "Black", "Hispanic", "Native American", "Other", "White"]
-    race_multiselect = mo.ui.multiselect(
-        options=ALL_RACES,
-        value=[r for r in ALL_RACES if r != "White"],
+    race_dropdown = mo.ui.dropdown(
+        options={"All": None, **{r: r for r in ALL_RACES if r != "White"}},
+        value="All",
         label="Race",
     )
-    mo.hstack([year_dropdown, race_multiselect])
-    return race_multiselect, year_dropdown
+    mo.hstack([year_dropdown, race_dropdown])
+    return race_dropdown, year_dropdown
 
 
 @app.cell(hide_code=True)
@@ -100,9 +100,9 @@ def _(mo):
 
 
 @app.cell(hide_code=True)
-def _(mo, race_multiselect, year_dropdown):
+def _(mo, race_dropdown, year_dropdown):
     selected_year = year_dropdown.value
-    selected_races = [str(s) for s in race_multiselect.value] if race_multiselect.value else None
+    selected_races = [race_dropdown.value] if race_dropdown.value else None
     year_label = str(selected_year) if selected_year else "all years"
 
     df_statewide: pd.DataFrame = likelihood_comparison(
@@ -188,17 +188,17 @@ def _(
         height=600,
         category_orders={"agency_name_race": curr_df["agency_name_race"].tolist()},
     )
-    if selected_races and len(selected_races) == 1:
-        for race in selected_races:
-            row = df_statewide[df_statewide["driver_race"] == race]
-            if not row.empty:
-                fig.add_hline(
-                    y=row.iloc[0]["times_likely"],
-                    line_dash="dash",
-                    line_color=color_map.get(race, "gray"),
-                    annotation_text=f"NC Avg ({race})",
-                    annotation_position="top right",
-                )
+    if selected_races:
+        race = selected_races[0]
+        row = df_statewide[df_statewide["driver_race"] == race]
+        if not row.empty:
+            fig.add_hline(
+                y=row.iloc[0]["times_likely"],
+                line_dash="dash",
+                line_color=color_map.get(race, "gray"),
+                annotation_text=f"NC Avg ({race})",
+                annotation_position="top right",
+            )
     plot = mo.ui.plotly(fig.update_yaxes(tickformat=",.1f").update_traces(textangle=0))
 
     agency_table_cols = [
@@ -228,14 +228,13 @@ def _(mo):
 
 
 @app.cell
-def _(df_agency: pd.DataFrame, mo, selected_races, year_label):
+def _(df_agency: pd.DataFrame, mo, race_dropdown, year_label):
     simplified_geojson_path = django_project_dir / Path(
         "nc/data/North_Carolina_State_and_County_Boundary_Polygons_simplified.geojson"
     )
     simplified_geojson = json.loads(simplified_geojson_path.read_text())
 
-    # Use the first selected non-white race for the map (default: Black)
-    map_race = (selected_races or ["Black"])[0]
+    map_race = race_dropdown.value or "Black"
 
     sheriff_df = df_agency[
         df_agency["group_name"].str.contains("Sheriff") & (df_agency["driver_race"] == map_race)
@@ -262,18 +261,23 @@ def _(df_agency: pd.DataFrame, mo, selected_races, year_label):
     )
     fig_map.update_geos(fitbounds="locations", visible=False)
     fig_map.update_layout(height=600, margin={"r": 0, "t": 40, "l": 0, "b": 0})
-    mo.ui.plotly(fig_map)
-    return (sheriff_df,)
 
+    sheriff_plot = mo.ui.plotly(fig_map)
+    sheriff_table_cols = [
+        "group_name",
+        "driver_race",
+        "population",
+        "total_population",
+        "stops",
+        "stop_rate",
+        "baseline_rate",
+        "stop_rate_ratio",
+        "times_likely",
+    ]
+    sheriff_table_df = sheriff_df[sheriff_table_cols].copy().round(2)
 
-@app.cell
-def _(sheriff_df):
-    sheriff_df
-    return
+    mo.vstack([sheriff_plot, sheriff_table_df])
 
-
-@app.cell
-def _():
     return
 
 
