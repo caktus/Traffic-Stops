@@ -42,7 +42,7 @@ with app.setup(hide_code=True):
 
     django.setup()
 
-    from nc.views.likelihood import likelihood_comparison
+    from nc.views.likelihood import likelihood_comparison  # noqa
 
     color_map = {
         "Asian": "#F9DC4E",
@@ -101,7 +101,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo, race_multiselect, year_dropdown):
     selected_year = year_dropdown.value
-    selected_races = race_multiselect.value or None
+    selected_races = [str(s) for s in race_multiselect.value] if race_multiselect.value else None
     year_label = str(selected_year) if selected_year else "all years"
 
     df_statewide: pd.DataFrame = likelihood_comparison(
@@ -143,8 +143,7 @@ def _(mo, race_multiselect, year_dropdown):
         "times_likely",
     ]
     table_df = df_statewide[table_cols].copy()
-    table = mo.ui.table(table_df)
-    mo.vstack([plot_statewide, table])
+    mo.vstack([plot_statewide, table_df.round(2)])
     return df_statewide, selected_races, selected_year, year_label
 
 
@@ -188,19 +187,21 @@ def _(
         height=600,
         category_orders={"agency_name_race": curr_df["agency_name_race"].tolist()},
     )
-    for race in selected_races or []:
-        row = df_statewide[df_statewide["driver_race"] == race]
-        if not row.empty:
-            fig.add_hline(
-                y=row.iloc[0]["times_likely"],
-                line_dash="dash",
-                line_color=color_map.get(race, "gray"),
-                annotation_text=f"NC Avg ({race})",
-                annotation_position="top right",
-            )
+    if selected_races and len(selected_races) == 1:
+        for race in selected_races:
+            row = df_statewide[df_statewide["driver_race"] == race]
+            if not row.empty:
+                fig.add_hline(
+                    y=row.iloc[0]["times_likely"],
+                    line_dash="dash",
+                    line_color=color_map.get(race, "gray"),
+                    annotation_text=f"NC Avg ({race})",
+                    annotation_position="top right",
+                )
     plot = mo.ui.plotly(fig.update_yaxes(tickformat=",.1f").update_traces(textangle=0))
 
     agency_table_cols = [
+        "agency_name_race",
         "driver_race",
         "population",
         "total_population",
@@ -209,10 +210,9 @@ def _(
         "baseline_rate",
         "stop_rate_ratio",
         "times_likely",
-        "agency_name_race",
     ]
-    agency_table = mo.ui.table(curr_df[agency_table_cols].copy())
-    mo.vstack([plot, agency_table])
+    agency_top20 = curr_df[agency_table_cols].copy().round(2)
+    mo.vstack([plot, agency_top20])
     return
 
 

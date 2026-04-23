@@ -51,3 +51,14 @@ NC CopWatch is a data-driven application that implements a nightly ETL pipeline 
 
 - Ansible is used for deployment automation with playbooks located in the `deploy/` directory.
 - Install Ansible dependencies: `uv run ansible-galaxy install -fr deploy/requirements.yml`
+
+## Notebooks
+
+Marimo notebooks are used for data exploration and analysis. These are interactive reactive Python notebooks stored as `.py` files (not JSON like Jupyter), making them Git-friendly and executable as scripts.
+
+- See [marimo documentation](https://docs.marimo.io/llms.txt) for comprehensive guides on reactivity, UI elements, deployment, and more.
+- Use setup cells to organize imports and dependencies that your notebook functions will reference.
+
+### Common Commands
+
+- `marimo check --fix notebook.py` — Check and fix notebook formatting
