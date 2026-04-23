@@ -4,6 +4,7 @@ __generated_with = "0.23.2"
 app = marimo.App(width="medium")
 
 with app.setup(hide_code=True):
+    import json
     import os
     import sys
 
@@ -213,6 +214,61 @@ def _(
     ]
     agency_top20 = curr_df[agency_table_cols].copy().round(2)
     mo.vstack([plot, agency_top20])
+    return (df_agency,)
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Map of sheriff agencies
+
+    Interactive choropleth map showing the times-as-likely ratio for drivers by county. Uses [North Carolina State and County Boundary Polygons](https://www.nconemap.gov/datasets/NCEM-GIS::north-carolina-state-and-county-boundary-polygons/about) for county geometries. The GeoJSON uses 3-digit county FIPS (e.g. `"001"`), so `group_id` (5-digit, e.g. `"37001"`) is trimmed to match.
+    """)
+    return
+
+
+@app.cell
+def _(df_agency: pd.DataFrame, mo, selected_races, year_label):
+    simplified_geojson_path = django_project_dir / Path(
+        "nc/data/North_Carolina_State_and_County_Boundary_Polygons_simplified.geojson"
+    )
+    simplified_geojson = json.loads(simplified_geojson_path.read_text())
+
+    # Use the first selected non-white race for the map (default: Black)
+    map_race = (selected_races or ["Black"])[0]
+
+    sheriff_df = df_agency[
+        df_agency["group_name"].str.contains("Sheriff") & (df_agency["driver_race"] == map_race)
+    ].copy()
+    sheriff_df["fips3"] = sheriff_df["census_profile_id"].str[-3:]
+
+    fig_map = px.choropleth(
+        sheriff_df,
+        geojson=simplified_geojson,
+        locations="fips3",
+        featureidkey="properties.FIPS",
+        color="times_likely",
+        color_continuous_scale="RdYlGn_r",
+        hover_name="group_name",
+        hover_data={
+            "times_likely": ":.2f",
+            "stops": True,
+            "population": True,
+            "fips3": False,
+        },
+        title=f"Sheriff agencies: Times as likely to be stopped as white drivers ({map_race}, {year_label})",
+        labels={"times_likely": "Times as likely"},
+        scope="usa",
+    )
+    fig_map.update_geos(fitbounds="locations", visible=False)
+    fig_map.update_layout(height=600, margin={"r": 0, "t": 40, "l": 0, "b": 0})
+    mo.ui.plotly(fig_map)
+    return (sheriff_df,)
+
+
+@app.cell
+def _(sheriff_df):
+    sheriff_df
     return
 
 
