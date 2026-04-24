@@ -227,9 +227,11 @@ def _(
             fig.add_hline(
                 y=row.iloc[0]["times_likely"],
                 line_dash="dash",
-                line_color=color_map.get(race, "gray"),
-                annotation_text=f"NC Avg ({race})",
-                annotation_position="top right",
+                line_color="#FF1493",
+                line_width=2,
+                annotation_text=f"<b>Statewide Average ({race})</b>",
+                annotation_position="bottom right",
+                annotation_font={"size": 13, "color": "#FF1493"},
             )
     plot = mo.ui.plotly(fig.update_yaxes(tickformat=",.1f").update_traces(textangle=0))
 
