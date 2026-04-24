@@ -6,7 +6,12 @@ import pytest
 from nc.models import DriverEthnicity, DriverRace, StopSummary
 from nc.tests.factories import AgencyFactory, CountyFactory, NCCensusProfileFactory, PersonFactory
 from nc.tests.urls import reverse_querystring
-from nc.views.likelihood import county_agency_labels, likelihood_comparison, likelihood_stop_query
+from nc.views.likelihood import (
+    county_agency_labels,
+    likelihood_comparison,
+    likelihood_stop_query,
+    parity_data,
+)
 
 
 @pytest.fixture
@@ -1289,22 +1294,98 @@ class TestACSPopulationByYear:
         assert black["total_population"] == 11500  # (11000 + 12000) / 2
 
 
-@pytest.mark.django_db(databases=["default", "traffic_stops_nc"])
-class TestRaceFilter:
-    """likelihood_comparison races= argument filters results to the specified races."""
+class TestParityData:
+    def test_expected_columns(self):
+        df = pd.DataFrame(
+            {
+                "group_id": ["1", "1"],
+                "group_name": ["Durham PD", "Durham PD"],
+                "driver_race": ["Black", "White"],
+                "population": [5000, 10000],
+                "total_population": [20000, 20000],
+                "stops": [50, 30],
+                "stop_rate_ratio": [1.5, 1.0],
+            }
+        )
+        result = parity_data(df)
+        assert {"pop_share", "stop_share", "excess_stops", "agency_name"}.issubset(result.columns)
 
-    def test_race_filter_excludes_other_races(self, durham_agency, durham_county, year_2023):
-        _create_stops_and_census(durham_agency, durham_county, year_2023)
-        df = likelihood_comparison(level="agency", year=2023, races=["Black"])
-        assert set(df["driver_race"]) == {"Black"}
+    def test_pop_share_and_stop_share_values(self):
+        df = pd.DataFrame(
+            {
+                "group_id": ["1", "1"],
+                "group_name": ["Durham PD", "Durham PD"],
+                "driver_race": ["Black", "White"],
+                "population": [5000, 10000],
+                "total_population": [20000, 20000],
+                "stops": [50, 30],
+                "stop_rate_ratio": [1.5, 1.0],
+            }
+        )
+        result = parity_data(df)
+        black = result[result["driver_race"] == "Black"].iloc[0]
+        assert black["pop_share"] == pytest.approx(5000 / 20000)
+        assert black["stop_share"] == pytest.approx(50 / 80)  # 80 total stops
+        assert black["excess_stops"] == pytest.approx(50 - (5000 / 20000) * 80)
 
-    def test_race_filter_none_returns_all_races(self, durham_agency, durham_county, year_2023):
-        _create_stops_and_census(durham_agency, durham_county, year_2023)
-        df = likelihood_comparison(level="agency", year=2023, races=None)
-        assert "Black" in df["driver_race"].values
-        assert "White" in df["driver_race"].values
+    def test_empty_dataframe_returns_empty(self):
+        df = pd.DataFrame(
+            columns=[
+                "group_id",
+                "group_name",
+                "driver_race",
+                "population",
+                "total_population",
+                "stops",
+            ]
+        )
+        result = parity_data(df)
+        assert result.empty
 
-    def test_race_filter_multiple_races(self, durham_agency, durham_county, year_2023):
-        _create_stops_and_census(durham_agency, durham_county, year_2023)
-        df = likelihood_comparison(level="agency", year=2023, races=["Black", "White"])
-        assert set(df["driver_race"]) == {"Black", "White"}
+    def test_white_always_present_when_filtering_by_race(self):
+        """Filtering parity_data output to a selected race + White always includes White."""
+        df = pd.DataFrame(
+            {
+                "group_id": ["1", "1", "1"],
+                "group_name": ["Durham PD"] * 3,
+                "driver_race": ["Black", "Hispanic", "White"],
+                "population": [5000, 3000, 10000],
+                "total_population": [20000, 20000, 20000],
+                "stops": [50, 20, 30],
+                "stop_rate_ratio": [1.5, 1.2, 1.0],
+            }
+        )
+        result = parity_data(df)
+        # Simulate notebook filter: selected race + White baseline
+        selected_race = "Black"
+        filtered = result[result["driver_race"].isin({selected_race, "White"})]
+        assert set(filtered["driver_race"]) == {"Black", "White"}
+        assert "Hispanic" not in filtered["driver_race"].values
+
+    def test_stop_share_requires_all_races_in_input(self):
+        """
+        parity_data must receive all races for a group so stop_share denominators
+        are correct. With only one race, stop_share is always 1.0 (a known footgun
+        if the caller pre-filters by race before passing to parity_data).
+        """
+        all_races = pd.DataFrame(
+            {
+                "group_id": ["1", "1"],
+                "group_name": ["Durham PD", "Durham PD"],
+                "driver_race": ["Black", "White"],
+                "population": [5000, 10000],
+                "total_population": [20000, 20000],
+                "stops": [50, 30],
+                "stop_rate_ratio": [1.5, 1.0],
+            }
+        )
+        # Correct: all races provided — Black stop_share = 50/80
+        result_all = parity_data(all_races)
+        black_all = result_all[result_all["driver_race"] == "Black"].iloc[0]
+        assert black_all["stop_share"] == pytest.approx(50 / 80)
+
+        # Incorrect caller pattern: pre-filtered to one race → stop_share = 1.0
+        single_race = all_races[all_races["driver_race"] == "Black"].copy()
+        result_single = parity_data(single_race)
+        black_single = result_single[result_single["driver_race"] == "Black"].iloc[0]
+        assert black_single["stop_share"] == pytest.approx(1.0)

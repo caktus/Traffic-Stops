@@ -44,7 +44,7 @@ with app.setup(hide_code=True):
     django.setup()
 
     from nc.models import DriverRace  # noqa
-    from nc.views.likelihood import likelihood_comparison  # noqa
+    from nc.views.likelihood import likelihood_comparison, parity_data  # noqa
 
     color_map = {
         "Asian": "#F9DC4E",
@@ -110,9 +110,9 @@ def _(mo, race_dropdown, year_dropdown):
     selected_races = [race_dropdown.value] if race_dropdown.value else None
     year_label = str(selected_year) if selected_year else "all years"
 
-    df_statewide: pd.DataFrame = likelihood_comparison(
-        level="statewide", year=selected_year, races=selected_races
-    )
+    df_statewide: pd.DataFrame = likelihood_comparison(level="statewide", year=selected_year)
+    if selected_races:
+        df_statewide = df_statewide[df_statewide["driver_race"].isin(selected_races)]
 
     chart_df = df_statewide[df_statewide["driver_race"] != DriverRace.WHITE.label].sort_values(
         "times_likely", ascending=False
@@ -171,10 +171,11 @@ def _(
     selected_year,
     year_label,
 ):
-    df_agency: pd.DataFrame = likelihood_comparison(
-        level="agency", year=selected_year, races=selected_races
-    )
-    curr_df = df_agency[df_agency["driver_race"] != DriverRace.WHITE.label].head(20)
+    df_agency: pd.DataFrame = likelihood_comparison(level="agency", year=selected_year)
+    curr_df = df_agency[df_agency["driver_race"] != DriverRace.WHITE.label]
+    if selected_races:
+        curr_df = curr_df[curr_df["driver_race"].isin(selected_races)]
+    curr_df = curr_df.head(20)
 
     fig = px.bar(
         curr_df,
@@ -283,6 +284,59 @@ def _(df_agency: pd.DataFrame, mo, race_dropdown, year_label):
 
     mo.vstack([sheriff_plot, sheriff_table_df])
 
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Parity Plot: Population Share vs. Stop Share
+
+    Each dot is one agency–race pair. Dots **above** the diagonal line of fairness
+    are stopped more often than their share of the population would predict;
+    dots **below** are stopped less often.
+    """)
+    return
+
+
+@app.cell
+def _(df_agency: pd.DataFrame, mo, race_dropdown, year_label):
+    map_race_parity = race_dropdown.value or DriverRace.BLACK.label
+
+    df_parity = parity_data(df_agency)
+    parity_races = {map_race_parity, DriverRace.WHITE.label}
+    df_parity_filtered = df_parity[df_parity["driver_race"].isin(parity_races)]
+
+    fig_parity = px.scatter(
+        df_parity_filtered,
+        x="pop_share",
+        y="stop_share",
+        color="driver_race",
+        color_discrete_map=color_map,
+        hover_name="agency_name",
+        hover_data={"stops": True, "excess_stops": ":.0f", "stop_rate_ratio": ":.2f"},
+        title=f"<b>Parity Plot:</b> Population Share vs. Stop Share ({map_race_parity} vs. White, {year_label})",
+        labels={"pop_share": "Share of Population", "stop_share": "Share of Traffic Stops"},
+        opacity=0.6,
+        height=700,
+    )
+    # Add the "Line of Fairness" (diagonal x=y)
+    fig_parity.add_shape(type="line", line=dict(dash="dash", color="gray"), x0=0, x1=1, y0=0, y1=1)
+    fig_parity.update_layout(xaxis_range=[0, 1], yaxis_range=[0, 1])
+
+    parity_table_cols = [
+        "agency_name",
+        "driver_race",
+        "population",
+        "total_population",
+        "stops",
+        "pop_share",
+        "stop_share",
+        "excess_stops",
+        "stop_rate_ratio",
+    ]
+    parity_table_df = df_parity_filtered[parity_table_cols].copy().round(4)
+    mo.vstack([mo.ui.plotly(fig_parity), parity_table_df])
     return
 
 

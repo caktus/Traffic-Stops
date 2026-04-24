@@ -169,17 +169,13 @@ class LikelihoodStopView(APIView):
         return Response(data=data, status=200)
 
 
-def likelihood_comparison(
-    level="agency", year=None, races: list[str] | None = None
-) -> pd.DataFrame:
+def likelihood_comparison(level="agency", year=None) -> pd.DataFrame:
     """
     Query LikelihoodOfStopSummary view for comparative stop likelihood data.
 
     Args:
         level: "agency", "county", or "statewide"
         year: optional year to filter to
-        races: optional list of driver races to include (e.g. ["Black", "Hispanic"]);
-               None returns all races
 
     Returns:
         DataFrame with columns: level, group_id, group_name, census_profile_id,
@@ -235,9 +231,35 @@ def likelihood_comparison(
         df["times_likely"] = df["times_likely"].fillna(0)
 
     df["agency_name_race"] = df["group_name"] + " - " + df["driver_race"]
-    if races:
-        df = df[df["driver_race"].isin(races)]
     return df.sort_values("times_likely", ascending=False).reset_index(drop=True)
+
+
+def parity_data(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Compute population share, stop share, and excess stops for a parity plot.
+
+    Args:
+        df: agency-level DataFrame from ``likelihood_comparison(level="agency")``,
+            containing columns: group_id, group_name, driver_race, population,
+            total_population, stops.
+
+    Returns:
+        DataFrame with added columns: agency_name, pop_share, stop_share,
+        excess_stops (stops above parity).
+    """
+    if df.empty:
+        return df.copy()
+
+    total_stops = df.groupby("group_id")["stops"].transform("sum")
+    out = df.copy()
+    out["agency_name"] = out["group_name"]
+    out["pop_share"] = out["population"] / out["total_population"].replace(0, np.nan)
+    out["stop_share"] = out["stops"] / total_stops.replace(0, np.nan)
+    out["excess_stops"] = out["stops"] - out["pop_share"] * total_stops
+    out["pop_share"] = out["pop_share"].fillna(0)
+    out["stop_share"] = out["stop_share"].fillna(0)
+    out["excess_stops"] = out["excess_stops"].fillna(0)
+    return out
 
 
 def county_agency_labels(
