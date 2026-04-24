@@ -4,6 +4,7 @@ __generated_with = "0.23.2"
 app = marimo.App(width="medium")
 
 with app.setup(hide_code=True):
+    import datetime as dt
     import json
     import os
     import sys
@@ -65,7 +66,8 @@ def _():
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""
+    last_updated = dt.datetime.fromtimestamp(Path(__file__).stat().st_mtime).strftime("%B %d, %Y")
+    mo.md(rf"""
     # Likelihood of Traffic Stop Comparison v3
 
     This notebook provides an interactive analysis of racial disparities in
@@ -78,6 +80,8 @@ def _(mo):
 
     Use the **Year** and **Race** filters in the sidebar to explore a specific
     year or race. The charts and tables below update reactively.
+
+    *Last updated: {last_updated}*
     """)
     return
 
