@@ -85,8 +85,13 @@ def _(mo):
         value="All",
         label="Race",
     )
-    mo.hstack([year_dropdown, race_dropdown])
     return race_dropdown, year_dropdown
+
+
+@app.cell(hide_code=True)
+def _(mo, race_dropdown, year_dropdown):
+    mo.sidebar(mo.vstack([year_dropdown, race_dropdown]))
+    return
 
 
 @app.cell(hide_code=True)
