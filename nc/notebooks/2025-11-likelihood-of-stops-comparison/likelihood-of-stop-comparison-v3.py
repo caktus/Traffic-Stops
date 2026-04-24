@@ -65,6 +65,25 @@ def _():
 
 @app.cell(hide_code=True)
 def _(mo):
+    mo.md(r"""
+    # Likelihood of Traffic Stop Comparison v3
+
+    This notebook provides an interactive analysis of racial disparities in
+    traffic stops across North Carolina. By comparing the share of the
+    population to the share of traffic stops, we can estimate a Stop Rate
+    Ratio (where a value of 1.0 indicates equal odds of being stopped). These
+    visualizations aim to identify whether Black and Hispanic drivers are pulled
+    over at higher rates than White drivers and how these patterns vary across
+    municipal police and county sheriff agencies.
+
+    Use the **Year** and **Race** filters in the sidebar to explore a specific
+    year or race. The charts and tables below update reactively.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
     from django.db.models.functions import ExtractYear
 
     from nc.models import StopSummary
@@ -90,16 +109,19 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo, race_dropdown, year_dropdown):
-    mo.sidebar(mo.vstack([year_dropdown, race_dropdown]))
+    mo.sidebar(mo.vstack([mo.md("## Filters"), year_dropdown, race_dropdown]))
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ## Statewide
+    ## Statewide Baseline and Stop Rate Estimates
 
-    This chart illustrates the statewide likelihood of drivers of different races being pulled over compared to white drivers. These statewide figures establish a baseline that will serve as a reference point for the graphs that follow.
+    This chart illustrates the statewide likelihood of drivers of different
+    races being pulled over compared to white drivers. These statewide figures
+    establish a baseline that will serve as a reference point for the graphs
+    that follow.
     """)
     return
 
@@ -156,9 +178,12 @@ def _(mo, race_dropdown, year_dropdown):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ## Top 20: Agency-level comparison
+    ## Agency-Level Disparities
 
-    This chart shows the top 20 agencies where drivers of the selected races are most likely to be stopped compared to white drivers. The dashed lines mark the statewide average for each race.
+    Disparities often vary dramatically from agency to agency. This chart shows
+    the top 20 agencies where drivers of the selected races are most likely to
+    be stopped compared to white drivers. The dashed lines mark the statewide
+    average for each race.
     """)
     return
 
@@ -226,9 +251,13 @@ def _(
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ## Sheriff agencies across NC
+    ## Geographic Distribution of Stop Ratios
 
-    This interactive choropleth map illustrates how much more likely drivers of the selected races are to be pulled over by sheriff agencies in each county compared to white drivers. Uses [North Carolina State and County Boundary Polygons](https://www.nconemap.gov/datasets/NCEM-GIS::north-carolina-state-and-county-boundary-polygons/about) for county geometries. The GeoJSON uses 3-digit county FIPS (e.g. `"001"`), so `group_id` (5-digit, e.g. `"37001"`) is trimmed to match.
+    This interactive choropleth map illustrates how much more likely drivers of
+    the selected races are to be pulled over by sheriff agencies in each county
+    compared to white drivers. Uses [North Carolina State and County Boundary
+    Polygons](https://www.nconemap.gov/datasets/NCEM-GIS::north-carolina-state-and-county-boundary-polygons/about)
+    for county geometries.
     """)
     return
 
@@ -290,11 +319,13 @@ def _(df_agency: pd.DataFrame, mo, race_dropdown, year_label):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ## Parity Plot: Population Share vs. Stop Share
+    ## Visualizing Over-Policing vs. Under-Policing
 
-    Each dot is one agency–race pair. Dots **above** the diagonal line of fairness
-    are stopped more often than their share of the population would predict;
-    dots **below** are stopped less often.
+    The parity plot visualizes the relationship between a group's share of the
+    community and its share of traffic stops. The diagonal "Line of Fairness"
+    indicates equality. Observations above the line indicate comparative
+    over-policing of a demographic group, while those below the line indicate
+    under-policing.
     """)
     return
 
