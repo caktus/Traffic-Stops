@@ -72,11 +72,8 @@ def _(mo):
 
     This notebook provides an interactive analysis of racial disparities in
     traffic stops across North Carolina. By comparing the share of the
-    population to the share of traffic stops, we can estimate a Stop Rate
-    Ratio (where a value of 1.0 indicates equal odds of being stopped). These
-    visualizations aim to identify whether Black and Hispanic drivers are pulled
-    over at higher rates than White drivers and how these patterns vary across
-    municipal police and county sheriff agencies.
+    population to the share of traffic stops, we can estimate a Stop Rate Ratio
+    (where a value of 1.0 indicates equal odds of being stopped).
 
     Use the **Year** and **Race** filters in the sidebar to explore a specific
     year or race. The charts and tables below update reactively.
