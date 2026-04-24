@@ -61,4 +61,5 @@ Marimo notebooks are used for data exploration and analysis. These are interacti
 
 ### Common Commands
 
-- `marimo check --fix notebook.py` — Check and fix notebook formatting
+- `uv run marimo check --fix notebook.py` -- Check and fix notebook formatting
+- `uv run python notebook.py` -- ALWAYS run a notebook as a script to ensure it executes successfully after making changes

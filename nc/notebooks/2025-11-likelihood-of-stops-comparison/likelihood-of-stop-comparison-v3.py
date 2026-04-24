@@ -43,6 +43,7 @@ with app.setup(hide_code=True):
 
     django.setup()
 
+    from nc.models import DriverRace  # noqa
     from nc.views.likelihood import likelihood_comparison  # noqa
 
     color_map = {
@@ -79,9 +80,8 @@ def _(mo):
         value="All",
         label="Year",
     )
-    ALL_RACES = ["Asian", "Black", "Hispanic", "Native American", "Other", "White"]
     race_dropdown = mo.ui.dropdown(
-        options={"All": None, **{r: r for r in ALL_RACES if r != "White"}},
+        options={"All": None, **{r.label: r.label for r in DriverRace if r != DriverRace.WHITE}},
         value="All",
         label="Race",
     )
@@ -109,7 +109,7 @@ def _(mo, race_dropdown, year_dropdown):
         level="statewide", year=selected_year, races=selected_races
     )
 
-    chart_df = df_statewide[df_statewide["driver_race"] != "White"].sort_values(
+    chart_df = df_statewide[df_statewide["driver_race"] != DriverRace.WHITE.label].sort_values(
         "times_likely", ascending=False
     )
 
@@ -169,7 +169,7 @@ def _(
     df_agency: pd.DataFrame = likelihood_comparison(
         level="agency", year=selected_year, races=selected_races
     )
-    curr_df = df_agency[df_agency["driver_race"] != "White"].head(20)
+    curr_df = df_agency[df_agency["driver_race"] != DriverRace.WHITE.label].head(20)
 
     fig = px.bar(
         curr_df,
@@ -234,7 +234,7 @@ def _(df_agency: pd.DataFrame, mo, race_dropdown, year_label):
     )
     simplified_geojson = json.loads(simplified_geojson_path.read_text())
 
-    map_race = race_dropdown.value or "Black"
+    map_race = race_dropdown.value or DriverRace.BLACK.label
 
     sheriff_df = df_agency[
         df_agency["group_name"].str.contains("Sheriff") & (df_agency["driver_race"] == map_race)
