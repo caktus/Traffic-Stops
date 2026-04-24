@@ -208,7 +208,3 @@ def refresh_census_models(data):
             logger.debug(f"Parsed {nc_profile.race} population in {nc_profile.location}")
             nc_profiles.append(nc_profile)
     NCCensusProfile.objects.bulk_create(nc_profiles)
-    # Link agencies to counties via pygris spatial join
-    from nc.data.county_linking import link_agencies_to_counties
-
-    link_agencies_to_counties()

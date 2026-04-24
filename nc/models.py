@@ -201,26 +201,10 @@ class SearchBasis(models.Model):
     basis = models.CharField(max_length=4, choices=SEARCH_BASIS_CHOICES)
 
 
-class County(models.Model):
-    id = models.CharField(max_length=5, primary_key=True)  # 5-digit FIPS code, e.g. "37063"
-    county_name = models.CharField(max_length=100)
-    census_profile_id = models.CharField(
-        max_length=32, blank=True, default=""
-    )  # e.g. "0500000US37063"
-
-    class Meta:
-        verbose_name_plural = "Counties"
-        ordering = ["county_name"]
-
-    def __str__(self):
-        return self.county_name
-
-
 class Agency(models.Model):
     name = models.CharField(max_length=255)
     # link to CensusProfile (no cross-database foreign key)
     census_profile_id = models.CharField(max_length=16, blank=True, default="")
-    county = models.ForeignKey(County, null=True, blank=True, on_delete=models.SET_NULL)
     last_reported_stop = models.DateField(null=True)
 
     class Meta:
@@ -465,30 +449,6 @@ LIKELIHOOD_OF_STOP_SUMMARY_SQL = """
         WHERE agency.census_profile_id != ''
         GROUP BY 1, 2, 3, 4, 5, 6
     ),
-    county_yearly_stops AS (
-        SELECT
-            'county' AS level,
-            county.id AS group_id,
-            county.county_name AS group_name,
-            county.census_profile_id,
-            EXTRACT('year' FROM summary.date)::integer AS year,
-            summary.driver_race_comb AS driver_race,
-            SUM(summary.count) AS stops
-        FROM nc_stopsummary summary
-        JOIN nc_agency agency ON summary.agency_id = agency.id
-        JOIN nc_county county ON agency.county_id = county.id
-        -- Only count stops from agencies whose own ACS geography passes the
-        -- population filter (mirrors the filter applied to agency-level rows).
-        -- This prevents small-city agencies (e.g. pop < 10 000) from inflating
-        -- the county aggregate while being absent from agency-level results.
-        JOIN acs_avg agency_acs ON (
-            agency_acs.census_profile_id = agency.census_profile_id
-            AND agency_acs.driver_race = 'White'
-            AND agency_acs.total_population > 10000
-        )
-        WHERE county.census_profile_id != ''
-        GROUP BY 1, 2, 3, 4, 5, 6
-    ),
     statewide_yearly_stops AS (
         -- Aggregate all stops statewide using the NC state ACS ID (0400000US37)
         SELECT
@@ -504,8 +464,6 @@ LIKELIHOOD_OF_STOP_SUMMARY_SQL = """
     ),
     all_yearly_stops AS (
         SELECT * FROM agency_yearly_stops
-        UNION ALL
-        SELECT * FROM county_yearly_stops
         UNION ALL
         SELECT * FROM statewide_yearly_stops
     ),
@@ -575,12 +533,12 @@ LIKELIHOOD_OF_STOP_SUMMARY_SQL = """
 
 
 class LikelihoodOfStopSummary(pg.View):
-    """Comparative stop likelihood data by agency and county, with population filters."""
+    """Comparative stop likelihood data by agency and statewide level, with population filters."""
 
     sql = LIKELIHOOD_OF_STOP_SUMMARY_SQL
 
     id = models.BigIntegerField(primary_key=True)
-    level = models.CharField(max_length=16)  # 'agency', 'county', or 'statewide'
+    level = models.CharField(max_length=16)  # 'agency' or 'statewide'
     group_id = models.CharField(max_length=16)
     group_name = models.CharField(max_length=255)
     census_profile_id = models.CharField(max_length=32)

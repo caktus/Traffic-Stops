@@ -5,7 +5,6 @@ from django_ckeditor_5.widgets import CKEditor5Widget
 from nc.models import (
     Agency,
     ContrabandSummary,
-    County,
     NCCensusProfile,
     Resource,
     ResourceFile,
@@ -15,17 +14,9 @@ from nc.models import (
 
 @admin.register(Agency)
 class AgencyAdmin(admin.ModelAdmin):
-    list_display = ("name", "id", "census_profile_id", "county")
-    list_filter = ("county",)
-    search_fields = ("name", "county__county_name")
+    list_display = ("name", "id", "census_profile_id")
+    search_fields = ("name",)
     ordering = ("id",)
-
-
-@admin.register(County)
-class CountyAdmin(admin.ModelAdmin):
-    list_display = ("county_name", "id", "census_profile_id")
-    search_fields = ("county_name",)
-    ordering = ("county_name",)
 
 
 @admin.register(StopSummary)
