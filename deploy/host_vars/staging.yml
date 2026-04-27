@@ -106,3 +106,20 @@ k8s_auth_api_key: !vault |
   63623766393733386537336339666131633664326337633631356132343232353334646465383139
   34393261346534376165366437643861636431633562303562643061346431353738666539383932
   3634
+
+# django-k8s app traefik ingress resources
+k8s_traefik_ingress_resources:
+  - name: "basic-auth"
+    type: "basicAuth"
+    resourceKind: middleware
+    config:
+      secret: "basic-auth-app"
+      realm: "Authentication Required"
+
+  - name: "server-transport"
+    type: "root-spec"
+    resourceKind: "ServersTransport"
+    config:
+      forwardingTimeouts:
+        dialTimeout: "1800s"
+        idleTimeout: "1800s"
