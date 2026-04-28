@@ -29,11 +29,14 @@ class Migration(migrations.Migration):
             ],
             options={
                 "managed": False,
+                "indexes": [
+                    models.Index(fields=["level", "year"], name="nc_likeliho_level_year_idx"),
+                ],
             },
         ),
         django_pgviews.db.migrations.operations.RegisterViewOperation(
             name="LikelihoodOfStopSummary",
-            materialized=False,
+            materialized=True,
             db_name="nc_likelihoodofstopsummary",
         ),
     ]

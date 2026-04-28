@@ -532,10 +532,11 @@ LIKELIHOOD_OF_STOP_SUMMARY_SQL = """
 """
 
 
-class LikelihoodOfStopSummary(pg.View):
+class LikelihoodOfStopSummary(pg.MaterializedView):
     """Comparative stop likelihood data by agency and statewide level, with population filters."""
 
     sql = LIKELIHOOD_OF_STOP_SUMMARY_SQL
+    with_data = False
 
     id = models.BigIntegerField(primary_key=True)
     level = models.CharField(max_length=16)  # 'agency' or 'statewide'
@@ -554,6 +555,9 @@ class LikelihoodOfStopSummary(pg.View):
 
     class Meta:
         managed = False
+        indexes = [
+            models.Index(fields=["level", "year"]),
+        ]
 
 
 class Resource(models.Model):
