@@ -60,14 +60,16 @@ with app.setup(hide_code=True):
 
 
 @app.cell(hide_code=True)
-def _():
+def marimo_imports():
+    """Import the marimo library for building the interactive notebook UI."""
     import marimo as mo
 
     return (mo,)
 
 
 @app.cell(hide_code=True)
-def _(mo):
+def notebook_header(mo):
+    """Render the notebook title and description as a markdown header."""
     last_updated = dt.datetime.fromtimestamp(Path(__file__).stat().st_mtime).strftime("%B %d, %Y")
     mo.md(rf"""
     # Likelihood of Traffic Stop Comparison v3
@@ -86,7 +88,8 @@ def _(mo):
 
 
 @app.cell(hide_code=True)
-def _(mo):
+def filters(mo):
+    """Build year and race dropdown filters populated from available stop data."""
     from django.db.models.functions import ExtractYear
 
     from nc.models import StopSummary
@@ -111,13 +114,15 @@ def _(mo):
 
 
 @app.cell(hide_code=True)
-def _(mo, race_dropdown, year_dropdown):
+def sidebar(mo, race_dropdown, year_dropdown):
+    """Render the sidebar containing the year and race filter controls."""
     mo.sidebar(mo.vstack([mo.md("## Filters"), year_dropdown, race_dropdown]))
     return
 
 
 @app.cell(hide_code=True)
-def _(mo):
+def statewide_section_header(mo):
+    """Render the section header for the statewide baseline chart."""
     mo.md(r"""
     ## Statewide Baseline and Stop Rate Estimates
 
@@ -130,7 +135,8 @@ def _(mo):
 
 
 @app.cell(hide_code=True)
-def _(mo, race_dropdown, year_dropdown):
+def statewide_chart(mo, race_dropdown, year_dropdown):
+    """Query statewide stop likelihood data and render a bar chart with summary table."""
     selected_year = year_dropdown.value
     selected_races = [race_dropdown.value] if race_dropdown.value else None
     year_label = str(selected_year) if selected_year else "all years"
@@ -179,7 +185,8 @@ def _(mo, race_dropdown, year_dropdown):
 
 
 @app.cell(hide_code=True)
-def _(mo):
+def agency_section_header(mo):
+    """Render the section header for the agency-level disparities chart."""
     mo.md(r"""
     ## Agency-Level Disparities
 
@@ -192,13 +199,14 @@ def _(mo):
 
 
 @app.cell
-def _(
+def top_20_agency_chart(
     df_statewide: pd.DataFrame,
     mo,
     selected_races,
     selected_year,
     year_label,
 ):
+    """Query agency-level data and render the top 20 disparity bar chart with statewide reference line."""
     df_agency: pd.DataFrame = likelihood_comparison(level="agency", year=selected_year)
     curr_df = df_agency[df_agency["driver_race"] != DriverRace.WHITE.label]
     if selected_races:
@@ -254,7 +262,8 @@ def _(
 
 
 @app.cell(hide_code=True)
-def _(mo):
+def map_section_header(mo):
+    """Render the section header for the geographic choropleth map."""
     mo.md(r"""
     ## Geographic Distribution of Stop Ratios
 
@@ -268,7 +277,8 @@ def _(mo):
 
 
 @app.cell
-def _(df_agency: pd.DataFrame, mo, race_dropdown, year_label):
+def sheriff_choropleth_map(df_agency: pd.DataFrame, mo, race_dropdown, year_label):
+    """Render a choropleth map of stop rate ratios for sheriff agencies by county."""
     simplified_geojson_path = django_project_dir / Path(
         "nc/data/North_Carolina_State_and_County_Boundary_Polygons_simplified.geojson"
     )
@@ -322,7 +332,8 @@ def _(df_agency: pd.DataFrame, mo, race_dropdown, year_label):
 
 
 @app.cell(hide_code=True)
-def _(mo):
+def parity_section_header(mo):
+    """Render the section header for the parity scatter plot."""
     mo.md(r"""
     ## Visualizing Over-Policing vs. Under-Policing
 
@@ -336,7 +347,8 @@ def _(mo):
 
 
 @app.cell
-def _(df_agency: pd.DataFrame, mo, race_dropdown, year_label):
+def parity_scatter_plot(df_agency: pd.DataFrame, mo, race_dropdown, year_label):
+    """Compute parity data and render the population-share vs. stop-share scatter plot."""
     map_race_parity = race_dropdown.value or DriverRace.BLACK.label
 
     df_parity = parity_data(df_agency)
