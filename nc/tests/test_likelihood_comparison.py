@@ -3,7 +3,7 @@ import datetime as dt
 import pandas as pd
 import pytest
 
-from nc.models import DriverEthnicity, DriverRace, StopSummary
+from nc.models import DriverEthnicity, DriverRace, LikelihoodOfStopSummary, StopSummary
 from nc.tests.factories import AgencyFactory, NCCensusProfileFactory, PersonFactory
 from nc.tests.urls import reverse_querystring
 from nc.views.likelihood import (
@@ -58,6 +58,7 @@ def _create_stops_and_census(agency, year_date):
         stop__date=year_date,
     )
     StopSummary.refresh()
+    LikelihoodOfStopSummary.refresh()
 
 
 @pytest.mark.django_db(databases=["default", "traffic_stops_nc"])
@@ -76,6 +77,7 @@ class TestLikelihoodComparison:
     def test_empty_result(self):
         """No data returns empty DataFrame."""
         StopSummary.refresh()
+        LikelihoodOfStopSummary.refresh()
         df = likelihood_comparison(level="agency", year=2099)
         assert df.empty
 
@@ -163,6 +165,7 @@ class TestMatchesLikelihoodStopQuery:
             stop__date=year_2023,
         )
         StopSummary.refresh()
+        LikelihoodOfStopSummary.refresh()
 
         # likelihood_stop_query (chart data)
         url = reverse_querystring(
@@ -254,6 +257,7 @@ class TestMatchesLikelihoodStopQuery:
             stop__date=year_2023,
         )
         StopSummary.refresh()
+        LikelihoodOfStopSummary.refresh()
 
         # likelihood_stop_query without year (averages across years)
         url = reverse_querystring("nc:likelihood-of-stops", args=[agency.id])
@@ -326,6 +330,7 @@ class TestStatewideLevel:
             stop__date=year_2023,
         )
         StopSummary.refresh()
+        LikelihoodOfStopSummary.refresh()
 
         df = likelihood_comparison(level="statewide", year=2023)
         assert not df.empty
@@ -380,6 +385,7 @@ class TestStatewideLevel:
             stop__date=year_2023,
         )
         StopSummary.refresh()
+        LikelihoodOfStopSummary.refresh()
 
         df = likelihood_comparison(level="statewide", year=2023)
         black = df[df["driver_race"] == "Black"].iloc[0]
@@ -438,6 +444,7 @@ class TestACSPopulationByYear:
             stop__date=year_2022,
         )
         StopSummary.refresh()
+        LikelihoodOfStopSummary.refresh()
 
         df = likelihood_comparison(level="statewide", year=2023)
         black = df[df["driver_race"] == "Black"].iloc[0]
@@ -489,6 +496,7 @@ class TestACSPopulationByYear:
             stop__date=year_2022,
         )
         StopSummary.refresh()
+        LikelihoodOfStopSummary.refresh()
 
         df = likelihood_comparison(level="statewide")
         black = df[df["driver_race"] == "Black"].iloc[0]
