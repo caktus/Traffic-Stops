@@ -161,3 +161,32 @@ k8s_environment_variables:
 # S3 bucket configuration:
 k8s_s3_region: "{{ aws_region }}"
 k8s_s3_cluster_name: "{{ k8s_cluster_name }}"
+
+# K8s templates: extend role defaults to include the notebook template.
+k8s_templates:
+  - name: redis.yaml.j2
+    state: "{{ k8s_redis_enabled | ternary('present', 'absent') }}"
+  - name: pgbouncer.yaml.j2
+    state: "{{ k8s_pgbouncer_enabled | ternary('present', 'absent') }}"
+  - name: elasticsearch.yaml.j2
+    state: "{{ k8s_elasticsearch_enabled | ternary('present', 'absent') }}"
+  - name: memcached.yaml.j2
+    state: "{{ k8s_memcached_enabled | ternary('present', 'absent') }}"
+  - name: web.yaml.j2
+    state: present
+  - name: workers.yaml.j2
+    state: "{{ k8s_worker_enabled | ternary('present', 'absent') }}"
+  - name: workers_beat.yaml.j2
+    state: "{{ (k8s_worker_enabled and k8s_worker_beat_enabled) | ternary('present', 'absent') }}"
+  - name: notebook.yaml.j2
+    state: "{{ k8s_notebook_enabled | ternary('present', 'absent') }}"
+
+# Notebook configuration:
+k8s_notebook_enabled: false
+k8s_notebook_name: notebook
+k8s_notebook_domain: ""
+k8s_notebook_htpasswd: ""
+k8s_notebook_resources:
+  requests:
+    memory: 256Mi
+    cpu: 50m
