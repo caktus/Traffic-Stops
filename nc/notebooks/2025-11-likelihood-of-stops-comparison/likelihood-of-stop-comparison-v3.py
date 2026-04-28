@@ -24,6 +24,8 @@ with app.setup(hide_code=True):
         available regardless of the working directory marimo is launched from."""
 
         envrc = django_project_dir / ".envrc"
+        if not envrc.exists():
+            return
         stream = StringIO()
         [
             stream.write(f"{line}\n")
