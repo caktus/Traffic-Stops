@@ -154,7 +154,7 @@ k8s_descheduler_release_values:
         enabled: false
 
 # Cluster migrated to Traefik and consequently the ingress-nginx controller was purged
-# k8s_purge_ingress_controller: yes
+k8s_purge_ingress_controller: yes
 k8s_install_ingress_controller: no
 
 # Traefik Service
