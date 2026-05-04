@@ -176,6 +176,6 @@ k8s_aws_load_balancer_controller_chart_version: v3.1.0
 # Traefik ingress
 # django-k8s app traefik ingress resources
 k8s_traefik_enable: true
-k8s_nginx_enable: true
+k8s_nginx_enable: false
 k8s_enable_asgi: false
 k8s_traefik_ingress_class: traefik
