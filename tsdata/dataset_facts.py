@@ -1,6 +1,6 @@
 import math
 
-import pytz
+from zoneinfo import ZoneInfo
 
 from django.conf import settings
 from django.core.exceptions import FieldDoesNotExist
@@ -41,7 +41,7 @@ def compute_dataset_facts(Agency, Stop, state_key, Search=None, override_start_d
     :return: printable form of the data
     """
     state_config = settings.STATE_CONFIG[state_key]
-    state_tz = pytz.timezone(state_config.tz_name)
+    state_tz = ZoneInfo(state_config.tz_name)
 
     try:
         Stop._meta.get_field("date")

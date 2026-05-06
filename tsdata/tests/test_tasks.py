@@ -17,7 +17,7 @@ class ComplianceReportTests(TransactionTestCase):
     databases = "__all__"
 
     def test_all_agencies_good(self):
-        for i in range(3):
+        for _i in range(3):
             agency = NCAgencyFactory()
             NCStopFactory(agency=agency, date=timezone.now() - datetime.timedelta(days=30))
 
@@ -43,7 +43,7 @@ class ComplianceReportTests(TransactionTestCase):
         days = [10, 30, 100, 130]
         stops = [
             NCStopFactory(agency=agency, date=timezone.now() - datetime.timedelta(days=d))
-            for d, agency in zip(days, agencies)
+            for d, agency in zip(days, agencies, strict=False)
         ]
 
         dataset = DatasetFactory(state="nc")

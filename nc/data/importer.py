@@ -128,13 +128,12 @@ def truncate_input_data(destination, min_stop_id, max_stop_id):
     for in_basename, stops_field_num in data_file_description:
         data_in_path = os.path.join(destination, in_basename)
         data_out_path = data_in_path + ".new"
-        with open(data_in_path, "rb") as data_in:
-            with open(data_out_path, "wb") as data_out:
-                for line in data_in:
-                    fields = line.split(b"\t")
-                    stop_id = int(fields[stops_field_num])
-                    if min_stop_id <= stop_id <= max_stop_id:
-                        data_out.write(line)
+        with open(data_in_path, "rb") as data_in, open(data_out_path, "wb") as data_out:
+            for line in data_in:
+                fields = line.split(b"\t")
+                stop_id = int(fields[stops_field_num])
+                if min_stop_id <= stop_id <= max_stop_id:
+                    data_out.write(line)
         os.replace(data_out_path, data_in_path)
 
 
@@ -159,22 +158,21 @@ def to_standard_csv(input_path, output_path):
         quoting=csv.QUOTE_MINIMAL,
         skipinitialspace=False,
     )
-    with open(input_path) as input:
-        with open(output_path, "w") as output:
-            reader = csv.reader(input, dialect="nc_data_in")
-            writer = csv.writer(output, dialect="nc_data_out")
-            headings_written = False
-            num_columns = sys.maxsize  # keep all of first row, however many
-            for row in reader:
-                columns = [column.strip() for i, column in enumerate(row) if i < num_columns]
-                if not headings_written:
-                    # Some records in Stops.csv have extra columns; drop any
-                    # columns beyond those in the first record.
-                    num_columns = len(columns)
-                    headings = ["column%d" % (i + 1) for i in range(len(columns))]
-                    writer.writerow(headings)
-                    headings_written = True
-                writer.writerow(columns)
+    with open(input_path) as input, open(output_path, "w") as output:
+        reader = csv.reader(input, dialect="nc_data_in")
+        writer = csv.writer(output, dialect="nc_data_out")
+        headings_written = False
+        num_columns = sys.maxsize  # keep all of first row, however many
+        for row in reader:
+            columns = [column.strip() for i, column in enumerate(row) if i < num_columns]
+            if not headings_written:
+                # Some records in Stops.csv have extra columns; drop any
+                # columns beyond those in the first record.
+                num_columns = len(columns)
+                headings = ["column%d" % (i + 1) for i in range(len(columns))]
+                writer.writerow(headings)
+                headings_written = True
+            writer.writerow(columns)
 
 
 def convert_to_csv(destination):
@@ -225,7 +223,7 @@ def update_nc_agencies(nc_csv_path, destination):
 
     with open(nc_csv_path) as agency_file:
         agency_table = csv.reader(agency_file)
-        agency_table_contents = list()
+        agency_table_contents = []
         agency_table_contents.append(next(agency_table))
         existing_agencies = set()
         for row in agency_table:
@@ -256,12 +254,10 @@ def update_nc_agencies(nc_csv_path, destination):
 
     email_body = """
         Here are the new agencies:\n
-           %s\n
+           {}\n
         A new agency table is attached.  You can add census codes for the
         the new agencies before checking in.
-    """ % ", ".join(
-        extra_agencies
-    )
+    """.format(", ".join(extra_agencies))
     email = EmailMessage(
         "New NC agencies were discovered during import",
         email_body,
@@ -300,7 +296,7 @@ def copy_from(destination, nc_csv_path):
         # datasets
         path = Path(destination)
         for p in path.glob("*.csv"):
-            if p.name in copy_nc.NC_COPY_INSTRUCTIONS.keys():
+            if p.name in copy_nc.NC_COPY_INSTRUCTIONS:
                 with p.open() as fh:
                     logger.info(f"COPY {p.name} into the database")
                     with cur.copy(copy_nc.NC_COPY_INSTRUCTIONS[p.name]) as copy:

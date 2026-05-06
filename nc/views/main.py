@@ -426,7 +426,7 @@ class AgencyTrafficStopsByPercentageView(APIView):
         stop_pivot_df = stops_df.pivot(
             index=date_precision, columns="driver_race_comb", values="count"
         ).fillna(value=0)
-        stops_df = pd.DataFrame(stop_pivot_df)
+        stops_df = stop_pivot_df.astype(float)
 
         columns = ["White", "Black", "Hispanic", "Asian", "Native American", "Other"]
         for year in unique_x_range:
@@ -436,10 +436,9 @@ class AgencyTrafficStopsByPercentageView(APIView):
             for col in columns:
                 if col not in stops_df or year not in stops_df[col]:
                     continue
-                try:
-                    stops_df.loc[year, col] = float(stops_df[col][year] / total_stops_for_year)
-                except ZeroDivisionError:
-                    stops_df.loc[year, col] = 0
+                stops_df.loc[year, col] = (
+                    stops_df[col][year] / total_stops_for_year if total_stops_for_year else 0.0
+                )
 
         data = self.build_response(stops_df, unique_x_range)
         return Response(data=data, status=200)
@@ -1233,13 +1232,13 @@ class AgencySearchesByPercentageView(APIView):
         search_pivot_df = search_df.pivot(
             index=date_precision, columns="driver_race_comb", values="count"
         ).fillna(value=0)
-        search_df = pd.DataFrame(search_pivot_df)
-        search_df["Average"] = pd.Series([0] * len(unique_x_range))
+        search_df = search_pivot_df.astype(float)
+        search_df["Average"] = 0.0
 
         stop_pivot_df = stops_df.pivot(
             index=date_precision, columns="driver_race_comb", values="count"
         ).fillna(value=0)
-        stops_df = pd.DataFrame(stop_pivot_df)
+        stops_df = stop_pivot_df.astype(float)
 
         columns = ["White", "Black", "Hispanic", "Asian", "Native American", "Other"]
         for year in unique_x_range:
@@ -1249,13 +1248,10 @@ class AgencySearchesByPercentageView(APIView):
                 if c in search_df and c in stops_df:
                     total_search += search_df[c][year] or 0
                     total_stop += stops_df[c][year] or 0
-                    try:
-                        search_df.loc[year, c] = float(search_df[c][year]) / float(
-                            stops_df[c][year]
-                        )
-                    except (ValueError, ZeroDivisionError):
-                        search_df.loc[year, c] = 0
-            search_df.loc[year, "Average"] = total_search / total_stop
+                    search_df.loc[year, c] = (
+                        search_df[c][year] / stops_df[c][year] if stops_df[c][year] else 0.0
+                    )
+            search_df.loc[year, "Average"] = total_search / total_stop if total_stop else 0.0
 
         data = self.build_response(search_df, unique_x_range)
         return Response(data=data, status=200)
@@ -1420,12 +1416,12 @@ class AgencySearchRateView(APIView):
         search_pivot_df = search_df.pivot(
             index="stop_purpose", columns="driver_race_comb", values="count"
         ).fillna(value=0)
-        search_df = pd.DataFrame(search_pivot_df)
+        search_df = search_pivot_df.astype(float)
 
         stop_pivot_df = stops_df.pivot(
             index="stop_purpose", columns="driver_race_comb", values="count"
         ).fillna(value=0)
-        stops_df = pd.DataFrame(stop_pivot_df)
+        stops_df = stop_pivot_df.astype(float)
 
         columns = ["Black", "Hispanic", "Asian", "Native American", "Other"]
         purpose_choices = {e.value: e.label for e in StopPurpose}
@@ -1438,12 +1434,14 @@ class AgencySearchRateView(APIView):
             return float(0)
 
         for col in columns:
-            for k, v in purpose_choices.items():
-                base_searches, base_stops = get_val(search_df, "White", k), get_val(
-                    stops_df, "White", k
+            for k, _v in purpose_choices.items():
+                base_searches, base_stops = (
+                    get_val(search_df, "White", k),
+                    get_val(stops_df, "White", k),
                 )
-                purpose_searches, purpose_stops = get_val(search_df, col, k), get_val(
-                    stops_df, col, k
+                purpose_searches, purpose_stops = (
+                    get_val(search_df, col, k),
+                    get_val(stops_df, col, k),
                 )
                 try:
                     base_rate = base_searches / base_stops

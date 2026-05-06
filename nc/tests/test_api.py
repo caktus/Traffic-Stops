@@ -1,6 +1,6 @@
 import datetime
 
-import pytz
+from zoneinfo import ZoneInfo
 
 from django.conf import settings
 from django.urls import reverse
@@ -98,10 +98,10 @@ class AgencyTests(APITestCase):
         stop a day later and ensure that the stops are counted in the expected
         years.
         """
-        nc_timezone = pytz.timezone(settings.NC_TIME_ZONE)
+        nc_timezone = ZoneInfo(settings.NC_TIME_ZONE)
         year = 2015
-        end_of_year = nc_timezone.localize(
-            datetime.datetime(year=year, month=12, day=31, hour=23, minute=59)
+        end_of_year = datetime.datetime(
+            year=year, month=12, day=31, hour=23, minute=59, tzinfo=nc_timezone
         )
         agency = factories.AgencyFactory()
         race_code, _ = RACE_CHOICES[1]

@@ -16,7 +16,6 @@ from tsdata.utils import (
 
 
 class TestUtils(TestCase):
-
     databases = "__all__"
 
     @staticmethod

@@ -1,8 +1,9 @@
 import django_filters
+import numpy as np
 import pandas as pd
 
 from django.db.models import Count, Q, Sum
-from django.db.models.functions import ExtractYear
+from django.db.models.functions import Coalesce, ExtractYear
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -87,8 +88,8 @@ def arrest_query(request, agency_id, group_by, debug=False):
     # Perform query with SQL aggregations
     qs = filter_set.qs.values(*group_by).annotate(
         stop_count=Sum("count"),
-        search_count=Sum("count", filter=Q(driver_searched=True)),
-        arrest_count=Sum("count", filter=Q(driver_arrest=True)),
+        search_count=Coalesce(Sum("count", filter=Q(driver_searched=True)), 0),
+        arrest_count=Coalesce(Sum("count", filter=Q(driver_arrest=True)), 0),
     )
     df = pd.DataFrame(qs)
     if df.empty:
@@ -96,11 +97,13 @@ def arrest_query(request, agency_id, group_by, debug=False):
         df = pd.DataFrame(
             qs, columns=list(qs.query.values_select) + list(qs.query.annotation_select)
         )
-    # Calculate rates
     df["stop_arrest_rate"] = df.arrest_count / df.stop_count
-    df["search_arrest_rate"] = df.arrest_count / df.search_count
+    # search_count can be 0 (no searches) so inf is still possible
+    df["search_arrest_rate"] = (df.arrest_count / df.search_count).replace([np.inf, -np.inf], 0)
     df["stop_without_arrest_count"] = df["stop_count"] - df["arrest_count"]
-    df.fillna(0, inplace=True)
+    # Only fill numeric columns to avoid TypeError with string columns
+    numeric_cols = df.select_dtypes(include=["number"]).columns
+    df[numeric_cols] = df[numeric_cols].fillna(0)
     if "driver_race_comb" in group_by:
         # Add custom sortable driver race column
         columns = ["White", "Black", "Hispanic", "Asian", "Native American", "Other"]
@@ -160,12 +163,15 @@ def contraband_query(request, agency_id, group_by, debug=False):
     # Query stop counts
     stop_df = arrest_query(request, agency_id, group_by=("agency_id",))
     df["stop_count"] = stop_df.iloc[0]["stop_count"] if not stop_df.empty else 0
-    # Calculate rates
     df["driver_contraband_arrest_rate"] = (
         df.contraband_and_driver_arrest_count / df.contraband_count
+    ).replace([np.inf, -np.inf], 0)
+    df["driver_stop_arrest_rate"] = (df.contraband_and_driver_arrest_count / df.stop_count).replace(
+        [np.inf, -np.inf], 0
     )
-    df["driver_stop_arrest_rate"] = df.contraband_and_driver_arrest_count / df.stop_count
-    df.fillna(0, inplace=True)
+    # Only fill numeric columns to avoid TypeError with string columns
+    numeric_cols = df.select_dtypes(include=["number"]).columns
+    df[numeric_cols] = df[numeric_cols].fillna(0)
     if "driver_race_comb" in group_by:
         # Add custom sortable driver race column
         columns = ["White", "Black", "Hispanic", "Asian", "Native American", "Other"]

@@ -79,17 +79,17 @@ class CensusProfile(models.Model):
         return self.location
 
     def get_census_dict(self):
-        return dict(
-            white=self.white,
-            black=self.black,
-            native_american=self.native_american,
-            asian=self.asian,
-            other=self.other + self.native_hawaiian + self.two_or_more_races,
-            hispanic=self.hispanic,
-            non_hispanic=self.non_hispanic,
-            total=self.total,
-            year=self.year,
-        )
+        return {
+            "white": self.white,
+            "black": self.black,
+            "native_american": self.native_american,
+            "asian": self.asian,
+            "other": self.other + self.native_hawaiian + self.two_or_more_races,
+            "hispanic": self.hispanic,
+            "non_hispanic": self.non_hispanic,
+            "total": self.total,
+            "year": self.year,
+        }
 
 
 class StateFacts(models.Model):

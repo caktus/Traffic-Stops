@@ -127,7 +127,7 @@ class GroupedData:
 
     def __init__(self, by, defaults=None):
         if type(by) is str:
-            by = tuple([by])
+            by = (by,)
         self.group_by = by
         self.data = OrderedDict()
         self.defaults = defaults or {}
@@ -148,7 +148,7 @@ class GroupedData:
         """Transform (group, value) mapping into list of dicts"""
         response = []
         for group, data in self.data.items():
-            group_by = zip(self.group_by, group)
+            group_by = zip(self.group_by, group, strict=False)
             row = OrderedDict(group_by)
             row.update(data)
             response.append(row)
