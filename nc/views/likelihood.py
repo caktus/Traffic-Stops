@@ -169,13 +169,24 @@ class LikelihoodStopView(APIView):
         return Response(data=data, status=200)
 
 
+def available_likelihood_years() -> list[int]:
+    """Return census years used by year filters and year-gating, newest first."""
+    return list(
+        NCCensusProfile.objects.exclude(year__isnull=True)
+        .values_list("year", flat=True)
+        .distinct()
+        .order_by("-year")
+    )
+
+
 def likelihood_comparison(level="agency", year=None) -> pd.DataFrame:
     """
     Query LikelihoodOfStopSummary view for comparative stop likelihood data.
 
     Args:
         level: "agency", "county", or "statewide"
-        year: optional year to filter to
+        year: optional year to filter to. If provided and not present in
+            ``available_likelihood_years()``, returns an empty DataFrame.
 
     Returns:
         DataFrame with columns: level, group_id, group_name, census_profile_id,
@@ -183,7 +194,9 @@ def likelihood_comparison(level="agency", year=None) -> pd.DataFrame:
         baseline_rate, stop_rate_ratio, times_likely, agency_name_race
     """
     qs = LikelihoodOfStopSummary.objects.filter(level=level)
-    if year:
+    if year is not None:
+        if int(year) not in available_likelihood_years():
+            return pd.DataFrame()
         qs = qs.filter(year=year)
     df = pd.DataFrame(
         qs.values(

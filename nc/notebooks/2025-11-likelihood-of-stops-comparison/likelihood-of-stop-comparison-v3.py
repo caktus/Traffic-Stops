@@ -47,7 +47,7 @@ with app.setup(hide_code=True):
     django.setup()
 
     from nc.models import DriverRace  # noqa
-    from nc.views.likelihood import likelihood_comparison, parity_data  # noqa
+    from nc.views.likelihood import available_likelihood_years, likelihood_comparison, parity_data  # noqa
 
     color_map = {
         "Asian": "#F9DC4E",
@@ -89,25 +89,22 @@ def notebook_header(mo):
 
 @app.cell(hide_code=True)
 def filters(mo):
-    """Build year and race dropdown filters populated from available stop data."""
-    from django.db.models.functions import ExtractYear
-
-    from nc.models import StopSummary
-
-    years = list(
-        StopSummary.objects.annotate(year=ExtractYear("date"))
-        .values_list("year", flat=True)
-        .distinct()
-        .order_by("-year")
-    )
+    """Build year and race dropdown filters from census-backed years and race labels."""
+    years = available_likelihood_years()
+    year_options = {"All": None, **{str(y): y for y in years}}
     year_dropdown = mo.ui.dropdown(
-        options={"All": None, **{str(y): y for y in years}},
+        options=year_options,
         value="All",
         label="Year",
     )
+    race_options = {r.label: r.label for r in DriverRace if r != DriverRace.WHITE}
     race_dropdown = mo.ui.dropdown(
-        options={"All": None, **{r.label: r.label for r in DriverRace if r != DriverRace.WHITE}},
-        value="All",
+        options=race_options,
+        value=(
+            DriverRace.BLACK.label
+            if DriverRace.BLACK.label in race_options
+            else next(iter(race_options.values()), None)
+        ),
         label="Race",
     )
     return race_dropdown, year_dropdown
@@ -121,67 +118,12 @@ def sidebar(mo, race_dropdown, year_dropdown):
 
 
 @app.cell(hide_code=True)
-def statewide_section_header(mo):
-    """Render the section header for the statewide baseline chart."""
-    mo.md(r"""
-    ## Statewide Baseline and Stop Rate Estimates
-
-    This chart illustrates the statewide likelihood of drivers of different
-    races being pulled over compared to white drivers. These statewide figures
-    establish a baseline that will serve as a reference point for the graphs
-    that follow.
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def statewide_chart(mo, race_dropdown, year_dropdown):
-    """Query statewide stop likelihood data and render a bar chart with summary table."""
+def selected_filters(race_dropdown, year_dropdown):
+    """Normalize selected filter values for downstream chart cells."""
     selected_year = year_dropdown.value
     selected_races = [race_dropdown.value] if race_dropdown.value else None
     year_label = str(selected_year) if selected_year else "all years"
-
-    df_statewide: pd.DataFrame = likelihood_comparison(level="statewide", year=selected_year)
-    if selected_races:
-        df_statewide = df_statewide[df_statewide["driver_race"].isin(selected_races)]
-
-    chart_df = df_statewide[df_statewide["driver_race"] != DriverRace.WHITE.label].sort_values(
-        "times_likely", ascending=False
-    )
-
-    fig_statewide = px.bar(
-        chart_df,
-        x="driver_race",
-        y="times_likely",
-        color="driver_race",
-        color_discrete_map=color_map,
-        title=f"Statewide: Times as likely to be stopped as white drivers by race ({year_label})",
-        labels={
-            "times_likely": "Times as likely",
-            "driver_race": "Race",
-        },
-        text="times_likely",
-        text_auto=",.1f",
-        height=500,
-        category_orders={"driver_race": chart_df["driver_race"].tolist()},
-    )
-    plot_statewide = mo.ui.plotly(
-        fig_statewide.update_yaxes(tickformat=",.1f").update_traces(textangle=0)
-    )
-
-    table_cols = [
-        "driver_race",
-        "population",
-        "total_population",
-        "stops",
-        "stop_rate",
-        "baseline_rate",
-        "stop_rate_ratio",
-        "times_likely",
-    ]
-    table_df = df_statewide[table_cols].copy()
-    mo.vstack([plot_statewide, table_df.round(2)])
-    return df_statewide, selected_races, selected_year, year_label
+    return selected_races, selected_year, year_label
 
 
 @app.cell(hide_code=True)
@@ -192,21 +134,21 @@ def agency_section_header(mo):
 
     Disparities often vary dramatically from agency to agency. This chart shows
     the top 20 agencies where drivers of the selected races are most likely to
-    be stopped compared to white drivers. The dashed lines mark the statewide
-    average for each race.
+    be stopped compared to white drivers. A dashed line marks baseline equity
+    (1.0), and a dotted line marks the statewide average for the selected race.
     """)
     return
 
 
 @app.cell
 def top_20_agency_chart(
-    df_statewide: pd.DataFrame,
     mo,
     selected_races,
     selected_year,
     year_label,
 ):
-    """Query agency-level data and render the top 20 disparity bar chart with statewide reference line."""
+    """Render top-20 agency disparities with statewide-average and equity reference lines."""
+    df_statewide: pd.DataFrame = likelihood_comparison(level="statewide", year=selected_year)
     df_agency: pd.DataFrame = likelihood_comparison(level="agency", year=selected_year)
     curr_df = df_agency[df_agency["driver_race"] != DriverRace.WHITE.label]
     if selected_races:
@@ -230,17 +172,26 @@ def top_20_agency_chart(
         height=600,
         category_orders={"agency_name_race": curr_df["agency_name_race"].tolist()},
     )
+    fig.add_hline(
+        y=1,
+        line_dash="dash",
+        line_color="#FF8C00",
+        line_width=2,
+        annotation_text="<b>Baseline Equity (1.0)</b>",
+        annotation_position="bottom right",
+        annotation_font={"size": 13, "color": "#FF8C00"},
+    )
     if selected_races:
         race = selected_races[0]
         row = df_statewide[df_statewide["driver_race"] == race]
         if not row.empty:
             fig.add_hline(
                 y=row.iloc[0]["times_likely"],
-                line_dash="dash",
+                line_dash="dot",
                 line_color="#FF1493",
                 line_width=2,
                 annotation_text=f"<b>Statewide Average ({race})</b>",
-                annotation_position="bottom right",
+                annotation_position="top right",
                 annotation_font={"size": 13, "color": "#FF1493"},
             )
     plot = mo.ui.plotly(fig.update_yaxes(tickformat=",.1f").update_traces(textangle=0))

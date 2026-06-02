@@ -7,6 +7,7 @@ from nc.models import DriverEthnicity, DriverRace, LikelihoodOfStopSummary, Stop
 from nc.tests.factories import AgencyFactory, NCCensusProfileFactory, PersonFactory
 from nc.tests.urls import reverse_querystring
 from nc.views.likelihood import (
+    available_likelihood_years,
     likelihood_comparison,
     likelihood_stop_query,
     parity_data,
@@ -80,6 +81,49 @@ class TestLikelihoodComparison:
         LikelihoodOfStopSummary.refresh()
         df = likelihood_comparison(level="agency", year=2099)
         assert df.empty
+
+    def test_no_census_year_unavailable(self, durham_agency, year_2023):
+        """Years without census-backed likelihood data should be gated out."""
+        _create_stops_and_census(durham_agency, year_2023)
+
+        # Add stop records for a newer year without adding census rows.
+        year_2024 = dt.date(2024, 6, 1)
+        PersonFactory.create_batch(
+            size=10,
+            race=DriverRace.BLACK,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=durham_agency,
+            stop__date=year_2024,
+        )
+        StopSummary.refresh()
+        LikelihoodOfStopSummary.refresh()
+
+        years = available_likelihood_years()
+        assert 2023 in years
+        assert 2024 not in years
+        assert likelihood_comparison(level="agency", year=2024).empty
+
+    def test_census_year_available_without_stops(self, durham_agency, year_2023):
+        """Census-backed years remain selectable even when stop rows do not exist."""
+        _create_stops_and_census(durham_agency, year_2023)
+        NCCensusProfileFactory(
+            acs_id=durham_agency.census_profile_id,
+            race="Black",
+            population=5100,
+            population_total=21000,
+            year=2022,
+        )
+        NCCensusProfileFactory(
+            acs_id=durham_agency.census_profile_id,
+            race="White",
+            population=10100,
+            population_total=21000,
+            year=2022,
+        )
+
+        years = available_likelihood_years()
+        assert 2023 in years
+        assert 2022 in years
 
     def test_times_likely_white_is_one(self, durham_agency, year_2023):
         """White drivers should have times_likely == 1.0 (baseline)."""
