@@ -608,6 +608,8 @@ class NCCensusProfile(models.Model):
     population = models.BigIntegerField()
     population_total = models.BigIntegerField()
     population_percent = models.FloatField()
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
 
     class Meta:
         verbose_name = "NC Census Profile"

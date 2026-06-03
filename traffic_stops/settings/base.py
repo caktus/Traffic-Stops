@@ -1,6 +1,8 @@
 # Django settings for traffic_stops project.
 import os
 
+from pathlib import Path
+
 from celery.schedules import crontab
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -345,6 +347,7 @@ else:
 BROKER_URL = os.getenv("BROKER_URL", "redis://redis:6379/0")
 
 CENSUS_API_KEY = os.getenv("CENSUS_API_KEY", "")
+CENSUS_DATA_DIR = Path(os.getenv("CENSUS_DATA_DIR", os.path.join(BASE_DIR, "censusdata")))
 
 NC_AUTO_IMPORT_DIRECTORY = "/tmp/nc-automated-import"
 
