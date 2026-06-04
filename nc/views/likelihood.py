@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from nc.constants import STATEWIDE
-from nc.models import Agency, LikelihoodOfStopSummary, NCCensusProfile, StopSummary
+from nc.models import LikelihoodOfStopSummary, NCCensusProfile, StopSummary
 
 
 class StopSummaryFilterSet(django_filters.FilterSet):
@@ -81,53 +81,65 @@ def get_stop_count_data(filter_set: StopSummaryFilterSet) -> pd.DataFrame:
 
 def likelihood_stop_query(request, agency_id, debug=True):
     """
-    Query LikelihoodStopSummary view for stop likelihood data.
+    Query LikelihoodOfStopSummary view for stop likelihood data for a specific agency.
+
+    Results are consistent with likelihood_comparison() since both query the
+    same materialized view, which uses per-year ACS population data.
 
     Related notebooks:
     - https://nccopwatch-share.s3.amazonaws.com/2024-04-likelihood-of-stops/likelihood-of-stops.html
     """  # noqa
-    # Build query to filter down queryset
     filter_set = StopSummaryFilterSet(request.GET, agency_id=agency_id)
     filter_set.is_valid()
-    # Perform query with SQL aggregations
-    df = get_stop_count_data(filter_set=filter_set)
-    # Merge with ACS data
-    agency = Agency.objects.get(id=agency_id)
-    df_acs = get_acs_population_data(
-        acs_id=agency.census_profile_id, year=filter_set.form.cleaned_data["year"]
-    )
-    df = df.merge(
-        right=df_acs[["race", "population"]],
-        left_on="driver_race_comb",
-        right_on="race",
-    )
-    if not df_acs.empty:
-        # Calculate rates
-        # If stops is non-zero and population is 0 for a race, its stop_rate will
-        # be Infinity, which will cause a ValueError when serializing to JSON.
-        # Update it to 0 in such cases
-        df["stop_rate"] = (df["stops"] / df["population"]).replace(np.inf, 0)
-        df["baseline_rate"] = df[df["race"] == "White"]["stop_rate"].iloc[0]
-        df["stop_rate_ratio"] = df["stop_rate"] / df["baseline_rate"]
+    year = filter_set.form.cleaned_data.get("year")
+
+    if int(agency_id) == STATEWIDE:
+        qs = LikelihoodOfStopSummary.objects.filter(level="statewide")
     else:
-        # If no ACS data, chart will be empty
-        df["stop_rate"] = 0.0
-        df["baseline_rate"] = 0.0
-        df["stop_rate_ratio"] = 0.0
+        qs = LikelihoodOfStopSummary.objects.filter(level="agency", group_id=str(agency_id))
 
-    # Ensure numeric columns are properly typed
-    df["stop_rate"] = pd.to_numeric(df["stop_rate"], errors="coerce").fillna(0)
-    df["baseline_rate"] = pd.to_numeric(df["baseline_rate"], errors="coerce").fillna(0)
-    df["stop_rate_ratio"] = pd.to_numeric(df["stop_rate_ratio"], errors="coerce").fillna(0)
-    df.rename(columns={"driver_race_comb": "driver_race"}, inplace=True)
+    if year:
+        df = pd.DataFrame(
+            qs.filter(year=int(year)).values(
+                "driver_race",
+                "population",
+                "stops",
+                "stop_rate",
+                "baseline_rate",
+                "stop_rate_ratio",
+            )
+        )
+    else:
+        # Average across all years, then recompute rates — same methodology as likelihood_comparison()
+        agg = qs.values("driver_race").annotate(
+            population=Avg("population"),
+            stops=Avg("stops"),
+        )
+        df = pd.DataFrame(agg)
+        if not df.empty:
+            df["stops"] = df["stops"].astype(int)
+            df["population"] = df["population"].astype(int)
+            df["stop_rate"] = df["stops"] / df["population"].replace(0, np.nan)
+            white_rows = df.loc[df["driver_race"] == "White", "stop_rate"]
+            white_rate = white_rows.iloc[0] if not white_rows.empty else np.nan
+            df["baseline_rate"] = white_rate
+            df["stop_rate_ratio"] = (df["stop_rate"] - white_rate) / (white_rate or np.nan)
+            df["stop_rate"] = df["stop_rate"].fillna(0)
+            df["baseline_rate"] = df["baseline_rate"].fillna(0)
+            df["stop_rate_ratio"] = df["stop_rate_ratio"].fillna(0)
 
-    # Ensure driver_race column follows this order
+    if df.empty:
+        return pd.DataFrame(
+            columns=["race", "population", "stops", "stop_rate", "baseline_rate", "stop_rate_ratio"]
+        )
+
+    df = df.rename(columns={"driver_race": "race"})
+
+    # Sort by canonical race order
     race_order = ["White", "Black", "Hispanic", "Asian", "Native American", "Other"]
-    df["driver_race_category"] = pd.Categorical(df["driver_race"], categories=race_order)
-    df.sort_values("driver_race_category", inplace=True)
-    df = df.drop(columns=["driver_race_category"])
+    df["race_category"] = pd.Categorical(df["race"], categories=race_order, ordered=True)
+    df = df.sort_values("race_category").drop(columns=["race_category"])
 
-    # Reorder columns
     df = df[["race", "population", "stops", "stop_rate", "baseline_rate", "stop_rate_ratio"]].copy()
 
     if debug:
@@ -144,8 +156,8 @@ class LikelihoodStopView(APIView):
         df = likelihood_stop_query(request=request, agency_id=agency_id, debug=False)
         # Don't include White stops in the chart
         chart_df = df[df["race"] != "White"].copy()
-        # Extract only stop_rate_ratio values as an array
-        stop_percentages = (chart_df["stop_rate_ratio"] - 1).round(2).tolist()
+        # Extract stop_rate_ratio values (already percentage difference) as an array
+        stop_percentages = chart_df["stop_rate_ratio"].round(2).tolist()
         # Prepare table data
         table_data = df.copy()
         table_data["population"] = table_data["population"].astype(int)

@@ -236,12 +236,15 @@ class TestMatchesLikelihoodStopQuery:
                 f"baseline_rate mismatch for {race}"
             )
 
-        # chart stop_rate_ratio == comparison times_likely (both = stop_rate / baseline_rate)
+        # chart stop_rate_ratio (percentage diff) == comparison stop_rate_ratio
+        # Frontend converts: display_multiplier = 1 + stop_rate_ratio
         black_chart = chart_df[chart_df["race"] == "Black"].iloc[0]
         black_comp = agency_rows[agency_rows["driver_race"] == "Black"].iloc[0]
-        assert black_chart["stop_rate_ratio"] == pytest.approx(black_comp["times_likely"])
-        # 110/5000 / (50/5000) = 0.022 / 0.010 = 2.2
-        assert black_chart["stop_rate_ratio"] == pytest.approx(110 / 5000 / (50 / 5000))
+        assert black_chart["stop_rate_ratio"] == pytest.approx(black_comp["stop_rate_ratio"])
+        # (110/5000 - 50/5000) / (50/5000) = (0.022 - 0.010) / 0.010 = 1.2
+        assert black_chart["stop_rate_ratio"] == pytest.approx(
+            (110 / 5000 - 50 / 5000) / (50 / 5000)
+        )
 
     def test_stop_rates_match_averaged_across_years(self, rf, year_2023):
         """
@@ -330,8 +333,9 @@ class TestMatchesLikelihoodStopQuery:
         black_chart = chart_df[chart_df["race"] == "Black"].iloc[0]
         black_comp = agency_rows[agency_rows["driver_race"] == "Black"].iloc[0]
         assert black_chart["stop_rate"] == pytest.approx(0.024)
-        assert black_chart["stop_rate_ratio"] == pytest.approx(black_comp["times_likely"])
-        assert black_chart["stop_rate_ratio"] == pytest.approx(2.0)
+        assert black_chart["stop_rate_ratio"] == pytest.approx(black_comp["stop_rate_ratio"])
+        # (0.024 - 0.012) / 0.012 = 1.0
+        assert black_chart["stop_rate_ratio"] == pytest.approx(1.0)
 
 
 # State ACS ID for North Carolina statewide census data
