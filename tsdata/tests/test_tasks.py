@@ -18,6 +18,15 @@ from tsdata.tests.factories import DatasetFactory
 class ComplianceReportTests(TransactionTestCase):
     databases = "__all__"
 
+    def setUp(self):
+        super().setUp()
+        self.ping_delay_patcher = patch("tsdata.tasks.ping_healthcheck_task.delay")
+        self.ping_delay_patcher.start()
+
+    def tearDown(self):
+        self.ping_delay_patcher.stop()
+        super().tearDown()
+
     def test_all_agencies_good(self):
         for _i in range(3):
             agency = NCAgencyFactory()
