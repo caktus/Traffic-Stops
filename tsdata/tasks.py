@@ -86,7 +86,7 @@ def import_dataset(dataset_id):
 
     compliance_report.delay(dataset_id)
 
-    ping_healthcheck_task.delay(slug="import-dataset", signal="SUCCESS", auto_provision=True)
+    ping_healthcheck_task.delay(slug="import-dataset")
 
 
 @app.task
@@ -128,7 +128,7 @@ def compliance_report(dataset_id):
             settings.DEFAULT_FROM_EMAIL,
             settings.COMPLIANCE_REPORT_LIST,
         )
-        ping_healthcheck_task.delay(slug="compliance-report", signal="SUCCESS", auto_provision=True)
+        ping_healthcheck_task.delay(slug="compliance-report")
         return
 
     csvfile = io.StringIO()
@@ -147,4 +147,4 @@ def compliance_report(dataset_id):
     message.attach("report.csv", csvfile.getvalue(), "text/csv")
     message.send()
 
-    ping_healthcheck_task.delay(slug="compliance-report", signal="SUCCESS", auto_provision=True)
+    ping_healthcheck_task.delay(slug="compliance-report")

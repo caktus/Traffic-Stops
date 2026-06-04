@@ -107,6 +107,4 @@ class ImportDatasetHealthcheckTests(TransactionTestCase):
             tasks.import_dataset(dataset.id)
 
         mock_compliance_delay.assert_called_once_with(dataset.id)
-        mock_ping_delay.assert_called_once_with(
-            slug="import-dataset", signal="SUCCESS", auto_provision=True
-        )
+        mock_ping_delay.assert_called_once_with(slug="import-dataset")
