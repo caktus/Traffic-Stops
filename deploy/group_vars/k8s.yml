@@ -82,7 +82,7 @@ env_media_location: ""
 env_new_relic_app_name: "{{ k8s_namespace }}"
 env_new_relic_license_key: "{{ k8s_newrelic_license_key }}"
 env_sentry_dsn: https://8567ec420cf04ce3b7f4b82d5fff70f7@o168020.ingest.sentry.io/5398612
-env_sentry_traces_sample_rate: "1.0"
+env_sentry_traces_sample_rate: "0.1"
 env_nc_ftp_host: 199.90.195.21
 env_nc_ftp_user: TSTOPSuser
 env_nc_ftp_password: !vault |
