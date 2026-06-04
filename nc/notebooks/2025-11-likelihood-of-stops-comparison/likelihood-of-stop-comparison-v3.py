@@ -111,9 +111,22 @@ def filters(mo):
 
 
 @app.cell(hide_code=True)
-def sidebar(mo, race_dropdown, year_dropdown):
-    """Render the sidebar containing the year and race filter controls."""
-    mo.sidebar(mo.vstack([mo.md("## Filters"), year_dropdown, race_dropdown]))
+def sidebar(layout_toggle, min_stops_slider, mo, race_dropdown, scale_toggle, year_dropdown):
+    """Render the sidebar containing the year, race, and disparity map filter controls."""
+    mo.sidebar(
+        mo.vstack(
+            [
+                mo.md("## Filters"),
+                year_dropdown,
+                race_dropdown,
+                mo.md("---"),
+                mo.md("**Agency Disparity Map**"),
+                layout_toggle,
+                scale_toggle,
+                min_stops_slider,
+            ]
+        )
+    )
     return
 
 
@@ -202,6 +215,7 @@ def top_20_agency_chart(
         "population",
         "total_population",
         "stops",
+        "total_stops",
         "stop_rate",
         "baseline_rate",
         "stop_rate_ratio",
@@ -235,10 +249,11 @@ def sheriff_choropleth_map(df_agency: pd.DataFrame, mo, race_dropdown, year_labe
     )
     simplified_geojson = json.loads(simplified_geojson_path.read_text())
 
-    map_race = race_dropdown.value or DriverRace.BLACK.label
+    _map_race_sheriff = race_dropdown.value or DriverRace.BLACK.label
 
     sheriff_df = df_agency[
-        df_agency["group_name"].str.contains("Sheriff") & (df_agency["driver_race"] == map_race)
+        df_agency["group_name"].str.contains("Sheriff")
+        & (df_agency["driver_race"] == _map_race_sheriff)
     ].copy()
     sheriff_df["fips3"] = sheriff_df["census_profile_id"].str[-3:]
 
@@ -256,7 +271,7 @@ def sheriff_choropleth_map(df_agency: pd.DataFrame, mo, race_dropdown, year_labe
             "population": True,
             "fips3": False,
         },
-        title=f"Sheriff agencies: Times as likely to be stopped as white drivers ({map_race}, {year_label})",
+        title=f"Sheriff agencies: Times as likely to be stopped as white drivers ({_map_race_sheriff}, {year_label})",
         labels={"times_likely": "Times as likely"},
         scope="usa",
     )
@@ -270,6 +285,7 @@ def sheriff_choropleth_map(df_agency: pd.DataFrame, mo, race_dropdown, year_labe
         "population",
         "total_population",
         "stops",
+        "total_stops",
         "stop_rate",
         "baseline_rate",
         "stop_rate_ratio",
@@ -279,6 +295,162 @@ def sheriff_choropleth_map(df_agency: pd.DataFrame, mo, race_dropdown, year_labe
 
     mo.vstack([sheriff_plot, sheriff_table_df])
 
+    return
+
+
+@app.cell(hide_code=True)
+def police_agency_disparity_map_section_header(mo):
+    """Render the section header for the police agency disparity map."""
+    mo.md(r"""
+    ## Police Agency Disparity Map
+
+    This map shows stop rate disparities for police departments (excluding sheriff
+    agencies) across North Carolina. Each marker is placed at the agency's
+    geographic location using ACS coordinates.
+
+    Disparity categories (relative to white drivers):
+    - **Green**: ≤ 1.0 — Equity or less
+    - **Yellow**: 1.0 – 2.0 — Moderate disparity
+    - **Orange**: 2.0 – 3.0 — High disparity
+    - **Red**: ≥ 3.0 — Severe disparity
+
+    Use the controls below to switch between flat dots and bubbles, choose what
+    the bubble size represents, and filter out low-volume agencies.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def disparity_map_controls(mo):
+    """Build controls for the police agency disparity map."""
+    layout_toggle = mo.ui.radio(
+        options=["Flat dots", "Bubbles"],
+        value="Flat dots",
+        label="Layout",
+    )
+    scale_toggle = mo.ui.radio(
+        options=["Total Traffic Stops", "Stops of Selected Race"],
+        value="Total Traffic Stops",
+        label="Bubble size",
+    )
+    min_stops_slider = mo.ui.slider(
+        start=0,
+        stop=500,
+        step=25,
+        value=50,
+        label="Minimum stops (selected race)",
+    )
+    return layout_toggle, min_stops_slider, scale_toggle
+
+
+@app.cell
+def police_agency_disparity_map(
+    df_agency: pd.DataFrame,
+    layout_toggle,
+    min_stops_slider,
+    mo,
+    race_dropdown,
+    scale_toggle,
+    year_label,
+):
+    """Render a geographic map of stop rate disparities for police (non-sheriff) agencies."""
+    _DISPARITY_COLORS = {
+        "≤ 1.0 (Equity)": "#2ecc71",
+        "1.0 - 2.0": "#f1c40f",
+        "2.0 - 3.0": "#e67e22",
+        "≥ 3.0 (Severe)": "#e74c3c",
+    }
+    _CATEGORY_ORDER = list(_DISPARITY_COLORS.keys())
+
+    def _disparity_category(times_likely):
+        if times_likely <= 1.0:
+            return "≤ 1.0 (Equity)"
+        elif times_likely <= 2.0:
+            return "1.0 - 2.0"
+        elif times_likely <= 3.0:
+            return "2.0 - 3.0"
+        return "≥ 3.0 (Severe)"
+
+    _map_race = race_dropdown.value or DriverRace.BLACK.label
+    _min_stops = min_stops_slider.value
+
+    # Filter to non-sheriff police agencies with coordinates
+    _police_df = df_agency[
+        ~df_agency["group_name"].str.contains("Sheriff", case=False)
+        & (df_agency["driver_race"] == _map_race)
+        & df_agency["latitude"].notna()
+        & df_agency["longitude"].notna()
+        & (df_agency["stops"] >= _min_stops)
+    ].copy()
+
+    if _police_df.empty:
+        mo.stop(
+            True,
+            mo.callout(mo.md("No police agencies found with the current filters."), kind="warn"),
+        )
+
+    _police_df["disparity_category"] = _police_df["times_likely"].apply(_disparity_category)
+
+    _use_bubbles = layout_toggle.value == "Bubbles"
+    _size_col = "total_stops" if scale_toggle.value == "Total Traffic Stops" else "stops"
+
+    _scatter_kwargs = dict(
+        data_frame=_police_df,
+        lat="latitude",
+        lon="longitude",
+        color="disparity_category",
+        color_discrete_map=_DISPARITY_COLORS,
+        category_orders={"disparity_category": _CATEGORY_ORDER},
+        hover_name="group_name",
+        hover_data={
+            "times_likely": ":.2f",
+            "stops": True,
+            "total_stops": True,
+            "latitude": False,
+            "longitude": False,
+        },
+        title=f"Police Agencies: Stop Rate Disparity ({_map_race} vs. White, {year_label})",
+        labels={
+            "disparity_category": "Disparity",
+            "stops": f"Stops ({_map_race})",
+            "total_stops": "Total stops",
+        },
+    )
+    if _use_bubbles:
+        _scatter_kwargs["size"] = _size_col
+        _scatter_kwargs["size_max"] = 30
+
+    _fig_disparity = px.scatter_geo(**_scatter_kwargs)
+    _fig_disparity.update_geos(
+        scope="usa",
+        fitbounds="locations",
+        visible=True,
+        showland=True,
+        landcolor="#f5f5f5",
+        showlakes=True,
+        lakecolor="#cfe2f3",
+        showsubunits=True,
+        subunitcolor="#cccccc",
+    )
+    if not _use_bubbles:
+        _fig_disparity.update_traces(marker_size=8)
+    _fig_disparity.update_layout(height=650, margin={"r": 0, "t": 40, "l": 0, "b": 0})
+
+    _table_cols = [
+        "group_name",
+        "driver_race",
+        "population",
+        "total_population",
+        "stops",
+        "total_stops",
+        "stop_rate",
+        "baseline_rate",
+        "stop_rate_ratio",
+        "times_likely",
+        "disparity_category",
+    ]
+    _disparity_table_df = _police_df[_table_cols].copy().round(2)
+    mo.vstack([mo.ui.plotly(_fig_disparity), _disparity_table_df])
     return
 
 
@@ -329,6 +501,7 @@ def parity_scatter_plot(df_agency: pd.DataFrame, mo, race_dropdown, year_label):
         "population",
         "total_population",
         "stops",
+        "total_stops",
         "pop_share",
         "stop_share",
         "excess_stops",

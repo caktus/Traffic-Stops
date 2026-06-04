@@ -2,7 +2,7 @@ import django_filters
 import numpy as np
 import pandas as pd
 
-from django.db.models import Avg, Sum
+from django.db.models import Avg, Min, Sum
 from django.db.models.functions import ExtractYear
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -197,35 +197,48 @@ def likelihood_comparison(level="agency", year=None) -> pd.DataFrame:
     if year is not None:
         if int(year) not in available_likelihood_years():
             return pd.DataFrame()
-        qs = qs.filter(year=year)
-    df = pd.DataFrame(
-        qs.values(
-            "level",
-            "group_id",
-            "group_name",
-            "census_profile_id",
-            "year",
-            "driver_race",
-            "population",
-            "total_population",
-            "stops",
-            "stop_rate",
-            "baseline_rate",
-            "stop_rate_ratio",
-            "times_likely",
+        df = pd.DataFrame(
+            qs.filter(year=year).values(
+                "level",
+                "group_id",
+                "group_name",
+                "census_profile_id",
+                "year",
+                "driver_race",
+                "population",
+                "total_population",
+                "stops",
+                "total_stops",
+                "stop_rate",
+                "baseline_rate",
+                "stop_rate_ratio",
+                "times_likely",
+                "latitude",
+                "longitude",
+            )
         )
-    )
+    else:
+        # Aggregate across all years in the database rather than fetching every
+        # per-year row and grouping in Python. This avoids transferring millions
+        # of rows over the wire.
+        df = pd.DataFrame(
+            qs.values(
+                "level", "group_id", "group_name", "census_profile_id", "driver_race"
+            ).annotate(
+                population=Avg("population"),
+                total_population=Avg("total_population"),
+                stops=Avg("stops"),
+                total_stops=Avg("total_stops"),
+                latitude=Min("latitude"),
+                longitude=Min("longitude"),
+            )
+        )
     if df.empty:
         return df
 
     if not year:
-        # Average across years to match the original notebook behavior
-        df = (
-            df.groupby(["level", "group_id", "group_name", "census_profile_id", "driver_race"])
-            .agg({"population": "mean", "total_population": "mean", "stops": "mean"})
-            .reset_index()
-        )
         df["stops"] = df["stops"].astype(int)
+        df["total_stops"] = df["total_stops"].astype(int)
         df["population"] = df["population"].astype(int)
         df["total_population"] = df["total_population"].astype(int)
         df["stop_rate"] = df["stops"] / df["population"].replace(0, np.nan)

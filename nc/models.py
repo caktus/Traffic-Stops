@@ -425,6 +425,16 @@ LIKELIHOOD_OF_STOP_SUMMARY_SQL = """
         FROM nc_nccensusprofile
         GROUP BY 1, 2
     ),
+    agency_lat_lon AS (
+        -- Most recent lat/lon for each ACS ID (one row per acs_id).
+        SELECT DISTINCT ON (acs_id)
+            acs_id AS census_profile_id,
+            latitude,
+            longitude
+        FROM nc_nccensusprofile
+        WHERE latitude IS NOT NULL AND longitude IS NOT NULL
+        ORDER BY acs_id, year DESC NULLS LAST
+    ),
     acs_by_year AS (
         -- Per-year ACS data: used when an exact year match is available.
         SELECT
@@ -479,7 +489,10 @@ LIKELIHOOD_OF_STOP_SUMMARY_SQL = """
             COALESCE(acs_year.population, acs_avg.population) AS population,
             COALESCE(acs_year.total_population, acs_avg.total_population) AS total_population,
             s.stops,
-            s.stops::float / NULLIF(COALESCE(acs_year.population, acs_avg.population), 0) AS stop_rate
+            SUM(s.stops) OVER (PARTITION BY s.level, s.group_id, s.year) AS total_stops,
+            s.stops::float / NULLIF(COALESCE(acs_year.population, acs_avg.population), 0) AS stop_rate,
+            ll.latitude,
+            ll.longitude
         FROM all_yearly_stops s
         JOIN acs_avg ON (
             acs_avg.census_profile_id = s.census_profile_id
@@ -490,6 +503,7 @@ LIKELIHOOD_OF_STOP_SUMMARY_SQL = """
             AND acs_year.driver_race = s.driver_race
             AND acs_year.year = s.year
         )
+        LEFT JOIN agency_lat_lon ll ON ll.census_profile_id = s.census_profile_id
         WHERE acs_avg.total_population > 10000
           AND (acs_avg.population > 100 OR s.driver_race = 'White')
     ),
@@ -524,10 +538,13 @@ LIKELIHOOD_OF_STOP_SUMMARY_SQL = """
         population,
         total_population,
         stops,
+        total_stops,
         stop_rate,
         baseline_rate,
         stop_rate_ratio,
-        times_likely
+        times_likely,
+        latitude,
+        longitude
     FROM with_baseline;
 """
 
@@ -548,10 +565,13 @@ class LikelihoodOfStopSummary(pg.MaterializedView):
     population = models.IntegerField()
     total_population = models.IntegerField()
     stops = models.BigIntegerField()
+    total_stops = models.BigIntegerField()
     stop_rate = models.FloatField()
     baseline_rate = models.FloatField()
     stop_rate_ratio = models.FloatField()
     times_likely = models.FloatField()
+    latitude = models.FloatField(null=True)
+    longitude = models.FloatField(null=True)
 
     class Meta:
         managed = False

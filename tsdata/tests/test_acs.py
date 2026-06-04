@@ -126,11 +126,11 @@ class TestACSCache:
         assert result.iloc[0]["location"] == "Cached Durham"
 
 
-class GazetteerTests:
+class TestGazetteer:
     def test_get_gazetteer_coordinates_unknown_geography(self):
         result = acs.get_gazetteer_coordinates(2021, "unknown")
         assert result.empty
-        assert list(result.columns) == ["id", "latitude", "longitude"]
+        assert list(result.columns) == ["id", "year", "latitude", "longitude"]
 
     def test_get_gazetteer_coordinates_place(self, make_in_memory_zipped_csv, census_data_dir):
         """Test reading place-level gazetteer data from a real zipped CSV."""
@@ -147,8 +147,9 @@ class GazetteerTests:
 
         result = acs.get_gazetteer_coordinates(2021, "place")
 
-        assert list(result.columns) == ["id", "latitude", "longitude"]
+        assert list(result.columns) == ["id", "year", "latitude", "longitude"]
         assert result.iloc[0]["id"] == "1600000US3719000"
+        assert result.iloc[0]["year"] == 2021
         assert result.iloc[0]["latitude"] == 35.9940
         assert result.iloc[0]["longitude"] == -78.8986
 
@@ -163,8 +164,36 @@ class GazetteerTests:
         result = acs.get_gazetteer_coordinates(2013, "place")
 
         assert result.iloc[0]["id"] == "1600000US3719000"
+        assert result.iloc[0]["year"] == 2013
         assert result.iloc[0]["latitude"] == 35.9940
         assert result.iloc[0]["longitude"] == -78.8986
+
+
+class TestAddGazetteerCoordinates:
+    def test_merges_on_id_and_year(self, make_in_memory_zipped_csv, census_data_dir):
+        """Coordinates must not fan-out when multiple years share the same place id."""
+        # Write two Gazetteer zips (2020 and 2021) with different coordinates for same id.
+        for year, lat, lon in [(2020, 10.0, -10.0), (2021, 20.0, -20.0)]:
+            zip_stream = make_in_memory_zipped_csv(
+                {"GEOID": "3719000", "INTPTLAT": str(lat), "INTPTLONG": str(lon), "NAME": "Durham"},
+                filename=f"{year}_Gaz_place_national",
+            )
+            (census_data_dir / f"{year}_Gaz_place_national.zip").write_bytes(zip_stream.getvalue())
+
+        df = pd.DataFrame(
+            [
+                {"id": "1600000US3719000", "year": 2020, "geography": "place"},
+                {"id": "1600000US3719000", "year": 2021, "geography": "place"},
+            ]
+        )
+        result = acs.add_gazetteer_coordinates(df)
+
+        # No fan-out: still 2 rows, one per year
+        assert len(result) == 2
+        row_2020 = result[result["year"] == 2020].iloc[0]
+        row_2021 = result[result["year"] == 2021].iloc[0]
+        assert row_2020["latitude"] == 10.0
+        assert row_2021["latitude"] == 20.0
 
 
 class RefreshCensusModelsTests(TestCase):

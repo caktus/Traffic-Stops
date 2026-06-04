@@ -146,10 +146,13 @@ class TestLikelihoodComparison:
             "population",
             "total_population",
             "stops",
+            "total_stops",
             "stop_rate",
             "baseline_rate",
             "stop_rate_ratio",
             "times_likely",
+            "latitude",
+            "longitude",
             "agency_name_race",
         }
         assert set(df.columns) == expected
@@ -643,3 +646,175 @@ class TestParityData:
         result_single = parity_data(single_race)
         black_single = result_single[result_single["driver_race"] == "Black"].iloc[0]
         assert black_single["stop_share"] == pytest.approx(1.0)
+
+
+@pytest.mark.django_db(databases=["default", "traffic_stops_nc"])
+class TestLatLon:
+    """latitude and longitude should flow through likelihood_comparison results."""
+
+    def test_lat_lon_columns_present(self, durham_agency, year_2023):
+        """likelihood_comparison always returns latitude and longitude columns."""
+        _create_stops_and_census(durham_agency, year_2023)
+        df = likelihood_comparison(level="agency", year=2023)
+        assert "latitude" in df.columns
+        assert "longitude" in df.columns
+
+    def test_lat_lon_values_from_census_profile(self, year_2023):
+        """When NCCensusProfile has lat/lon, they appear in the comparison output."""
+        agency = AgencyFactory(
+            name="Chapel Hill PD",
+            census_profile_id="1600000US3712000",
+        )
+        NCCensusProfileFactory(
+            acs_id=agency.census_profile_id,
+            race="Black",
+            population=5000,
+            population_total=20000,
+            year=year_2023.year,
+            latitude=35.9132,
+            longitude=-79.0558,
+        )
+        NCCensusProfileFactory(
+            acs_id=agency.census_profile_id,
+            race="White",
+            population=10000,
+            population_total=20000,
+            year=year_2023.year,
+            latitude=35.9132,
+            longitude=-79.0558,
+        )
+        PersonFactory.create_batch(
+            40,
+            race=DriverRace.BLACK,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=agency,
+            stop__date=year_2023,
+        )
+        PersonFactory.create_batch(
+            20,
+            race=DriverRace.WHITE,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=agency,
+            stop__date=year_2023,
+        )
+        StopSummary.refresh()
+        LikelihoodOfStopSummary.refresh()
+
+        df = likelihood_comparison(level="agency", year=2023)
+        row = df[df["group_id"] == str(agency.id)].iloc[0]
+        assert row["latitude"] == pytest.approx(35.9132)
+        assert row["longitude"] == pytest.approx(-79.0558)
+
+    def test_lat_lon_null_when_not_set(self, durham_agency, year_2023):
+        """When NCCensusProfile has no lat/lon, columns contain NaN."""
+        _create_stops_and_census(durham_agency, year_2023)
+        df = likelihood_comparison(level="agency", year=2023)
+        row = df[df["group_id"] == str(durham_agency.id)].iloc[0]
+        import math
+
+        assert row["latitude"] is None or math.isnan(row["latitude"])
+
+    def test_lat_lon_uses_most_recent_year(self, year_2023):
+        """When multiple ACS years exist, the most recent lat/lon is used."""
+        agency = AgencyFactory(
+            name="Raleigh PD",
+            census_profile_id="1600000US3755000",
+        )
+        year_2022 = dt.date(2022, 6, 1)
+        for yr, lat, lon in [
+            (year_2022.year, 35.7000, -78.6000),
+            (year_2023.year, 35.7796, -78.6382),
+        ]:
+            NCCensusProfileFactory(
+                acs_id=agency.census_profile_id,
+                race="Black",
+                population=5000,
+                population_total=20000,
+                year=yr,
+                latitude=lat,
+                longitude=lon,
+            )
+            NCCensusProfileFactory(
+                acs_id=agency.census_profile_id,
+                race="White",
+                population=10000,
+                population_total=20000,
+                year=yr,
+                latitude=lat,
+                longitude=lon,
+            )
+        PersonFactory.create_batch(
+            40,
+            race=DriverRace.BLACK,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=agency,
+            stop__date=year_2023,
+        )
+        PersonFactory.create_batch(
+            20,
+            race=DriverRace.WHITE,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=agency,
+            stop__date=year_2023,
+        )
+        StopSummary.refresh()
+        LikelihoodOfStopSummary.refresh()
+
+        df = likelihood_comparison(level="agency", year=2023)
+        row = df[df["group_id"] == str(agency.id)].iloc[0]
+        # Most recent year (2023) coordinates should be used
+        assert row["latitude"] == pytest.approx(35.7796)
+        assert row["longitude"] == pytest.approx(-78.6382)
+
+
+@pytest.mark.django_db(databases=["default", "traffic_stops_nc"])
+class TestTotalStops:
+    """total_stops is the sum of all-race stops for a given agency and year."""
+
+    def test_total_stops_single_year(self, durham_agency, year_2023):
+        """total_stops equals Black + White stops for that year."""
+        _create_stops_and_census(durham_agency, year_2023)  # 50 Black + 30 White
+        df = likelihood_comparison(level="agency", year=2023)
+        rows = df[df["group_id"] == str(durham_agency.id)]
+        # Every race row should report the same agency total: 80
+        assert (rows["total_stops"] == 80).all()
+
+    def test_total_stops_all_years_is_average(self, durham_agency, year_2023):
+        """Without a year filter, total_stops is the per-year average across years."""
+        _create_stops_and_census(durham_agency, year_2023)  # 50 Black + 30 White in 2023
+        year_2022 = dt.date(2022, 6, 1)
+        NCCensusProfileFactory(
+            acs_id=durham_agency.census_profile_id,
+            race="Black",
+            population=5000,
+            population_total=20000,
+            year=year_2022.year,
+        )
+        NCCensusProfileFactory(
+            acs_id=durham_agency.census_profile_id,
+            race="White",
+            population=10000,
+            population_total=20000,
+            year=year_2022.year,
+        )
+        PersonFactory.create_batch(
+            40,
+            race=DriverRace.BLACK,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=durham_agency,
+            stop__date=year_2022,
+        )
+        PersonFactory.create_batch(
+            20,
+            race=DriverRace.WHITE,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=durham_agency,
+            stop__date=year_2022,
+        )
+        StopSummary.refresh()
+        LikelihoodOfStopSummary.refresh()
+
+        df = likelihood_comparison(level="agency")
+        rows = df[df["group_id"] == str(durham_agency.id)]
+        # 2022 total: 60, 2023 total: 80 → average: 70
+        assert (rows["total_stops"] == 70).all()

@@ -157,13 +157,13 @@ class ACSStatePlaces(ACS):
 def get_gazetteer_coordinates(year: int, geography: str) -> pd.DataFrame:
     """
     Fetch lat/lng lookups from US Census Gazetteer files.
-    Returns a DataFrame with 'id' (GEO_ID) and 'latitude', 'longitude'.
+    Returns a DataFrame with 'id' (GEO_ID), 'year', 'latitude', 'longitude'.
     Files are cached in a local directory for reuse across runs.
 
     https://www.census.gov/geographies/reference-files/time-series/geo/gazetteer-files.html
     """
     if geography == "state" or year in GAZETTEER_SKIP_YEARS:
-        return pd.DataFrame(columns=["id", "latitude", "longitude"])
+        return pd.DataFrame(columns=["id", "year", "latitude", "longitude"])
     elif geography == "place":
         basename = f"{year}_Gaz_place_national"
         id_prefix = "1600000US"
@@ -173,7 +173,7 @@ def get_gazetteer_coordinates(year: int, geography: str) -> pd.DataFrame:
         id_prefix = "0500000US"
         geoid_col = "GEOID"
     else:
-        return pd.DataFrame(columns=["id", "latitude", "longitude"])
+        return pd.DataFrame(columns=["id", "year", "latitude", "longitude"])
 
     census_dir = pathlib.Path(settings.CENSUS_DATA_DIR)
     zip_path = census_dir / f"{basename}.zip"
@@ -187,7 +187,7 @@ def get_gazetteer_coordinates(year: int, geography: str) -> pd.DataFrame:
         response = requests.get(url, timeout=5)
         if response.status_code == 404:
             logger.warning(f"Gazetteer file not found (404): {url}")
-            return pd.DataFrame(columns=["id", "latitude", "longitude"])
+            return pd.DataFrame(columns=["id", "year", "latitude", "longitude"])
         response.raise_for_status()
         zip_path.write_bytes(response.content)
 
@@ -199,8 +199,9 @@ def get_gazetteer_coordinates(year: int, geography: str) -> pd.DataFrame:
 
     df.columns = df.columns.str.strip()
     df["id"] = id_prefix + df[geoid_col].astype(str)
+    df["year"] = year
     df.rename(columns={"INTPTLAT": "latitude", "INTPTLONG": "longitude"}, inplace=True)
-    return df[["id", "latitude", "longitude"]]
+    return df[["id", "year", "latitude", "longitude"]]
 
 
 def add_gazetteer_coordinates(df: pd.DataFrame) -> pd.DataFrame:
@@ -211,7 +212,7 @@ def add_gazetteer_coordinates(df: pd.DataFrame) -> pd.DataFrame:
         for _, row in years_geographies.iterrows()
     ]
     gaz = pd.concat(gaz_frames, ignore_index=True)
-    return df.merge(gaz, on="id", how="left")
+    return df.merge(gaz, on=["id", "year"], how="left")
 
 
 def get_state_census_data(key):
