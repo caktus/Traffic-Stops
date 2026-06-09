@@ -2,6 +2,8 @@ import csv
 import datetime
 import io
 
+from unittest.mock import patch
+
 from django.core import mail
 from django.test import TransactionTestCase, override_settings
 from django.utils import timezone
@@ -15,6 +17,15 @@ from tsdata.tests.factories import DatasetFactory
 @override_settings(COMPLIANCE_REPORT_LIST=("compliance@example.com",))
 class ComplianceReportTests(TransactionTestCase):
     databases = "__all__"
+
+    def setUp(self):
+        super().setUp()
+        self.ping_delay_patcher = patch("tsdata.tasks.ping_healthcheck_task.delay")
+        self.ping_delay_patcher.start()
+
+    def tearDown(self):
+        self.ping_delay_patcher.stop()
+        super().tearDown()
 
     def test_all_agencies_good(self):
         for _i in range(3):
@@ -80,3 +91,20 @@ class ComplianceReportTests(TransactionTestCase):
         self.assertEqual(
             rows[2], {"id": str(agencies[4].id), "name": agencies[4].name, "last_reported_stop": ""}
         )
+
+
+class ImportDatasetHealthcheckTests(TransactionTestCase):
+    databases = "__all__"
+
+    @patch("tsdata.tasks.ping_healthcheck_task.delay")
+    @patch("tsdata.tasks.compliance_report.delay")
+    def test_success_enqueues_healthcheck_success_ping(
+        self, mock_compliance_delay, mock_ping_delay
+    ):
+        dataset = DatasetFactory(state="nc")
+
+        with patch.dict(tasks.RUN_MAP, {dataset.state: lambda *_args, **_kwargs: None}):
+            tasks.import_dataset(dataset.id)
+
+        mock_compliance_delay.assert_called_once_with(dataset.id)
+        mock_ping_delay.assert_called_once_with(slug="import-dataset")

@@ -108,6 +108,14 @@ env_email_use_tls: "true"
 # Basic auth
 env_basicauth_username: ""
 env_basicauth_password: ""
+# Healthchecks.io
+env_healthchecksio_ping_key: !vault |
+  $ANSIBLE_VAULT;1.1;AES256
+  65303535646162643463636161653130346534376564353037663839653762383538643136373534
+  6363663738373961366265643962326463333366346263620a323262353139303163383863343164
+  33346637643966366666313930323864623730613739666662383364343636666637643736376433
+  3964323235336533630a313132363337316239306264316632323138343835666566366136343931
+  34366636663033643863336136396264663237656231376263623462323362363733
 
 k8s_environment_variables:
   CONTAINER_IMAGE_TAG: "{{ k8s_container_image_tag }}"
@@ -157,6 +165,8 @@ k8s_environment_variables:
   NC_FTP_PASSWORD: "{{ env_nc_ftp_password }}"
   # Contact form
   CONTACT_US_EMAILS: "{{ env_contact_us_emails|join(':') }}"
+  # Healthchecks.io
+  HEALTHCHECKSIO_PING_KEY: "{{ env_healthchecksio_ping_key }}"
 
 # S3 bucket configuration:
 k8s_s3_region: "{{ aws_region }}"
