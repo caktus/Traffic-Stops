@@ -66,9 +66,9 @@ def prime_groups_cache(
         by_officer=by_officer, limit_to_agencies=limit_to_agencies
     )
     logger.info(f"Queuing {len(endpoint_groups):,} {kind} endpoint groups")
-    for endpoint_group in endpoint_groups:
-        if endpoint_group.num_stops <= cutoff_count:
-            logger.info(f"Stopping due to cutoff ({endpoint_group.num_stops=}, {cutoff_count=})")
+    for i, endpoint_group in enumerate(endpoint_groups):
+        if cutoff_count and i >= cutoff_count:
+            logger.info(f"Stopping due to cutoff ({i=}, {cutoff_count=})")
             break
         prime_group_cache.delay(**endpoint_group._asdict())
 
