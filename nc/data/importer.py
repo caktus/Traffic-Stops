@@ -103,6 +103,7 @@ def run(url, destination=None, zip_path=None, min_stop_id=None, max_stop_id=None
             clear_cache=True,
             skip_agencies=False,
             skip_officers=True,
+            agency_cutoff_count=10,
         )
 
 

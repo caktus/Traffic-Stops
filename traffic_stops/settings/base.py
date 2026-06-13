@@ -286,6 +286,10 @@ CELERYBEAT_SCHEDULE = {
     },
 }
 
+# Healthchecks.io ping key for monitoring background tasks
+# https://healthchecks.io/docs/slug_urls/
+HEALTHCHECKSIO_PING_KEY = os.getenv("HEALTHCHECKSIO_PING_KEY", "")
+
 # If using Celery, tell it to obey our logging configuration.
 CELERYD_HIJACK_ROOT_LOGGER = False
 
