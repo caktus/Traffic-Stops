@@ -10,6 +10,7 @@ from django.utils import timezone
 
 from nc.data.importer import run as nc_run
 from traffic_stops.celery import app
+from traffic_stops.healthchecks import HealthcheckSignal, ping_healthcheck
 from tsdata.models import Dataset, Import
 
 logger = get_task_logger(__name__)
@@ -17,6 +18,43 @@ logger = get_task_logger(__name__)
 RUN_MAP = {
     settings.NC_KEY: nc_run,
 }
+
+
+@app.task(
+    bind=True,
+    autoretry_for=(Exception,),
+    retry_backoff=True,
+    retry_backoff_max=300,
+    max_retries=5,
+)
+def ping_healthcheck_task(
+    self, slug: str, signal: str = "SUCCESS", auto_provision: bool = True
+) -> bool:
+    """Celery task to ping healthchecks.io with retry support.
+
+    Uses exponential backoff for transient network errors.
+
+    Args:
+        self: Celery task instance (bound)
+        slug: The check's slug identifier
+        signal: Signal name (SUCCESS, START, FAILURE, LOG)
+        auto_provision: If True, creates the check if it doesn't exist
+
+    Returns:
+        True if ping was successful, False otherwise
+    """
+    # Validate signal is a valid enum value
+    try:
+        signal_enum = HealthcheckSignal[signal]
+    except KeyError:
+        logger.error(
+            "ping_healthcheck_task.invalid_signal signal=%s valid_signals=%s",
+            signal,
+            list(HealthcheckSignal.__members__.keys()),
+        )
+        return False
+
+    return ping_healthcheck(slug=slug, signal=signal_enum, auto_provision=auto_provision)
 
 
 @app.task
@@ -47,6 +85,8 @@ def import_dataset(dataset_id):
         )
 
     compliance_report.delay(dataset_id)
+
+    ping_healthcheck_task.delay(slug="import-dataset")
 
 
 @app.task
@@ -88,6 +128,7 @@ def compliance_report(dataset_id):
             settings.DEFAULT_FROM_EMAIL,
             settings.COMPLIANCE_REPORT_LIST,
         )
+        ping_healthcheck_task.delay(slug="compliance-report")
         return
 
     csvfile = io.StringIO()
@@ -105,3 +146,5 @@ def compliance_report(dataset_id):
     )
     message.attach("report.csv", csvfile.getvalue(), "text/csv")
     message.send()
+
+    ping_healthcheck_task.delay(slug="compliance-report")
