@@ -6,8 +6,8 @@ readme = "README.rst"
 requires-python = "~=3.13.0"
 dependencies = [
     "boto==2.49.0",
-    "boto3>=1.40.13",
-    "botocore>=1.40.13",
+    "boto3~=1.43",
+    "botocore~=1.43.11",
     "brotli>=1.1.0",
     "celery>=5.5.0",
     "census>=0.8.24",
@@ -81,8 +81,8 @@ dev = [
     "invoke-kubesae>=0.1.0",
     "ipython>=8.32.0",
     "jupyterlab>=4.5.3",
-    "kubernetes==32.*",
-    "kubernetes-validate~=1.33.0",
+    "kubernetes==35.*",
+    "kubernetes-validate==1.35.*",
     "openshift>=0.13.2",
     "plotly>=6.5.2",
     "pre-commit>=4.1.0",
