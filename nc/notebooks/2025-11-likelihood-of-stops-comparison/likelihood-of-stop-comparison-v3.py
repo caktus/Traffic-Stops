@@ -14,6 +14,7 @@ with app.setup(hide_code=True):
 
     import pandas as pd
     import plotly.express as px
+    import plotly.graph_objects as go
 
     from dotenv import load_dotenv
 
@@ -190,9 +191,16 @@ def top_20_agency_chart(
         line_dash="dash",
         line_color="#FF8C00",
         line_width=2,
-        annotation_text="<b>Baseline Equity (1.0)</b>",
-        annotation_position="bottom right",
-        annotation_font={"size": 13, "color": "#FF8C00"},
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=[None],
+            y=[None],
+            mode="lines",
+            line=dict(dash="dash", color="#FF8C00", width=2),
+            name="Baseline Equity (1.0)",
+            showlegend=True,
+        )
     )
     if selected_races:
         race = selected_races[0]
@@ -203,11 +211,20 @@ def top_20_agency_chart(
                 line_dash="dot",
                 line_color="#FF1493",
                 line_width=2,
-                annotation_text=f"<b>Statewide Average ({race})</b>",
-                annotation_position="top right",
-                annotation_font={"size": 13, "color": "#FF1493"},
             )
-    plot = mo.ui.plotly(fig.update_yaxes(tickformat=",.1f").update_traces(textangle=0))
+            fig.add_trace(
+                go.Scatter(
+                    x=[None],
+                    y=[None],
+                    mode="lines",
+                    line=dict(dash="dot", color="#FF1493", width=2),
+                    name=f"Statewide Average ({race})",
+                    showlegend=True,
+                )
+            )
+    plot = mo.ui.plotly(
+        fig.update_yaxes(tickformat=",.1f").update_traces(textangle=0, selector=dict(type="bar"))
+    )
 
     agency_table_cols = [
         "agency_name_race",
@@ -257,26 +274,69 @@ def sheriff_choropleth_map(df_agency: pd.DataFrame, mo, race_dropdown, year_labe
     ].copy()
     sheriff_df["fips3"] = sheriff_df["census_profile_id"].str[-3:]
 
-    fig_map = px.choropleth(
-        sheriff_df,
-        geojson=simplified_geojson,
-        locations="fips3",
-        featureidkey="properties.FIPS",
-        color="times_likely",
-        color_continuous_scale="RdYlGn_r",
-        hover_name="group_name",
-        hover_data={
-            "times_likely": ":.2f",
-            "stops": True,
-            "population": True,
-            "fips3": False,
-        },
-        title=f"Sheriff agencies: Times as likely to be stopped as white drivers ({_map_race_sheriff}, {year_label})",
-        labels={"times_likely": "Times as likely"},
-        scope="usa",
+    # Build full county DataFrame so missing counties render as gray
+    all_fips = [
+        (f["properties"]["FIPS"], f["properties"]["County"]) for f in simplified_geojson["features"]
+    ]
+    all_counties_df = pd.DataFrame(all_fips, columns=["fips3", "county_name"])
+    full_df = all_counties_df.merge(
+        sheriff_df[["fips3", "times_likely", "group_name", "stops", "population"]],
+        on="fips3",
+        how="left",
     )
-    fig_map.update_geos(fitbounds="locations", visible=False)
-    fig_map.update_layout(height=600, margin={"r": 0, "t": 40, "l": 0, "b": 0})
+    missing_df = full_df[full_df["times_likely"].isna()]
+    data_df = full_df[full_df["times_likely"].notna()]
+
+    fig_map = go.Figure()
+
+    # Gray base layer for counties without sheriff data
+    fig_map.add_trace(
+        go.Choropleth(
+            geojson=simplified_geojson,
+            locations=missing_df["fips3"],
+            z=[0] * len(missing_df),
+            featureidkey="properties.FIPS",
+            colorscale=[[0, "#cccccc"], [1, "#cccccc"]],
+            customdata=missing_df[["county_name"]].values,
+            showscale=False,
+            hovertemplate="<b>%{customdata[0]} County</b><br>No data available.<br>Requires county ≥ 10k residents and selected race ≥ 100 residents.<extra></extra>",
+            name="No Data",
+            showlegend=True,
+            marker_line_color="white",
+            marker_line_width=0.5,
+        )
+    )
+
+    # Data layer for counties with sheriff data
+    fig_map.add_trace(
+        go.Choropleth(
+            geojson=simplified_geojson,
+            locations=data_df["fips3"],
+            z=data_df["times_likely"],
+            featureidkey="properties.FIPS",
+            colorscale="RdYlGn_r",
+            customdata=data_df[["group_name", "stops", "population"]].values,
+            hovertemplate=(
+                "<b>%{customdata[0]}</b><br>"
+                "Times as likely: %{z:.2f}<br>"
+                "Stops: %{customdata[1]}<br>"
+                "Population: %{customdata[2]}<extra></extra>"
+            ),
+            colorbar=dict(title="Times as<br>likely"),
+            name="Sheriff Agencies",
+            showlegend=False,
+            marker_line_color="white",
+            marker_line_width=0.5,
+        )
+    )
+
+    fig_map.update_layout(
+        title_text=f"Sheriff agencies: Times as likely to be stopped as white drivers ({_map_race_sheriff}, {year_label})",
+        height=600,
+        margin={"r": 0, "t": 40, "l": 0, "b": 0},
+        legend=dict(x=0.01, y=0.05),
+    )
+    fig_map.update_geos(fitbounds="locations", visible=False, scope="usa")
 
     sheriff_plot = mo.ui.plotly(fig_map)
     sheriff_table_cols = [
@@ -382,6 +442,11 @@ def police_agency_disparity_map(
         & df_agency["longitude"].notna()
         & (df_agency["stops"] >= _min_stops)
     ].copy()
+    # Ensure numeric types for bubble size (ORM may return objects when year is filtered)
+    _police_df["stops"] = pd.to_numeric(_police_df["stops"], errors="coerce").fillna(0).astype(int)
+    _police_df["total_stops"] = (
+        pd.to_numeric(_police_df["total_stops"], errors="coerce").fillna(0).astype(int)
+    )
 
     if _police_df.empty:
         mo.stop(
