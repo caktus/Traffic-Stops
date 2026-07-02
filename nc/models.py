@@ -413,7 +413,13 @@ class ContrabandSummary(pg.ReadOnlyMaterializedView):
         ]
 
 
-LIKELIHOOD_OF_STOP_SUMMARY_SQL = """
+class AgencyLikelihoodStatus(models.TextChoices):
+    ACTIVE = "active", "Active"
+    SMALL_POPULATION = "small_population", "Population too small (< 10,000)"
+    SMALL_RACE_POPULATION = "small_race_population", "Race population too small (≤ 100)"
+
+
+LIKELIHOOD_OF_STOP_SUMMARY_SQL = f"""
     WITH acs_avg AS (
         -- Averaged ACS data: used for population filter checks and as fallback
         -- when no exact-year ACS row exists for a given stop year.
@@ -492,7 +498,12 @@ LIKELIHOOD_OF_STOP_SUMMARY_SQL = """
             SUM(s.stops) OVER (PARTITION BY s.level, s.group_id, s.year) AS total_stops,
             s.stops::float / NULLIF(COALESCE(acs_year.population, acs_avg.population), 0) AS stop_rate,
             ll.latitude,
-            ll.longitude
+            ll.longitude,
+            CASE
+                WHEN acs_avg.total_population <= 10000 THEN '{AgencyLikelihoodStatus.SMALL_POPULATION}'
+                WHEN s.driver_race != 'White' AND acs_avg.population <= 100 THEN '{AgencyLikelihoodStatus.SMALL_RACE_POPULATION}'
+                ELSE '{AgencyLikelihoodStatus.ACTIVE}'
+            END AS status
         FROM all_yearly_stops s
         JOIN acs_avg ON (
             acs_avg.census_profile_id = s.census_profile_id
@@ -504,8 +515,6 @@ LIKELIHOOD_OF_STOP_SUMMARY_SQL = """
             AND acs_year.year = s.year
         )
         LEFT JOIN agency_lat_lon ll ON ll.census_profile_id = s.census_profile_id
-        WHERE acs_avg.total_population > 10000
-          AND (acs_avg.population > 100 OR s.driver_race = 'White')
     ),
     with_baseline AS (
         SELECT
@@ -543,6 +552,7 @@ LIKELIHOOD_OF_STOP_SUMMARY_SQL = """
         baseline_rate,
         stop_rate_ratio,
         times_likely,
+        status,
         latitude,
         longitude
     FROM with_baseline;
@@ -570,6 +580,7 @@ class LikelihoodOfStopSummary(pg.MaterializedView):
     baseline_rate = models.FloatField()
     stop_rate_ratio = models.FloatField()
     times_likely = models.FloatField()
+    status = models.CharField(max_length=32, choices=AgencyLikelihoodStatus)
     latitude = models.FloatField(null=True)
     longitude = models.FloatField(null=True)
 
@@ -577,6 +588,7 @@ class LikelihoodOfStopSummary(pg.MaterializedView):
         managed = False
         indexes = [
             models.Index(fields=["level", "year"]),
+            models.Index(fields=["level", "status"]),
         ]
 
 

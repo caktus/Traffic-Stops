@@ -8,7 +8,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from nc.constants import STATEWIDE
-from nc.models import LikelihoodOfStopSummary, NCCensusProfile, StopSummary
+from nc.models import (
+    Agency,
+    AgencyLikelihoodStatus,
+    LikelihoodOfStopSummary,
+    NCCensusProfile,
+    StopSummary,
+)
 
 
 class StopSummaryFilterSet(django_filters.FilterSet):
@@ -94,9 +100,13 @@ def likelihood_stop_query(request, agency_id, debug=True):
     year = filter_set.form.cleaned_data.get("year")
 
     if int(agency_id) == STATEWIDE:
-        qs = LikelihoodOfStopSummary.objects.filter(level="statewide")
+        qs = LikelihoodOfStopSummary.objects.filter(
+            level="statewide", status=AgencyLikelihoodStatus.ACTIVE
+        )
     else:
-        qs = LikelihoodOfStopSummary.objects.filter(level="agency", group_id=str(agency_id))
+        qs = LikelihoodOfStopSummary.objects.filter(
+            level="agency", group_id=str(agency_id), status=AgencyLikelihoodStatus.ACTIVE
+        )
 
     if year:
         df = pd.DataFrame(
@@ -191,7 +201,9 @@ def available_likelihood_years() -> list[int]:
     )
 
 
-def likelihood_comparison(level="agency", year=None) -> pd.DataFrame:
+def likelihood_comparison(
+    level="agency", year=None, status: str | None = AgencyLikelihoodStatus.ACTIVE
+) -> pd.DataFrame:
     """
     Query LikelihoodOfStopSummary view for comparative stop likelihood data.
 
@@ -199,6 +211,8 @@ def likelihood_comparison(level="agency", year=None) -> pd.DataFrame:
         level: "agency", "county", or "statewide"
         year: optional year to filter to. If provided and not present in
             ``available_likelihood_years()``, returns an empty DataFrame.
+        status: filter to rows with this status value. Pass ``None`` to return
+            all rows regardless of status. Defaults to ``AgencyStopStatus.ACTIVE``.
 
     Returns:
         DataFrame with columns: level, group_id, group_name, census_profile_id,
@@ -206,6 +220,8 @@ def likelihood_comparison(level="agency", year=None) -> pd.DataFrame:
         baseline_rate, stop_rate_ratio, times_likely, agency_name_race
     """
     qs = LikelihoodOfStopSummary.objects.filter(level=level)
+    if status is not None:
+        qs = qs.filter(status=status)
     if year is not None:
         if int(year) not in available_likelihood_years():
             return pd.DataFrame()
@@ -225,6 +241,7 @@ def likelihood_comparison(level="agency", year=None) -> pd.DataFrame:
                 "baseline_rate",
                 "stop_rate_ratio",
                 "times_likely",
+                "status",
                 "latitude",
                 "longitude",
             )
@@ -235,7 +252,7 @@ def likelihood_comparison(level="agency", year=None) -> pd.DataFrame:
         # of rows over the wire.
         df = pd.DataFrame(
             qs.values(
-                "level", "group_id", "group_name", "census_profile_id", "driver_race"
+                "level", "group_id", "group_name", "census_profile_id", "driver_race", "status"
             ).annotate(
                 population=Avg("population"),
                 total_population=Avg("total_population"),
@@ -298,3 +315,51 @@ def parity_data(df: pd.DataFrame) -> pd.DataFrame:
     out["stop_share"] = out["stop_share"].fillna(0)
     out["excess_stops"] = out["excess_stops"].fillna(0)
     return out
+
+
+def excluded_police_agencies(year: int = None, race: str = None) -> pd.DataFrame:
+    """
+    Return non-sheriff police agencies excluded from the disparity map due to
+    population thresholds (status != active in LikelihoodOfStopSummary).
+
+    Ratio metrics are still computed and available in the returned rows.
+
+    Args:
+        year: optional year to filter to. If None, averages across all years.
+        race: optional driver race to filter to.
+
+    Returns:
+        DataFrame with the same columns as likelihood_comparison() plus status.
+    """
+    df = likelihood_comparison(level="agency", year=year, status=None)
+    if df.empty:
+        return df
+    mask = ~df["group_name"].str.contains("Sheriff", case=False) & (
+        df["status"] != AgencyLikelihoodStatus.ACTIVE
+    )
+    if race:
+        mask = mask & (df["driver_race"] == race)
+    return df[mask].reset_index(drop=True)
+
+
+def no_census_agencies() -> pd.DataFrame:
+    """
+    Return non-sheriff police agencies with no census profile.
+
+    These agencies are absent from LikelihoodOfStopSummary entirely because
+    there is no matching population data.
+
+    Returns:
+        DataFrame with columns: group_id, group_name, exclusion_reason.
+    """
+    qs = (
+        Agency.objects.exclude(name__icontains="sheriff")
+        .filter(census_profile_id="")
+        .values("id", "name")
+    )
+    df = pd.DataFrame(list(qs)).rename(columns={"id": "group_id", "name": "group_name"})
+    if df.empty:
+        return df
+    df["group_id"] = df["group_id"].astype(str)
+    df["exclusion_reason"] = "No census data"
+    return df.reset_index(drop=True)

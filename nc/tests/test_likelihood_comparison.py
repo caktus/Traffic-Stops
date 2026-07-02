@@ -3,13 +3,21 @@ import datetime as dt
 import pandas as pd
 import pytest
 
-from nc.models import DriverEthnicity, DriverRace, LikelihoodOfStopSummary, StopSummary
+from nc.models import (
+    AgencyLikelihoodStatus,
+    DriverEthnicity,
+    DriverRace,
+    LikelihoodOfStopSummary,
+    StopSummary,
+)
 from nc.tests.factories import AgencyFactory, NCCensusProfileFactory, PersonFactory
 from nc.tests.urls import reverse_querystring
 from nc.views.likelihood import (
     available_likelihood_years,
+    excluded_police_agencies,
     likelihood_comparison,
     likelihood_stop_query,
+    no_census_agencies,
     parity_data,
 )
 
@@ -151,11 +159,66 @@ class TestLikelihoodComparison:
             "baseline_rate",
             "stop_rate_ratio",
             "times_likely",
+            "status",
             "latitude",
             "longitude",
             "agency_name_race",
         }
         assert set(df.columns) == expected
+
+    def test_active_status_above_threshold(self, durham_agency, year_2023):
+        """Agencies with population_total > 10000 get status='active'."""
+        _create_stops_and_census(durham_agency, year_2023)  # population_total=20000
+        df = likelihood_comparison(level="agency", year=2023)
+        assert not df.empty
+        assert (df["status"] == AgencyLikelihoodStatus.ACTIVE).all()
+
+    def test_small_population_status_below_threshold(self, year_2023):
+        """Agencies with population_total <= 10000 get status='small_population'."""
+        small_agency = AgencyFactory(
+            name="Tiny Town PD",
+            census_profile_id="1600000US0000001",
+        )
+        NCCensusProfileFactory(
+            acs_id=small_agency.census_profile_id,
+            race="Black",
+            population=500,
+            population_total=5000,  # below 10k threshold
+            year=year_2023.year,
+        )
+        NCCensusProfileFactory(
+            acs_id=small_agency.census_profile_id,
+            race="White",
+            population=2000,
+            population_total=5000,
+            year=year_2023.year,
+        )
+        PersonFactory.create_batch(
+            10,
+            race=DriverRace.BLACK,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=small_agency,
+            stop__date=year_2023,
+        )
+        PersonFactory.create_batch(
+            20,
+            race=DriverRace.WHITE,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=small_agency,
+            stop__date=year_2023,
+        )
+        StopSummary.refresh()
+        LikelihoodOfStopSummary.refresh()
+
+        # Default (status='active') should exclude this agency
+        df_active = likelihood_comparison(level="agency", year=2023)
+        assert df_active.empty or str(small_agency.id) not in df_active["group_id"].values
+
+        # status=None should include it with small_population status
+        df_all = likelihood_comparison(level="agency", year=2023, status=None)
+        small_rows = df_all[df_all["group_id"] == str(small_agency.id)]
+        assert not small_rows.empty
+        assert (small_rows["status"] == AgencyLikelihoodStatus.SMALL_POPULATION).all()
 
 
 @pytest.mark.django_db(databases=["default", "traffic_stops_nc"])
@@ -822,3 +885,180 @@ class TestTotalStops:
         rows = df[df["group_id"] == str(durham_agency.id)]
         # 2022 total: 60, 2023 total: 80 → average: 70
         assert (rows["total_stops"] == 70).all()
+
+
+@pytest.mark.django_db(databases=["default", "traffic_stops_nc"])
+class TestSmallRacePopulationStatus:
+    """
+    Agencies whose census area is large enough (total_population > 10k) but whose
+    race-specific population is tiny (≤ 100 for non-White) should receive
+    status='small_race_population'.
+    """
+
+    def test_small_race_population_status(self, year_2023):
+        agency = AgencyFactory(
+            name="Mid-Size Town PD",
+            census_profile_id="1600000US0000002",
+        )
+        NCCensusProfileFactory(
+            acs_id=agency.census_profile_id,
+            race="Black",
+            population=50,  # ≤ 100 → small_race_population
+            population_total=15000,  # > 10k → passes total threshold
+            year=year_2023.year,
+        )
+        NCCensusProfileFactory(
+            acs_id=agency.census_profile_id,
+            race="White",
+            population=8000,
+            population_total=15000,
+            year=year_2023.year,
+        )
+        PersonFactory.create_batch(
+            5,
+            race=DriverRace.BLACK,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=agency,
+            stop__date=year_2023,
+        )
+        PersonFactory.create_batch(
+            30,
+            race=DriverRace.WHITE,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=agency,
+            stop__date=year_2023,
+        )
+        StopSummary.refresh()
+        LikelihoodOfStopSummary.refresh()
+
+        # Default active filter excludes this agency's Black row
+        df_active = likelihood_comparison(level="agency", year=2023)
+        black_active = df_active[
+            (df_active["group_id"] == str(agency.id)) & (df_active["driver_race"] == "Black")
+        ]
+        assert black_active.empty
+
+        # White row still passes (White is always included regardless of race pop)
+        white_active = df_active[
+            (df_active["group_id"] == str(agency.id)) & (df_active["driver_race"] == "White")
+        ]
+        assert not white_active.empty
+        assert white_active.iloc[0]["status"] == AgencyLikelihoodStatus.ACTIVE
+
+        # status=None exposes the Black row with small_race_population
+        df_all = likelihood_comparison(level="agency", year=2023, status=None)
+        black_row = df_all[
+            (df_all["group_id"] == str(agency.id)) & (df_all["driver_race"] == "Black")
+        ]
+        assert not black_row.empty
+        assert black_row.iloc[0]["status"] == AgencyLikelihoodStatus.SMALL_RACE_POPULATION
+
+
+@pytest.mark.django_db(databases=["default", "traffic_stops_nc"])
+class TestExcludedPoliceAgencies:
+    """excluded_police_agencies() returns threshold-excluded non-sheriff agencies."""
+
+    def test_returns_excluded_agencies(self, year_2023):
+        active_agency = AgencyFactory(
+            name="Big City PD",
+            census_profile_id="1600000US0000010",
+        )
+        small_agency = AgencyFactory(
+            name="Tiny Town PD",
+            census_profile_id="1600000US0000011",
+        )
+        for acs_id, total_pop in [
+            (active_agency.census_profile_id, 20000),
+            (small_agency.census_profile_id, 5000),
+        ]:
+            NCCensusProfileFactory(
+                acs_id=acs_id,
+                race="Black",
+                population=500,
+                population_total=total_pop,
+                year=year_2023.year,
+            )
+            NCCensusProfileFactory(
+                acs_id=acs_id,
+                race="White",
+                population=2000,
+                population_total=total_pop,
+                year=year_2023.year,
+            )
+        for agency in [active_agency, small_agency]:
+            PersonFactory.create_batch(
+                10,
+                race=DriverRace.BLACK,
+                ethnicity=DriverEthnicity.NON_HISPANIC,
+                stop__agency=agency,
+                stop__date=year_2023,
+            )
+            PersonFactory.create_batch(
+                20,
+                race=DriverRace.WHITE,
+                ethnicity=DriverEthnicity.NON_HISPANIC,
+                stop__agency=agency,
+                stop__date=year_2023,
+            )
+        StopSummary.refresh()
+        LikelihoodOfStopSummary.refresh()
+
+        result = excluded_police_agencies(year=year_2023.year, race="Black")
+        group_ids = result["group_id"].astype(str).tolist()
+        assert str(small_agency.id) in group_ids
+        assert str(active_agency.id) not in group_ids
+
+    def test_excludes_sheriff_agencies(self, year_2023):
+        sheriff = AgencyFactory(
+            name="Wake County Sheriff",
+            census_profile_id="1600000US0000020",
+        )
+        NCCensusProfileFactory(
+            acs_id=sheriff.census_profile_id,
+            race="Black",
+            population=100,
+            population_total=3000,
+            year=year_2023.year,
+        )
+        NCCensusProfileFactory(
+            acs_id=sheriff.census_profile_id,
+            race="White",
+            population=500,
+            population_total=3000,
+            year=year_2023.year,
+        )
+        PersonFactory.create_batch(
+            5,
+            race=DriverRace.WHITE,
+            ethnicity=DriverEthnicity.NON_HISPANIC,
+            stop__agency=sheriff,
+            stop__date=year_2023,
+        )
+        StopSummary.refresh()
+        LikelihoodOfStopSummary.refresh()
+
+        result = excluded_police_agencies(year=year_2023.year)
+        assert str(sheriff.id) not in result["group_id"].astype(str).tolist()
+
+
+@pytest.mark.django_db(databases=["default", "traffic_stops_nc"])
+class TestNoCensusAgencies:
+    """no_census_agencies() returns non-sheriff agencies with no census profile."""
+
+    def test_returns_agencies_without_census_profile(self):
+        agency = AgencyFactory(name="Uncovered PD", census_profile_id="")
+        AgencyFactory(name="Covered PD", census_profile_id="1600000US3719000")
+
+        result = no_census_agencies()
+        ids = result["group_id"].astype(str).tolist()
+        assert str(agency.id) in ids
+
+    def test_excludes_agencies_with_census_profile(self):
+        AgencyFactory(name="Covered PD", census_profile_id="1600000US3719000")
+        result = no_census_agencies()
+        assert result.empty
+
+    def test_excludes_sheriff_agencies(self):
+        AgencyFactory(name="Wake County Sheriff", census_profile_id="")
+        result = no_census_agencies()
+        assert result.empty

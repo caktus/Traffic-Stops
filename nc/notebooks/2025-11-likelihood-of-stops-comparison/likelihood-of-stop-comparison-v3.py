@@ -47,8 +47,14 @@ with app.setup(hide_code=True):
 
     django.setup()
 
-    from nc.models import DriverRace  # noqa
-    from nc.views.likelihood import available_likelihood_years, likelihood_comparison, parity_data  # noqa
+    from nc.models import AgencyLikelihoodStatus, DriverRace  # noqa
+    from nc.views.likelihood import (
+        available_likelihood_years,
+        excluded_police_agencies,
+        likelihood_comparison,
+        no_census_agencies,
+        parity_data,
+    )  # noqa
 
     color_map = {
         "Asian": "#F9DC4E",
@@ -112,7 +118,14 @@ def filters(mo):
 
 
 @app.cell(hide_code=True)
-def sidebar(layout_toggle, min_stops_slider, mo, race_dropdown, scale_toggle, year_dropdown):
+def sidebar(
+    layout_toggle,
+    min_stops_slider,
+    mo,
+    race_dropdown,
+    scale_toggle,
+    year_dropdown,
+):
     """Render the sidebar containing the year, race, and disparity map filter controls."""
     mo.sidebar(
         mo.vstack(
@@ -155,12 +168,7 @@ def agency_section_header(mo):
 
 
 @app.cell
-def top_20_agency_chart(
-    mo,
-    selected_races,
-    selected_year,
-    year_label,
-):
+def top_20_agency_chart(mo, selected_races, selected_year, year_label):
     """Render top-20 agency disparities with statewide-average and equity reference lines."""
     df_statewide: pd.DataFrame = likelihood_comparison(level="statewide", year=selected_year)
     df_agency: pd.DataFrame = likelihood_comparison(level="agency", year=selected_year)
@@ -259,7 +267,12 @@ def map_section_header(mo):
 
 
 @app.cell
-def sheriff_choropleth_map(df_agency: pd.DataFrame, mo, race_dropdown, year_label):
+def sheriff_choropleth_map(
+    df_agency: pd.DataFrame,
+    mo,
+    race_dropdown,
+    year_label,
+):
     """Render a choropleth map of stop rate ratios for sheriff agencies by county."""
     simplified_geojson_path = django_project_dir / Path(
         "nc/data/North_Carolina_State_and_County_Boundary_Polygons_simplified.geojson"
@@ -354,7 +367,6 @@ def sheriff_choropleth_map(df_agency: pd.DataFrame, mo, race_dropdown, year_labe
     sheriff_table_df = sheriff_df[sheriff_table_cols].copy().round(2)
 
     mo.vstack([sheriff_plot, sheriff_table_df])
-
     return
 
 
@@ -411,6 +423,7 @@ def police_agency_disparity_map(
     mo,
     race_dropdown,
     scale_toggle,
+    selected_year,
     year_label,
 ):
     """Render a geographic map of stop rate disparities for police (non-sheriff) agencies."""
@@ -515,6 +528,38 @@ def police_agency_disparity_map(
         "disparity_category",
     ]
     _disparity_table_df = _police_df[_table_cols].copy().round(2)
+    _disparity_table_df["exclusion_reason"] = ""
+
+    # Append excluded agencies (below population threshold) from matview
+    _excluded_matview = excluded_police_agencies(year=selected_year, race=_map_race)
+    if not _excluded_matview.empty:
+        _excluded_rows = pd.DataFrame(
+            {col: pd.NA for col in _table_cols},
+            index=range(len(_excluded_matview)),
+        )
+        _excluded_rows["group_name"] = _excluded_matview["group_name"].values
+        _excluded_rows["driver_race"] = _excluded_matview["driver_race"].values
+        _excluded_rows["population"] = _excluded_matview["population"].values
+        _excluded_rows["total_population"] = _excluded_matview["total_population"].values
+        _excluded_rows["total_stops"] = _excluded_matview["total_stops"].values
+        _excluded_rows["stop_rate"] = _excluded_matview["stop_rate"].round(4).values
+        _excluded_rows["times_likely"] = _excluded_matview["times_likely"].round(2).values
+        _excluded_rows["exclusion_reason"] = (
+            _excluded_matview["status"].map(lambda s: AgencyLikelihoodStatus(s).label).values
+        )
+        _disparity_table_df = pd.concat([_disparity_table_df, _excluded_rows], ignore_index=True)
+
+    # Append agencies with no census profile
+    _no_census = no_census_agencies()
+    if not _no_census.empty:
+        _no_census_rows = pd.DataFrame(
+            {col: pd.NA for col in _table_cols},
+            index=range(len(_no_census)),
+        )
+        _no_census_rows["group_name"] = _no_census["group_name"].values
+        _no_census_rows["exclusion_reason"] = _no_census["exclusion_reason"].values
+        _disparity_table_df = pd.concat([_disparity_table_df, _no_census_rows], ignore_index=True)
+
     mo.vstack([mo.ui.plotly(_fig_disparity), _disparity_table_df])
     return
 
@@ -535,7 +580,12 @@ def parity_section_header(mo):
 
 
 @app.cell
-def parity_scatter_plot(df_agency: pd.DataFrame, mo, race_dropdown, year_label):
+def parity_scatter_plot(
+    df_agency: pd.DataFrame,
+    mo,
+    race_dropdown,
+    year_label,
+):
     """Compute parity data and render the population-share vs. stop-share scatter plot."""
     map_race_parity = race_dropdown.value or DriverRace.BLACK.label
 
