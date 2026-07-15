@@ -580,7 +580,7 @@ class LikelihoodOfStopSummary(pg.MaterializedView):
     baseline_rate = models.FloatField()
     stop_rate_ratio = models.FloatField()
     times_likely = models.FloatField()
-    status = models.CharField(max_length=32, choices=AgencyLikelihoodStatus.choices)
+    status = models.CharField(max_length=32, choices=AgencyLikelihoodStatus)
     latitude = models.FloatField(null=True)
     longitude = models.FloatField(null=True)
 
