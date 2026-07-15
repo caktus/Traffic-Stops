@@ -212,7 +212,7 @@ def likelihood_comparison(
         year: optional year to filter to. If provided and not present in
             ``available_likelihood_years()``, returns an empty DataFrame.
         status: filter to rows with this status value. Pass ``None`` to return
-            all rows regardless of status. Defaults to ``AgencyStopStatus.ACTIVE``.
+            all rows regardless of status. Defaults to ``AgencyLikelihoodStatus.ACTIVE``.
 
     Returns:
         DataFrame with columns: level, group_id, group_name, census_profile_id,

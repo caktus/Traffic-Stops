@@ -25,9 +25,7 @@ from tsdata.models import STATE_CHOICES, CensusProfile
 
 logger = logging.getLogger(__name__)
 
-GAZETTEER_URL_PREFIX = "https://www2.census.gov/geo/docs/maps-data/data/gazetteer"
-GAZETTEER_SKIP_YEARS = [2011, 2010, 2009]  # No Gazetteer files available for 2011
-
+GAZETTEER_SKIP_YEARS = [2011, 2010, 2009]  # No Gazetteer files available for these years
 # Variables: http://api.census.gov/data/2021/acs/acs5/variables.json
 NC_RACE_VARS = {
     "B03002_001E": "total",  # Estimate!!Total
