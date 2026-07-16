@@ -2,7 +2,7 @@ name: deploy
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main, develop, 3973-likelihood-map2]
 
 jobs:
   deploy:

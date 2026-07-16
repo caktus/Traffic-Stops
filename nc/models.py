@@ -413,6 +413,185 @@ class ContrabandSummary(pg.ReadOnlyMaterializedView):
         ]
 
 
+class AgencyLikelihoodStatus(models.TextChoices):
+    ACTIVE = "active", "Active"
+    SMALL_POPULATION = "small_population", "Population too small (< 10,000)"
+    SMALL_RACE_POPULATION = "small_race_population", "Race population too small (≤ 100)"
+
+
+LIKELIHOOD_OF_STOP_SUMMARY_SQL = f"""
+    WITH acs_avg AS (
+        -- Averaged ACS data: used for population filter checks and as fallback
+        -- when no exact-year ACS row exists for a given stop year.
+        SELECT
+            acs_id AS census_profile_id,
+            race AS driver_race,
+            AVG(population)::integer AS population,
+            AVG(population_total)::integer AS total_population
+        FROM nc_nccensusprofile
+        GROUP BY 1, 2
+    ),
+    agency_lat_lon AS (
+        -- Most recent lat/lon for each ACS ID (one row per acs_id).
+        SELECT DISTINCT ON (acs_id)
+            acs_id AS census_profile_id,
+            latitude,
+            longitude
+        FROM nc_nccensusprofile
+        WHERE latitude IS NOT NULL AND longitude IS NOT NULL
+        ORDER BY acs_id, year DESC NULLS LAST
+    ),
+    acs_by_year AS (
+        -- Per-year ACS data: used when an exact year match is available.
+        SELECT
+            acs_id AS census_profile_id,
+            year,
+            race AS driver_race,
+            population,
+            population_total AS total_population
+        FROM nc_nccensusprofile
+    ),
+    agency_yearly_stops AS (
+        SELECT
+            'agency' AS level,
+            agency.id::text AS group_id,
+            agency.name AS group_name,
+            agency.census_profile_id,
+            EXTRACT('year' FROM summary.date)::integer AS year,
+            summary.driver_race_comb AS driver_race,
+            SUM(summary.count) AS stops
+        FROM nc_stopsummary summary
+        JOIN nc_agency agency ON summary.agency_id = agency.id
+        WHERE agency.census_profile_id != ''
+        GROUP BY 1, 2, 3, 4, 5, 6
+    ),
+    statewide_yearly_stops AS (
+        -- Aggregate all stops statewide using the NC state ACS ID (0400000US37)
+        SELECT
+            'statewide' AS level,
+            '0400000US37' AS group_id,
+            'North Carolina' AS group_name,
+            '0400000US37' AS census_profile_id,
+            EXTRACT('year' FROM summary.date)::integer AS year,
+            summary.driver_race_comb AS driver_race,
+            SUM(summary.count) AS stops
+        FROM nc_stopsummary summary
+        GROUP BY 5, 6
+    ),
+    all_yearly_stops AS (
+        SELECT * FROM agency_yearly_stops
+        UNION ALL
+        SELECT * FROM statewide_yearly_stops
+    ),
+    stops_with_pop AS (
+        SELECT
+            s.level,
+            s.group_id,
+            s.group_name,
+            s.census_profile_id,
+            s.year,
+            s.driver_race,
+            -- Use exact-year ACS when available, fall back to averaged ACS
+            COALESCE(acs_year.population, acs_avg.population) AS population,
+            COALESCE(acs_year.total_population, acs_avg.total_population) AS total_population,
+            s.stops,
+            SUM(s.stops) OVER (PARTITION BY s.level, s.group_id, s.year) AS total_stops,
+            s.stops::float / NULLIF(COALESCE(acs_year.population, acs_avg.population), 0) AS stop_rate,
+            ll.latitude,
+            ll.longitude,
+            CASE
+                WHEN acs_avg.total_population <= 10000 THEN '{AgencyLikelihoodStatus.SMALL_POPULATION}'
+                WHEN s.driver_race != 'White' AND acs_avg.population <= 100 THEN '{AgencyLikelihoodStatus.SMALL_RACE_POPULATION}'
+                ELSE '{AgencyLikelihoodStatus.ACTIVE}'
+            END AS status
+        FROM all_yearly_stops s
+        JOIN acs_avg ON (
+            acs_avg.census_profile_id = s.census_profile_id
+            AND acs_avg.driver_race = s.driver_race
+        )
+        LEFT JOIN acs_by_year acs_year ON (
+            acs_year.census_profile_id = s.census_profile_id
+            AND acs_year.driver_race = s.driver_race
+            AND acs_year.year = s.year
+        )
+        LEFT JOIN agency_lat_lon ll ON ll.census_profile_id = s.census_profile_id
+    ),
+    with_baseline AS (
+        SELECT
+            p.*,
+            COALESCE(w.stop_rate, 0) AS baseline_rate,
+            CASE WHEN COALESCE(w.stop_rate, 0) > 0
+                THEN (p.stop_rate - w.stop_rate) / w.stop_rate
+                ELSE 0
+            END AS stop_rate_ratio,
+            CASE WHEN COALESCE(w.stop_rate, 0) > 0
+                THEN ABS(p.stop_rate / w.stop_rate)
+                ELSE 0
+            END AS times_likely
+        FROM stops_with_pop p
+        LEFT JOIN stops_with_pop w ON (
+            w.driver_race = 'White'
+            AND p.level = w.level
+            AND p.group_id = w.group_id
+            AND p.year = w.year
+        )
+    )
+    SELECT
+        ROW_NUMBER() OVER () AS id,
+        level,
+        group_id,
+        group_name,
+        census_profile_id,
+        year,
+        driver_race,
+        population,
+        total_population,
+        stops,
+        total_stops,
+        stop_rate,
+        baseline_rate,
+        stop_rate_ratio,
+        times_likely,
+        status,
+        latitude,
+        longitude
+    FROM with_baseline;
+"""
+
+
+class LikelihoodOfStopSummary(pg.MaterializedView):
+    """Comparative stop likelihood data by agency and statewide level, with population filters."""
+
+    sql = LIKELIHOOD_OF_STOP_SUMMARY_SQL
+    with_data = False
+
+    id = models.BigIntegerField(primary_key=True)
+    level = models.CharField(max_length=16)  # 'agency' or 'statewide'
+    group_id = models.CharField(max_length=16)
+    group_name = models.CharField(max_length=255)
+    census_profile_id = models.CharField(max_length=32)
+    year = models.IntegerField()
+    driver_race = models.CharField(max_length=20)
+    population = models.IntegerField()
+    total_population = models.IntegerField()
+    stops = models.BigIntegerField()
+    total_stops = models.BigIntegerField()
+    stop_rate = models.FloatField()
+    baseline_rate = models.FloatField()
+    stop_rate_ratio = models.FloatField()
+    times_likely = models.FloatField()
+    status = models.CharField(max_length=32, choices=AgencyLikelihoodStatus)
+    latitude = models.FloatField(null=True)
+    longitude = models.FloatField(null=True)
+
+    class Meta:
+        managed = False
+        indexes = [
+            models.Index(fields=["level", "year"]),
+            models.Index(fields=["level", "status"]),
+        ]
+
+
 class Resource(models.Model):
     created_date = models.DateTimeField(auto_now_add=True, editable=False)
     publication_date = models.DateField(null=True, blank=True, editable=True)
@@ -461,6 +640,8 @@ class NCCensusProfile(models.Model):
     population = models.BigIntegerField()
     population_total = models.BigIntegerField()
     population_percent = models.FloatField()
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
 
     class Meta:
         verbose_name = "NC Census Profile"

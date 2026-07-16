@@ -9,10 +9,12 @@
 #  - Durham city, NC: https://data.census.gov/table?q=B03002&g=1600000US3719000&y=2021&d=ACS+5-Year+Estimates+Detailed+Tables  # noqa
 
 import logging
+import pathlib
 
 import census
 import census.core
 import pandas as pd
+import requests
 
 from django.conf import settings
 from django.db import transaction
@@ -23,6 +25,8 @@ from tsdata.models import STATE_CHOICES, CensusProfile
 
 logger = logging.getLogger(__name__)
 
+GAZETTEER_URL_PREFIX = "https://www2.census.gov/geo/docs/maps-data/data/gazetteer"
+GAZETTEER_SKIP_YEARS = [2011, 2010, 2009]  # No Gazetteer files available for these years
 # Variables: http://api.census.gov/data/2021/acs/acs5/variables.json
 NC_RACE_VARS = {
     "B03002_001E": "total",  # Estimate!!Total
@@ -77,8 +81,17 @@ class ACS:
         raise NotImplementedError()
 
     def get(self):
+        census_dir = pathlib.Path(settings.CENSUS_DATA_DIR)
+        downloaded_file = census_dir / f"acs_{self.geography}_{self.state_abbr}_{self.year}.zip"
+        if not downloaded_file.exists():
+            logger.debug(f"Downloading ACS data to {downloaded_file.name}")
+            census_dir.mkdir(parents=True, exist_ok=True)
+            data = self.call_api()
+            pd.DataFrame(data).to_json(downloaded_file, orient="records", compression="infer")
+        else:
+            logger.debug(f"Using cached ACS data from {downloaded_file.name}")
         # load response (list of dicts) into pandas
-        df = pd.DataFrame(self.call_api())
+        df = pd.read_json(downloaded_file, orient="records", compression="infer")
         # insert metadata
         df["state"] = self.state_abbr
         df["source"] = self.source
@@ -140,19 +153,81 @@ class ACSStatePlaces(ACS):
         return df[~df.location.str.contains("CDP")]
 
 
+def get_gazetteer_coordinates(year: int, geography: str) -> pd.DataFrame:
+    """
+    Fetch lat/lng lookups from US Census Gazetteer files.
+    Returns a DataFrame with 'id' (GEO_ID), 'year', 'latitude', 'longitude'.
+    Files are cached in a local directory for reuse across runs.
+
+    https://www.census.gov/geographies/reference-files/time-series/geo/gazetteer-files.html
+    """
+    if geography == "state" or year in GAZETTEER_SKIP_YEARS:
+        return pd.DataFrame(columns=["id", "year", "latitude", "longitude"])
+    elif geography == "place":
+        basename = f"{year}_Gaz_place_national"
+        id_prefix = "1600000US"
+        geoid_col = "GEOID"
+    elif geography == "county":
+        basename = f"{year}_Gaz_counties_national"
+        id_prefix = "0500000US"
+        geoid_col = "GEOID"
+    else:
+        return pd.DataFrame(columns=["id", "year", "latitude", "longitude"])
+
+    census_dir = pathlib.Path(settings.CENSUS_DATA_DIR)
+    zip_path = census_dir / f"{basename}.zip"
+
+    if zip_path.exists():
+        logger.debug(f"Using cached Gazetteer file for {geography} in {year}")
+    else:
+        census_dir.mkdir(parents=True, exist_ok=True)
+        url = f"{GAZETTEER_URL_PREFIX}/{year}_Gazetteer/{basename}.zip"
+        logger.debug(f"Downloading Gazetteer file {url}")
+        response = requests.get(url, timeout=5)
+        if response.status_code == 404:
+            logger.warning(f"Gazetteer file not found (404): {url}")
+            return pd.DataFrame(columns=["id", "year", "latitude", "longitude"])
+        response.raise_for_status()
+        zip_path.write_bytes(response.content)
+
+    try:
+        df = pd.read_csv(zip_path, sep="\t", dtype={geoid_col: str})
+    except UnicodeDecodeError:
+        # Older Gazetteer files can contain latin-1 encoded place names.
+        df = pd.read_csv(zip_path, sep="\t", dtype={geoid_col: str}, encoding="latin-1")
+
+    df.columns = df.columns.str.strip()
+    df["id"] = id_prefix + df[geoid_col].astype(str)
+    df["year"] = year
+    df.rename(columns={"INTPTLAT": "latitude", "INTPTLONG": "longitude"}, inplace=True)
+    return df[["id", "year", "latitude", "longitude"]]
+
+
+def add_gazetteer_coordinates(df: pd.DataFrame) -> pd.DataFrame:
+    """Enrich a DataFrame with latitude and longitude from Gazetteer files."""
+    years_geographies = df[["year", "geography"]].drop_duplicates()
+    gaz_frames = [
+        get_gazetteer_coordinates(row["year"], row["geography"])
+        for _, row in years_geographies.iterrows()
+    ]
+    gaz = pd.concat(gaz_frames, ignore_index=True)
+    return df.merge(gaz, on=["id", "year"], how="left")
+
+
 def get_state_census_data(key):
     """Download several state Census endpoints into a single DataFrame"""
     years = census.core.ACS5Client.years
     importers = (ACSState, ACSStateCounties, ACSStatePlaces)
     profiles = []
-    logger.debug(f"Downloading ACS 5-Year Data for years {years}")
+    logger.info(f"Downloading ACS 5-Year Data for years {years}")
     for state in [abbr.upper() for abbr, _ in STATE_CHOICES]:
         for year in years:
             for importer in importers:
                 data = importer(key, state, year).get()
                 profiles.append(data)
-                logger.debug(f"Parsed {importer.geography} data for {state} in {year}")
-    return pd.concat(profiles)
+    df = pd.concat(profiles).pipe(add_gazetteer_coordinates)
+    logger.info(f"Census DataFrame has {len(df)} rows and columns: {df.columns.tolist()}")
+    return df
 
 
 @transaction.atomic
@@ -204,6 +279,8 @@ def refresh_census_models(data):
                 population=population,
                 population_total=row["total"],
                 population_percent=population * 1.0 / row["total"] if row["total"] else 0,
+                latitude=row.get("latitude"),
+                longitude=row.get("longitude"),
             )
             logger.debug(f"Parsed {nc_profile.race} population in {nc_profile.location}")
             nc_profiles.append(nc_profile)

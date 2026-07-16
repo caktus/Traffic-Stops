@@ -135,6 +135,8 @@ class NCCensusProfileAdmin(admin.ModelAdmin):
         "population",
         "population_total",
         "population_pct",
+        "latitude",
+        "longitude",
     )
     list_filter = ("geography", "race", "year")
     ordering = ("location",)
@@ -142,11 +144,14 @@ class NCCensusProfileAdmin(admin.ModelAdmin):
         "acs_id",
         "location",
         "geography",
+        "year",
         "race",
         "population",
         "population_total",
         "population_percent",
         "source",
+        "latitude",
+        "longitude",
     )
     search_fields = ("location", "id", "acs_id")
 
