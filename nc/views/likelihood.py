@@ -342,6 +342,51 @@ def excluded_police_agencies(year: int = None, race: str = None) -> pd.DataFrame
     return df[mask].reset_index(drop=True)
 
 
+def active_small_population_agencies(year: int = None) -> pd.DataFrame:
+    """
+    Audit helper: non-sheriff agencies below the 10,000-population threshold
+    (status = small_population) that are actively submitting stop data.
+
+    Unlike ``excluded_police_agencies()``, this excludes agencies flagged only
+    for ``small_race_population`` (a different exclusion reason) and keeps a
+    single agency-level row (the underlying view is per-race). Only agencies
+    with at least one recorded stop in the target year are returned.
+
+    Args:
+        year: year to audit. Defaults to the most recent census year from
+            ``available_likelihood_years()``.
+
+    Returns:
+        DataFrame sorted by ``total_stops`` descending with columns:
+        group_id, group_name, total_population, total_stops.
+    """
+    if year is None:
+        years = available_likelihood_years()
+        if not years:
+            return pd.DataFrame(
+                columns=["group_id", "group_name", "total_population", "total_stops"]
+            )
+        year = years[0]
+
+    df = excluded_police_agencies(year=year)
+    if df.empty:
+        return pd.DataFrame(columns=["group_id", "group_name", "total_population", "total_stops"])
+
+    small_pop = df[df["status"] == AgencyLikelihoodStatus.SMALL_POPULATION]
+    if small_pop.empty:
+        return pd.DataFrame(columns=["group_id", "group_name", "total_population", "total_stops"])
+
+    # Collapse per-race rows to one agency-level row (population/stop totals are
+    # agency-level and repeated across races).
+    agencies = (
+        small_pop.groupby(["group_id", "group_name"], as_index=False)
+        .agg(total_population=("total_population", "max"), total_stops=("total_stops", "max"))
+        .astype({"total_population": int, "total_stops": int})
+    )
+    agencies = agencies[agencies["total_stops"] > 0]
+    return agencies.sort_values("total_stops", ascending=False).reset_index(drop=True)
+
+
 def no_census_agencies() -> pd.DataFrame:
     """
     Return non-sheriff police agencies with no census profile.

@@ -49,6 +49,7 @@ with app.setup(hide_code=True):
 
     from nc.models import AgencyLikelihoodStatus, DriverRace  # noqa
     from nc.views.likelihood import (
+        active_small_population_agencies,
         available_likelihood_years,
         excluded_police_agencies,
         likelihood_comparison,
@@ -119,6 +120,7 @@ def filters(mo):
 
 @app.cell(hide_code=True)
 def sidebar(
+    include_small_pop_toggle,
     layout_toggle,
     min_stops_slider,
     mo,
@@ -138,6 +140,7 @@ def sidebar(
                 layout_toggle,
                 scale_toggle,
                 min_stops_slider,
+                include_small_pop_toggle,
             ]
         )
     )
@@ -387,7 +390,10 @@ def police_agency_disparity_map_section_header(mo):
     - **Red**: ≥ 3.0 — Severe disparity
 
     Use the controls below to switch between flat dots and bubbles, choose what
-    the bubble size represents, and filter out low-volume agencies.
+    the bubble size represents, and filter out low-volume agencies. Toggle
+    "Include smaller departments (< 10,000 population)" to overlay agencies that
+    voluntarily report despite being below the population threshold; they appear
+    as hollow markers to distinguish them from active agencies.
     """)
     return
 
@@ -412,12 +418,22 @@ def disparity_map_controls(mo):
         value=50,
         label="Minimum stops (selected race)",
     )
-    return layout_toggle, min_stops_slider, scale_toggle
+    include_small_pop_toggle = mo.ui.switch(
+        value=False,
+        label="Include smaller departments (< 10,000 population)",
+    )
+    return (
+        include_small_pop_toggle,
+        layout_toggle,
+        min_stops_slider,
+        scale_toggle,
+    )
 
 
 @app.cell
 def police_agency_disparity_map(
     df_agency: pd.DataFrame,
+    include_small_pop_toggle,
     layout_toggle,
     min_stops_slider,
     mo,
@@ -446,6 +462,7 @@ def police_agency_disparity_map(
 
     _map_race = race_dropdown.value or DriverRace.BLACK.label
     _min_stops = min_stops_slider.value
+    _show_small_pop = include_small_pop_toggle.value
 
     # Filter to non-sheriff police agencies with coordinates
     _police_df = df_agency[
@@ -461,7 +478,29 @@ def police_agency_disparity_map(
         pd.to_numeric(_police_df["total_stops"], errors="coerce").fillna(0).astype(int)
     )
 
-    if _police_df.empty:
+    # Optionally build sub-threshold (< 10,000 population) agencies to overlay.
+    # The same minimum-stops filter is applied for consistency with active agencies.
+    _small_pop_df = pd.DataFrame()
+    if _show_small_pop:
+        _excluded = excluded_police_agencies(year=selected_year, race=_map_race)
+        if not _excluded.empty:
+            _small_pop_df = _excluded[
+                (_excluded["status"] == AgencyLikelihoodStatus.SMALL_POPULATION)
+                & _excluded["latitude"].notna()
+                & _excluded["longitude"].notna()
+            ].copy()
+            _small_pop_df["stops"] = (
+                pd.to_numeric(_small_pop_df["stops"], errors="coerce").fillna(0).astype(int)
+            )
+            _small_pop_df["total_stops"] = (
+                pd.to_numeric(_small_pop_df["total_stops"], errors="coerce").fillna(0).astype(int)
+            )
+            _small_pop_df = _small_pop_df[_small_pop_df["stops"] >= _min_stops]
+            _small_pop_df["disparity_category"] = _small_pop_df["times_likely"].apply(
+                _disparity_category
+            )
+
+    if _police_df.empty and _small_pop_df.empty:
         mo.stop(
             True,
             mo.callout(mo.md("No police agencies found with the current filters."), kind="warn"),
@@ -514,6 +553,33 @@ def police_agency_disparity_map(
         _fig_disparity.update_traces(marker_size=8)
     _fig_disparity.update_layout(height=650, margin={"r": 0, "t": 40, "l": 0, "b": 0})
 
+    # Overlay sub-threshold agencies as hollow markers so voluntary reporters are
+    # visually distinct from active agencies while sharing the disparity colors.
+    if not _small_pop_df.empty:
+        _marker_colors = _small_pop_df["disparity_category"].map(_DISPARITY_COLORS)
+        _fig_disparity.add_trace(
+            go.Scattergeo(
+                lat=_small_pop_df["latitude"],
+                lon=_small_pop_df["longitude"],
+                mode="markers",
+                name="< 10,000 population",
+                text=_small_pop_df["group_name"],
+                customdata=_small_pop_df[["times_likely", "stops", "total_stops"]].values,
+                hovertemplate=(
+                    "<b>%{text}</b><br>"
+                    "Times likely: %{customdata[0]:.2f}<br>"
+                    f"Stops ({_map_race}): %{{customdata[1]}}<br>"
+                    "Total stops: %{customdata[2]}<br>"
+                    "<i>&lt; 10,000 population</i><extra></extra>"
+                ),
+                marker=dict(
+                    size=10,
+                    color="rgba(255, 255, 255, 0)",
+                    line=dict(width=2, color=_marker_colors),
+                ),
+            )
+        )
+
     _table_cols = [
         "group_name",
         "driver_race",
@@ -533,6 +599,13 @@ def police_agency_disparity_map(
     # Append excluded agencies (below population threshold) from matview
     _excluded_matview = excluded_police_agencies(year=selected_year, race=_map_race)
     if not _excluded_matview.empty:
+        _plotted_ids = set(_small_pop_df["group_id"]) if not _small_pop_df.empty else set()
+
+        def _exclusion_label(row):
+            if row["group_id"] in _plotted_ids:
+                return "Shown on map (< 10,000 population)"
+            return AgencyLikelihoodStatus(row["status"]).label
+
         _excluded_rows = pd.DataFrame(
             {col: pd.NA for col in _table_cols},
             index=range(len(_excluded_matview)),
@@ -544,9 +617,9 @@ def police_agency_disparity_map(
         _excluded_rows["total_stops"] = _excluded_matview["total_stops"].values
         _excluded_rows["stop_rate"] = _excluded_matview["stop_rate"].round(4).values
         _excluded_rows["times_likely"] = _excluded_matview["times_likely"].round(2).values
-        _excluded_rows["exclusion_reason"] = (
-            _excluded_matview["status"].map(lambda s: AgencyLikelihoodStatus(s).label).values
-        )
+        _excluded_rows["exclusion_reason"] = _excluded_matview.apply(
+            _exclusion_label, axis=1
+        ).values
         _disparity_table_df = pd.concat([_disparity_table_df, _excluded_rows], ignore_index=True)
 
     # Append agencies with no census profile
@@ -561,6 +634,50 @@ def police_agency_disparity_map(
         _disparity_table_df = pd.concat([_disparity_table_df, _no_census_rows], ignore_index=True)
 
     mo.vstack([mo.ui.plotly(_fig_disparity), _disparity_table_df])
+    return
+
+
+@app.cell(hide_code=True)
+def sub_threshold_audit_section_header(mo):
+    """Render the section header for the sub-threshold reporting audit."""
+    mo.md(r"""
+    ## Audit: Sub-Threshold Agencies Actively Reporting
+
+    Police departments below the 10,000-population threshold
+    (`status = small_population`) are excluded from the disparity map by default.
+    Some of these smaller departments voluntarily submit traffic stop data.
+
+    The table below lists non-sheriff agencies under the threshold that recorded
+    at least one stop in the most recent data year, with each agency's total
+    population and total stops. Use it to gauge the scope and data quality of
+    voluntary reporting before investing in front-end visibility.
+    """)
+    return
+
+
+@app.cell
+def sub_threshold_audit(mo):
+    """List sub-threshold agencies that are actively reporting stop data."""
+    _audit_year = available_likelihood_years()[0]
+    _audit_df = active_small_population_agencies(year=_audit_year)
+
+    _display_df = _audit_df.rename(
+        columns={
+            "group_name": "Agency",
+            "total_population": "Total population",
+            "total_stops": "Total stops",
+        }
+    )[["Agency", "Total population", "Total stops"]]
+
+    mo.vstack(
+        [
+            mo.md(
+                f"**{len(_audit_df)}** sub-threshold non-sheriff agencies actively "
+                f"reported traffic stops in **{_audit_year}**."
+            ),
+            mo.ui.table(_display_df, selection=None),
+        ]
+    )
     return
 
 
