@@ -464,11 +464,12 @@ def police_agency_disparity_map_section_header(mo):
     - **Orange**: 2.0 – 3.0 — High disparity
     - **Red**: ≥ 3.0 — Severe disparity
 
-    Use the controls below to switch between flat dots and bubbles, choose what
-    the bubble size represents, and filter out low-volume agencies. Toggle
-    "Include smaller departments (< 10,000 population)" to overlay agencies that
-    voluntarily report despite being below the population threshold; they appear
-    as hollow markers to distinguish them from active agencies.
+    Use the control below to choose what the bubble size represents. Agencies
+    with fewer than 100 stops (for the selected race) are omitted from the map.
+
+    Smaller departments (< 10,000 population) that voluntarily report are shown
+    by default as hollow markers to distinguish them from active agencies. Turn
+    off "Include smaller departments (< 10,000 population)" to hide them.
     """)
     return
 
@@ -485,10 +486,7 @@ def disparity_map_controls(mo):
         value=True,
         label="Include smaller departments (< 10,000 population)",
     )
-    return (
-        include_small_pop_toggle,
-        scale_toggle,
-    )
+    return include_small_pop_toggle, scale_toggle
 
 
 @app.cell
@@ -717,7 +715,15 @@ def sub_threshold_audit(mo, selected_year):
     # active_small_population_agencies() needs a concrete year. When the sidebar
     # Year filter is set to "All" (selected_year is None), fall back to the most
     # recent available year so the audit still renders.
-    _audit_year = selected_year if selected_year else available_likelihood_years()[0]
+    _years = available_likelihood_years()
+    _audit_year = selected_year if selected_year else (_years[0] if _years else None)
+    mo.stop(
+        _audit_year is None,
+        mo.callout(
+            mo.md("No census years are available, so the sub-threshold audit cannot run."),
+            kind="warn",
+        ),
+    )
     _audit_df = active_small_population_agencies(year=_audit_year)
 
     _display_df = _audit_df.rename(
