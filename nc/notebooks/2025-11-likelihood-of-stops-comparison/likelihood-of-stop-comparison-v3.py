@@ -47,6 +47,8 @@ with app.setup(hide_code=True):
 
     django.setup()
 
+    from django.db.models import Q  # noqa
+
     from nc.models import AgencyLikelihoodStatus, DriverRace  # noqa
     from nc.views.likelihood import (
         active_small_population_agencies,
@@ -270,12 +272,7 @@ def map_section_header(mo):
 
 
 @app.cell
-def sheriff_choropleth_map(
-    df_agency: pd.DataFrame,
-    mo,
-    race_dropdown,
-    year_label,
-):
+def sheriff_choropleth_map(mo, race_dropdown, selected_year, year_label):
     """Render a choropleth map of stop rate ratios for sheriff agencies by county."""
     simplified_geojson_path = django_project_dir / Path(
         "nc/data/North_Carolina_State_and_County_Boundary_Polygons_simplified.geojson"
@@ -284,28 +281,87 @@ def sheriff_choropleth_map(
 
     _map_race_sheriff = race_dropdown.value or DriverRace.BLACK.label
 
-    sheriff_df = df_agency[
-        df_agency["group_name"].str.contains("Sheriff")
-        & (df_agency["driver_race"] == _map_race_sheriff)
-    ].copy()
-    sheriff_df["fips3"] = sheriff_df["census_profile_id"].str[-3:]
+    # Pull all sheriff rows for the selected race, including non-active statuses,
+    # so we can distinguish counties excluded by a census population threshold
+    # from counties that simply never reported any stop data.
+    _sheriff_all = likelihood_comparison(
+        level="agency",
+        year=selected_year,
+        status=None,
+        query=Q(group_name__icontains="Sheriff"),
+    )
+    if not _sheriff_all.empty:
+        _sheriff_all = _sheriff_all[_sheriff_all["driver_race"] == _map_race_sheriff].copy()
+        _sheriff_all["fips3"] = _sheriff_all["census_profile_id"].str[-3:]
+    else:
+        # Guarantee the columns referenced below exist even with no data so the
+        # merges and status filters don't raise on an empty (columnless) frame.
+        _sheriff_all = pd.DataFrame(
+            columns=[
+                "fips3",
+                "status",
+                "group_name",
+                "driver_race",
+                "population",
+                "total_population",
+                "stops",
+                "total_stops",
+                "stop_rate",
+                "baseline_rate",
+                "stop_rate_ratio",
+                "times_likely",
+            ]
+        )
 
-    # Build full county DataFrame so missing counties render as gray
+    # Active sheriff agencies drive the colored choropleth; the sheriff table
+    # below continues to summarize these.
+    sheriff_df = (
+        _sheriff_all[_sheriff_all["status"] == AgencyLikelihoodStatus.ACTIVE].copy()
+        if not _sheriff_all.empty
+        else _sheriff_all
+    )
+
+    # Counties excluded by a census population threshold (county < 10,000
+    # residents, or the selected race ≤ 100 residents) get a distinct color so
+    # they read as "below threshold" rather than "failed to report".
+    _threshold_statuses = [
+        AgencyLikelihoodStatus.SMALL_POPULATION,
+        AgencyLikelihoodStatus.SMALL_RACE_POPULATION,
+    ]
+    below_threshold_df = (
+        _sheriff_all[_sheriff_all["status"].isin(_threshold_statuses)].copy()
+        if not _sheriff_all.empty
+        else _sheriff_all
+    )
+
+    # Build full county DataFrame so every county falls into exactly one layer.
     all_fips = [
         (f["properties"]["FIPS"], f["properties"]["County"]) for f in simplified_geojson["features"]
     ]
     all_counties_df = pd.DataFrame(all_fips, columns=["fips3", "county_name"])
-    full_df = all_counties_df.merge(
+
+    data_df = all_counties_df.merge(
         sheriff_df[["fips3", "times_likely", "group_name", "stops", "population"]],
+        on="fips3",
+        how="inner",
+    )
+    _data_fips = set(data_df["fips3"])
+
+    _below_fips = (
+        set(below_threshold_df["fips3"]) - _data_fips if not below_threshold_df.empty else set()
+    )
+    below_df = all_counties_df[all_counties_df["fips3"].isin(_below_fips)].merge(
+        below_threshold_df[["fips3", "group_name"]].drop_duplicates("fips3"),
         on="fips3",
         how="left",
     )
-    missing_df = full_df[full_df["times_likely"].isna()]
-    data_df = full_df[full_df["times_likely"].notna()]
+
+    _covered_fips = _data_fips | _below_fips
+    missing_df = all_counties_df[~all_counties_df["fips3"].isin(_covered_fips)]
 
     fig_map = go.Figure()
 
-    # Gray base layer for counties without sheriff data
+    # Gray base layer for counties that never reported sheriff stop data
     fig_map.add_trace(
         go.Choropleth(
             geojson=simplified_geojson,
@@ -315,15 +371,38 @@ def sheriff_choropleth_map(
             colorscale=[[0, "#cccccc"], [1, "#cccccc"]],
             customdata=missing_df[["county_name"]].values,
             showscale=False,
-            hovertemplate="<b>%{customdata[0]} County</b><br>No data available.<br>Requires county ≥ 10k residents and selected race ≥ 100 residents.<extra></extra>",
-            name="No Data",
+            hovertemplate="<b>%{customdata[0]} County</b><br>No stop data reported.<extra></extra>",
+            name="Failed to report",
             showlegend=True,
             marker_line_color="white",
             marker_line_width=0.5,
         )
     )
 
-    # Data layer for counties with sheriff data
+    # Distinct layer for counties excluded by a census population threshold
+    if not below_df.empty:
+        fig_map.add_trace(
+            go.Choropleth(
+                geojson=simplified_geojson,
+                locations=below_df["fips3"],
+                z=[0] * len(below_df),
+                featureidkey="properties.FIPS",
+                colorscale=[[0, "#8e6fb0"], [1, "#8e6fb0"]],
+                customdata=below_df[["county_name"]].values,
+                showscale=False,
+                hovertemplate=(
+                    "<b>%{customdata[0]} County</b><br>Below population threshold.<br>"
+                    "Requires county ≥ 10k residents and selected race ≥ 100 residents."
+                    "<extra></extra>"
+                ),
+                name="Below population threshold",
+                showlegend=True,
+                marker_line_color="white",
+                marker_line_width=0.5,
+            )
+        )
+
+    # Data layer for counties with active sheriff data
     fig_map.add_trace(
         go.Choropleth(
             geojson=simplified_geojson,
@@ -554,9 +633,9 @@ def police_agency_disparity_map(
     _fig_disparity.update_layout(height=650, margin={"r": 0, "t": 40, "l": 0, "b": 0})
 
     # Overlay sub-threshold agencies as hollow markers so voluntary reporters are
-    # visually distinct from active agencies while sharing the disparity colors.
+    # visually distinct from active agencies. A solid black outline is used (rather
+    # than the disparity colors) so these markers are not color-coded by disparity.
     if not _small_pop_df.empty:
-        _marker_colors = _small_pop_df["disparity_category"].map(_DISPARITY_COLORS)
         _fig_disparity.add_trace(
             go.Scattergeo(
                 lat=_small_pop_df["latitude"],
@@ -575,7 +654,7 @@ def police_agency_disparity_map(
                 marker=dict(
                     size=10,
                     color="rgba(255, 255, 255, 0)",
-                    line=dict(width=2, color=_marker_colors),
+                    line=dict(width=2, color="black"),
                 ),
             )
         )
@@ -648,7 +727,8 @@ def sub_threshold_audit_section_header(mo):
     Some of these smaller departments voluntarily submit traffic stop data.
 
     The table below lists non-sheriff agencies under the threshold that recorded
-    at least one stop in the most recent data year, with each agency's total
+    at least one stop in the selected data year (from the sidebar **Year**
+    filter; "All" falls back to the most recent year), with each agency's total
     population and total stops. Use it to gauge the scope and data quality of
     voluntary reporting before investing in front-end visibility.
     """)
@@ -656,9 +736,12 @@ def sub_threshold_audit_section_header(mo):
 
 
 @app.cell
-def sub_threshold_audit(mo):
+def sub_threshold_audit(mo, selected_year):
     """List sub-threshold agencies that are actively reporting stop data."""
-    _audit_year = available_likelihood_years()[0]
+    # active_small_population_agencies() needs a concrete year. When the sidebar
+    # Year filter is set to "All" (selected_year is None), fall back to the most
+    # recent available year so the audit still renders.
+    _audit_year = selected_year if selected_year else available_likelihood_years()[0]
     _audit_df = active_small_population_agencies(year=_audit_year)
 
     _display_df = _audit_df.rename(
@@ -669,11 +752,12 @@ def sub_threshold_audit(mo):
         }
     )[["Agency", "Total population", "Total stops"]]
 
+    _year_note = "" if selected_year else " (most recent year; Year filter set to All)"
     mo.vstack(
         [
             mo.md(
                 f"**{len(_audit_df)}** sub-threshold non-sheriff agencies actively "
-                f"reported traffic stops in **{_audit_year}**."
+                f"reported traffic stops in **{_audit_year}**{_year_note}."
             ),
             mo.ui.table(_display_df, selection=None),
         ]
