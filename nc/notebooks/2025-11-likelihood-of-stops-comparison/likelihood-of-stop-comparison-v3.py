@@ -123,8 +123,6 @@ def filters(mo):
 @app.cell(hide_code=True)
 def sidebar(
     include_small_pop_toggle,
-    layout_toggle,
-    min_stops_slider,
     mo,
     race_dropdown,
     scale_toggle,
@@ -139,9 +137,7 @@ def sidebar(
                 race_dropdown,
                 mo.md("---"),
                 mo.md("**Agency Disparity Map**"),
-                layout_toggle,
                 scale_toggle,
-                min_stops_slider,
                 include_small_pop_toggle,
             ]
         )
@@ -480,22 +476,10 @@ def police_agency_disparity_map_section_header(mo):
 @app.cell(hide_code=True)
 def disparity_map_controls(mo):
     """Build controls for the police agency disparity map."""
-    layout_toggle = mo.ui.radio(
-        options=["Flat dots", "Bubbles"],
-        value="Bubbles",
-        label="Layout",
-    )
     scale_toggle = mo.ui.radio(
         options=["Total Traffic Stops", "Stops of Selected Race"],
         value="Total Traffic Stops",
         label="Bubble size",
-    )
-    min_stops_slider = mo.ui.slider(
-        start=0,
-        stop=500,
-        step=25,
-        value=100,
-        label="Minimum stops (selected race)",
     )
     include_small_pop_toggle = mo.ui.switch(
         value=True,
@@ -503,8 +487,6 @@ def disparity_map_controls(mo):
     )
     return (
         include_small_pop_toggle,
-        layout_toggle,
-        min_stops_slider,
         scale_toggle,
     )
 
@@ -513,8 +495,6 @@ def disparity_map_controls(mo):
 def police_agency_disparity_map(
     df_agency: pd.DataFrame,
     include_small_pop_toggle,
-    layout_toggle,
-    min_stops_slider,
     mo,
     race_dropdown,
     scale_toggle,
@@ -540,7 +520,7 @@ def police_agency_disparity_map(
         return "≥ 3.0 (Severe)"
 
     _map_race = race_dropdown.value or DriverRace.BLACK.label
-    _min_stops = min_stops_slider.value
+    _min_stops = 100
     _show_small_pop = include_small_pop_toggle.value
 
     # Filter to non-sheriff police agencies with coordinates
@@ -587,7 +567,6 @@ def police_agency_disparity_map(
 
     _police_df["disparity_category"] = _police_df["times_likely"].apply(_disparity_category)
 
-    _use_bubbles = layout_toggle.value == "Bubbles"
     _size_col = "total_stops" if scale_toggle.value == "Total Traffic Stops" else "stops"
 
     _scatter_kwargs = dict(
@@ -612,9 +591,8 @@ def police_agency_disparity_map(
             "total_stops": "Total stops",
         },
     )
-    if _use_bubbles:
-        _scatter_kwargs["size"] = _size_col
-        _scatter_kwargs["size_max"] = 30
+    _scatter_kwargs["size"] = _size_col
+    _scatter_kwargs["size_max"] = 30
 
     _fig_disparity = px.scatter_geo(**_scatter_kwargs)
     _fig_disparity.update_geos(
@@ -628,8 +606,6 @@ def police_agency_disparity_map(
         showsubunits=True,
         subunitcolor="#cccccc",
     )
-    if not _use_bubbles:
-        _fig_disparity.update_traces(marker_size=8)
     _fig_disparity.update_layout(height=650, margin={"r": 0, "t": 40, "l": 0, "b": 0})
 
     # Overlay sub-threshold agencies as hollow markers so voluntary reporters are
