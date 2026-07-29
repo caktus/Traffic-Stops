@@ -482,7 +482,7 @@ def disparity_map_controls(mo):
     """Build controls for the police agency disparity map."""
     layout_toggle = mo.ui.radio(
         options=["Flat dots", "Bubbles"],
-        value="Flat dots",
+        value="Bubbles",
         label="Layout",
     )
     scale_toggle = mo.ui.radio(
@@ -494,11 +494,11 @@ def disparity_map_controls(mo):
         start=0,
         stop=500,
         step=25,
-        value=50,
+        value=100,
         label="Minimum stops (selected race)",
     )
     include_small_pop_toggle = mo.ui.switch(
-        value=False,
+        value=True,
         label="Include smaller departments (< 10,000 population)",
     )
     return (
@@ -654,7 +654,7 @@ def police_agency_disparity_map(
                 marker=dict(
                     size=10,
                     color="rgba(255, 255, 255, 0)",
-                    line=dict(width=2, color="black"),
+                    line=dict(width=2, color="#777777"),
                 ),
             )
         )
