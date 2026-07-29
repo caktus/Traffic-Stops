@@ -13,6 +13,7 @@ from nc.models import (
 from nc.tests.factories import AgencyFactory, NCCensusProfileFactory, PersonFactory
 from nc.tests.urls import reverse_querystring
 from nc.views.likelihood import (
+    active_small_population_agencies,
     available_likelihood_years,
     excluded_police_agencies,
     likelihood_comparison,
@@ -219,6 +220,104 @@ class TestLikelihoodComparison:
         small_rows = df_all[df_all["group_id"] == str(small_agency.id)]
         assert not small_rows.empty
         assert (small_rows["status"] == AgencyLikelihoodStatus.SMALL_POPULATION).all()
+
+    def test_query_kwarg_filters_at_db_level(self, durham_agency, year_2023):
+        """A `query` Q object applies DB-level filtering on both branches."""
+        _create_stops_and_census(durham_agency, year_2023)
+
+        from django.db.models import Q
+
+        # Matching group_name returns rows; non-matching excludes everything.
+        year_df = likelihood_comparison(
+            level="agency", year=2023, query=Q(group_name__icontains="Durham")
+        )
+        assert not year_df.empty
+        assert set(year_df["group_name"]) == {"Durham Police Department"}
+
+        assert likelihood_comparison(
+            level="agency", year=2023, query=Q(group_name__icontains="Nonexistent")
+        ).empty
+
+        # The no-year branch honors the query too and still computes baseline.
+        no_year_df = likelihood_comparison(level="agency", query=Q(group_name__icontains="Durham"))
+        assert not no_year_df.empty
+        assert set(no_year_df["group_name"]) == {"Durham Police Department"}
+        white = no_year_df[no_year_df["driver_race"] == "White"]
+        assert not white.empty
+        for _, row in white.iterrows():
+            assert row["times_likely"] == pytest.approx(1.0)
+
+
+@pytest.mark.django_db(databases=["default", "traffic_stops_nc"])
+class TestActiveSmallPopulationAgencies:
+    """Audit helper for sub-threshold agencies actively reporting stops (issue #411)."""
+
+    def _make_small_agency(self, name, acs_id, year_date, black_stops=10, white_stops=20):
+        agency = AgencyFactory(name=name, census_profile_id=acs_id)
+        NCCensusProfileFactory(
+            acs_id=acs_id,
+            race="Black",
+            population=500,
+            population_total=5000,  # below 10k threshold
+            year=year_date.year,
+        )
+        NCCensusProfileFactory(
+            acs_id=acs_id,
+            race="White",
+            population=2000,
+            population_total=5000,
+            year=year_date.year,
+        )
+        if black_stops:
+            PersonFactory.create_batch(
+                black_stops,
+                race=DriverRace.BLACK,
+                ethnicity=DriverEthnicity.NON_HISPANIC,
+                stop__agency=agency,
+                stop__date=year_date,
+            )
+        if white_stops:
+            PersonFactory.create_batch(
+                white_stops,
+                race=DriverRace.WHITE,
+                ethnicity=DriverEthnicity.NON_HISPANIC,
+                stop__agency=agency,
+                stop__date=year_date,
+            )
+        return agency
+
+    def test_lists_sub_threshold_reporting_agency(self, year_2023):
+        agency = self._make_small_agency("Tiny Town PD", "1600000US0000001", year_2023)
+        StopSummary.refresh()
+        LikelihoodOfStopSummary.refresh()
+
+        df = active_small_population_agencies(year=2023)
+        assert list(df.columns) == [
+            "group_id",
+            "group_name",
+            "total_population",
+            "total_stops",
+        ]
+        rows = df[df["group_id"] == str(agency.id)]
+        assert len(rows) == 1  # one agency-level row despite per-race view rows
+        assert rows.iloc[0]["total_population"] == 5000
+        assert rows.iloc[0]["total_stops"] == 30
+
+    def test_excludes_sheriff_agencies(self, year_2023):
+        self._make_small_agency("Tiny County Sheriff", "1600000US0000002", year_2023)
+        StopSummary.refresh()
+        LikelihoodOfStopSummary.refresh()
+
+        df = active_small_population_agencies(year=2023)
+        assert df.empty or not df["group_name"].str.contains("Sheriff").any()
+
+    def test_defaults_to_most_recent_year(self, year_2023):
+        agency = self._make_small_agency("Tiny Town PD", "1600000US0000001", year_2023)
+        StopSummary.refresh()
+        LikelihoodOfStopSummary.refresh()
+
+        df = active_small_population_agencies()
+        assert str(agency.id) in df["group_id"].values
 
 
 @pytest.mark.django_db(databases=["default", "traffic_stops_nc"])

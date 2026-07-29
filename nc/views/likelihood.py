@@ -2,7 +2,7 @@ import django_filters
 import numpy as np
 import pandas as pd
 
-from django.db.models import Avg, Min, Sum
+from django.db.models import Avg, Min, Q, Sum
 from django.db.models.functions import ExtractYear
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -202,7 +202,10 @@ def available_likelihood_years() -> list[int]:
 
 
 def likelihood_comparison(
-    level="agency", year=None, status: str | None = AgencyLikelihoodStatus.ACTIVE
+    level="agency",
+    year=None,
+    status: str | None = AgencyLikelihoodStatus.ACTIVE,
+    query: Q | None = None,
 ) -> pd.DataFrame:
     """
     Query LikelihoodOfStopSummary view for comparative stop likelihood data.
@@ -213,6 +216,13 @@ def likelihood_comparison(
             ``available_likelihood_years()``, returns an empty DataFrame.
         status: filter to rows with this status value. Pass ``None`` to return
             all rows regardless of status. Defaults to ``AgencyLikelihoodStatus.ACTIVE``.
+        query: optional ``Q`` object applied to the base queryset for additional
+            DB-level filtering (e.g. ``~Q(group_name__icontains="Sheriff")``). It is
+            applied to both the year and no-year branches. Do **not** filter on
+            ``driver_race`` here for the no-year path: that branch recomputes
+            ``baseline_rate`` by merging each group's White row, so removing White
+            rows at the DB level would break the baseline calculation. Filter race
+            in Pandas after this function returns instead.
 
     Returns:
         DataFrame with columns: level, group_id, group_name, census_profile_id,
@@ -222,45 +232,47 @@ def likelihood_comparison(
     qs = LikelihoodOfStopSummary.objects.filter(level=level)
     if status is not None:
         qs = qs.filter(status=status)
+    if query is not None:
+        qs = qs.filter(query)
     if year is not None:
         if int(year) not in available_likelihood_years():
             return pd.DataFrame()
-        df = pd.DataFrame(
-            qs.filter(year=year).values(
-                "level",
-                "group_id",
-                "group_name",
-                "census_profile_id",
-                "year",
-                "driver_race",
-                "population",
-                "total_population",
-                "stops",
-                "total_stops",
-                "stop_rate",
-                "baseline_rate",
-                "stop_rate_ratio",
-                "times_likely",
-                "status",
-                "latitude",
-                "longitude",
-            )
+        qs = qs.filter(year=year).values(
+            "level",
+            "group_id",
+            "group_name",
+            "census_profile_id",
+            "year",
+            "driver_race",
+            "population",
+            "total_population",
+            "stops",
+            "total_stops",
+            "stop_rate",
+            "baseline_rate",
+            "stop_rate_ratio",
+            "times_likely",
+            "status",
+            "latitude",
+            "longitude",
         )
+        df = pd.DataFrame(qs, columns=list(qs.query.values_select))
     else:
         # Aggregate across all years in the database rather than fetching every
         # per-year row and grouping in Python. This avoids transferring millions
         # of rows over the wire.
+        qs = qs.values(
+            "level", "group_id", "group_name", "census_profile_id", "driver_race", "status"
+        ).annotate(
+            population=Avg("population"),
+            total_population=Avg("total_population"),
+            stops=Avg("stops"),
+            total_stops=Avg("total_stops"),
+            latitude=Min("latitude"),
+            longitude=Min("longitude"),
+        )
         df = pd.DataFrame(
-            qs.values(
-                "level", "group_id", "group_name", "census_profile_id", "driver_race", "status"
-            ).annotate(
-                population=Avg("population"),
-                total_population=Avg("total_population"),
-                stops=Avg("stops"),
-                total_stops=Avg("total_stops"),
-                latitude=Min("latitude"),
-                longitude=Min("longitude"),
-            )
+            qs, columns=list(qs.query.values_select) + list(qs.query.annotation_select)
         )
     if df.empty:
         return df
@@ -331,15 +343,64 @@ def excluded_police_agencies(year: int = None, race: str = None) -> pd.DataFrame
     Returns:
         DataFrame with the same columns as likelihood_comparison() plus status.
     """
-    df = likelihood_comparison(level="agency", year=year, status=None)
+    df = likelihood_comparison(
+        level="agency",
+        year=year,
+        status=None,
+        query=~Q(group_name__icontains="Sheriff") & ~Q(status=AgencyLikelihoodStatus.ACTIVE),
+    )
     if df.empty:
         return df
-    mask = ~df["group_name"].str.contains("Sheriff", case=False) & (
-        df["status"] != AgencyLikelihoodStatus.ACTIVE
-    )
     if race:
-        mask = mask & (df["driver_race"] == race)
-    return df[mask].reset_index(drop=True)
+        df = df[df["driver_race"] == race]
+    return df.reset_index(drop=True)
+
+
+def active_small_population_agencies(year: int = None) -> pd.DataFrame:
+    """
+    Audit helper: non-sheriff agencies below the 10,000-population threshold
+    (status = small_population) that are actively submitting stop data.
+
+    Unlike ``excluded_police_agencies()``, this excludes agencies flagged only
+    for ``small_race_population`` (a different exclusion reason) and keeps a
+    single agency-level row (the underlying view is per-race). Only agencies
+    with at least one recorded stop in the target year are returned.
+
+    Args:
+        year: year to audit. Defaults to the most recent census year from
+            ``available_likelihood_years()``.
+
+    Returns:
+        DataFrame sorted by ``total_stops`` descending with columns:
+        group_id, group_name, total_population, total_stops.
+    """
+    if year is None:
+        years = available_likelihood_years()
+        if not years:
+            return pd.DataFrame(
+                columns=["group_id", "group_name", "total_population", "total_stops"]
+            )
+        year = years[0]
+
+    df = likelihood_comparison(
+        level="agency",
+        year=year,
+        status=None,
+        query=~Q(group_name__icontains="Sheriff")
+        & Q(status=AgencyLikelihoodStatus.SMALL_POPULATION),
+    )
+    if df.empty:
+        return pd.DataFrame(columns=["group_id", "group_name", "total_population", "total_stops"])
+
+    # Collapse per-race rows to one agency-level row (population/stop totals are
+    # agency-level and repeated across races).
+    agencies = (
+        df.groupby(["group_id", "group_name"], as_index=False)
+        .agg(total_population=("total_population", "max"), total_stops=("total_stops", "max"))
+        .astype({"total_population": int, "total_stops": int})
+    )
+    agencies = agencies[agencies["total_stops"] > 0]
+    return agencies.sort_values("total_stops", ascending=False).reset_index(drop=True)
 
 
 def no_census_agencies() -> pd.DataFrame:
