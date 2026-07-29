@@ -221,6 +221,32 @@ class TestLikelihoodComparison:
         assert not small_rows.empty
         assert (small_rows["status"] == AgencyLikelihoodStatus.SMALL_POPULATION).all()
 
+    def test_query_kwarg_filters_at_db_level(self, durham_agency, year_2023):
+        """A `query` Q object applies DB-level filtering on both branches."""
+        _create_stops_and_census(durham_agency, year_2023)
+
+        from django.db.models import Q
+
+        # Matching group_name returns rows; non-matching excludes everything.
+        year_df = likelihood_comparison(
+            level="agency", year=2023, query=Q(group_name__icontains="Durham")
+        )
+        assert not year_df.empty
+        assert set(year_df["group_name"]) == {"Durham Police Department"}
+
+        assert likelihood_comparison(
+            level="agency", year=2023, query=Q(group_name__icontains="Nonexistent")
+        ).empty
+
+        # The no-year branch honors the query too and still computes baseline.
+        no_year_df = likelihood_comparison(level="agency", query=Q(group_name__icontains="Durham"))
+        assert not no_year_df.empty
+        assert set(no_year_df["group_name"]) == {"Durham Police Department"}
+        white = no_year_df[no_year_df["driver_race"] == "White"]
+        assert not white.empty
+        for _, row in white.iterrows():
+            assert row["times_likely"] == pytest.approx(1.0)
+
 
 @pytest.mark.django_db(databases=["default", "traffic_stops_nc"])
 class TestActiveSmallPopulationAgencies:
