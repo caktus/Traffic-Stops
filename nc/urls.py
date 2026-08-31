@@ -129,4 +129,29 @@ urlpatterns = [  # noqa
         views.LikelihoodStopView.as_view(),
         name="likelihood-of-stops",
     ),
+    path(
+        "api/disparities/years/",
+        views.DisparityYearsView.as_view(),
+        name="disparity-years",
+    ),
+    path(
+        "api/disparities/agencies/",
+        views.TopAgenciesView.as_view(),
+        name="disparity-agencies",
+    ),
+    path(
+        "api/disparities/sheriffs/",
+        views.SheriffDisparityView.as_view(),
+        name="disparity-sheriffs",
+    ),
+    path(
+        "api/disparities/police/",
+        views.PoliceDisparityView.as_view(),
+        name="disparity-police",
+    ),
+    path(
+        "api/disparities/parity/",
+        views.ParityView.as_view(),
+        name="disparity-parity",
+    ),
 ]

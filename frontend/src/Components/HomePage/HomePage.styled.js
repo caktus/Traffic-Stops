@@ -45,6 +45,26 @@ export const MainContent = styled.div`
   }
 `;
 
+export const LeftColumn = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+
+  @media (${smallerThanTabletLandscape}) {
+    width: 100%;
+  }
+`;
+
+export const RightColumn = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+
+  @media (${smallerThanTabletLandscape}) {
+    width: 100%;
+  }
+`;
+
 export const About = styled.aside`
   flex: 1;
   margin-bottom: 2em;
@@ -178,3 +198,50 @@ export const ButtonInner = styled.span`
 `;
 
 export const ButtonIcon = styled(FJIcon)``;
+
+export const DisparityCTA = styled.div`
+  flex: 1;
+  margin: 2em 0;
+  padding: 1.5em 2em;
+  background: ${(props) => props.theme.colors.greySemi};
+  @media (${smallerThanTabletLandscape}) {
+    margin: 2em auto;
+    width: 90%;
+  }
+`;
+
+export const DisparitySubHeading = styled.p`
+  font-size: 18px;
+  font-weight: bold;
+  color: ${(props) => props.theme.colors.primaryDark};
+  margin: 0.75em 0;
+`;
+
+export const DisparityList = styled.ol`
+  list-style: none;
+  padding: 0;
+  margin: 1em 0;
+`;
+
+export const DisparityListItem = styled.li`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 0.5em 0;
+  border-bottom: 1px solid ${(props) => props.theme.colors.grey};
+  font-size: 16px;
+
+  & span:last-child {
+    font-weight: bold;
+    white-space: nowrap;
+    margin-left: 1em;
+  }
+`;
+
+export const DisparityNote = styled.p`
+  font-size: 13px;
+  font-style: italic;
+  color: ${(props) => props.theme.colors.textLight};
+  margin: 1em 0;
+`;

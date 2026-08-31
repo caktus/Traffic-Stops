@@ -11,6 +11,7 @@ from nc.constants import STATEWIDE
 from nc.models import (
     Agency,
     AgencyLikelihoodStatus,
+    DriverRace,
     LikelihoodOfStopSummary,
     NCCensusProfile,
     StopSummary,
@@ -424,3 +425,189 @@ def no_census_agencies() -> pd.DataFrame:
     df["group_id"] = df["group_id"].astype(str)
     df["exclusion_reason"] = "No census data"
     return df.reset_index(drop=True)
+
+
+# --- Agency-Level Stop Disparities dashboard API ------------------------------
+
+# Disparity color categories keyed on times_likely, mirroring the notebook.
+DISPARITY_COLORS = {
+    "≤ 1.0 (Equity)": "#2ecc71",
+    "1.0 - 2.0": "#f1c40f",
+    "2.0 - 3.0": "#e67e22",
+    "≥ 3.0 (Severe)": "#e74c3c",
+}
+
+
+def disparity_category(times_likely: float) -> str:
+    """Bucket a ``times_likely`` value into a disparity category label."""
+    if times_likely <= 1.0:
+        return "≤ 1.0 (Equity)"
+    elif times_likely <= 2.0:
+        return "1.0 - 2.0"
+    elif times_likely <= 3.0:
+        return "2.0 - 3.0"
+    return "≥ 3.0 (Severe)"
+
+
+def _clean_year(request) -> int | None:
+    """Return the ``year`` query param as an int, or None when absent/invalid."""
+    year = request.query_params.get("year")
+    return int(year) if year and year.isdigit() else None
+
+
+def _selected_race(request) -> str:
+    """Return the ``race`` query param, defaulting to Black."""
+    return request.query_params.get("race", DriverRace.BLACK.label)
+
+
+class DisparityYearsView(APIView):
+    """Census years available for the disparities dashboard filters."""
+
+    def get(self, request):
+        return Response({"years": available_likelihood_years()})
+
+
+class TopAgenciesView(APIView):
+    """Top-N agencies where the selected race is most likely to be stopped."""
+
+    def get(self, request):
+        year = _clean_year(request)
+        race = _selected_race(request)
+        limit = request.query_params.get("limit")
+        df = likelihood_comparison(level="agency", year=year)
+        records = []
+        if not df.empty:
+            df = df[df["driver_race"] == race]
+            if limit and limit.isdigit():
+                df = df.head(int(limit))
+            cols = [
+                "group_id",
+                "group_name",
+                "times_likely",
+                "stop_rate_ratio",
+                "stops",
+                "population",
+            ]
+            records = df[cols].round(2).to_dict(orient="records")
+        return Response({"race": race, "year": year, "agencies": records})
+
+
+class SheriffDisparityView(APIView):
+    """Sheriff agency stop-rate ratios by county for the county choropleth."""
+
+    def get(self, request):
+        year = _clean_year(request)
+        race = _selected_race(request)
+        df = likelihood_comparison(
+            level="agency",
+            year=year,
+            status=None,
+            query=Q(group_name__icontains="Sheriff"),
+        )
+        records = []
+        if not df.empty:
+            df = df[df["driver_race"] == race].copy()
+            df["fips3"] = df["census_profile_id"].str[-3:]
+            cols = [
+                "group_id",
+                "group_name",
+                "fips3",
+                "times_likely",
+                "stop_rate_ratio",
+                "stops",
+                "population",
+                "total_population",
+                "status",
+            ]
+            records = df[cols].round(2).to_dict(orient="records")
+        return Response({"race": race, "year": year, "sheriffs": records})
+
+
+class PoliceDisparityView(APIView):
+    """Non-sheriff police agencies with coordinates for the bubble map."""
+
+    min_stops = 100
+
+    def get(self, request):
+        year = _clean_year(request)
+        race = _selected_race(request)
+        df = likelihood_comparison(level="agency", year=year)
+        records = []
+        if not df.empty:
+            police = df[
+                ~df["group_name"].str.contains("Sheriff", case=False)
+                & (df["driver_race"] == race)
+                & df["latitude"].notna()
+                & df["longitude"].notna()
+            ].copy()
+            police["stops"] = pd.to_numeric(police["stops"], errors="coerce").fillna(0).astype(int)
+            police["total_stops"] = (
+                pd.to_numeric(police["total_stops"], errors="coerce").fillna(0).astype(int)
+            )
+            police = police[police["stops"] >= self.min_stops].copy()
+            police["disparity_category"] = police["times_likely"].apply(disparity_category)
+            police["small_population"] = False
+            frames = [police]
+            # Sub-threshold (< 10,000 population) agencies that voluntarily report.
+            excluded = excluded_police_agencies(year=year, race=race)
+            if not excluded.empty:
+                small = excluded[
+                    (excluded["status"] == AgencyLikelihoodStatus.SMALL_POPULATION)
+                    & excluded["latitude"].notna()
+                    & excluded["longitude"].notna()
+                ].copy()
+                small["stops"] = (
+                    pd.to_numeric(small["stops"], errors="coerce").fillna(0).astype(int)
+                )
+                small["total_stops"] = (
+                    pd.to_numeric(small["total_stops"], errors="coerce").fillna(0).astype(int)
+                )
+                small = small[small["stops"] >= self.min_stops].copy()
+                if not small.empty:
+                    small["disparity_category"] = small["times_likely"].apply(disparity_category)
+                    small["small_population"] = True
+                    frames.append(small)
+            combined = pd.concat(frames, ignore_index=True)
+            cols = [
+                "group_id",
+                "group_name",
+                "latitude",
+                "longitude",
+                "times_likely",
+                "stop_rate_ratio",
+                "stops",
+                "total_stops",
+                "population",
+                "disparity_category",
+                "small_population",
+            ]
+            records = combined[cols].round(2).to_dict(orient="records")
+        return Response({"race": race, "year": year, "agencies": records})
+
+
+class ParityView(APIView):
+    """Population share vs. stop share for the parity scatter plot."""
+
+    def get(self, request):
+        year = _clean_year(request)
+        race = _selected_race(request)
+        df = likelihood_comparison(level="agency", year=year)
+        records = []
+        if not df.empty:
+            parity = parity_data(df)
+            races = {race, DriverRace.WHITE.label}
+            parity = parity[parity["driver_race"].isin(races)]
+            cols = [
+                "group_id",
+                "agency_name",
+                "driver_race",
+                "population",
+                "total_population",
+                "stops",
+                "pop_share",
+                "stop_share",
+                "excess_stops",
+                "stop_rate_ratio",
+            ]
+            records = parity[cols].round(4).to_dict(orient="records")
+        return Response({"race": race, "year": year, "agencies": records})
