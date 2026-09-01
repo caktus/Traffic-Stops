@@ -1,31 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Scatter } from 'react-chartjs-2';
 import { useTheme } from 'styled-components';
 
-import axios from '../../Services/Axios';
 import { getDisparityParityURL } from '../../Services/endpoints';
 import { raceColor } from './disparityConstants';
+import useDisparityData from './useDisparityData';
 import * as S from './AgencyDisparities.styled';
 
 export default function ParityScatter({ year, race }) {
   const theme = useTheme();
-  const [rows, setRows] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-
-  useEffect(() => {
-    let active = true;
-    setLoading(true);
-    setError(false);
-    axios
-      .get(getDisparityParityURL({ year, race }))
-      .then((res) => active && setRows(res.data.agencies || []))
-      .catch(() => active && setError(true))
-      .finally(() => active && setLoading(false));
-    return () => {
-      active = false;
-    };
-  }, [year, race]);
+  const { rows, loading, error } = useDisparityData(getDisparityParityURL({ year, race }));
 
   if (loading) return <S.Loading>Loading chart…</S.Loading>;
   if (error) return <S.FetchError>Unable to load parity data. Please try again.</S.FetchError>;

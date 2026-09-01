@@ -1,36 +1,24 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { ComposableMap, Geographies, Geography } from 'react-simple-maps';
+import React, { useMemo, useState } from 'react';
+import { Geographies, Geography } from 'react-simple-maps';
 import { scaleSequential } from 'd3-scale';
 import { interpolateRdYlGn } from 'd3-scale-chromatic';
 
-import axios from '../../Services/Axios';
 import { getDisparitySheriffsURL, COUNTIES_GEOJSON_URL } from '../../Services/endpoints';
 import { BELOW_THRESHOLD_COLOR, NO_DATA_COLOR } from './disparityConstants';
 import useCountiesGeojson from './useCountiesGeojson';
+import useDisparityData from './useDisparityData';
+import { NcMap, MapTooltip } from './MapPrimitives';
 import * as S from './AgencyDisparities.styled';
 
 const BELOW_STATUSES = ['small_population', 'small_race_population'];
 
 export default function SheriffCountyMap({ year, race }) {
   const geojson = useCountiesGeojson(COUNTIES_GEOJSON_URL);
-  const [rows, setRows] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const { rows, loading, error } = useDisparityData(
+    getDisparitySheriffsURL({ year, race }),
+    'sheriffs'
+  );
   const [tooltip, setTooltip] = useState(null);
-
-  useEffect(() => {
-    let active = true;
-    setLoading(true);
-    setError(false);
-    axios
-      .get(getDisparitySheriffsURL({ year, race }))
-      .then((res) => active && setRows(res.data.sheriffs || []))
-      .catch(() => active && setError(true))
-      .finally(() => active && setLoading(false));
-    return () => {
-      active = false;
-    };
-  }, [year, race]);
 
   const byFips = useMemo(() => {
     const lookup = {};
@@ -79,36 +67,28 @@ export default function SheriffCountyMap({ year, race }) {
 
   return (
     <div>
-      <S.MapWrapper>
-        <ComposableMap
-          projection="geoMercator"
-          projectionConfig={{ center: [-79.2, 35.5], scale: 3800 }}
-          width={800}
-          height={380}
-          style={{ width: '100%', height: 'auto' }}
-        >
-          <Geographies geography={geojson}>
-            {({ geographies }) =>
-              geographies.map((geo) => (
-                <Geography
-                  key={geo.rsmKey}
-                  geography={geo}
-                  fill={fillFor(geo.properties.FIPS)}
-                  stroke="#ffffff"
-                  strokeWidth={0.5}
-                  onMouseMove={(evt) => handleMove(evt, geo)}
-                  onMouseLeave={() => setTooltip(null)}
-                  style={{
-                    default: { outline: 'none' },
-                    hover: { outline: 'none', opacity: 0.85 },
-                    pressed: { outline: 'none' },
-                  }}
-                />
-              ))
-            }
-          </Geographies>
-        </ComposableMap>
-      </S.MapWrapper>
+      <NcMap>
+        <Geographies geography={geojson}>
+          {({ geographies }) =>
+            geographies.map((geo) => (
+              <Geography
+                key={geo.rsmKey}
+                geography={geo}
+                fill={fillFor(geo.properties.FIPS)}
+                stroke="#ffffff"
+                strokeWidth={0.5}
+                onMouseMove={(evt) => handleMove(evt, geo)}
+                onMouseLeave={() => setTooltip(null)}
+                style={{
+                  default: { outline: 'none' },
+                  hover: { outline: 'none', opacity: 0.85 },
+                  pressed: { outline: 'none' },
+                }}
+              />
+            ))
+          }
+        </Geographies>
+      </NcMap>
       <S.Legend>
         <S.LegendItem>
           <S.Swatch color="#1a9850" /> Lower disparity
@@ -123,13 +103,7 @@ export default function SheriffCountyMap({ year, race }) {
           <S.Swatch color={NO_DATA_COLOR} /> No stop data reported
         </S.LegendItem>
       </S.Legend>
-      {tooltip && (
-        <S.Tooltip style={{ left: tooltip.x + 12, top: tooltip.y + 12 }}>
-          <strong>{tooltip.title}</strong>
-          <br />
-          {tooltip.body}
-        </S.Tooltip>
-      )}
+      <MapTooltip tooltip={tooltip} />
     </div>
   );
 }

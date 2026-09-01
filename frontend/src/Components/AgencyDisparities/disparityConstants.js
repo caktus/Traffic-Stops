@@ -18,8 +18,6 @@ export const DISPARITY_COLORS = {
   '≥ 3.0 (Severe)': '#e74c3c',
 };
 
-export const DISPARITY_CATEGORY_ORDER = Object.keys(DISPARITY_COLORS);
-
 // Distinct colors for county choropleth layers that are not colored by ratio.
 export const BELOW_THRESHOLD_COLOR = '#8e6fb0';
 export const NO_DATA_COLOR = '#cccccc';

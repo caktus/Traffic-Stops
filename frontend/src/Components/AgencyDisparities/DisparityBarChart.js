@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Bar } from 'react-chartjs-2';
 import { useTheme } from 'styled-components';
 
-import axios from '../../Services/Axios';
 import { getDisparityAgenciesURL } from '../../Services/endpoints';
 import { raceColor } from './disparityConstants';
+import useDisparityData from './useDisparityData';
 import * as S from './AgencyDisparities.styled';
 
 // Draws a dashed vertical baseline at times_likely == 1.0 (parity with white drivers).
@@ -29,25 +29,9 @@ const baselinePlugin = {
 
 export default function DisparityBarChart({ year, race }) {
   const theme = useTheme();
-  const [rows, setRows] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-
-  useEffect(() => {
-    let active = true;
-    setLoading(true);
-    setError(false);
-    axios
-      .get(getDisparityAgenciesURL({ year, race, limit: 20 }))
-      .then((res) => {
-        if (active) setRows(res.data.agencies || []);
-      })
-      .catch(() => active && setError(true))
-      .finally(() => active && setLoading(false));
-    return () => {
-      active = false;
-    };
-  }, [year, race]);
+  const { rows, loading, error } = useDisparityData(
+    getDisparityAgenciesURL({ year, race, limit: 20 })
+  );
 
   if (loading) return <S.Loading>Loading chart…</S.Loading>;
   if (error) return <S.FetchError>Unable to load agency ranking. Please try again.</S.FetchError>;

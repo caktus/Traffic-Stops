@@ -19,6 +19,7 @@ import {
 // AJAX
 import axios from '../../Services/Axios';
 import { STATE_FACTS_URL, getDisparityAgenciesURL } from '../../Services/endpoints';
+import useDisparityData from '../AgencyDisparities/useDisparityData';
 
 // State
 import fetchReducer, {
@@ -38,7 +39,9 @@ import * as ChartHeaderStyles from '../Charts/ChartSections/ChartHeader.styled';
 
 function HomePage() {
   const [{ data, loading, errors }, dispatch] = React.useReducer(fetchReducer, initialState);
-  const [topAgencies, setTopAgencies] = React.useState([]);
+  const { rows: topAgencies } = useDisparityData(
+    getDisparityAgenciesURL({ race: 'Black', limit: 5 })
+  );
   const history = useHistory();
   const theme = useTheme();
 
@@ -57,17 +60,6 @@ function HomePage() {
 
   useEffect(() => {
     _fetchMetaData();
-  }, []);
-
-  useEffect(() => {
-    let active = true;
-    axios
-      .get(getDisparityAgenciesURL({ race: 'Black', limit: 5 }))
-      .then((res) => active && setTopAgencies(res.data.agencies || []))
-      .catch(() => {});
-    return () => {
-      active = false;
-    };
   }, []);
 
   return (
