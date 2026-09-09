@@ -43,14 +43,17 @@ export default function PoliceBubbleMap({ year, race }) {
   if (loading || !geojson) return <S.Loading height="500px">Loading map…</S.Loading>;
 
   const handleMove = (evt, row) => {
+    const star = row.small_population ? '*' : '';
+    let body = `${row.times_likely.toFixed(2)}×${star} as likely · ${row.disparity_category}
+Stops (${race}): ${row.stops} · Total: ${row.total_stops}`;
+    if (row.small_population) {
+      body += '\n*Small population (< 10,000) — ratio may be less statistically reliable.';
+    }
     setTooltip({
       x: evt.clientX,
       y: evt.clientY,
       title: row.group_name,
-      body: `${row.times_likely.toFixed(2)}× as likely · ${row.disparity_category}
-Stops (${race}): ${row.stops} · Total: ${row.total_stops}${
-        row.small_population ? ' · < 10,000 population' : ''
-      }`,
+      body,
     });
   };
 
