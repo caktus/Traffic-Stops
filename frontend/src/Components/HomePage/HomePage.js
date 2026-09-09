@@ -135,7 +135,8 @@ function HomePage() {
               )}
             </S.AboutContent>
           </S.About>
-
+        </S.LeftColumn>
+        <S.MiddleColumn>
           <S.DeptCTA>
             <S.SubHeading>View Data by Department</S.SubHeading>
             <P size={SIZES[1]}>Choose a police or sheriff’s department to see:</P>
@@ -177,7 +178,37 @@ function HomePage() {
               </FjButton>
             </S.ButtonWrapper>
           </S.DeptCTA>
-        </S.LeftColumn>
+          <S.StopCTA>
+            <S.SubHeading>Find a Stop</S.SubHeading>
+            <P size={SIZES[1]}>
+              Have you or someone you know been subjected to an unfair stop or search?
+            </P>
+            <P size={SIZES[1]}>
+              Enter the stop information to view all data associated with that particular officer.
+            </P>
+            <S.ButtonWrapper>
+              <FjButton
+                onClick={() => history.push(FIND_A_STOP_SLUG)}
+                variant="positive"
+                bg={theme.colors.secondary}
+                width="100%"
+                py="2"
+                fontSize="3"
+                fontWeight="bold"
+              >
+                <S.ButtonInner>
+                  FIND A STOP
+                  <S.ButtonIcon
+                    icon={ICONS.arrowRight}
+                    fill={theme.colors.white}
+                    width={32}
+                    height={32}
+                  />
+                </S.ButtonInner>
+              </FjButton>
+            </S.ButtonWrapper>
+          </S.StopCTA>
+        </S.MiddleColumn>
         <S.RightColumn>
           <S.DisparityCTA>
             <S.SubHeading>Where are traffic stop disparities greatest in NC?</S.SubHeading>
@@ -220,36 +251,6 @@ function HomePage() {
               </FjButton>
             </S.ButtonWrapper>
           </S.DisparityCTA>
-          <S.StopCTA>
-            <S.SubHeading>Find a Stop</S.SubHeading>
-            <P size={SIZES[1]}>
-              Have you or someone you know been subjected to an unfair stop or search?
-            </P>
-            <P size={SIZES[1]}>
-              Enter the stop information to view all data associated with that particular officer.
-            </P>
-            <S.ButtonWrapper>
-              <FjButton
-                onClick={() => history.push(FIND_A_STOP_SLUG)}
-                variant="positive"
-                bg={theme.colors.secondary}
-                width="100%"
-                py="2"
-                fontSize="3"
-                fontWeight="bold"
-              >
-                <S.ButtonInner>
-                  FIND A STOP
-                  <S.ButtonIcon
-                    icon={ICONS.arrowRight}
-                    fill={theme.colors.white}
-                    width={32}
-                    height={32}
-                  />
-                </S.ButtonInner>
-              </FjButton>
-            </S.ButtonWrapper>
-          </S.StopCTA>
         </S.RightColumn>
       </S.MainContent>
     </S.HomePage>

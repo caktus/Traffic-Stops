@@ -55,6 +55,16 @@ export const LeftColumn = styled.div`
   }
 `;
 
+export const MiddleColumn = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+
+  @media (${smallerThanTabletLandscape}) {
+    width: 100%;
+  }
+`;
+
 export const RightColumn = styled.div`
   flex: 1;
   display: flex;
@@ -160,21 +170,21 @@ export const ViewAllIcon = styled(FJIcon)`
 
 export const DeptCTA = styled.div`
   flex: 1;
-  margin: 2em 0;
+  margin: 2em 0 0.5em;
   padding: 1em 2em 0.5em;
   background: ${(props) => props.theme.colors.greySemi};
   @media (${smallerThanTabletLandscape}) {
-    margin: 2em auto;
+    margin: 2em auto 0.5em;
   }
 `;
 
 export const StopCTA = styled.div`
   flex: 1;
-  margin: 2em 0;
+  margin: 0.5em 0 2em;
   padding: 1em 2em 0.5em;
-  background: ${(props) => props.theme.colors.grey};
+  background: ${(props) => props.theme.colors.greySemi};
   @media (${smallerThanTabletLandscape}) {
-    margin: 0 auto 2em;
+    margin: 0.5em auto 2em;
   }
 `;
 
