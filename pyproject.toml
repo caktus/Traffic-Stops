@@ -13,7 +13,7 @@ dependencies = [
     "census>=0.8.24",
     "click>=8.2.0",
     "dj-database-url>=3.0.0",
-    "django>=5.2.8,<6.0",
+    "django>=5.2.15,<6.0",
     "django-ckeditor-5>=0.2.15",
     "django-click>=2.4.1",
     "django-crispy-forms>=2.4.0",
@@ -25,11 +25,11 @@ dependencies = [
     "djangorestframework>=3.16",
     "dotenv>=0.9.9",
     "httpx[http2]>=0.28.1",
-    "marimo>=0.23.2",
+    "marimo>=0.23.9",
     "pandas>=2.3",
     "plotly>=6.5.2",
     "psycopg>=3.2.9",
-    "requests>=2.32.3",
+    "requests>=2.33.0",
     "us>=3.2.0",
     "whitenoise>=6.9.0",
 ]
@@ -83,12 +83,12 @@ dev = [
     "factory-boy>=3.3.3",
     "invoke-kubesae>=0.1.0",
     "ipython>=8.32.0",
-    "jupyterlab>=4.5.3",
+    "jupyterlab>=4.5.10",
     "kubernetes==35.*",
     "kubernetes-validate==1.35.*",
     "openshift>=0.13.2",
     "pre-commit>=4.1.0",
-    "pytest>=8.3.3",
+    "pytest>=9.1.1",
     "pytest-cov>=6.0.0",
     "pytest-django>=4.9.0",
     "pyyaml>=6.0.2",
@@ -100,5 +100,5 @@ dev = [
     # Python 3.13 is not supported by urllib3 2.4.0
     # https://github.com/crate/crate-python/issues/708
     # https://github.com/aws/containers-roadmap/issues/2638
-    "urllib3<2.4.0",
+    "urllib3<2.8.0",
 ]
