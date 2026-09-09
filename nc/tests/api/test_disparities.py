@@ -101,10 +101,16 @@ class TestTopAgencies:
         expected_keys = {
             "group_id",
             "group_name",
-            "times_likely",
-            "stop_rate_ratio",
-            "stops",
+            "agency_name_race",
+            "driver_race",
             "population",
+            "total_population",
+            "stops",
+            "total_stops",
+            "stop_rate",
+            "baseline_rate",
+            "stop_rate_ratio",
+            "times_likely",
         }
         assert expected_keys == set(agencies[0].keys())
 
@@ -165,6 +171,7 @@ class TestParity:
             "population",
             "total_population",
             "stops",
+            "total_stops",
             "pop_share",
             "stop_share",
             "excess_stops",

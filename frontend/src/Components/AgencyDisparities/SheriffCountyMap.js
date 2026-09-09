@@ -4,13 +4,32 @@ import { scaleSequential } from 'd3-scale';
 import { interpolateRdYlGn } from 'd3-scale-chromatic';
 
 import { getDisparitySheriffsURL, COUNTIES_GEOJSON_URL } from '../../Services/endpoints';
-import { BELOW_THRESHOLD_COLOR, NO_DATA_COLOR } from './disparityConstants';
+import {
+  BELOW_THRESHOLD_COLOR,
+  NO_DATA_COLOR,
+  fmt,
+  agencySearchRateLink,
+} from './disparityConstants';
 import useCountiesGeojson from './useCountiesGeojson';
 import useDisparityData from './useDisparityData';
+import DisparityTable from './DisparityTable';
 import { NcMap, MapTooltip } from './MapPrimitives';
 import * as S from './AgencyDisparities.styled';
 
 const BELOW_STATUSES = ['small_population', 'small_race_population'];
+
+const columns = [
+  { key: 'group_name', label: 'Agency', link: agencySearchRateLink },
+  { key: 'driver_race', label: 'Race' },
+  { key: 'population', label: 'Population', numeric: true, format: fmt.int },
+  { key: 'total_population', label: 'Total population', numeric: true, format: fmt.int },
+  { key: 'stops', label: 'Stops', numeric: true, format: fmt.int },
+  { key: 'total_stops', label: 'Total stops', numeric: true, format: fmt.int },
+  { key: 'stop_rate', label: 'Stop rate', numeric: true, format: fmt.ratio },
+  { key: 'baseline_rate', label: 'Baseline rate', numeric: true, format: fmt.ratio },
+  { key: 'stop_rate_ratio', label: 'Stop rate ratio', numeric: true, format: fmt.ratio },
+  { key: 'times_likely', label: 'Times as likely', numeric: true, format: fmt.times },
+];
 
 export default function SheriffCountyMap({ year, race }) {
   const geojson = useCountiesGeojson(COUNTIES_GEOJSON_URL);
@@ -104,6 +123,7 @@ export default function SheriffCountyMap({ year, race }) {
         </S.LegendItem>
       </S.Legend>
       <MapTooltip tooltip={tooltip} />
+      <DisparityTable rows={rows} columns={columns} />
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 
 import FullWidthPage from '../../styles/StyledComponents/FullWidthPage';
 import { H1, H2 } from '../../styles/StyledComponents/Typography';
@@ -115,5 +116,62 @@ export const FetchError = styled.p`
 `;
 
 export const BottomLink = styled.div`
+  display: flex;
+  justify-content: center;
   margin-top: 3em;
+  margin-bottom: 3em;
+`;
+
+export const TableDisclosure = styled.details`
+  margin-top: 1em;
+`;
+
+export const TableSummary = styled.summary`
+  cursor: pointer;
+  color: ${(p) => p.theme.colors.primary};
+  font-size: 14px;
+  width: fit-content;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+export const TableScroll = styled.div`
+  margin-top: 0.75em;
+  max-height: 360px;
+  overflow: auto;
+  border: 1px solid ${(p) => p.theme.colors.greyLight};
+`;
+
+export const Table = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+`;
+
+export const Th = styled.th`
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #f5f5f5;
+  text-align: ${(p) => (p.numeric ? 'right' : 'left')};
+  padding: 0.5em 0.75em;
+  border-bottom: 1px solid ${(p) => p.theme.colors.greyLight};
+  white-space: nowrap;
+`;
+
+export const Td = styled.td`
+  text-align: ${(p) => (p.numeric ? 'right' : 'left')};
+  padding: 0.4em 0.75em;
+  border-bottom: 1px solid ${(p) => p.theme.colors.greyLight};
+  white-space: nowrap;
+`;
+
+export const TableLink = styled(Link)`
+  color: ${(p) => p.theme.colors.primary};
+
+  &:hover {
+    text-decoration: underline;
+  }
 `;

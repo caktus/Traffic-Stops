@@ -3,9 +3,23 @@ import { Scatter } from 'react-chartjs-2';
 import { useTheme } from 'styled-components';
 
 import { getDisparityParityURL } from '../../Services/endpoints';
-import { raceColor } from './disparityConstants';
+import { raceColor, fmt, agencySearchRateLink } from './disparityConstants';
 import useDisparityData from './useDisparityData';
+import DisparityTable from './DisparityTable';
 import * as S from './AgencyDisparities.styled';
+
+const columns = [
+  { key: 'agency_name', label: 'Agency', link: agencySearchRateLink },
+  { key: 'driver_race', label: 'Race' },
+  { key: 'population', label: 'Population', numeric: true, format: fmt.int },
+  { key: 'total_population', label: 'Total population', numeric: true, format: fmt.int },
+  { key: 'stops', label: 'Stops', numeric: true, format: fmt.int },
+  { key: 'total_stops', label: 'Total stops', numeric: true, format: fmt.int },
+  { key: 'pop_share', label: 'Population share', numeric: true, format: fmt.pct },
+  { key: 'stop_share', label: 'Stop share', numeric: true, format: fmt.pct },
+  { key: 'excess_stops', label: 'Excess stops', numeric: true, format: fmt.int },
+  { key: 'stop_rate_ratio', label: 'Stop rate ratio', numeric: true, format: fmt.ratio },
+];
 
 export default function ParityScatter({ year, race }) {
   const theme = useTheme();
@@ -81,8 +95,11 @@ export default function ParityScatter({ year, race }) {
   };
 
   return (
-    <S.ChartWrapper height="600px">
-      <Scatter data={data} options={options} redraw />
-    </S.ChartWrapper>
+    <>
+      <S.ChartWrapper height="600px">
+        <Scatter data={data} options={options} redraw />
+      </S.ChartWrapper>
+      <DisparityTable rows={rows} columns={columns} />
+    </>
   );
 }
