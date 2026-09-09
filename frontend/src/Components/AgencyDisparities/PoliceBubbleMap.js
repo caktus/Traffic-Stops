@@ -38,7 +38,7 @@ export default function PoliceBubbleMap({ year, race }) {
   if (error) return <S.FetchError>Unable to load police data. Please try again.</S.FetchError>;
   if (geojsonError)
     return <S.FetchError>Unable to load county map. Please try again.</S.FetchError>;
-  if (loading || !geojson) return <S.Loading>Loading map…</S.Loading>;
+  if (loading || !geojson) return <S.Loading height="500px">Loading map…</S.Loading>;
 
   const handleMove = (evt, row) => {
     setTooltip({
@@ -67,7 +67,7 @@ Stops (${race}): ${row.stops} · Total: ${row.total_stops}${
           </S.LegendItem>
         ))}
         <S.LegendItem>
-          <S.Swatch round hollow /> &lt; 10,000 population
+          <S.Swatch round dashed faded /> Sub-threshold, actively reporting (&lt; 10,000 population)
         </S.LegendItem>
       </S.Legend>
       <NcMap>
@@ -77,9 +77,9 @@ Stops (${race}): ${row.stops} · Total: ${row.total_stops}${
               <Geography
                 key={geo.rsmKey}
                 geography={geo}
-                fill="#eeeeee"
-                stroke="#cccccc"
-                strokeWidth={0.5}
+                fill="#e4e9ee"
+                stroke="#9aa5b1"
+                strokeWidth={0.75}
                 style={{ default: { outline: 'none' }, hover: { outline: 'none' } }}
               />
             ))
@@ -94,14 +94,11 @@ Stops (${race}): ${row.stops} · Total: ${row.total_stops}${
           >
             <circle
               r={sizeScale(row.total_stops || 0)}
-              fill={
-                row.small_population
-                  ? 'rgba(255,255,255,0)'
-                  : DISPARITY_COLORS[row.disparity_category]
-              }
-              stroke={row.small_population ? '#777777' : '#ffffff'}
-              strokeWidth={row.small_population ? 2 : 0.5}
-              fillOpacity={0.75}
+              fill={DISPARITY_COLORS[row.disparity_category]}
+              fillOpacity={row.small_population ? 0.4 : 0.75}
+              stroke={row.small_population ? '#333333' : '#ffffff'}
+              strokeWidth={row.small_population ? 1.5 : 0.5}
+              strokeDasharray={row.small_population ? '2,2' : undefined}
             />
           </Marker>
         ))}

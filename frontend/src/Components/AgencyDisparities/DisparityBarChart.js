@@ -47,9 +47,10 @@ export default function DisparityBarChart({ year, race }) {
     getDisparityAgenciesURL({ year, race, limit: 20 })
   );
 
-  if (loading) return <S.Loading>Loading chart…</S.Loading>;
+  if (loading) return <S.Loading height="500px">Loading chart…</S.Loading>;
   if (error) return <S.FetchError>Unable to load agency ranking. Please try again.</S.FetchError>;
-  if (!rows.length) return <S.Loading>No agency data for the selected filters.</S.Loading>;
+  if (!rows.length)
+    return <S.Loading height="500px">No agency data for the selected filters.</S.Loading>;
 
   const color = raceColor(theme, race);
   const data = {

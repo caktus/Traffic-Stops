@@ -25,9 +25,10 @@ export default function ParityScatter({ year, race }) {
   const theme = useTheme();
   const { rows, loading, error } = useDisparityData(getDisparityParityURL({ year, race }));
 
-  if (loading) return <S.Loading>Loading chart…</S.Loading>;
+  if (loading) return <S.Loading height="600px">Loading chart…</S.Loading>;
   if (error) return <S.FetchError>Unable to load parity data. Please try again.</S.FetchError>;
-  if (!rows.length) return <S.Loading>No parity data for the selected filters.</S.Loading>;
+  if (!rows.length)
+    return <S.Loading height="600px">No parity data for the selected filters.</S.Loading>;
 
   const toPoints = (label) =>
     rows

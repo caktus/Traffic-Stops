@@ -184,8 +184,13 @@ export const Swatch = styled.span`
   width: 14px;
   height: 14px;
   border-radius: ${(p) => (p.round ? '50%' : '2px')};
-  background: ${(p) => p.color || 'transparent'};
-  border: ${(p) => (p.hollow ? '2px solid #777' : 'none')};
+  background: ${(p) => p.color || (p.faded ? '#999999' : 'transparent')};
+  opacity: ${(p) => (p.faded ? 0.4 : 1)};
+  border: ${(p) => {
+    if (p.dashed) return '1.5px dashed #333333';
+    if (p.hollow) return '2px solid #777777';
+    return 'none';
+  }};
 `;
 
 // Dashed-line swatch for legend items describing a reference line (e.g. the
@@ -210,8 +215,15 @@ export const Tooltip = styled.div`
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 `;
 
-export const Loading = styled.p`
+// Sized to roughly match the chart/map that will replace it, so the page
+// doesn't jump when data finishes loading.
+export const Loading = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: ${(p) => p.height || '500px'};
   color: ${(p) => p.theme.colors.textLight};
+  text-align: center;
 `;
 
 export const FetchError = styled.p`

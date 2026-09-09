@@ -7,6 +7,7 @@ import { getDisparitySheriffsURL, COUNTIES_GEOJSON_URL } from '../../Services/en
 import {
   BELOW_THRESHOLD_COLOR,
   NO_DATA_COLOR,
+  STATUS_LABELS,
   fmt,
   agencySearchRateLink,
 } from './disparityConstants';
@@ -29,6 +30,13 @@ const columns = [
   { key: 'baseline_rate', label: 'Baseline rate', numeric: true, format: fmt.ratio },
   { key: 'stop_rate_ratio', label: 'Stop rate ratio', numeric: true, format: fmt.ratio },
   { key: 'times_likely', label: 'Times as likely', numeric: true, format: fmt.times },
+  {
+    key: 'status',
+    label: 'Map color',
+    // Below-threshold agencies are shown gray on the map (unreliable ratio due
+    // to small population), regardless of their calculated ratio.
+    format: (v) => (BELOW_STATUSES.includes(v) ? STATUS_LABELS[v] || v : 'By disparity'),
+  },
 ];
 
 export default function SheriffCountyMap({ year, race }) {
@@ -58,7 +66,7 @@ export default function SheriffCountyMap({ year, race }) {
   if (error) return <S.FetchError>Unable to load sheriff data. Please try again.</S.FetchError>;
   if (geojsonError)
     return <S.FetchError>Unable to load county map. Please try again.</S.FetchError>;
-  if (loading || !geojson) return <S.Loading>Loading map…</S.Loading>;
+  if (loading || !geojson) return <S.Loading height="500px">Loading map…</S.Loading>;
 
   const fillFor = (fips) => {
     const row = byFips[fips];
