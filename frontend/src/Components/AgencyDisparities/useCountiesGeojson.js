@@ -7,6 +7,7 @@ let inflight = null;
 
 export default function useCountiesGeojson(url) {
   const [geojson, setGeojson] = useState(cached);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     if (cached) {
@@ -24,11 +25,12 @@ export default function useCountiesGeojson(url) {
       })
       .catch(() => {
         inflight = null;
+        if (active) setError(true);
       });
     return () => {
       active = false;
     };
   }, [url]);
 
-  return geojson;
+  return { geojson, error };
 }

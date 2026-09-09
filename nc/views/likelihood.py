@@ -95,7 +95,7 @@ def likelihood_stop_query(request, agency_id, debug=True):
 
     Related notebooks:
     - https://nccopwatch-share.s3.amazonaws.com/2024-04-likelihood-of-stops/likelihood-of-stops.html
-    """  # noqa
+    """
     filter_set = StopSummaryFilterSet(request.GET, agency_id=agency_id)
     filter_set.is_valid()
     year = filter_set.form.cleaned_data.get("year")
@@ -457,7 +457,7 @@ def _clean_year(request) -> int | None:
 
 def _selected_race(request) -> str:
     """Return the ``race`` query param, defaulting to Black."""
-    return request.query_params.get("race", DriverRace.BLACK.label)
+    return request.query_params.get("race") or DriverRace.BLACK.label
 
 
 class DisparityYearsView(APIView):

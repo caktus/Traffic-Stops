@@ -32,7 +32,7 @@ const columns = [
 ];
 
 export default function SheriffCountyMap({ year, race }) {
-  const geojson = useCountiesGeojson(COUNTIES_GEOJSON_URL);
+  const { geojson, error: geojsonError } = useCountiesGeojson(COUNTIES_GEOJSON_URL);
   const { rows, loading, error } = useDisparityData(
     getDisparitySheriffsURL({ year, race }),
     'sheriffs'
@@ -56,6 +56,8 @@ export default function SheriffCountyMap({ year, race }) {
   }, [rows]);
 
   if (error) return <S.FetchError>Unable to load sheriff data. Please try again.</S.FetchError>;
+  if (geojsonError)
+    return <S.FetchError>Unable to load county map. Please try again.</S.FetchError>;
   if (loading || !geojson) return <S.Loading>Loading map…</S.Loading>;
 
   const fillFor = (fips) => {

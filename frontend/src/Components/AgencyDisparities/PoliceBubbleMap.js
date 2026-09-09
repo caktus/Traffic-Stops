@@ -25,7 +25,7 @@ const columns = [
 ];
 
 export default function PoliceBubbleMap({ year, race }) {
-  const geojson = useCountiesGeojson(COUNTIES_GEOJSON_URL);
+  const { geojson, error: geojsonError } = useCountiesGeojson(COUNTIES_GEOJSON_URL);
   const { rows, loading, error } = useDisparityData(getDisparityPoliceURL({ year, race }));
   const [tooltip, setTooltip] = useState(null);
 
@@ -36,6 +36,8 @@ export default function PoliceBubbleMap({ year, race }) {
   }, [rows]);
 
   if (error) return <S.FetchError>Unable to load police data. Please try again.</S.FetchError>;
+  if (geojsonError)
+    return <S.FetchError>Unable to load county map. Please try again.</S.FetchError>;
   if (loading || !geojson) return <S.Loading>Loading map…</S.Loading>;
 
   const handleMove = (evt, row) => {

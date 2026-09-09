@@ -124,7 +124,7 @@ export const SectionTitle = styled(H2)`
   margin-bottom: 0.35em;
   scroll-margin-top: 5em;
 
-  &:hover ${SectionAnchor} {
+  &:hover ${SectionAnchor}, &:focus-within ${SectionAnchor} {
     opacity: 1;
   }
 `;
@@ -139,7 +139,7 @@ export const SectionSubTitle = styled(H2)`
   margin-bottom: 0.35em;
   scroll-margin-top: 5em;
 
-  &:hover ${SectionAnchor} {
+  &:hover ${SectionAnchor}, &:focus-within ${SectionAnchor} {
     opacity: 1;
   }
 `;

@@ -38,6 +38,16 @@ export default function DisparityTableModal({
     return () => document.removeEventListener('keyup', _handleKeyUp);
   }, [closeModal]);
 
+  // suppress body scrolling behind modal
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    }
+
+    // eslint-disable-next-line no-return-assign
+    return () => (document.body.style.overflow = 'visible');
+  }, [isOpen]);
+
   return ReactDOM.createPortal(
     isOpen && (
       <>
