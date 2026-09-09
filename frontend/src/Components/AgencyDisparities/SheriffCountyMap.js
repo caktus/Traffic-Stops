@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { Geographies, Geography } from 'react-simple-maps';
 import { scaleSequential } from 'd3-scale';
 import { interpolateRdYlGn } from 'd3-scale-chromatic';
@@ -40,6 +41,7 @@ const columns = [
 ];
 
 export default function SheriffCountyMap({ year, race }) {
+  const history = useHistory();
   const { geojson, error: geojsonError } = useCountiesGeojson(COUNTIES_GEOJSON_URL);
   const { rows, loading, error } = useDisparityData(
     getDisparitySheriffsURL({ year, race }),
@@ -73,6 +75,11 @@ export default function SheriffCountyMap({ year, race }) {
     if (!row) return NO_DATA_COLOR;
     if (BELOW_STATUSES.includes(row.status)) return BELOW_THRESHOLD_COLOR;
     return colorScale(row.times_likely);
+  };
+
+  const handleClick = (fips) => {
+    const row = byFips[fips];
+    if (row) history.push(agencySearchRateLink(row));
   };
 
   const handleMove = (evt, geo) => {
@@ -119,22 +126,30 @@ export default function SheriffCountyMap({ year, race }) {
       <NcMap>
         <Geographies geography={geojson}>
           {({ geographies }) =>
-            geographies.map((geo) => (
-              <Geography
-                key={geo.rsmKey}
-                geography={geo}
-                fill={fillFor(geo.properties.FIPS)}
-                stroke="#ffffff"
-                strokeWidth={0.5}
-                onMouseMove={(evt) => handleMove(evt, geo)}
-                onMouseLeave={() => setTooltip(null)}
-                style={{
-                  default: { outline: 'none' },
-                  hover: { outline: 'none', opacity: 0.85 },
-                  pressed: { outline: 'none' },
-                }}
-              />
-            ))
+            geographies.map((geo) => {
+              const clickable = Boolean(byFips[geo.properties.FIPS]);
+              return (
+                <Geography
+                  key={geo.rsmKey}
+                  geography={geo}
+                  fill={fillFor(geo.properties.FIPS)}
+                  stroke="#ffffff"
+                  strokeWidth={0.5}
+                  onMouseMove={(evt) => handleMove(evt, geo)}
+                  onMouseLeave={() => setTooltip(null)}
+                  onClick={() => handleClick(geo.properties.FIPS)}
+                  style={{
+                    default: { outline: 'none', cursor: clickable ? 'pointer' : 'default' },
+                    hover: {
+                      outline: 'none',
+                      opacity: 0.85,
+                      cursor: clickable ? 'pointer' : 'default',
+                    },
+                    pressed: { outline: 'none' },
+                  }}
+                />
+              );
+            })
           }
         </Geographies>
       </NcMap>

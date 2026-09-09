@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { Geographies, Geography, Marker } from 'react-simple-maps';
 import { scaleSqrt } from 'd3-scale';
 
@@ -25,6 +26,7 @@ const columns = [
 ];
 
 export default function PoliceBubbleMap({ year, race }) {
+  const history = useHistory();
   const { geojson, error: geojsonError } = useCountiesGeojson(COUNTIES_GEOJSON_URL);
   const { rows, loading, error } = useDisparityData(getDisparityPoliceURL({ year, race }));
   const [tooltip, setTooltip] = useState(null);
@@ -51,6 +53,8 @@ Stops (${race}): ${row.stops} · Total: ${row.total_stops}${
       }`,
     });
   };
+
+  const handleClick = (row) => history.push(agencySearchRateLink(row));
 
   return (
     <div>
@@ -91,6 +95,8 @@ Stops (${race}): ${row.stops} · Total: ${row.total_stops}${
             coordinates={[row.longitude, row.latitude]}
             onMouseMove={(evt) => handleMove(evt, row)}
             onMouseLeave={() => setTooltip(null)}
+            onClick={() => handleClick(row)}
+            style={{ default: { cursor: 'pointer' } }}
           >
             <circle
               r={sizeScale(row.total_stops || 0)}
