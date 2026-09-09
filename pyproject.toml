@@ -57,7 +57,7 @@ extend-exclude = [
 
 [tool.ruff.lint]
 ignore = [
-    "E501",  # line too long, handled by formatter
+    "E501", # line too long, handled by formatter
 ]
 
 [tool.ruff.lint.isort]
@@ -100,5 +100,5 @@ dev = [
     # Python 3.13 is not supported by urllib3 2.4.0
     # https://github.com/crate/crate-python/issues/708
     # https://github.com/aws/containers-roadmap/issues/2638
-    "urllib3<2.8.0",
+    "urllib3<2.4.0",
 ]
