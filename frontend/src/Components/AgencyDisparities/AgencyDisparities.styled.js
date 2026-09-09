@@ -19,8 +19,7 @@ export const Page = styled.main`
 `;
 
 // Shared reading-width constraint used for page text (title, intro, filters,
-// and each section's heading/copy), while charts render at the full width of
-// the page for a more immersive layout.
+// and each section's heading/copy).
 const constrainedWidth = css`
   margin: 0 auto;
   width: 100%;
@@ -28,6 +27,21 @@ const constrainedWidth = css`
 
   @media (${smallerThanDesktop}) {
     max-width: 900px;
+  }
+  @media (${smallerThanTabletLandscape}) {
+    max-width: 550px;
+  }
+`;
+
+// Wider constraint used for charts/maps so they read as larger than the page
+// text, without spanning the full viewport edge-to-edge.
+const wideWidth = css`
+  margin: 0 auto;
+  width: 100%;
+  max-width: 1600px;
+
+  @media (${smallerThanDesktop}) {
+    max-width: 1100px;
   }
   @media (${smallerThanTabletLandscape}) {
     max-width: 550px;
@@ -151,16 +165,14 @@ export const SectionCopy = styled.p`
 `;
 
 export const ChartWrapper = styled.div`
+  ${wideWidth}
   position: relative;
-  width: 100%;
   height: ${(p) => p.height || '500px'};
 `;
 
 export const MapWrapper = styled.div`
+  ${wideWidth}
   position: relative;
-  width: 100%;
-  border: 1px solid ${(p) => p.theme.colors.greyLight};
-  background: #f5f5f5;
 `;
 
 export const Legend = styled.div`
@@ -238,6 +250,7 @@ export const BottomLink = styled.div`
 `;
 
 export const TableButtonRow = styled.div`
+  ${wideWidth}
   display: flex;
   justify-content: flex-end;
   margin-bottom: 0.75em;
