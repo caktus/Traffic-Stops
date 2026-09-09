@@ -22,13 +22,20 @@ export function NcMap({ children }) {
 }
 
 // Cursor-following tooltip shared by the maps. `tooltip` is null when hidden.
+// `tooltip.body` may be a single string or an array of lines, each rendered
+// on its own line via <br /> so multiple data points don't run together.
 export function MapTooltip({ tooltip }) {
   if (!tooltip) return null;
+  const lines = Array.isArray(tooltip.body) ? tooltip.body : [tooltip.body];
   return (
-    <S.Tooltip style={{ left: tooltip.x + 12, top: tooltip.y + 12, whiteSpace: 'pre-line' }}>
+    <S.Tooltip style={{ left: tooltip.x + 12, top: tooltip.y + 12 }}>
       <strong>{tooltip.title}</strong>
-      <br />
-      {tooltip.body}
+      {lines.map((line) => (
+        <React.Fragment key={line}>
+          <br />
+          {line}
+        </React.Fragment>
+      ))}
     </S.Tooltip>
   );
 }

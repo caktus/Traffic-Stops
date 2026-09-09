@@ -88,15 +88,17 @@ export default function SheriffCountyMap({ year, race }) {
     const row = byFips[fips];
     let body;
     if (!row) {
-      body = 'No sheriff stop data reported.';
+      body = ['No sheriff stop data reported.'];
     } else {
       const belowThreshold = BELOW_STATUSES.includes(row.status);
       const star = belowThreshold ? '*' : '';
-      body = `${row.times_likely.toFixed(2)}×${star} as likely · Stops: ${row.stops} · Pop: ${
-        row.population
-      }`;
+      body = [
+        `${row.times_likely.toFixed(2)}×${star} as likely`,
+        `Stops: ${row.stops}`,
+        `Pop: ${row.population}`,
+      ];
       if (belowThreshold) {
-        body += '\n*Small population — ratio may be less statistically reliable.';
+        body.push('*Small population — ratio may be less statistically reliable.');
       }
     }
     setTooltip({

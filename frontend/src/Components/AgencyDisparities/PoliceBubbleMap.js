@@ -44,10 +44,14 @@ export default function PoliceBubbleMap({ year, race }) {
 
   const handleMove = (evt, row) => {
     const star = row.small_population ? '*' : '';
-    let body = `${row.times_likely.toFixed(2)}×${star} as likely · ${row.disparity_category}
-Stops (${race}): ${row.stops} · Total: ${row.total_stops}`;
+    const body = [
+      `${row.times_likely.toFixed(2)}×${star} as likely`,
+      row.disparity_category,
+      `Stops (${race}): ${row.stops}`,
+      `Total: ${row.total_stops}`,
+    ];
     if (row.small_population) {
-      body += '\n*Small population (< 10,000) — ratio may be less statistically reliable.';
+      body.push('*Small population (< 10,000) — ratio may be less statistically reliable.');
     }
     setTooltip({
       x: evt.clientX,
