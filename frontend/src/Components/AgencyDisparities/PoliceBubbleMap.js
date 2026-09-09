@@ -52,6 +52,12 @@ Stops (${race}): ${row.stops} · Total: ${row.total_stops}${
 
   return (
     <div>
+      <DisparityTable
+        rows={rows}
+        columns={columns}
+        title={`Police Departments Stop Rate Ratios — ${race}`}
+        downloadName={`police-disparities-${race}`}
+      />
       <NcMap>
         <Geographies geography={geojson}>
           {({ geographies }) =>
@@ -99,7 +105,6 @@ Stops (${race}): ${row.stops} · Total: ${row.total_stops}${
         </S.LegendItem>
       </S.Legend>
       <MapTooltip tooltip={tooltip} />
-      <DisparityTable rows={rows} columns={columns} />
     </div>
   );
 }

@@ -86,6 +86,12 @@ export default function SheriffCountyMap({ year, race }) {
 
   return (
     <div>
+      <DisparityTable
+        rows={rows}
+        columns={columns}
+        title={`Sheriff's Offices Stop Rate Ratios — ${race}`}
+        downloadName={`sheriff-disparities-${race}`}
+      />
       <NcMap>
         <Geographies geography={geojson}>
           {({ geographies }) =>
@@ -123,7 +129,6 @@ export default function SheriffCountyMap({ year, race }) {
         </S.LegendItem>
       </S.Legend>
       <MapTooltip tooltip={tooltip} />
-      <DisparityTable rows={rows} columns={columns} />
     </div>
   );
 }

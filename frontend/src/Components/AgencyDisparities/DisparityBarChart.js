@@ -90,10 +90,15 @@ export default function DisparityBarChart({ year, race }) {
 
   return (
     <>
+      <DisparityTable
+        rows={rows}
+        columns={columns}
+        title={`Top Agencies by Likelihood of Stop — ${race}`}
+        downloadName={`top-agencies-${race}`}
+      />
       <S.ChartWrapper height={`${Math.max(300, rows.length * 28)}px`}>
         <Bar data={data} options={options} plugins={[baselinePlugin]} redraw />
       </S.ChartWrapper>
-      <DisparityTable rows={rows} columns={columns} />
     </>
   );
 }

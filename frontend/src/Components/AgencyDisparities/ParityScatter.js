@@ -96,10 +96,15 @@ export default function ParityScatter({ year, race }) {
 
   return (
     <>
+      <DisparityTable
+        rows={rows}
+        columns={columns}
+        title={`Population vs. Traffic Stops — ${race}`}
+        downloadName={`parity-${race}`}
+      />
       <S.ChartWrapper height="600px">
         <Scatter data={data} options={options} redraw />
       </S.ChartWrapper>
-      <DisparityTable rows={rows} columns={columns} />
     </>
   );
 }

@@ -1,14 +1,42 @@
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
-import FullWidthPage from '../../styles/StyledComponents/FullWidthPage';
 import { H1, H2 } from '../../styles/StyledComponents/Typography';
-import { smallerThanTabletLandscape } from '../../styles/breakpoints';
+import {
+  smallerThanDesktop,
+  smallerThanTabletLandscape,
+  phoneOnly,
+} from '../../styles/breakpoints';
+import { TableModal } from '../Elements/Table/TableModal.styled';
 
-export const Page = styled(FullWidthPage)`
+// The disparities page uses its own page/inner wrappers (rather than the shared
+// FullWidthPage) so that the filter bar can use position: sticky. FullWidthPage's
+// inner wrapper sets overflow-y: hidden, which would trap the sticky element.
+export const Page = styled.main`
+  flex: 1;
   display: flex;
   flex-direction: column;
+`;
+
+export const Inner = styled.div`
+  margin: 0 auto;
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
   padding-bottom: 4em;
+
+  @media (${smallerThanDesktop}) {
+    max-width: 900px;
+  }
+  @media (${smallerThanTabletLandscape}) {
+    max-width: 550px;
+  }
+  @media (${phoneOnly}) {
+    max-width: 100%;
+    padding: 0 1em 4em;
+  }
 `;
 
 export const PageTitle = styled(H1)`
@@ -32,8 +60,14 @@ export const Filters = styled.div`
   flex-direction: row;
   gap: 2em;
   align-items: flex-end;
-  margin-bottom: 2em;
   flex-wrap: wrap;
+
+  position: sticky;
+  top: 0;
+  z-index: 9;
+  padding: 1em 1.5em;
+  background: ${(p) => p.theme.colors.white};
+  box-shadow: ${(p) => p.theme.shadows.depth1};
 
   @media (${smallerThanTabletLandscape}) {
     flex-direction: column;
@@ -122,50 +156,15 @@ export const BottomLink = styled.div`
   margin-bottom: 3em;
 `;
 
-export const TableDisclosure = styled.details`
-  margin-top: 1em;
+export const TableButtonRow = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.75em;
 `;
 
-export const TableSummary = styled.summary`
-  cursor: pointer;
-  color: ${(p) => p.theme.colors.primary};
-  font-size: 14px;
-  width: fit-content;
-
-  &:hover {
-    text-decoration: underline;
-  }
-`;
-
-export const TableScroll = styled.div`
-  margin-top: 0.75em;
-  max-height: 360px;
-  overflow: auto;
-  border: 1px solid ${(p) => p.theme.colors.greyLight};
-`;
-
-export const Table = styled.table`
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
-`;
-
-export const Th = styled.th`
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  background: #f5f5f5;
-  text-align: ${(p) => (p.numeric ? 'right' : 'left')};
-  padding: 0.5em 0.75em;
-  border-bottom: 1px solid ${(p) => p.theme.colors.greyLight};
-  white-space: nowrap;
-`;
-
-export const Td = styled.td`
-  text-align: ${(p) => (p.numeric ? 'right' : 'left')};
-  padding: 0.4em 0.75em;
-  border-bottom: 1px solid ${(p) => p.theme.colors.greyLight};
-  white-space: nowrap;
+// Wider variant of the shared table modal so the extra disparity columns fit.
+export const WideModal = styled(TableModal)`
+  max-width: 1400px;
 `;
 
 export const TableLink = styled(Link)`
