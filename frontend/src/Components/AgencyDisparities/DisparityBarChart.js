@@ -1,6 +1,7 @@
 import React from 'react';
 import { Bar } from 'react-chartjs-2';
 import { useTheme } from 'styled-components';
+import { useHistory } from 'react-router-dom';
 
 import { getDisparityAgenciesURL } from '../../Services/endpoints';
 import { raceColor, fmt, agencySearchRateLink } from './disparityConstants';
@@ -43,6 +44,7 @@ const columns = [
 
 export default function DisparityBarChart({ year, race }) {
   const theme = useTheme();
+  const history = useHistory();
   const { rows, loading, error } = useDisparityData(
     getDisparityAgenciesURL({ year, race, limit: 20 })
   );
@@ -69,6 +71,15 @@ export default function DisparityBarChart({ year, race }) {
     indexAxis: 'y',
     responsive: true,
     maintainAspectRatio: false,
+    // Trigger on any hover/click along a bar's row, not just directly over the fill.
+    interaction: { mode: 'nearest', axis: 'y', intersect: false },
+    onClick: (evt, elements) => {
+      if (elements.length) history.push(agencySearchRateLink(rows[elements[0].index]));
+    },
+    onHover: (evt, elements) => {
+      // eslint-disable-next-line no-param-reassign
+      evt.native.target.style.cursor = elements.length ? 'pointer' : 'default';
+    },
     plugins: {
       legend: { display: false },
       title: {
