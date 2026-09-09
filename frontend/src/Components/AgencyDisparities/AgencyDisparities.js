@@ -17,6 +17,7 @@ import DisparityBarChart from './DisparityBarChart';
 import SheriffCountyMap from './SheriffCountyMap';
 import PoliceBubbleMap from './PoliceBubbleMap';
 import ParityScatter from './ParityScatter';
+import SectionHeading from './SectionHeading';
 import { RACE_OPTIONS, DEFAULT_RACE, ALL_YEARS } from './disparityConstants';
 import * as S from './AgencyDisparities.styled';
 
@@ -85,7 +86,9 @@ export default function AgencyDisparities() {
             data.
           </S.Note>
         </S.Intro>
+      </S.Inner>
 
+      <S.FiltersBar>
         <S.Filters>
           <DataSubsetPicker
             label="Year"
@@ -106,42 +109,53 @@ export default function AgencyDisparities() {
             dropdownWidth="160px"
           />
         </S.Filters>
+      </S.FiltersBar>
 
-        <S.Section>
-          <DisparityBarChart {...chartProps} />
-        </S.Section>
+      <S.Section>
+        <S.SectionHeader>
+          <SectionHeading id="non-white-likelihood">
+            Where Non-White Drivers Are Most Likely to Be Stopped
+          </SectionHeading>
+        </S.SectionHeader>
+        <DisparityBarChart {...chartProps} />
+      </S.Section>
 
-        <S.Section>
-          <S.SectionTitle>
+      <S.Section>
+        <S.SectionHeader>
+          <SectionHeading id="where-disparities-occur">
             Where are stop disparities occurring across North Carolina?
-          </S.SectionTitle>
-          <S.SectionTitle as="h3">
+          </SectionHeading>
+          <SectionHeading id="sheriff-offices" subtitle>
             Sheriff&apos;s Offices: Stop Rate Ratios by County
-          </S.SectionTitle>
+          </SectionHeading>
           <S.SectionCopy>
             Because North Carolina sheriff&apos;s offices generally have countywide jurisdictions,
             county boundaries provide a useful way to visualize disparities in stops by
             sheriff&apos;s office.
           </S.SectionCopy>
-          <SheriffCountyMap {...chartProps} />
-        </S.Section>
+        </S.SectionHeader>
+        <SheriffCountyMap {...chartProps} />
+      </S.Section>
 
-        <S.Section>
-          <S.SectionTitle as="h3">
+      <S.Section>
+        <S.SectionHeader>
+          <SectionHeading id="police-departments" subtitle>
             Police Departments: Stop Rate Ratios Across North Carolina
-          </S.SectionTitle>
+          </SectionHeading>
           <S.SectionCopy>
             Unlike sheriff&apos;s offices, municipal police departments may operate within the same
             county. Each bubble represents an individual police department, allowing users to see
             differences between agencies operating in the same geographic area.
           </S.SectionCopy>
-          <PoliceBubbleMap {...chartProps} />
-        </S.Section>
+        </S.SectionHeader>
+        <PoliceBubbleMap {...chartProps} />
+      </S.Section>
 
-        <S.Section>
-          <S.SectionTitle>
+      <S.Section>
+        <S.SectionHeader>
+          <SectionHeading id="population-vs-stops">
             How Do Traffic Stops Compare With the Community Population?
-          </S.SectionTitle>
+          </SectionHeading>
           <S.SectionCopy>
             This chart compares each racial group&apos;s share of the local population with its
             share of traffic stops. Each dot represents a law enforcement agency. When a racial
@@ -149,9 +163,11 @@ export default function AgencyDisparities() {
             agency appears above the parity line. When the two shares are similar, the agency falls
             closer to the line.
           </S.SectionCopy>
-          <ParityScatter {...chartProps} />
-        </S.Section>
+        </S.SectionHeader>
+        <ParityScatter {...chartProps} />
+      </S.Section>
 
+      <S.Inner>
         <S.BottomLink>
           <FjButton
             variant="positive"

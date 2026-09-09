@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { Link } from 'react-router-dom';
 
 import { H1, H2 } from '../../styles/StyledComponents/Typography';
@@ -18,14 +18,13 @@ export const Page = styled.main`
   flex-direction: column;
 `;
 
-export const Inner = styled.div`
+// Shared reading-width constraint used for page text (title, intro, filters,
+// and each section's heading/copy), while charts render at the full width of
+// the page for a more immersive layout.
+const constrainedWidth = css`
   margin: 0 auto;
   width: 100%;
   max-width: 1200px;
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  padding-bottom: 4em;
 
   @media (${smallerThanDesktop}) {
     max-width: 900px;
@@ -33,9 +32,17 @@ export const Inner = styled.div`
   @media (${smallerThanTabletLandscape}) {
     max-width: 550px;
   }
+`;
+
+export const Inner = styled.div`
+  ${constrainedWidth}
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+
   @media (${phoneOnly}) {
     max-width: 100%;
-    padding: 0 1em 4em;
+    padding: 0 1em;
   }
 `;
 
@@ -55,19 +62,25 @@ export const Note = styled.p`
   margin-top: 1em;
 `;
 
+// Wraps Filters so its sticky containing block spans the whole page (not just
+// the Inner block above it), letting the bar stay stuck while scrolling
+// through the full-width chart sections below.
+export const FiltersBar = styled.div`
+  position: sticky;
+  top: 0;
+  z-index: 9;
+  background: ${(p) => p.theme.colors.white};
+  box-shadow: ${(p) => p.theme.shadows.depth1};
+`;
+
 export const Filters = styled.div`
+  ${constrainedWidth}
   display: flex;
   flex-direction: row;
   gap: 2em;
   align-items: flex-end;
   flex-wrap: wrap;
-
-  position: sticky;
-  top: 0;
-  z-index: 9;
   padding: 1em 1.5em;
-  background: ${(p) => p.theme.colors.white};
-  box-shadow: ${(p) => p.theme.shadows.depth1};
 
   @media (${smallerThanTabletLandscape}) {
     flex-direction: column;
@@ -76,12 +89,59 @@ export const Filters = styled.div`
 `;
 
 export const Section = styled.section`
-  margin: 2.5em 0;
+  margin: 4.5em 0;
+  padding: 0 1.5em;
+
+  @media (${phoneOnly}) {
+    padding: 0 1em;
+  }
+`;
+
+// Wraps a section's heading(s) and copy so text stays at reading width even
+// though the section itself (and its chart) spans the full page width.
+export const SectionHeader = styled.div`
+  ${constrainedWidth}
+`;
+
+// Hash link revealed to the right of a heading on hover, matching the anchor
+// pattern used by most documentation sites.
+export const SectionAnchor = styled.a`
+  display: inline-block;
+  margin-left: 0.5em;
+  font-weight: 400;
+  text-decoration: none;
+  color: ${(p) => p.theme.colors.primary};
+  opacity: 0;
+  transition: opacity 0.15s ease;
+
+  &:hover {
+    text-decoration: underline;
+  }
 `;
 
 export const SectionTitle = styled(H2)`
-  font-size: 24px;
-  margin-bottom: 0.25em;
+  font-size: 34px;
+  margin-bottom: 0.35em;
+  scroll-margin-top: 5em;
+
+  &:hover ${SectionAnchor} {
+    opacity: 1;
+  }
+`;
+
+// Sub-heading used under a section's main title (e.g. "Sheriff's Offices" and
+// "Police Departments" under "Where are stop disparities occurring...").
+export const SectionSubTitle = styled(H2)`
+  font-size: 22px;
+  font-weight: 600;
+  text-transform: none;
+  color: ${(p) => p.theme.colors.textLight};
+  margin-bottom: 0.35em;
+  scroll-margin-top: 5em;
+
+  &:hover ${SectionAnchor} {
+    opacity: 1;
+  }
 `;
 
 export const SectionCopy = styled.p`

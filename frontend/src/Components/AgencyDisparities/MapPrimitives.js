@@ -10,9 +10,9 @@ export function NcMap({ children }) {
     <S.MapWrapper>
       <ComposableMap
         projection="geoMercator"
-        projectionConfig={{ center: [-79.2, 35.5], scale: 3800 }}
+        projectionConfig={{ center: [-79.9, 35.5], scale: 4500 }}
         width={800}
-        height={380}
+        height={340}
         style={{ width: '100%', height: 'auto' }}
       >
         {children}
