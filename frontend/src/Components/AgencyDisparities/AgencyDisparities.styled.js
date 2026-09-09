@@ -167,8 +167,9 @@ export const Legend = styled.div`
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 1em;
-  margin-top: 0.75em;
+  margin-bottom: 0.75em;
   font-size: 13px;
 `;
 
@@ -185,6 +186,14 @@ export const Swatch = styled.span`
   border-radius: ${(p) => (p.round ? '50%' : '2px')};
   background: ${(p) => p.color || 'transparent'};
   border: ${(p) => (p.hollow ? '2px solid #777' : 'none')};
+`;
+
+// Dashed-line swatch for legend items describing a reference line (e.g. the
+// equity baseline on the likelihood bar chart) rather than a fill color.
+export const LineSwatch = styled.span`
+  display: inline-block;
+  width: 18px;
+  border-top: 2px dashed ${(p) => p.color || '#ff8c00'};
 `;
 
 export const Tooltip = styled.div`

@@ -64,7 +64,7 @@ export default function DisparityTable({ rows, columns, title, downloadName }) {
             width={25}
             fill={theme.colors.primary}
           />
-          View Data ({rows.length})
+          View Data
         </Button>
       </S.TableButtonRow>
 

@@ -96,6 +96,11 @@ export default function DisparityBarChart({ year, race }) {
         title={`Top Agencies by Likelihood of Stop — ${race}`}
         downloadName={`top-agencies-${race}`}
       />
+      <S.Legend>
+        <S.LegendItem>
+          <S.LineSwatch /> Equity (1.0× — same rate as white drivers)
+        </S.LegendItem>
+      </S.Legend>
       <S.ChartWrapper height={`${Math.max(300, rows.length * 28)}px`}>
         <Bar data={data} options={options} plugins={[baselinePlugin]} redraw />
       </S.ChartWrapper>

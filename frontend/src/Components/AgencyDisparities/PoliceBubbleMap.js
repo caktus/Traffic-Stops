@@ -60,6 +60,16 @@ Stops (${race}): ${row.stops} · Total: ${row.total_stops}${
         title={`Police Departments Stop Rate Ratios — ${race}`}
         downloadName={`police-disparities-${race}`}
       />
+      <S.Legend>
+        {Object.entries(DISPARITY_COLORS).map(([label, color]) => (
+          <S.LegendItem key={label}>
+            <S.Swatch round color={color} /> {label}
+          </S.LegendItem>
+        ))}
+        <S.LegendItem>
+          <S.Swatch round hollow /> &lt; 10,000 population
+        </S.LegendItem>
+      </S.Legend>
       <NcMap>
         <Geographies geography={geojson}>
           {({ geographies }) =>
@@ -96,16 +106,6 @@ Stops (${race}): ${row.stops} · Total: ${row.total_stops}${
           </Marker>
         ))}
       </NcMap>
-      <S.Legend>
-        {Object.entries(DISPARITY_COLORS).map(([label, color]) => (
-          <S.LegendItem key={label}>
-            <S.Swatch round color={color} /> {label}
-          </S.LegendItem>
-        ))}
-        <S.LegendItem>
-          <S.Swatch round hollow /> &lt; 10,000 population
-        </S.LegendItem>
-      </S.Legend>
       <MapTooltip tooltip={tooltip} />
     </div>
   );

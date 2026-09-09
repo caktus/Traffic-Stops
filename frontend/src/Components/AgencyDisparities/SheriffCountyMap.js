@@ -94,6 +94,20 @@ export default function SheriffCountyMap({ year, race }) {
         title={`Sheriff's Offices Stop Rate Ratios — ${race}`}
         downloadName={`sheriff-disparities-${race}`}
       />
+      <S.Legend>
+        <S.LegendItem>
+          <S.Swatch color="#1a9850" /> Lower disparity
+        </S.LegendItem>
+        <S.LegendItem>
+          <S.Swatch color="#d73027" /> Higher disparity
+        </S.LegendItem>
+        <S.LegendItem>
+          <S.Swatch color={BELOW_THRESHOLD_COLOR} /> Below population threshold
+        </S.LegendItem>
+        <S.LegendItem>
+          <S.Swatch color={NO_DATA_COLOR} /> No stop data reported
+        </S.LegendItem>
+      </S.Legend>
       <NcMap>
         <Geographies geography={geojson}>
           {({ geographies }) =>
@@ -116,20 +130,6 @@ export default function SheriffCountyMap({ year, race }) {
           }
         </Geographies>
       </NcMap>
-      <S.Legend>
-        <S.LegendItem>
-          <S.Swatch color="#1a9850" /> Lower disparity
-        </S.LegendItem>
-        <S.LegendItem>
-          <S.Swatch color="#d73027" /> Higher disparity
-        </S.LegendItem>
-        <S.LegendItem>
-          <S.Swatch color={BELOW_THRESHOLD_COLOR} /> Below population threshold
-        </S.LegendItem>
-        <S.LegendItem>
-          <S.Swatch color={NO_DATA_COLOR} /> No stop data reported
-        </S.LegendItem>
-      </S.Legend>
       <MapTooltip tooltip={tooltip} />
     </div>
   );
