@@ -2,6 +2,7 @@ import django_filters
 import numpy as np
 import pandas as pd
 
+from django import forms
 from django.db.models import Avg, Min, Q
 from django.db.models.functions import ExtractYear
 from rest_framework.response import Response
@@ -40,6 +41,47 @@ class StopSummaryFilterSet(django_filters.FilterSet):
         if int(self.agency_id) != STATEWIDE:
             qs = qs.filter(agency_id=self.agency_id)
         return qs
+
+
+class IntegerFilter(django_filters.NumberFilter):
+    """django-filters has no IntegerFilter; NumberFilter defaults to DecimalField."""
+
+    field_class = forms.IntegerField
+
+
+class DisparityFilters(django_filters.FilterSet):
+    """Shared query-param validation for the disparity dashboard views.
+
+    Used purely for parameter parsing/validation; views call ``is_valid()``,
+    then read the ``cleaned_*`` properties and apply the values to their
+    queries. Instantiated fresh per request with a dummy queryset (no
+    Meta.model).
+    """
+
+    year = IntegerFilter(min_value=2009)
+    # Frontend sends race labels (which match the mat view's race strings),
+    # not the single-letter DriverRace values.
+    race = django_filters.ChoiceFilter(choices=[(race.label, race.label) for race in DriverRace])
+    limit = IntegerFilter(min_value=1, max_value=1000)
+
+    def __init__(self, data, **kwargs):
+        kwargs.setdefault("queryset", LikelihoodOfStopSummary.objects.none())
+        super().__init__(data, **kwargs)
+
+    @property
+    def cleaned_year(self) -> int | None:
+        """Validated year, or None for all years."""
+        return self.form.cleaned_data["year"]
+
+    @property
+    def cleaned_race(self) -> str:
+        """Validated race label, defaulting to Black when omitted."""
+        return self.form.cleaned_data["race"] or DriverRace.BLACK.label
+
+    @property
+    def cleaned_limit(self) -> int | None:
+        """Validated row limit for top-N endpoints, or None for all rows."""
+        return self.form.cleaned_data["limit"]
 
 
 def likelihood_stop_query(request, agency_id, debug=True):
@@ -386,17 +428,6 @@ def no_census_agencies() -> pd.DataFrame:
 # --- Agency-Level Stop Disparities dashboard API ------------------------------
 
 
-def _clean_year(request) -> int | None:
-    """Return the ``year`` query param as an int, or None when absent/invalid."""
-    year = request.query_params.get("year")
-    return int(year) if year and year.isdigit() else None
-
-
-def _selected_race(request) -> str:
-    """Return the ``race`` query param, defaulting to Black."""
-    return request.query_params.get("race") or DriverRace.BLACK.label
-
-
 class DisparityYearsView(APIView):
     """Census years available for the disparities dashboard filters."""
 
@@ -408,15 +439,15 @@ class TopAgenciesView(APIView):
     """Top-N agencies where the selected race is most likely to be stopped."""
 
     def get(self, request):
-        year = _clean_year(request)
-        race = _selected_race(request)
-        limit = request.query_params.get("limit")
-        df = likelihood_comparison(level="agency", year=year)
+        filterset = DisparityFilters(request.GET)
+        if not filterset.is_valid():
+            return Response(dict(filterset.errors), status=400)
+        df = likelihood_comparison(level="agency", year=filterset.cleaned_year)
         records = []
         if not df.empty:
-            df = df[df["driver_race"] == race]
-            if limit and limit.isdigit():
-                df = df.head(int(limit))
+            df = df[df["driver_race"] == filterset.cleaned_race]
+            if filterset.cleaned_limit:
+                df = df.head(filterset.cleaned_limit)
             cols = [
                 "group_id",
                 "group_name",
@@ -432,24 +463,27 @@ class TopAgenciesView(APIView):
                 "times_likely",
             ]
             records = df[cols].round(2).to_dict(orient="records")
-        return Response({"race": race, "year": year, "agencies": records})
+        return Response(
+            {"race": filterset.cleaned_race, "year": filterset.cleaned_year, "agencies": records}
+        )
 
 
 class SheriffDisparityView(APIView):
     """Sheriff agency stop-rate ratios by county for the county choropleth."""
 
     def get(self, request):
-        year = _clean_year(request)
-        race = _selected_race(request)
+        filterset = DisparityFilters(request.GET)
+        if not filterset.is_valid():
+            return Response(dict(filterset.errors), status=400)
         df = likelihood_comparison(
             level="agency",
-            year=year,
+            year=filterset.cleaned_year,
             status=None,
             query=Q(group_name__icontains="Sheriff"),
         )
         records = []
         if not df.empty:
-            df = df[df["driver_race"] == race].copy()
+            df = df[df["driver_race"] == filterset.cleaned_race].copy()
             df["fips3"] = df["census_profile_id"].str[-3:]
             cols = [
                 "group_id",
@@ -467,7 +501,9 @@ class SheriffDisparityView(APIView):
                 "status",
             ]
             records = df[cols].round(2).to_dict(orient="records")
-        return Response({"race": race, "year": year, "sheriffs": records})
+        return Response(
+            {"race": filterset.cleaned_race, "year": filterset.cleaned_year, "sheriffs": records}
+        )
 
 
 class PoliceDisparityView(APIView):
@@ -476,14 +512,15 @@ class PoliceDisparityView(APIView):
     min_stops = 100
 
     def get(self, request):
-        year = _clean_year(request)
-        race = _selected_race(request)
-        df = likelihood_comparison(level="agency", year=year)
+        filterset = DisparityFilters(request.GET)
+        if not filterset.is_valid():
+            return Response(dict(filterset.errors), status=400)
+        df = likelihood_comparison(level="agency", year=filterset.cleaned_year)
         records = []
         if not df.empty:
             police = df[
                 ~df["group_name"].str.contains("Sheriff", case=False)
-                & (df["driver_race"] == race)
+                & (df["driver_race"] == filterset.cleaned_race)
                 & df["latitude"].notna()
                 & df["longitude"].notna()
             ].copy()
@@ -498,7 +535,9 @@ class PoliceDisparityView(APIView):
             police["small_population"] = False
             frames = [police]
             # Sub-threshold (< 10,000 population) agencies that voluntarily report.
-            excluded = excluded_police_agencies(year=year, race=race)
+            excluded = excluded_police_agencies(
+                year=filterset.cleaned_year, race=filterset.cleaned_race
+            )
             if not excluded.empty:
                 small = excluded[
                     (excluded["status"] == AgencyLikelihoodStatus.SMALL_POPULATION)
@@ -537,20 +576,23 @@ class PoliceDisparityView(APIView):
                 "small_population",
             ]
             records = combined[cols].round(2).to_dict(orient="records")
-        return Response({"race": race, "year": year, "agencies": records})
+        return Response(
+            {"race": filterset.cleaned_race, "year": filterset.cleaned_year, "agencies": records}
+        )
 
 
 class ParityView(APIView):
     """Population share vs. stop share for the parity scatter plot."""
 
     def get(self, request):
-        year = _clean_year(request)
-        race = _selected_race(request)
-        df = likelihood_comparison(level="agency", year=year)
+        filterset = DisparityFilters(request.GET)
+        if not filterset.is_valid():
+            return Response(dict(filterset.errors), status=400)
+        df = likelihood_comparison(level="agency", year=filterset.cleaned_year)
         records = []
         if not df.empty:
             parity = parity_data(df)
-            races = {race, DriverRace.WHITE.label}
+            races = {filterset.cleaned_race, DriverRace.WHITE.label}
             parity = parity[parity["driver_race"].isin(races)]
             cols = [
                 "group_id",
@@ -566,4 +608,6 @@ class ParityView(APIView):
                 "stop_rate_ratio",
             ]
             records = parity[cols].round(4).to_dict(orient="records")
-        return Response({"race": race, "year": year, "agencies": records})
+        return Response(
+            {"race": filterset.cleaned_race, "year": filterset.cleaned_year, "agencies": records}
+        )

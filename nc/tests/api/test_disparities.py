@@ -177,6 +177,42 @@ class TestDisparityCategory:
 
 
 @pytest.mark.django_db(databases=["default", "traffic_stops_nc"])
+class TestDisparityParamValidation:
+    """Invalid query params on disparity endpoints return 400 with field errors."""
+
+    @pytest.mark.parametrize(
+        ("url", "params", "field"),
+        [
+            ("nc:disparity-agencies", {"year": "abc"}, "year"),
+            ("nc:disparity-agencies", {"year": "1850"}, "year"),
+            ("nc:disparity-agencies", {"race": "green"}, "race"),
+            ("nc:disparity-agencies", {"limit": "0"}, "limit"),
+            ("nc:disparity-agencies", {"limit": "1001"}, "limit"),
+            ("nc:disparity-sheriffs", {"year": "abc"}, "year"),
+            ("nc:disparity-police", {"race": "green"}, "race"),
+            ("nc:disparity-parity", {"limit": "1001"}, "limit"),
+        ],
+    )
+    def test_invalid_params_return_400(self, client, url, params, field):
+        response = client.get(reverse(url), params)
+        assert response.status_code == 400
+        assert field in response.json()
+
+    def test_missing_params_default_to_all_years_black(self, client, disparity_data):
+        response = client.get(reverse("nc:disparity-agencies"))
+        assert response.status_code == 200
+        body = response.json()
+        assert body["year"] is None
+        assert body["race"] == "Black"
+        assert len(body["agencies"]) > 0
+
+    def test_valid_limit_accepted(self, client, disparity_data):
+        response = client.get(reverse("nc:disparity-agencies"), {"limit": 1})
+        assert response.status_code == 200
+        assert len(response.json()["agencies"]) == 1
+
+
+@pytest.mark.django_db(databases=["default", "traffic_stops_nc"])
 class TestParity:
     def test_race_and_white_rows(self, client, disparity_data):
         response = client.get(reverse("nc:disparity-parity"), {"race": "Black"})
