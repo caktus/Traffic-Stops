@@ -210,7 +210,7 @@ export const Swatch = styled.span`
 export const LineSwatch = styled.span`
   display: inline-block;
   width: 18px;
-  border-top: 2px dashed ${(p) => p.color || '#ff8c00'};
+  border-top: 2px ${(p) => p.dash || 'dashed'} ${(p) => p.color || '#ff8c00'};
 `;
 
 export const Tooltip = styled.div`

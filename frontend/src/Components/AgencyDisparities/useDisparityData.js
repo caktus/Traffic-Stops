@@ -6,7 +6,7 @@ import axios from '../../Services/Axios';
 // payload nests its rows under a key ("agencies" or "sheriffs"). The effect
 // re-runs whenever the URL changes, which already encodes the year/race filters.
 export default function useDisparityData(url, key = 'agencies') {
-  const [state, setState] = useState({ rows: [], loading: true, error: false });
+  const [state, setState] = useState({ rows: [], payload: {}, loading: true, error: false });
 
   useEffect(() => {
     let active = true;
@@ -14,10 +14,16 @@ export default function useDisparityData(url, key = 'agencies') {
     axios
       .get(url)
       .then((res) => {
-        if (active) setState({ rows: res.data[key] || [], loading: false, error: false });
+        if (active)
+          setState({
+            rows: res.data[key] || [],
+            payload: res.data || {},
+            loading: false,
+            error: false,
+          });
       })
       .catch(() => {
-        if (active) setState({ rows: [], loading: false, error: true });
+        if (active) setState({ rows: [], payload: {}, loading: false, error: true });
       });
     return () => {
       active = false;

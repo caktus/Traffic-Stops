@@ -29,6 +29,29 @@ const baselinePlugin = {
   },
 };
 
+// Draws a dotted vertical reference line at the statewide average times_likely
+// for the selected race (matches the statewide line in the likelihood-of-stop
+// notebooks; omitted when no statewide value is available).
+const createStatewidePlugin = (statewideTimes) => ({
+  id: 'disparityStatewide',
+  afterDraw(chart) {
+    if (statewideTimes == null || Number.isNaN(statewideTimes)) return;
+    const { ctx, chartArea, scales } = chart;
+    if (!scales.x) return;
+    const x = scales.x.getPixelForValue(statewideTimes);
+    if (x < chartArea.left || x > chartArea.right) return;
+    ctx.save();
+    ctx.beginPath();
+    ctx.setLineDash([2, 4]);
+    ctx.strokeStyle = '#FF1493';
+    ctx.lineWidth = 2;
+    ctx.moveTo(x, chartArea.top);
+    ctx.lineTo(x, chartArea.bottom);
+    ctx.stroke();
+    ctx.restore();
+  },
+});
+
 const columns = [
   { key: 'agency_name_race', label: 'Agency', link: agencySearchRateLink },
   { key: 'driver_race', label: 'Race' },
@@ -45,9 +68,10 @@ const columns = [
 export default function DisparityBarChart({ year, race }) {
   const theme = useTheme();
   const history = useHistory();
-  const { rows, loading, error } = useDisparityData(
+  const { rows, payload, loading, error } = useDisparityData(
     getDisparityAgenciesURL({ year, race, limit: 20 })
   );
+  const statewideTimes = payload.statewide ?? null;
 
   if (loading) return <S.Loading height="500px">Loading chart…</S.Loading>;
   if (error) return <S.FetchError>Unable to load agency ranking. Please try again.</S.FetchError>;
@@ -112,9 +136,19 @@ export default function DisparityBarChart({ year, race }) {
         <S.LegendItem>
           <S.LineSwatch /> Equity (1.0× — same rate as white drivers)
         </S.LegendItem>
+        {statewideTimes != null && (
+          <S.LegendItem>
+            <S.LineSwatch color="#ff1493" dash="dotted" /> Statewide Average ({race})
+          </S.LegendItem>
+        )}
       </S.Legend>
       <S.ChartWrapper height={`${Math.max(300, rows.length * 28)}px`}>
-        <Bar data={data} options={options} plugins={[baselinePlugin]} redraw />
+        <Bar
+          data={data}
+          options={options}
+          plugins={[baselinePlugin, createStatewidePlugin(statewideTimes)]}
+          redraw
+        />
       </S.ChartWrapper>
     </>
   );

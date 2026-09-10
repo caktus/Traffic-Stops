@@ -454,8 +454,21 @@ class TopAgenciesView(APIView):
                 "times_likely",
             ]
             records = df[cols].round(2).to_dict(orient="records")
+        # Statewide average for the selected race, used as a reference line on
+        # the top-agencies bar chart (same source as the notebooks).
+        statewide_times_likely = None
+        df_statewide = likelihood_comparison(level="statewide", year=filterset.cleaned_year)
+        if not df_statewide.empty:
+            row = df_statewide[df_statewide["driver_race"] == filterset.cleaned_race]
+            if not row.empty:
+                statewide_times_likely = round(float(row.iloc[0]["times_likely"]), 2)
         return Response(
-            {"race": filterset.cleaned_race, "year": filterset.cleaned_year, "agencies": records}
+            {
+                "race": filterset.cleaned_race,
+                "year": filterset.cleaned_year,
+                "agencies": records,
+                "statewide": statewide_times_likely,
+            }
         )
 
 
