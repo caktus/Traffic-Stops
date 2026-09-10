@@ -5,6 +5,7 @@ import pandas as pd
 from django import forms
 from django.db.models import Avg, Min, Q
 from django.db.models.functions import ExtractYear
+from django.http import HttpRequest
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -84,7 +85,7 @@ class DisparityFilters(django_filters.FilterSet):
         return self.form.cleaned_data["limit"]
 
 
-def likelihood_stop_query(request, agency_id, debug=True):
+def likelihood_stop_query(request: HttpRequest, agency_id: int, debug: bool = True) -> pd.DataFrame:
     """
     Query LikelihoodOfStopSummary view for stop likelihood data for a specific agency.
 
@@ -160,7 +161,7 @@ def likelihood_stop_query(request, agency_id, debug=True):
 class LikelihoodStopView(APIView):
     """Comparison of Population to Traffic Stops"""
 
-    def get(self, request, agency_id):
+    def get(self, request: HttpRequest, agency_id: int) -> Response:
         # Build chart and table data
         df = likelihood_stop_query(request=request, agency_id=agency_id, debug=False)
         # Don't include White stops in the chart
@@ -201,8 +202,8 @@ def available_likelihood_years() -> list[int]:
 
 
 def likelihood_comparison(
-    level="agency",
-    year=None,
+    level: str = "agency",
+    year: int | None = None,
     status: str | None = AgencyLikelihoodStatus.ACTIVE,
     query: Q | None = None,
 ) -> pd.DataFrame:
@@ -431,14 +432,14 @@ def no_census_agencies() -> pd.DataFrame:
 class DisparityYearsView(APIView):
     """Census years available for the disparities dashboard filters."""
 
-    def get(self, request):
+    def get(self, request: HttpRequest) -> Response:
         return Response({"years": available_likelihood_years()})
 
 
 class TopAgenciesView(APIView):
     """Top-N agencies where the selected race is most likely to be stopped."""
 
-    def get(self, request):
+    def get(self, request: HttpRequest) -> Response:
         filterset = DisparityFilters(request.GET)
         if not filterset.is_valid():
             return Response(dict(filterset.errors), status=400)
@@ -471,7 +472,7 @@ class TopAgenciesView(APIView):
 class SheriffDisparityView(APIView):
     """Sheriff agency stop-rate ratios by county for the county choropleth."""
 
-    def get(self, request):
+    def get(self, request: HttpRequest) -> Response:
         filterset = DisparityFilters(request.GET)
         if not filterset.is_valid():
             return Response(dict(filterset.errors), status=400)
@@ -511,7 +512,7 @@ class PoliceDisparityView(APIView):
 
     min_stops = 100
 
-    def get(self, request):
+    def get(self, request: HttpRequest) -> Response:
         filterset = DisparityFilters(request.GET)
         if not filterset.is_valid():
             return Response(dict(filterset.errors), status=400)
@@ -584,7 +585,7 @@ class PoliceDisparityView(APIView):
 class ParityView(APIView):
     """Population share vs. stop share for the parity scatter plot."""
 
-    def get(self, request):
+    def get(self, request: HttpRequest) -> Response:
         filterset = DisparityFilters(request.GET)
         if not filterset.is_valid():
             return Response(dict(filterset.errors), status=400)
