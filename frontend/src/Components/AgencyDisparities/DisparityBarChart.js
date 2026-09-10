@@ -129,7 +129,7 @@ export default function DisparityBarChart({ year, race }) {
       <DisparityTable
         rows={rows}
         columns={columns}
-        title={`Top Agencies by Likelihood of Stop — ${race}`}
+        title={`Top Agencies by Likelihood of Stop — ${race} drivers`}
         downloadName={`top-agencies-${race}`}
       />
       <S.Legend>
@@ -138,7 +138,7 @@ export default function DisparityBarChart({ year, race }) {
         </S.LegendItem>
         {statewideTimes != null && (
           <S.LegendItem>
-            <S.LineSwatch color="#ff1493" dash="dotted" /> Statewide Average ({race})
+            <S.LineSwatch color="#ff1493" dash="dotted" /> Statewide Average ({race} drivers)
           </S.LegendItem>
         )}
       </S.Legend>
