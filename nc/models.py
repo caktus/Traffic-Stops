@@ -645,12 +645,25 @@ class ResourceFile(models.Model):
         return f"Resource file for {self.resource.title}"
 
 
+class NCCensusProfileManager(models.Manager):
+    def distinct_years(self) -> list[int]:
+        """Distinct census years present in the data, newest first."""
+        return list(
+            self.get_queryset()
+            .exclude(year__isnull=True)
+            .values_list("year", flat=True)
+            .distinct()
+            .order_by("-year")
+        )
+
+
 class NCCensusProfile(models.Model):
     class GeographyChoices(models.TextChoices):
         STATE = "state", "State"
         COUNTY = "county", "County"
         PLACE = "place", "Place"
 
+    objects = NCCensusProfileManager()
     acs_id = models.CharField(verbose_name="ACS ID", max_length=32)
     location = models.CharField(max_length=64)
     geography = models.CharField(max_length=16, choices=GeographyChoices.choices)

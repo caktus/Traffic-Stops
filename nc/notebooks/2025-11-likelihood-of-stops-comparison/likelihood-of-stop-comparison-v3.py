@@ -49,10 +49,9 @@ with app.setup(hide_code=True):
 
     from django.db.models import Q  # noqa
 
-    from nc.models import AgencyLikelihoodStatus, DisparityCategory, DriverRace  # noqa
+    from nc.models import AgencyLikelihoodStatus, DisparityCategory, DriverRace, NCCensusProfile  # noqa
     from nc.views.likelihood import (
         active_small_population_agencies,
-        available_likelihood_years,
         excluded_police_agencies,
         likelihood_comparison,
         no_census_agencies,
@@ -100,7 +99,7 @@ def notebook_header(mo):
 @app.cell(hide_code=True)
 def filters(mo):
     """Build year and race dropdown filters from census-backed years and race labels."""
-    years = available_likelihood_years()
+    years = NCCensusProfile.objects.distinct_years()
     year_options = {"All": None, **{str(y): y for y in years}}
     year_dropdown = mo.ui.dropdown(
         options=year_options,
@@ -708,7 +707,7 @@ def sub_threshold_audit(mo, selected_year):
     # active_small_population_agencies() needs a concrete year. When the sidebar
     # Year filter is set to "All" (selected_year is None), fall back to the most
     # recent available year so the audit still renders.
-    _years = available_likelihood_years()
+    _years = NCCensusProfile.objects.distinct_years()
     _audit_year = selected_year if selected_year else (_years[0] if _years else None)
     mo.stop(
         _audit_year is None,

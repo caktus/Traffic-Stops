@@ -191,16 +191,6 @@ class LikelihoodStopView(APIView):
         return Response(data=data, status=200)
 
 
-def available_likelihood_years() -> list[int]:
-    """Return census years used by year filters and year-gating, newest first."""
-    return list(
-        NCCensusProfile.objects.exclude(year__isnull=True)
-        .values_list("year", flat=True)
-        .distinct()
-        .order_by("-year")
-    )
-
-
 def likelihood_comparison(
     level: str = "agency",
     year: int | None = None,
@@ -213,7 +203,7 @@ def likelihood_comparison(
     Args:
         level: "agency", "county", or "statewide"
         year: optional year to filter to. If provided and not present in
-            ``available_likelihood_years()``, returns an empty DataFrame.
+            ``NCCensusProfile.objects.distinct_years()``, returns an empty DataFrame.
         status: filter to rows with this status value. Pass ``None`` to return
             all rows regardless of status. Defaults to ``AgencyLikelihoodStatus.ACTIVE``.
         query: optional ``Q`` object applied to the base queryset for additional
@@ -235,7 +225,7 @@ def likelihood_comparison(
     if query is not None:
         qs = qs.filter(query)
     if year is not None:
-        if int(year) not in available_likelihood_years():
+        if int(year) not in NCCensusProfile.objects.distinct_years():
             return pd.DataFrame()
         qs = qs.filter(year=year).values(
             "level",
@@ -368,14 +358,14 @@ def active_small_population_agencies(year: int = None) -> pd.DataFrame:
 
     Args:
         year: year to audit. Defaults to the most recent census year from
-            ``available_likelihood_years()``.
+            ``NCCensusProfile.objects.distinct_years()``.
 
     Returns:
         DataFrame sorted by ``total_stops`` descending with columns:
         group_id, group_name, total_population, total_stops.
     """
     if year is None:
-        years = available_likelihood_years()
+        years = NCCensusProfile.objects.distinct_years()
         if not years:
             return pd.DataFrame(
                 columns=["group_id", "group_name", "total_population", "total_stops"]
@@ -433,7 +423,7 @@ class DisparityYearsView(APIView):
     """Census years available for the disparities dashboard filters."""
 
     def get(self, request: HttpRequest) -> Response:
-        return Response({"years": available_likelihood_years()})
+        return Response({"years": NCCensusProfile.objects.distinct_years()})
 
 
 class TopAgenciesView(APIView):
