@@ -2,7 +2,7 @@ import django_filters
 import numpy as np
 import pandas as pd
 
-from django.db.models import Avg, Min, Q, Sum
+from django.db.models import Avg, Min, Q
 from django.db.models.functions import ExtractYear
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -39,51 +39,6 @@ class StopSummaryFilterSet(django_filters.FilterSet):
         if int(self.agency_id) != STATEWIDE:
             qs = qs.filter(agency_id=self.agency_id)
         return qs
-
-
-def get_acs_population_data(acs_id: str, year: int = None) -> pd.DataFrame:
-    """
-    Return ACS population data by race for a given acs_id and optional year. If
-    no year is provided, return the average population for the acs_id.
-    """
-    qs = NCCensusProfile.objects.filter(acs_id=acs_id)
-    if year:
-        qs = qs.filter(year=year).values("race", "population")
-    else:
-        # Get the average population for the acs_id
-        qs = qs.values("race").annotate(population=Avg("population"))
-    if not qs.exists():
-        # Create empty DF with expected column names
-        qs = pd.DataFrame(qs, columns=["race", "population"])
-    return pd.DataFrame(qs)
-
-
-def get_stop_count_data(filter_set: StopSummaryFilterSet) -> pd.DataFrame:
-    """
-    Return total stops
-    """
-    by_year = bool(filter_set.form.cleaned_data.get("year"))
-    # Group by race AND year if we're not limiting by year, so we can
-    # calculate the mean of the yearly stops. Otherwise, just group by
-    # race to get the total stops that year.
-    group_by = ("driver_race_comb",) if by_year else ("driver_race_comb", "year")
-    # Sum stops across the selected grouping, used for the denominator
-    # in the stop rate calculation.
-    qs = filter_set.qs.values(*group_by).annotate(stops=Sum("count"))
-    df = pd.DataFrame(qs)
-    if df.empty:
-        # Create empty DF with expected column names
-        df = pd.DataFrame(
-            qs, columns=list(qs.query.values_select) + list(qs.query.annotation_select)
-        )
-    if not by_year:
-        # If not grouping by year, we need to calculate the mean of the yearly
-        # stops for each race. Django doesn't allow aggregating an annotated
-        # field, so just use Pandas to calculate the mean.
-        df = df.groupby("driver_race_comb").agg({"stops": "mean"}).reset_index()
-    # Add a column for the total stops
-    df["stops_total"] = df["stops"].sum()
-    return df
 
 
 def likelihood_stop_query(request, agency_id, debug=True):
