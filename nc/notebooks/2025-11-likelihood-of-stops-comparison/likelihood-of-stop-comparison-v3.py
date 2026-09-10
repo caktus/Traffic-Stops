@@ -49,7 +49,7 @@ with app.setup(hide_code=True):
 
     from django.db.models import Q  # noqa
 
-    from nc.models import AgencyLikelihoodStatus, DriverRace  # noqa
+    from nc.models import AgencyLikelihoodStatus, DisparityCategory, DriverRace  # noqa
     from nc.views.likelihood import (
         active_small_population_agencies,
         available_likelihood_years,
@@ -501,21 +501,12 @@ def police_agency_disparity_map(
 ):
     """Render a geographic map of stop rate disparities for police (non-sheriff) agencies."""
     _DISPARITY_COLORS = {
-        "≤ 1.0 (Equity)": "#2ecc71",
-        "1.0 - 2.0": "#f1c40f",
-        "2.0 - 3.0": "#e67e22",
-        "≥ 3.0 (Severe)": "#e74c3c",
+        DisparityCategory.EQUITY: "#2ecc71",
+        DisparityCategory.LOW: "#f1c40f",
+        DisparityCategory.MODERATE: "#e67e22",
+        DisparityCategory.SEVERE: "#e74c3c",
     }
-    _CATEGORY_ORDER = list(_DISPARITY_COLORS.keys())
-
-    def _disparity_category(times_likely):
-        if times_likely <= 1.0:
-            return "≤ 1.0 (Equity)"
-        elif times_likely <= 2.0:
-            return "1.0 - 2.0"
-        elif times_likely <= 3.0:
-            return "2.0 - 3.0"
-        return "≥ 3.0 (Severe)"
+    _CATEGORY_ORDER = list(_DISPARITY_COLORS)
 
     _map_race = race_dropdown.value or DriverRace.BLACK.label
     _min_stops = 100
@@ -554,7 +545,7 @@ def police_agency_disparity_map(
             )
             _small_pop_df = _small_pop_df[_small_pop_df["stops"] >= _min_stops]
             _small_pop_df["disparity_category"] = _small_pop_df["times_likely"].apply(
-                _disparity_category
+                DisparityCategory.categorize
             )
 
     if _police_df.empty and _small_pop_df.empty:
@@ -563,7 +554,9 @@ def police_agency_disparity_map(
             mo.callout(mo.md("No police agencies found with the current filters."), kind="warn"),
         )
 
-    _police_df["disparity_category"] = _police_df["times_likely"].apply(_disparity_category)
+    _police_df["disparity_category"] = _police_df["times_likely"].apply(
+        DisparityCategory.categorize
+    )
 
     _size_col = "total_stops" if scale_toggle.value == "Total Traffic Stops" else "stops"
 

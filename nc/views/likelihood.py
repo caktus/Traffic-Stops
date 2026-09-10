@@ -11,6 +11,7 @@ from nc.constants import STATEWIDE
 from nc.models import (
     Agency,
     AgencyLikelihoodStatus,
+    DisparityCategory,
     DriverRace,
     LikelihoodOfStopSummary,
     NCCensusProfile,
@@ -384,25 +385,6 @@ def no_census_agencies() -> pd.DataFrame:
 
 # --- Agency-Level Stop Disparities dashboard API ------------------------------
 
-# Disparity color categories keyed on times_likely, mirroring the notebook.
-DISPARITY_COLORS = {
-    "≤ 1.0 (Equity)": "#2ecc71",
-    "1.0 - 2.0": "#f1c40f",
-    "2.0 - 3.0": "#e67e22",
-    "≥ 3.0 (Severe)": "#e74c3c",
-}
-
-
-def disparity_category(times_likely: float) -> str:
-    """Bucket a ``times_likely`` value into a disparity category label."""
-    if times_likely <= 1.0:
-        return "≤ 1.0 (Equity)"
-    elif times_likely <= 2.0:
-        return "1.0 - 2.0"
-    elif times_likely <= 3.0:
-        return "2.0 - 3.0"
-    return "≥ 3.0 (Severe)"
-
 
 def _clean_year(request) -> int | None:
     """Return the ``year`` query param as an int, or None when absent/invalid."""
@@ -510,7 +492,9 @@ class PoliceDisparityView(APIView):
                 pd.to_numeric(police["total_stops"], errors="coerce").fillna(0).astype(int)
             )
             police = police[police["stops"] >= self.min_stops].copy()
-            police["disparity_category"] = police["times_likely"].apply(disparity_category)
+            police["disparity_category"] = police["times_likely"].apply(
+                DisparityCategory.categorize
+            )
             police["small_population"] = False
             frames = [police]
             # Sub-threshold (< 10,000 population) agencies that voluntarily report.
@@ -529,7 +513,9 @@ class PoliceDisparityView(APIView):
                 )
                 small = small[small["stops"] >= self.min_stops].copy()
                 if not small.empty:
-                    small["disparity_category"] = small["times_likely"].apply(disparity_category)
+                    small["disparity_category"] = small["times_likely"].apply(
+                        DisparityCategory.categorize
+                    )
                     small["small_population"] = True
                     frames.append(small)
             combined = pd.concat(frames, ignore_index=True)

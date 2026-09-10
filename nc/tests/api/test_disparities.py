@@ -4,7 +4,13 @@ import pytest
 
 from django.urls import reverse
 
-from nc.models import DriverEthnicity, DriverRace, LikelihoodOfStopSummary, StopSummary
+from nc.models import (
+    DisparityCategory,
+    DriverEthnicity,
+    DriverRace,
+    LikelihoodOfStopSummary,
+    StopSummary,
+)
 from nc.tests.factories import AgencyFactory, NCCensusProfileFactory, PersonFactory
 
 YEAR = 2023
@@ -147,13 +153,27 @@ class TestPoliceDisparity:
         row = next(a for a in agencies if a["group_name"] == "Durham Police Department")
         assert row["latitude"] is not None
         assert row["longitude"] is not None
-        assert row["disparity_category"] in {
-            "≤ 1.0 (Equity)",
-            "1.0 - 2.0",
-            "2.0 - 3.0",
-            "≥ 3.0 (Severe)",
-        }
+        assert row["disparity_category"] in set(DisparityCategory.values)
         assert row["small_population"] is False
+
+
+class TestDisparityCategory:
+    """Tests for DisparityCategory.categorize bucketing."""
+
+    @pytest.mark.parametrize(
+        ("times_likely", "expected"),
+        [
+            (0.5, DisparityCategory.EQUITY),
+            (1.0, DisparityCategory.EQUITY),
+            (1.5, DisparityCategory.LOW),
+            (2.0, DisparityCategory.LOW),
+            (2.5, DisparityCategory.MODERATE),
+            (3.0, DisparityCategory.MODERATE),
+            (4.2, DisparityCategory.SEVERE),
+        ],
+    )
+    def test_categorize(self, times_likely: float, expected: DisparityCategory):
+        assert DisparityCategory.categorize(times_likely) == expected
 
 
 @pytest.mark.django_db(databases=["default", "traffic_stops_nc"])
