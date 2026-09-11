@@ -2,8 +2,10 @@ import django_filters
 import numpy as np
 import pandas as pd
 
-from django.db.models import Avg, Min, Q, Sum
+from django import forms
+from django.db.models import Avg, Min, Q
 from django.db.models.functions import ExtractYear
+from django.http import HttpRequest
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -11,6 +13,8 @@ from nc.constants import STATEWIDE
 from nc.models import (
     Agency,
     AgencyLikelihoodStatus,
+    DisparityCategory,
+    DriverRace,
     LikelihoodOfStopSummary,
     NCCensusProfile,
     StopSummary,
@@ -40,52 +44,48 @@ class StopSummaryFilterSet(django_filters.FilterSet):
         return qs
 
 
-def get_acs_population_data(acs_id: str, year: int = None) -> pd.DataFrame:
-    """
-    Return ACS population data by race for a given acs_id and optional year. If
-    no year is provided, return the average population for the acs_id.
-    """
-    qs = NCCensusProfile.objects.filter(acs_id=acs_id)
-    if year:
-        qs = qs.filter(year=year).values("race", "population")
-    else:
-        # Get the average population for the acs_id
-        qs = qs.values("race").annotate(population=Avg("population"))
-    if not qs.exists():
-        # Create empty DF with expected column names
-        qs = pd.DataFrame(qs, columns=["race", "population"])
-    return pd.DataFrame(qs)
+class IntegerFilter(django_filters.NumberFilter):
+    """django-filters has no IntegerFilter; NumberFilter defaults to DecimalField."""
+
+    field_class = forms.IntegerField
 
 
-def get_stop_count_data(filter_set: StopSummaryFilterSet) -> pd.DataFrame:
+class DisparityFilters(django_filters.FilterSet):
+    """Shared query-param validation for the disparity dashboard views.
+
+    Used purely for parameter parsing/validation; views call ``is_valid()``,
+    then read the ``cleaned_*`` properties and apply the values to their
+    queries. Instantiated fresh per request with a dummy queryset (no
+    Meta.model).
     """
-    Return total stops
-    """
-    by_year = bool(filter_set.form.cleaned_data.get("year"))
-    # Group by race AND year if we're not limiting by year, so we can
-    # calculate the mean of the yearly stops. Otherwise, just group by
-    # race to get the total stops that year.
-    group_by = ("driver_race_comb",) if by_year else ("driver_race_comb", "year")
-    # Sum stops across the selected grouping, used for the denominator
-    # in the stop rate calculation.
-    qs = filter_set.qs.values(*group_by).annotate(stops=Sum("count"))
-    df = pd.DataFrame(qs)
-    if df.empty:
-        # Create empty DF with expected column names
-        df = pd.DataFrame(
-            qs, columns=list(qs.query.values_select) + list(qs.query.annotation_select)
-        )
-    if not by_year:
-        # If not grouping by year, we need to calculate the mean of the yearly
-        # stops for each race. Django doesn't allow aggregating an annotated
-        # field, so just use Pandas to calculate the mean.
-        df = df.groupby("driver_race_comb").agg({"stops": "mean"}).reset_index()
-    # Add a column for the total stops
-    df["stops_total"] = df["stops"].sum()
-    return df
+
+    year = IntegerFilter(min_value=2009)
+    # Frontend sends race labels (which match the mat view's race strings),
+    # not the single-letter DriverRace values.
+    race = django_filters.ChoiceFilter(choices=[(race.label, race.label) for race in DriverRace])
+    limit = IntegerFilter(min_value=1, max_value=1000)
+
+    def __init__(self, data, **kwargs):
+        kwargs.setdefault("queryset", LikelihoodOfStopSummary.objects.none())
+        super().__init__(data, **kwargs)
+
+    @property
+    def cleaned_year(self) -> int | None:
+        """Validated year, or None for all years."""
+        return self.form.cleaned_data["year"]
+
+    @property
+    def cleaned_race(self) -> str:
+        """Validated race label, defaulting to Black when omitted."""
+        return self.form.cleaned_data["race"] or DriverRace.BLACK.label
+
+    @property
+    def cleaned_limit(self) -> int | None:
+        """Validated row limit for top-N endpoints, or None for all rows."""
+        return self.form.cleaned_data["limit"]
 
 
-def likelihood_stop_query(request, agency_id, debug=True):
+def likelihood_stop_query(request: HttpRequest, agency_id: int, debug: bool = True) -> pd.DataFrame:
     """
     Query LikelihoodOfStopSummary view for stop likelihood data for a specific agency.
 
@@ -94,7 +94,7 @@ def likelihood_stop_query(request, agency_id, debug=True):
 
     Related notebooks:
     - https://nccopwatch-share.s3.amazonaws.com/2024-04-likelihood-of-stops/likelihood-of-stops.html
-    """  # noqa
+    """
     filter_set = StopSummaryFilterSet(request.GET, agency_id=agency_id)
     filter_set.is_valid()
     year = filter_set.form.cleaned_data.get("year")
@@ -161,7 +161,7 @@ def likelihood_stop_query(request, agency_id, debug=True):
 class LikelihoodStopView(APIView):
     """Comparison of Population to Traffic Stops"""
 
-    def get(self, request, agency_id):
+    def get(self, request: HttpRequest, agency_id: int) -> Response:
         # Build chart and table data
         df = likelihood_stop_query(request=request, agency_id=agency_id, debug=False)
         # Don't include White stops in the chart
@@ -191,19 +191,9 @@ class LikelihoodStopView(APIView):
         return Response(data=data, status=200)
 
 
-def available_likelihood_years() -> list[int]:
-    """Return census years used by year filters and year-gating, newest first."""
-    return list(
-        NCCensusProfile.objects.exclude(year__isnull=True)
-        .values_list("year", flat=True)
-        .distinct()
-        .order_by("-year")
-    )
-
-
 def likelihood_comparison(
-    level="agency",
-    year=None,
+    level: str = "agency",
+    year: int | None = None,
     status: str | None = AgencyLikelihoodStatus.ACTIVE,
     query: Q | None = None,
 ) -> pd.DataFrame:
@@ -213,7 +203,7 @@ def likelihood_comparison(
     Args:
         level: "agency", "county", or "statewide"
         year: optional year to filter to. If provided and not present in
-            ``available_likelihood_years()``, returns an empty DataFrame.
+            ``NCCensusProfile.objects.distinct_years()``, returns an empty DataFrame.
         status: filter to rows with this status value. Pass ``None`` to return
             all rows regardless of status. Defaults to ``AgencyLikelihoodStatus.ACTIVE``.
         query: optional ``Q`` object applied to the base queryset for additional
@@ -235,7 +225,7 @@ def likelihood_comparison(
     if query is not None:
         qs = qs.filter(query)
     if year is not None:
-        if int(year) not in available_likelihood_years():
+        if int(year) not in NCCensusProfile.objects.distinct_years():
             return pd.DataFrame()
         qs = qs.filter(year=year).values(
             "level",
@@ -368,14 +358,14 @@ def active_small_population_agencies(year: int = None) -> pd.DataFrame:
 
     Args:
         year: year to audit. Defaults to the most recent census year from
-            ``available_likelihood_years()``.
+            ``NCCensusProfile.objects.distinct_years()``.
 
     Returns:
         DataFrame sorted by ``total_stops`` descending with columns:
         group_id, group_name, total_population, total_stops.
     """
     if year is None:
-        years = available_likelihood_years()
+        years = NCCensusProfile.objects.distinct_years()
         if not years:
             return pd.DataFrame(
                 columns=["group_id", "group_name", "total_population", "total_stops"]
@@ -424,3 +414,204 @@ def no_census_agencies() -> pd.DataFrame:
     df["group_id"] = df["group_id"].astype(str)
     df["exclusion_reason"] = "No census data"
     return df.reset_index(drop=True)
+
+
+# --- Agency-Level Stop Disparities dashboard API ------------------------------
+
+
+class DisparityYearsView(APIView):
+    """Census years available for the disparities dashboard filters."""
+
+    def get(self, request: HttpRequest) -> Response:
+        return Response({"years": NCCensusProfile.objects.distinct_years()})
+
+
+class TopAgenciesView(APIView):
+    """Top-N agencies where the selected race is most likely to be stopped."""
+
+    def get(self, request: HttpRequest) -> Response:
+        filterset = DisparityFilters(request.GET)
+        if not filterset.is_valid():
+            return Response(dict(filterset.errors), status=400)
+        df = likelihood_comparison(level="agency", year=filterset.cleaned_year)
+        records = []
+        if not df.empty:
+            df = df[df["driver_race"] == filterset.cleaned_race]
+            if filterset.cleaned_limit:
+                df = df.head(filterset.cleaned_limit)
+            cols = [
+                "group_id",
+                "group_name",
+                "agency_name_race",
+                "driver_race",
+                "population",
+                "total_population",
+                "stops",
+                "total_stops",
+                "stop_rate",
+                "baseline_rate",
+                "stop_rate_ratio",
+                "times_likely",
+            ]
+            records = df[cols].round(2).to_dict(orient="records")
+        # Statewide average for the selected race, used as a reference line on
+        # the top-agencies bar chart (same source as the notebooks).
+        statewide_times_likely = None
+        df_statewide = likelihood_comparison(level="statewide", year=filterset.cleaned_year)
+        if not df_statewide.empty:
+            row = df_statewide[df_statewide["driver_race"] == filterset.cleaned_race]
+            if not row.empty:
+                statewide_times_likely = round(float(row.iloc[0]["times_likely"]), 2)
+        return Response(
+            {
+                "race": filterset.cleaned_race,
+                "year": filterset.cleaned_year,
+                "agencies": records,
+                "statewide": statewide_times_likely,
+            }
+        )
+
+
+class SheriffDisparityView(APIView):
+    """Sheriff agency stop-rate ratios by county for the county choropleth."""
+
+    def get(self, request: HttpRequest) -> Response:
+        filterset = DisparityFilters(request.GET)
+        if not filterset.is_valid():
+            return Response(dict(filterset.errors), status=400)
+        df = likelihood_comparison(
+            level="agency",
+            year=filterset.cleaned_year,
+            status=None,
+            query=Q(group_name__icontains="Sheriff"),
+        )
+        records = []
+        if not df.empty:
+            df = df[df["driver_race"] == filterset.cleaned_race].copy()
+            df["fips3"] = df["census_profile_id"].str[-3:]
+            cols = [
+                "group_id",
+                "group_name",
+                "fips3",
+                "driver_race",
+                "population",
+                "total_population",
+                "stops",
+                "total_stops",
+                "stop_rate",
+                "baseline_rate",
+                "stop_rate_ratio",
+                "times_likely",
+                "status",
+            ]
+            records = df[cols].round(2).to_dict(orient="records")
+        return Response(
+            {"race": filterset.cleaned_race, "year": filterset.cleaned_year, "sheriffs": records}
+        )
+
+
+class PoliceDisparityView(APIView):
+    """Non-sheriff police agencies with coordinates for the bubble map."""
+
+    min_stops = 100
+
+    def get(self, request: HttpRequest) -> Response:
+        filterset = DisparityFilters(request.GET)
+        if not filterset.is_valid():
+            return Response(dict(filterset.errors), status=400)
+        df = likelihood_comparison(level="agency", year=filterset.cleaned_year)
+        records = []
+        if not df.empty:
+            police = df[
+                ~df["group_name"].str.contains("Sheriff", case=False)
+                & (df["driver_race"] == filterset.cleaned_race)
+                & df["latitude"].notna()
+                & df["longitude"].notna()
+            ].copy()
+            police["stops"] = pd.to_numeric(police["stops"], errors="coerce").fillna(0).astype(int)
+            police["total_stops"] = (
+                pd.to_numeric(police["total_stops"], errors="coerce").fillna(0).astype(int)
+            )
+            police = police[police["stops"] >= self.min_stops].copy()
+            police["disparity_category"] = police["times_likely"].apply(
+                DisparityCategory.categorize
+            )
+            police["small_population"] = False
+            frames = [police]
+            # Sub-threshold (< 10,000 population) agencies that voluntarily report.
+            excluded = excluded_police_agencies(
+                year=filterset.cleaned_year, race=filterset.cleaned_race
+            )
+            if not excluded.empty:
+                small = excluded[
+                    (excluded["status"] == AgencyLikelihoodStatus.SMALL_POPULATION)
+                    & excluded["latitude"].notna()
+                    & excluded["longitude"].notna()
+                ].copy()
+                small["stops"] = (
+                    pd.to_numeric(small["stops"], errors="coerce").fillna(0).astype(int)
+                )
+                small["total_stops"] = (
+                    pd.to_numeric(small["total_stops"], errors="coerce").fillna(0).astype(int)
+                )
+                small = small[small["stops"] >= self.min_stops].copy()
+                if not small.empty:
+                    small["disparity_category"] = small["times_likely"].apply(
+                        DisparityCategory.categorize
+                    )
+                    small["small_population"] = True
+                    frames.append(small)
+            combined = pd.concat(frames, ignore_index=True)
+            cols = [
+                "group_id",
+                "group_name",
+                "latitude",
+                "longitude",
+                "driver_race",
+                "population",
+                "total_population",
+                "stops",
+                "total_stops",
+                "stop_rate",
+                "baseline_rate",
+                "stop_rate_ratio",
+                "times_likely",
+                "disparity_category",
+                "small_population",
+            ]
+            records = combined[cols].round(2).to_dict(orient="records")
+        return Response(
+            {"race": filterset.cleaned_race, "year": filterset.cleaned_year, "agencies": records}
+        )
+
+
+class ParityView(APIView):
+    """Population share vs. stop share for the parity scatter plot."""
+
+    def get(self, request: HttpRequest) -> Response:
+        filterset = DisparityFilters(request.GET)
+        if not filterset.is_valid():
+            return Response(dict(filterset.errors), status=400)
+        df = likelihood_comparison(level="agency", year=filterset.cleaned_year)
+        records = []
+        if not df.empty:
+            parity = parity_data(df)
+            races = {filterset.cleaned_race, DriverRace.WHITE.label}
+            parity = parity[parity["driver_race"].isin(races)]
+            cols = [
+                "group_id",
+                "agency_name",
+                "driver_race",
+                "population",
+                "total_population",
+                "stops",
+                "total_stops",
+                "pop_share",
+                "stop_share",
+                "excess_stops",
+                "stop_rate_ratio",
+            ]
+            records = parity[cols].round(4).to_dict(orient="records")
+        return Response(
+            {"race": filterset.cleaned_race, "year": filterset.cleaned_year, "agencies": records}
+        )

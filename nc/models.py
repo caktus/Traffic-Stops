@@ -419,6 +419,26 @@ class AgencyLikelihoodStatus(models.TextChoices):
     SMALL_RACE_POPULATION = "small_race_population", "Race population too small (≤ 100)"
 
 
+class DisparityCategory(models.TextChoices):
+    """Disparity buckets keyed on ``times_likely`` for the stop disparities dashboard."""
+
+    EQUITY = "≤ 1.0 (Equity)"
+    LOW = "1.0 - 2.0"
+    MODERATE = "2.0 - 3.0"
+    SEVERE = "≥ 3.0 (Severe)"
+
+    @classmethod
+    def categorize(cls, times_likely: float) -> "DisparityCategory":
+        """Bucket a ``times_likely`` value into a disparity category."""
+        if times_likely <= 1.0:
+            return cls.EQUITY
+        if times_likely <= 2.0:
+            return cls.LOW
+        if times_likely <= 3.0:
+            return cls.MODERATE
+        return cls.SEVERE
+
+
 LIKELIHOOD_OF_STOP_SUMMARY_SQL = f"""
     WITH acs_avg AS (
         -- Averaged ACS data: used for population filter checks and as fallback
@@ -625,12 +645,25 @@ class ResourceFile(models.Model):
         return f"Resource file for {self.resource.title}"
 
 
+class NCCensusProfileManager(models.Manager):
+    def distinct_years(self) -> list[int]:
+        """Distinct census years present in the data, newest first."""
+        return list(
+            self.get_queryset()
+            .exclude(year__isnull=True)
+            .values_list("year", flat=True)
+            .distinct()
+            .order_by("-year")
+        )
+
+
 class NCCensusProfile(models.Model):
     class GeographyChoices(models.TextChoices):
         STATE = "state", "State"
         COUNTY = "county", "County"
         PLACE = "place", "Place"
 
+    objects = NCCensusProfileManager()
     acs_id = models.CharField(verbose_name="ACS ID", max_length=32)
     location = models.CharField(max_length=64)
     geography = models.CharField(max_length=16, choices=GeographyChoices.choices)

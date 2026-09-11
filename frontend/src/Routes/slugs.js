@@ -5,6 +5,7 @@ export const RESOURCES_SLUG = '/resources';
 export const ABOUT_CONTACT_SLUG = '/about/contact';
 export const AGENCY_LIST_SLUG = '/agencies';
 export const FIND_A_STOP_SLUG = '/stops';
+export const AGENCY_DISPARITIES_SLUG = '/agency-disparities';
 export const STATEWIDE_DATA = '/agencies/-1'; // -1 is NC State's static ID in DB
 
 // Second level

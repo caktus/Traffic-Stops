@@ -8,13 +8,13 @@ from nc.models import (
     DriverEthnicity,
     DriverRace,
     LikelihoodOfStopSummary,
+    NCCensusProfile,
     StopSummary,
 )
 from nc.tests.factories import AgencyFactory, NCCensusProfileFactory, PersonFactory
 from nc.tests.urls import reverse_querystring
 from nc.views.likelihood import (
     active_small_population_agencies,
-    available_likelihood_years,
     excluded_police_agencies,
     likelihood_comparison,
     likelihood_stop_query,
@@ -107,7 +107,7 @@ class TestLikelihoodComparison:
         StopSummary.refresh()
         LikelihoodOfStopSummary.refresh()
 
-        years = available_likelihood_years()
+        years = NCCensusProfile.objects.distinct_years()
         assert 2023 in years
         assert 2024 not in years
         assert likelihood_comparison(level="agency", year=2024).empty
@@ -130,7 +130,7 @@ class TestLikelihoodComparison:
             year=2022,
         )
 
-        years = available_likelihood_years()
+        years = NCCensusProfile.objects.distinct_years()
         assert 2023 in years
         assert 2022 in years
 
