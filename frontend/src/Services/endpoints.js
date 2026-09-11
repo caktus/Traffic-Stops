@@ -62,7 +62,9 @@ export const getDisparityPoliceURL = (opts) => withParams(`${DISPARITIES_BASE}/p
 
 export const getDisparityParityURL = (opts) => withParams(`${DISPARITIES_BASE}/parity/`, opts);
 
-export const COUNTIES_GEOJSON_URL = '/counties.geojson';
+// Served by Django staticfiles (collectstatic), not from the SPA build —
+// the production web server falls through root-level paths to index.html.
+export const COUNTIES_GEOJSON_URL = '/static/counties.geojson';
 
 export default function mapDatasetKeyToEndpoint(datasetKey) {
   switch (datasetKey) {
