@@ -6,9 +6,9 @@
   "dependencies": {
     "@loadable/component": "^5.15.2",
     "@popperjs/core": "^2.11.7",
-    "@sentry/react": "^7.6.0",
+    "@sentry/react": "^7.120.4",
     "autosuggest-highlight": "^3.3.0",
-    "axios": "^0.27.2",
+    "axios": "^0.30.3",
     "babel-eslint": "^10.1.0",
     "chart.js": "^4.2.1",
     "d3-scale": "^4.0.2",
@@ -41,7 +41,7 @@
   },
   "devDependencies": {
     "@testing-library/react": "^13.3.0",
-    "cypress": "^10.3.0",
+    "cypress": "^15.10.0",
     "eslint": "^8.19.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-prettier": "^8.5.0",
