@@ -126,15 +126,15 @@ Update EKS Addons and Nodegroup AMIs
 
 To update the EKS managed addon versions and the nodegroups to the latest Amazon EKS AMIs, run::
 
-    inv deploy.playbook -n eks-updates.yml
+    inv playbook -n eks-updates.yml
 
 You can target individual parts of the update using tags:
 
 To target EKS addon upgrade::
-    inv deploy.playbook -n  eks-updates.yml --extra "--tags addons"
+    inv playbook -n eks-updates.yml --extra "--tags addons"
 
 To target nodegroup AMIs upgrade::
-    inv deploy.playbook -n  eks-updates.yml --extra "--tags addons"
+    inv playbook -n eks-updates.yml --extra "--tags addons"
 
 
 **Note:** updating nodegroup AMIs performs a rolling update, so nodes will be
