@@ -1,17 +1,23 @@
 ---
 
-- src: https://github.com/caktus/ansible-role-django-k8s
-  name: caktus.django-k8s
-  version: v1.12.2
+roles:
+  - src: https://github.com/caktus/ansible-role-django-k8s
+    name: caktus.django-k8s
+    version: v1.12.2
 
-- src: https://github.com/caktus/ansible-role-aws-web-stacks
-  name: caktus.aws-web-stacks
-  version: v0.3.0
+  - src: https://github.com/caktus/ansible-role-aws-web-stacks
+    name: caktus.aws-web-stacks
+    version: v0.3.0
 
-- src: https://github.com/caktus/ansible-role-k8s-web-cluster
-  name: caktus.k8s-web-cluster
-  version: v1.12.1
+  - src: https://github.com/caktus/ansible-role-k8s-web-cluster
+    name: caktus.k8s-web-cluster
+    version: v1.12.1
 
-- src: https://github.com/caktus/ansible-role-k8s-hosting-services
-  name: caktus.k8s-hosting-services
-  version: v0.13.0
+  - src: https://github.com/caktus/ansible-role-k8s-hosting-services
+    name: caktus.k8s-hosting-services
+    version: v0.13.0
+
+collections:
+  - name: https://github.com/caktus/ansible-collection-caktus-hosting-services
+    version: v0.9.0
+    type: git
