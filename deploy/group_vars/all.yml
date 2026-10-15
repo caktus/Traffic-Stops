@@ -63,6 +63,7 @@ cloudformation_stack_template_parameters:
   AssetsUseCloudFront: "true"
   CustomEKSAMI: "" # Optional when CustomAMIImageType is set. Preferrably do not set as AWS will select best optimized image if CustomAMIImageType is set.
   CustomAMIImageType: AL2023_x86_64_STANDARD
+  EksClusterName: trafficstops-stack-cluster
 cloudformation_stack_tags:
   Environment: "{{ app_name }}"
 
