@@ -30,6 +30,7 @@ export default function PoliceBubbleMap({ year, race }) {
   const { geojson, error: geojsonError } = useCountiesGeojson(COUNTIES_GEOJSON_URL);
   const { rows, loading, error } = useDisparityData(getDisparityPoliceURL({ year, race }));
   const [tooltip, setTooltip] = useState(null);
+  const [showSubThreshold, setShowSubThreshold] = useState(true);
 
   // Bubble radius scales with total stops so higher-volume agencies read larger.
   const sizeScale = useMemo(() => {
@@ -77,9 +78,18 @@ export default function PoliceBubbleMap({ year, race }) {
             <S.Swatch round color={color} /> {label}
           </S.LegendItem>
         ))}
-        <S.LegendItem>
+        <S.LegendToggle
+          type="button"
+          off={!showSubThreshold}
+          aria-pressed={showSubThreshold}
+          title={`${showSubThreshold ? 'Hide' : 'Show'} sub-threshold agencies`}
+          onClick={() => {
+            setShowSubThreshold((show) => !show);
+            setTooltip(null);
+          }}
+        >
           <S.Swatch round dashed faded /> Sub-threshold, actively reporting (&lt; 10,000 population)
-        </S.LegendItem>
+        </S.LegendToggle>
       </S.Legend>
       <NcMap>
         <Geographies geography={geojson}>
@@ -96,25 +106,27 @@ export default function PoliceBubbleMap({ year, race }) {
             ))
           }
         </Geographies>
-        {rows.map((row) => (
-          <Marker
-            key={row.group_id}
-            coordinates={[row.longitude, row.latitude]}
-            onMouseMove={(evt) => handleMove(evt, row)}
-            onMouseLeave={() => setTooltip(null)}
-            onClick={() => handleClick(row)}
-            style={{ default: { cursor: 'pointer' } }}
-          >
-            <circle
-              r={sizeScale(row.total_stops || 0)}
-              fill={DISPARITY_COLORS[row.disparity_category]}
-              fillOpacity={row.small_population ? 0.4 : 0.75}
-              stroke={row.small_population ? '#333333' : '#ffffff'}
-              strokeWidth={row.small_population ? 1.5 : 0.5}
-              strokeDasharray={row.small_population ? '2,2' : undefined}
-            />
-          </Marker>
-        ))}
+        {rows
+          .filter((row) => showSubThreshold || !row.small_population)
+          .map((row) => (
+            <Marker
+              key={row.group_id}
+              coordinates={[row.longitude, row.latitude]}
+              onMouseMove={(evt) => handleMove(evt, row)}
+              onMouseLeave={() => setTooltip(null)}
+              onClick={() => handleClick(row)}
+              style={{ default: { cursor: 'pointer' } }}
+            >
+              <circle
+                r={sizeScale(row.total_stops || 0)}
+                fill={DISPARITY_COLORS[row.disparity_category]}
+                fillOpacity={row.small_population ? 0.4 : 0.75}
+                stroke={row.small_population ? '#333333' : '#ffffff'}
+                strokeWidth={row.small_population ? 1.5 : 0.5}
+                strokeDasharray={row.small_population ? '2,2' : undefined}
+              />
+            </Marker>
+          ))}
       </NcMap>
       <MapTooltip tooltip={tooltip} />
     </div>

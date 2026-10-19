@@ -87,6 +87,27 @@ def disparity_data(db):
     return {"police": police, "sheriff": sheriff}
 
 
+@pytest.fixture
+def small_agency_data(disparity_data):
+    """Add sub-threshold (< 10,000 population) police and sheriff agencies."""
+    small_kwargs = {"black_stops": 120, "white_stops": 40, "black_pop": 2000, "white_pop": 5000}
+    small_police = _create_agency_data(
+        name="Tinytown Police Department",
+        acs_id="1600000US3770000",
+        total_pop=8000,
+        **small_kwargs,
+    )
+    small_sheriff = _create_agency_data(
+        name="Tiny County Sheriff",
+        acs_id="0500000US37001",
+        total_pop=8000,
+        **small_kwargs,
+    )
+    StopSummary.refresh()
+    LikelihoodOfStopSummary.refresh()
+    return {"small_police": small_police, "small_sheriff": small_sheriff}
+
+
 @pytest.mark.django_db(databases=["default", "traffic_stops_nc"])
 class TestDisparityYears:
     def test_returns_available_years(self, client, disparity_data):
@@ -140,6 +161,13 @@ class TestSheriffDisparity:
         assert row["group_name"] == "Durham County Sheriff"
         assert row["status"] == "active"
 
+    def test_sub_threshold_status_returned(self, client, small_agency_data):
+        """The map legend toggle filters on status."""
+        response = client.get(reverse("nc:disparity-sheriffs"), {"race": "Black"})
+        statuses = {s["group_name"]: s["status"] for s in response.json()["sheriffs"]}
+        assert statuses["Tiny County Sheriff"] == "small_population"
+        assert statuses["Durham County Sheriff"] == "active"
+
 
 @pytest.mark.django_db(databases=["default", "traffic_stops_nc"])
 class TestPoliceDisparity:
@@ -155,6 +183,13 @@ class TestPoliceDisparity:
         assert row["longitude"] is not None
         assert row["disparity_category"] in set(DisparityCategory.values)
         assert row["small_population"] is False
+
+    def test_sub_threshold_agencies_flagged(self, client, small_agency_data):
+        """The map legend toggle filters on small_population."""
+        response = client.get(reverse("nc:disparity-police"), {"race": "Black"})
+        flags = {a["group_name"]: a["small_population"] for a in response.json()["agencies"]}
+        assert flags["Tinytown Police Department"] is True
+        assert flags["Durham Police Department"] is False
 
 
 class TestDisparityCategory:

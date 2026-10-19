@@ -23,6 +23,8 @@ export const DISPARITY_COLORS = {
 // Distinct colors for county choropleth layers that are not colored by ratio.
 export const BELOW_THRESHOLD_COLOR = '#8e6fb0';
 export const NO_DATA_COLOR = '#cccccc';
+// Neutral county fill, matching the police map's base layer, for counties hidden via a legend toggle.
+export const HIDDEN_COLOR = '#e4e9ee';
 
 // Human-readable labels for the AgencyLikelihoodStatus values returned by the API.
 export const STATUS_LABELS = {
