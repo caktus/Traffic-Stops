@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Geographies, Geography, Marker } from 'react-simple-maps';
-import { scaleSqrt } from 'd3-scale';
+import { scaleLog } from 'd3-scale';
 
 import { getDisparityPoliceURL, COUNTIES_GEOJSON_URL } from '../../Services/endpoints';
 import { DISPARITY_COLORS, fmt, agencySearchRateLink } from './disparityConstants';
@@ -25,6 +25,17 @@ const columns = [
   { key: 'disparity_category', label: 'Disparity' },
 ];
 
+const BUBBLE_MIN_RADIUS = 4;
+const BUBBLE_MAX_RADIUS = 24;
+
+// Linear-interpolated quantile of an ascending-sorted array.
+const quantile = (sorted, q) => {
+  const pos = (sorted.length - 1) * q;
+  const lower = Math.floor(pos);
+  const upper = Math.ceil(pos);
+  return sorted[lower] + (sorted[upper] - sorted[lower]) * (pos - lower);
+};
+
 export default function PoliceBubbleMap({ year, race }) {
   const history = useHistory();
   const { geojson, error: geojsonError } = useCountiesGeojson(COUNTIES_GEOJSON_URL);
@@ -32,10 +43,31 @@ export default function PoliceBubbleMap({ year, race }) {
   const [tooltip, setTooltip] = useState(null);
   const [showSubThreshold, setShowSubThreshold] = useState(true);
 
-  // Bubble radius scales with total stops so higher-volume agencies read larger.
-  const sizeScale = useMemo(() => {
-    const max = rows.length ? Math.max(...rows.map((r) => r.total_stops || 0)) : 1;
-    return scaleSqrt().domain([0, max]).range([3, 22]);
+  // Bubble radius scales with the log of an agency's total stops (all races, not
+  // the selected group's stops). Stop volumes span several orders of magnitude, so
+  // a log scale keeps low- and mid-volume agencies visually distinguishable. The
+  // domain runs from the smallest agency to the 95th percentile and is clamped,
+  // so a few very high-volume agencies don't stretch the scale.
+  const { sizeScale, sizeLegend } = useMemo(() => {
+    const totals = rows
+      .map((r) => r.total_stops || 0)
+      .filter((t) => t > 0)
+      .sort((a, b) => a - b);
+    if (!totals.length) {
+      return { sizeScale: () => BUBBLE_MIN_RADIUS, sizeLegend: [] };
+    }
+    const low = totals[0];
+    const high = Math.max(quantile(totals, 0.95), low + 1);
+    const scale = scaleLog()
+      .domain([low, high])
+      .range([BUBBLE_MIN_RADIUS, BUBBLE_MAX_RADIUS])
+      .clamp(true);
+    const legendValues = [low, quantile(totals, 0.5), high].map(Math.round);
+    return {
+      // Guard against log(0) for agencies with no total_stops value.
+      sizeScale: (value) => scale(Math.max(value, low)),
+      sizeLegend: [...new Set(legendValues)].map((value) => ({ value, radius: scale(value) })),
+    };
   }, [rows]);
 
   if (error) return <S.FetchError>Unable to load police data. Please try again.</S.FetchError>;
@@ -91,6 +123,16 @@ export default function PoliceBubbleMap({ year, race }) {
           <S.Swatch round dashed faded /> Sub-threshold, actively reporting (&lt; 10,000 population)
         </S.LegendToggle>
       </S.Legend>
+      {sizeLegend.length > 0 && (
+        <S.Legend>
+          Bubble size = total stops:
+          {sizeLegend.map(({ value, radius }) => (
+            <S.LegendItem key={value}>
+              <S.BubbleSwatch size={radius * 2} /> {value.toLocaleString()}
+            </S.LegendItem>
+          ))}
+        </S.Legend>
+      )}
       <NcMap>
         <Geographies geography={geojson}>
           {({ geographies }) =>
@@ -108,6 +150,8 @@ export default function PoliceBubbleMap({ year, race }) {
         </Geographies>
         {rows
           .filter((row) => showSubThreshold || !row.small_population)
+          // Draw large bubbles first so small ones stay visible and clickable on top.
+          .sort((a, b) => (b.total_stops || 0) - (a.total_stops || 0))
           .map((row) => (
             <Marker
               key={row.group_id}

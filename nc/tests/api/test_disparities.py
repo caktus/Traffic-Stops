@@ -184,6 +184,16 @@ class TestPoliceDisparity:
         assert row["disparity_category"] in set(DisparityCategory.values)
         assert row["small_population"] is False
 
+    def test_total_stops_is_agency_total_not_race_subset(self, client, disparity_data):
+        """Bubble size uses total_stops, which must cover all races for the agency."""
+        response = client.get(reverse("nc:disparity-police"), {"race": "Black"})
+        row = next(
+            a for a in response.json()["agencies"] if a["group_name"] == "Durham Police Department"
+        )
+        # Fixture: 150 Black + 50 White stops.
+        assert row["stops"] == 150
+        assert row["total_stops"] == 200
+
     def test_sub_threshold_agencies_flagged(self, client, small_agency_data):
         """The map legend toggle filters on small_population."""
         response = client.get(reverse("nc:disparity-police"), {"race": "Black"})

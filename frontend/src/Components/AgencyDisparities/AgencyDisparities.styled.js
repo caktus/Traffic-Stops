@@ -229,6 +229,16 @@ export const Swatch = styled.span`
   }};
 `;
 
+// Legend entry for bubble sizes; `size` is the diameter in px.
+export const BubbleSwatch = styled.span`
+  display: inline-block;
+  width: ${(p) => p.size}px;
+  height: ${(p) => p.size}px;
+  border-radius: 50%;
+  background: #999999;
+  opacity: 0.6;
+`;
+
 // Dashed-line swatch for legend items describing a reference line (e.g. the
 // equity baseline on the likelihood bar chart) rather than a fill color.
 export const LineSwatch = styled.span`
