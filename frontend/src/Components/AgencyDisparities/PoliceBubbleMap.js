@@ -28,6 +28,8 @@ const columns = [
 
 const BUBBLE_MIN_RADIUS = 4;
 const BUBBLE_MAX_RADIUS = 24;
+// Marker only applies the style for its current state, so each state needs the cursor.
+const BUBBLE_CURSOR = { cursor: 'pointer' };
 
 // Round to one significant figure (e.g. 17,119 -> 20,000) for legend labels.
 const roundSignificant = (value) => {
@@ -40,7 +42,9 @@ export default function PoliceBubbleMap({ year, race }) {
   const { geojson, error: geojsonError } = useCountiesGeojson(COUNTIES_GEOJSON_URL);
   const { rows, loading, error } = useDisparityData(getDisparityPoliceURL({ year, race }));
   const [tooltip, setTooltip] = useState(null);
+  const [hovered, setHovered] = useState(null);
   const [showSubThreshold, setShowSubThreshold] = useState(true);
+  const [hiddenCategories, setHiddenCategories] = useState(() => new Set());
 
   // Bubble radius scales with the log of an agency's total stops (all races, not
   // the selected group's stops). Stop volumes span several orders of magnitude, so
@@ -85,6 +89,7 @@ export default function PoliceBubbleMap({ year, race }) {
     if (row.small_population) {
       body.push('*Small population (< 10,000) — ratio may be less statistically reliable.');
     }
+    setHovered(row);
     setTooltip({
       x: evt.clientX,
       y: evt.clientY,
@@ -93,7 +98,27 @@ export default function PoliceBubbleMap({ year, race }) {
     });
   };
 
+  const clearHover = () => {
+    setTooltip(null);
+    setHovered(null);
+  };
+
+  const toggleCategory = (label) => {
+    setHiddenCategories((prev) => {
+      const next = new Set(prev);
+      if (!next.delete(label)) next.add(label);
+      return next;
+    });
+    clearHover();
+  };
+
   const handleClick = (row) => history.push(agencySearchRateLink(row));
+
+  const visibleRows = rows
+    .filter((row) => showSubThreshold || !row.small_population)
+    .filter((row) => !hiddenCategories.has(row.disparity_category))
+    // Draw large bubbles first so small ones stay visible and clickable on top.
+    .sort((a, b) => (b.total_stops || 0) - (a.total_stops || 0));
 
   return (
     <div>
@@ -104,11 +129,21 @@ export default function PoliceBubbleMap({ year, race }) {
         downloadName={`police-disparities-${race}`}
       />
       <S.Legend>
-        {Object.entries(DISPARITY_COLORS).map(([label, color]) => (
-          <S.LegendItem key={label}>
-            <S.Swatch round color={color} /> {label}
-          </S.LegendItem>
-        ))}
+        {Object.entries(DISPARITY_COLORS).map(([label, color]) => {
+          const hidden = hiddenCategories.has(label);
+          return (
+            <S.LegendToggle
+              key={label}
+              type="button"
+              off={hidden}
+              aria-pressed={!hidden}
+              title={`${hidden ? 'Show' : 'Hide'} ${label} agencies`}
+              onClick={() => toggleCategory(label)}
+            >
+              <S.Swatch round color={color} /> {label}
+            </S.LegendToggle>
+          );
+        })}
         <S.LegendToggle
           type="button"
           off={!showSubThreshold}
@@ -116,7 +151,7 @@ export default function PoliceBubbleMap({ year, race }) {
           title={`${showSubThreshold ? 'Hide' : 'Show'} sub-threshold agencies`}
           onClick={() => {
             setShowSubThreshold((show) => !show);
-            setTooltip(null);
+            clearHover();
           }}
         >
           <S.Swatch round dashed faded /> Sub-threshold, actively reporting (&lt; 10,000 population)
@@ -147,29 +182,38 @@ export default function PoliceBubbleMap({ year, race }) {
             ))
           }
         </Geographies>
-        {rows
-          .filter((row) => showSubThreshold || !row.small_population)
-          // Draw large bubbles first so small ones stay visible and clickable on top.
-          .sort((a, b) => (b.total_stops || 0) - (a.total_stops || 0))
-          .map((row) => (
-            <Marker
-              key={row.group_id}
-              coordinates={[row.longitude, row.latitude]}
-              onMouseMove={(evt) => handleMove(evt, row)}
-              onMouseLeave={() => setTooltip(null)}
-              onClick={() => handleClick(row)}
-              style={{ default: { cursor: 'pointer' } }}
-            >
-              <circle
-                r={sizeScale(row.total_stops || 0)}
-                fill={DISPARITY_COLORS[row.disparity_category]}
-                fillOpacity={row.small_population ? 0.4 : 0.75}
-                stroke={row.small_population ? '#333333' : '#ffffff'}
-                strokeWidth={row.small_population ? 1.5 : 0.5}
-                strokeDasharray={row.small_population ? '2,2' : undefined}
-              />
-            </Marker>
-          ))}
+        {visibleRows.map((row) => (
+          <Marker
+            key={row.group_id}
+            coordinates={[row.longitude, row.latitude]}
+            onMouseMove={(evt) => handleMove(evt, row)}
+            onMouseLeave={clearHover}
+            onClick={() => handleClick(row)}
+            style={{ default: BUBBLE_CURSOR, hover: BUBBLE_CURSOR, pressed: BUBBLE_CURSOR }}
+          >
+            <circle
+              r={sizeScale(row.total_stops || 0)}
+              fill={DISPARITY_COLORS[row.disparity_category]}
+              fillOpacity={row.small_population ? 0.4 : 0.75}
+              stroke={row.small_population ? '#333333' : '#ffffff'}
+              strokeWidth={row.small_population ? 1.5 : 0.5}
+              strokeDasharray={row.small_population ? '2,2' : undefined}
+            />
+          </Marker>
+        ))}
+        {/* Drawn last so an overlapped bubble is fully visible while hovered. */}
+        {hovered && (
+          <Marker coordinates={[hovered.longitude, hovered.latitude]}>
+            <circle
+              r={sizeScale(hovered.total_stops || 0)}
+              fill={DISPARITY_COLORS[hovered.disparity_category]}
+              fillOpacity={0.9}
+              stroke="#111111"
+              strokeWidth={2}
+              pointerEvents="none"
+            />
+          </Marker>
+        )}
       </NcMap>
       <MapTooltip tooltip={tooltip} />
     </div>
