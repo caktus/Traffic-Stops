@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Geographies, Geography, Marker } from 'react-simple-maps';
 import { scaleLog } from 'd3-scale';
+import { ascending, quantileSorted } from 'd3-array';
 
 import { getDisparityPoliceURL, COUNTIES_GEOJSON_URL } from '../../Services/endpoints';
 import { DISPARITY_COLORS, fmt, agencySearchRateLink } from './disparityConstants';
@@ -28,12 +29,10 @@ const columns = [
 const BUBBLE_MIN_RADIUS = 4;
 const BUBBLE_MAX_RADIUS = 24;
 
-// Linear-interpolated quantile of an ascending-sorted array.
-const quantile = (sorted, q) => {
-  const pos = (sorted.length - 1) * q;
-  const lower = Math.floor(pos);
-  const upper = Math.ceil(pos);
-  return sorted[lower] + (sorted[upper] - sorted[lower]) * (pos - lower);
+// Round to one significant figure (e.g. 17,119 -> 20,000) for legend labels.
+const roundSignificant = (value) => {
+  const magnitude = 10 ** Math.floor(Math.log10(value));
+  return Math.round(value / magnitude) * magnitude;
 };
 
 export default function PoliceBubbleMap({ year, race }) {
@@ -52,17 +51,17 @@ export default function PoliceBubbleMap({ year, race }) {
     const totals = rows
       .map((r) => r.total_stops || 0)
       .filter((t) => t > 0)
-      .sort((a, b) => a - b);
+      .sort(ascending);
     if (!totals.length) {
       return { sizeScale: () => BUBBLE_MIN_RADIUS, sizeLegend: [] };
     }
     const low = totals[0];
-    const high = Math.max(quantile(totals, 0.95), low + 1);
+    const high = Math.max(quantileSorted(totals, 0.95), low + 1);
     const scale = scaleLog()
       .domain([low, high])
       .range([BUBBLE_MIN_RADIUS, BUBBLE_MAX_RADIUS])
       .clamp(true);
-    const legendValues = [low, quantile(totals, 0.5), high].map(Math.round);
+    const legendValues = [low, quantileSorted(totals, 0.5), high].map(roundSignificant);
     return {
       // Guard against log(0) for agencies with no total_stops value.
       sizeScale: (value) => scale(Math.max(value, low)),
