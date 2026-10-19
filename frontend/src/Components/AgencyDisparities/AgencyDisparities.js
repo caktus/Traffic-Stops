@@ -18,7 +18,14 @@ import SheriffCountyMap from './SheriffCountyMap';
 import PoliceBubbleMap from './PoliceBubbleMap';
 import ParityScatter from './ParityScatter';
 import SectionHeading from './SectionHeading';
-import { RACE_OPTIONS, DEFAULT_RACE, ALL_YEARS } from './disparityConstants';
+import {
+  RACE_OPTIONS,
+  DEFAULT_RACE,
+  ALL_YEARS,
+  BAR_CHART_COPY,
+  SHERIFF_MAP_COPY,
+  POLICE_MAP_COPY,
+} from './disparityConstants';
 import * as S from './AgencyDisparities.styled';
 
 export default function AgencyDisparities() {
@@ -116,6 +123,7 @@ export default function AgencyDisparities() {
           <SectionHeading id="non-white-likelihood">
             Where Non-White Drivers Are Most Likely to Be Stopped
           </SectionHeading>
+          <S.SectionCopy>{BAR_CHART_COPY}</S.SectionCopy>
         </S.SectionHeader>
         <DisparityBarChart {...chartProps} />
       </S.Section>
@@ -128,11 +136,7 @@ export default function AgencyDisparities() {
           <SectionHeading id="sheriff-offices" subtitle>
             Sheriff&apos;s Offices: Stop Rate Ratios by County
           </SectionHeading>
-          <S.SectionCopy>
-            Because North Carolina sheriff&apos;s offices generally have countywide jurisdictions,
-            county boundaries provide a useful way to visualize disparities in stops by
-            sheriff&apos;s office.
-          </S.SectionCopy>
+          <S.SectionCopy>{SHERIFF_MAP_COPY}</S.SectionCopy>
         </S.SectionHeader>
         <SheriffCountyMap {...chartProps} />
       </S.Section>
@@ -142,11 +146,7 @@ export default function AgencyDisparities() {
           <SectionHeading id="police-departments" subtitle>
             Police Departments: Stop Rate Ratios Across North Carolina
           </SectionHeading>
-          <S.SectionCopy>
-            Unlike sheriff&apos;s offices, municipal police departments may operate within the same
-            county. Each bubble represents an individual police department, allowing users to see
-            differences between agencies operating in the same geographic area.
-          </S.SectionCopy>
+          <S.SectionCopy>{POLICE_MAP_COPY}</S.SectionCopy>
         </S.SectionHeader>
         <PoliceBubbleMap {...chartProps} />
       </S.Section>
