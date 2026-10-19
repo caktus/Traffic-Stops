@@ -234,3 +234,10 @@ class TestParity:
             "stop_rate_ratio",
         }
         assert expected_keys == set(row.keys())
+
+    def test_group_id_identifies_agencies(self, client, disparity_data):
+        """group_id is what the scatter plot uses to link points to agency dashboards."""
+        response = client.get(reverse("nc:disparity-parity"), {"race": "Black"})
+        agencies = response.json()["agencies"]
+        expected = {str(a.pk): a.name for a in disparity_data.values()}
+        assert {str(a["group_id"]): a["agency_name"] for a in agencies} == expected
