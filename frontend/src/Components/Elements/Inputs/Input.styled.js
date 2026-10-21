@@ -16,6 +16,7 @@ export const TextArea = styled.textarea`
 `;
 
 export const Wrapper = styled.div`
+  font-family: ${(props) => props.theme.fonts.ui};
   height: 100%;
   display: flex;
   flex-direction: column;
