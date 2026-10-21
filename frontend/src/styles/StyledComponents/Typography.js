@@ -64,7 +64,7 @@ export const COLORS = ['light', 'dark'];
 export const WEIGHTS = ['normal', 'bold'];
 
 export const P = styled.p`
-  font-family: ${(props) => props.theme.fonts.body};
+  font-family: ${(props) => props.theme.fonts.ui};
   font-weight: ${(props) => props.weight};
   font-size: ${(props) => props.size}px;
   line-height: ${(props) => (props.size === SIZES[0] ? '28px' : '32px')};
