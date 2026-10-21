@@ -2,8 +2,6 @@ env_name: "production"
 
 k8s_domain_names:
   - nccopwatch.org
-k8s_domain_from_to_www_redirect: true
-k8s_ingress_tls_domains_extra:
   - www.nccopwatch.org
 # k8s_domain_redirects:
 # - nccopwatch.com
@@ -103,6 +101,14 @@ k8s_hosting_services_healthcheck_url: https://hc-ping.com/c80a410a-f739-4613-9aa
 
 # django-k8s app traefik ingress resources
 k8s_traefik_ingress_resources:
+  - name: "www-redirect"
+    type: "redirectRegex"
+    resourceKind: middleware
+    config:
+      regex: '^https://www\.(.*)'
+      replacement: 'https://${1}'
+      permanent: true
+
   - name: "server-transport"
     type: "root-spec"
     resourceKind: "ServersTransport"
