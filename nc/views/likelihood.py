@@ -525,6 +525,7 @@ class PoliceDisparityView(APIView):
             police = df[
                 ~df["group_name"].str.contains("Sheriff", case=False)
                 & (df["driver_race"] == filterset.cleaned_race)
+                & df["times_likely"].notna()
                 & df["latitude"].notna()
                 & df["longitude"].notna()
             ].copy()
@@ -545,6 +546,7 @@ class PoliceDisparityView(APIView):
             if not excluded.empty:
                 small = excluded[
                     (excluded["status"] == AgencyLikelihoodStatus.SMALL_POPULATION)
+                    & excluded["times_likely"].notna()
                     & excluded["latitude"].notna()
                     & excluded["longitude"].notna()
                 ].copy()

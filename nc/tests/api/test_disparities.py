@@ -201,6 +201,25 @@ class TestPoliceDisparity:
         assert flags["Tinytown Police Department"] is True
         assert flags["Durham Police Department"] is False
 
+    def test_zero_race_population_excluded(self, client, small_agency_data):
+        """A race with 0 population has no stop rate (NaN); it must not break JSON rendering."""
+        _create_agency_data(
+            name="Zeroville Police Department",
+            acs_id="1600000US3780000",
+            black_stops=120,
+            white_stops=40,
+            black_pop=0,
+            white_pop=5000,
+            total_pop=8000,
+        )
+        StopSummary.refresh()
+        LikelihoodOfStopSummary.refresh()
+        response = client.get(reverse("nc:disparity-police"), {"race": "Black", "year": YEAR})
+        assert response.status_code == 200
+        names = {a["group_name"] for a in response.json()["agencies"]}
+        assert "Zeroville Police Department" not in names
+        assert "Tinytown Police Department" in names
+
 
 class TestDisparityCategory:
     """Tests for DisparityCategory.categorize bucketing."""
