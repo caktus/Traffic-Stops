@@ -168,8 +168,9 @@ class TestSheriffDisparity:
         assert statuses["Tiny County Sheriff"] == "small_population"
         assert statuses["Durham County Sheriff"] == "active"
 
-    def test_zero_race_population_excluded(self, client, disparity_data):
-        """A race with 0 population has no stop rate (NaN); it must not break JSON rendering."""
+    @pytest.mark.parametrize("year", [YEAR, None], ids=["year", "all-years"])
+    def test_zero_race_population_excluded(self, client, disparity_data, year):
+        """A race with 0 population has no stop ratio, so the agency is left off the map."""
         _create_agency_data(
             name="Zero County Sheriff",
             acs_id="0500000US37002",
@@ -181,10 +182,30 @@ class TestSheriffDisparity:
         )
         StopSummary.refresh()
         LikelihoodOfStopSummary.refresh()
-        response = client.get(reverse("nc:disparity-sheriffs"), {"race": "Black", "year": YEAR})
+        params = {"race": "Black", **({"year": year} if year else {})}
+        response = client.get(reverse("nc:disparity-sheriffs"), params)
         assert response.status_code == 200
         names = {s["group_name"] for s in response.json()["sheriffs"]}
         assert "Zero County Sheriff" not in names
+        assert "Durham County Sheriff" in names
+
+    @pytest.mark.parametrize("year", [YEAR, None], ids=["year", "all-years"])
+    def test_zero_white_population_excluded(self, client, disparity_data, year):
+        """Without a White baseline there is no stop ratio, so the agency is left off the map."""
+        _create_agency_data(
+            name="No Baseline County Sheriff",
+            acs_id="0500000US37003",
+            black_stops=120,
+            white_stops=40,
+            black_pop=5000,
+            white_pop=0,
+        )
+        StopSummary.refresh()
+        LikelihoodOfStopSummary.refresh()
+        params = {"race": "Black", **({"year": year} if year else {})}
+        response = client.get(reverse("nc:disparity-sheriffs"), params)
+        names = {s["group_name"] for s in response.json()["sheriffs"]}
+        assert "No Baseline County Sheriff" not in names
         assert "Durham County Sheriff" in names
 
 
@@ -220,8 +241,9 @@ class TestPoliceDisparity:
         assert flags["Tinytown Police Department"] is True
         assert flags["Durham Police Department"] is False
 
-    def test_zero_race_population_excluded(self, client, small_agency_data):
-        """A race with 0 population has no stop rate (NaN); it must not break JSON rendering."""
+    @pytest.mark.parametrize("year", [YEAR, None], ids=["year", "all-years"])
+    def test_zero_race_population_excluded(self, client, small_agency_data, year):
+        """A race with 0 population has no stop ratio, so the agency is left off the map."""
         _create_agency_data(
             name="Zeroville Police Department",
             acs_id="1600000US3780000",
@@ -233,11 +255,31 @@ class TestPoliceDisparity:
         )
         StopSummary.refresh()
         LikelihoodOfStopSummary.refresh()
-        response = client.get(reverse("nc:disparity-police"), {"race": "Black", "year": YEAR})
+        params = {"race": "Black", **({"year": year} if year else {})}
+        response = client.get(reverse("nc:disparity-police"), params)
         assert response.status_code == 200
         names = {a["group_name"] for a in response.json()["agencies"]}
         assert "Zeroville Police Department" not in names
         assert "Tinytown Police Department" in names
+
+    @pytest.mark.parametrize("year", [YEAR, None], ids=["year", "all-years"])
+    def test_zero_white_population_excluded(self, client, disparity_data, year):
+        """Without a White baseline there is no stop ratio, so the agency is left off the map."""
+        _create_agency_data(
+            name="No Baseline Police Department",
+            acs_id="1600000US3790000",
+            black_stops=150,
+            white_stops=50,
+            black_pop=5000,
+            white_pop=0,
+        )
+        StopSummary.refresh()
+        LikelihoodOfStopSummary.refresh()
+        params = {"race": "Black", **({"year": year} if year else {})}
+        response = client.get(reverse("nc:disparity-police"), params)
+        names = {a["group_name"] for a in response.json()["agencies"]}
+        assert "No Baseline Police Department" not in names
+        assert "Durham Police Department" in names
 
 
 class TestDisparityCategory:

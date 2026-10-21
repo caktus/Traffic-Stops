@@ -419,6 +419,17 @@ def no_census_agencies() -> pd.DataFrame:
 # --- Agency-Level Stop Disparities dashboard API ------------------------------
 
 
+def has_stop_ratio(df: pd.DataFrame) -> pd.Series:
+    """
+    Mask of rows with a meaningful stop rate ratio.
+
+    A ratio needs population for the selected race and a White baseline rate. When
+    either is missing, ``times_likely`` is NaN for a single year but 0 when
+    aggregating across all years, so it can't be relied on to detect the gap.
+    """
+    return df["times_likely"].notna() & (df["population"] > 0) & (df["baseline_rate"] > 0)
+
+
 class DisparityYearsView(APIView):
     """Census years available for the disparities dashboard filters."""
 
@@ -487,7 +498,7 @@ class SheriffDisparityView(APIView):
         )
         records = []
         if not df.empty:
-            df = df[(df["driver_race"] == filterset.cleaned_race) & df["times_likely"].notna()]
+            df = df[(df["driver_race"] == filterset.cleaned_race) & has_stop_ratio(df)]
             df = df.copy()
             df["fips3"] = df["census_profile_id"].str[-3:]
             cols = [
@@ -526,7 +537,7 @@ class PoliceDisparityView(APIView):
             police = df[
                 ~df["group_name"].str.contains("Sheriff", case=False)
                 & (df["driver_race"] == filterset.cleaned_race)
-                & df["times_likely"].notna()
+                & has_stop_ratio(df)
                 & df["latitude"].notna()
                 & df["longitude"].notna()
             ].copy()
@@ -547,7 +558,7 @@ class PoliceDisparityView(APIView):
             if not excluded.empty:
                 small = excluded[
                     (excluded["status"] == AgencyLikelihoodStatus.SMALL_POPULATION)
-                    & excluded["times_likely"].notna()
+                    & has_stop_ratio(excluded)
                     & excluded["latitude"].notna()
                     & excluded["longitude"].notna()
                 ].copy()
