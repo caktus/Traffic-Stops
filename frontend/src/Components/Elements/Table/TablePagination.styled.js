@@ -34,7 +34,7 @@ export const PageNumber = styled.button`
   color: ${(props) => (props.current ? props.theme.colors.white : props.theme.colors.text)};
   width: 30px;
   height: 30px;
-  font-family: ${(props) => props.theme.fonts.body};
+  font-family: ${(props) => props.theme.fonts.ui};
   font-weight: bold;
   font-size: 16px;
   border: none;

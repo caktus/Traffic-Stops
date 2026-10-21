@@ -88,8 +88,9 @@ export default Object.freeze({
   fontSizes: ['12px', '16px', '18px', '24px', '32px', '48px', '64px', '96px', '128px'],
   fonts: {
     heading: "'Bebas Neue', sans-serif",
-    subheading: "'Oxygen', sans-serif",
-    body: "'Montserrat', sans-serif",
+    accent: "'Libre Baskerville', serif",
+    body: "'Lora', serif",
+    ui: "'DM Sans', sans-serif",
   },
   fontWeights: ['light', 'normal', 'bold'],
 

@@ -120,7 +120,7 @@ export const Note = styled.p`
 export const Link = styled.a`
   display: block;
   font-size: 16px;
-  font-family: ${(props) => props.theme.fonts.body};
+  font-family: ${(props) => props.theme.fonts.ui};
   color: ${(props) => props.theme.colors.primaryDark};
   cursor: pointer;
   text-align: center;
