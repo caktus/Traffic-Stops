@@ -2,10 +2,12 @@ import React from 'react';
 import ListSkeletonStyled from './ListSkeleton.styled';
 // Deps
 import ContentLoader from 'react-content-loader';
+import { useLoaderColors } from './Skeletons/LoaderBase';
 
 const REPS = 4;
 
 function ListSkeleton({ reps = REPS }) {
+  const colors = useLoaderColors();
   return (
     <ListSkeletonStyled>
       <ContentLoader
@@ -14,6 +16,7 @@ function ListSkeleton({ reps = REPS }) {
         height={200 * reps}
         speed={2}
         data-testid="ListSkeleton"
+        {...colors}
       >
         {[...Array(reps)].map((_, r) => {
           const ySpacer = r * 80;
