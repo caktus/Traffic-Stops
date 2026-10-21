@@ -15,7 +15,7 @@ export const Heading = styled.div`
   width: 100%;
   display: flex;
   flex-direction: row;
-  align-items: flex-end;
+  align-items: baseline;
   margin-top: 2.5em;
   padding-bottom: 0.5em;
   border-bottom: 2px solid ${(p) => p.theme.colors.secondary};
@@ -24,7 +24,6 @@ export const Heading = styled.div`
 export const Logo = styled(LogoFull)``;
 
 export const SubTitle = styled.p`
-  margin-bottom: 8px;
   margin-left: 1em;
 `;
 

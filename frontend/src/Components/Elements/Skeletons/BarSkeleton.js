@@ -2,9 +2,10 @@ import React from 'react';
 
 // Deps
 import ContentLoader from 'react-content-loader';
-import LoaderBase from './LoaderBase';
+import LoaderBase, { useLoaderColors } from './LoaderBase';
 
 function BarSkeleton() {
+  const colors = useLoaderColors();
   return (
     <LoaderBase>
       <ContentLoader
@@ -13,6 +14,7 @@ function BarSkeleton() {
         viewBox="0 0 200 200"
         speed={2}
         data-testid="BarSkeleton"
+        {...colors}
       >
         <rect x="0" y="160" rx="0" ry="0" width="25" height="40" />
         <rect x="30" y="145" rx="0" ry="0" width="25" height="55" />

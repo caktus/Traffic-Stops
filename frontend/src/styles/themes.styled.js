@@ -13,19 +13,20 @@ export default Object.freeze({
     black: '#212121',
     darkGrey: '#666666',
     grey: '#ACACAC',
-    greySemi: '#E6E6E6',
-    greyLight: '#F5F5F5',
+    greySemi: '#E8E2D6',
+    greyLight: '#FBF9F4',
     white: '#fff',
+    mist: '#E8E2D6',
 
     // aliased colors
-    primary: '#272973',
-    primaryDark: '#1565B3',
-    secondary: '#29A3A1',
+    primary: '#0D2240',
+    primaryDark: '#0F766E',
+    secondary: '#0F766E',
     background: '#ffffff',
     disabled: '#ACACAC',
-    caution: '#F25F5C',
+    caution: '#CF4C3A',
 
-    text: '#212121',
+    text: '#2D2D2D',
     textLight: '#666666',
     border: '#666666',
 
@@ -87,8 +88,8 @@ export default Object.freeze({
   fontSizes: ['12px', '16px', '18px', '24px', '32px', '48px', '64px', '96px', '128px'],
   fonts: {
     heading: "'Bebas Neue', sans-serif",
-    subheading: "'Oxygen', sans-serif",
-    body: "'Montserrat', sans-serif",
+    accent: "'Libre Baskerville', serif",
+    ui: "'DM Sans', sans-serif",
   },
   fontWeights: ['light', 'normal', 'bold'],
 

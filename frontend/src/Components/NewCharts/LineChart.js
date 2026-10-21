@@ -184,13 +184,7 @@ export default function LineChart({
         </>
       )}
       {!data.labels.length && <EmptyMessage />}
-      <Line
-        options={options}
-        data={data}
-        redraw={redraw}
-        datasetIdKey={title}
-        plugins={[whiteBackground]}
-      />
+      <Line options={options} data={data} redraw={redraw} datasetIdKey={title} />
       <ChartModal
         isOpen={isChartOpen}
         closeModal={() => setIsChartOpen(false)}

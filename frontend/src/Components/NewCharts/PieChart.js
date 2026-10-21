@@ -10,7 +10,7 @@ export default function PieChart({
   displayTitle = true,
   displayLegend = true,
   legendPosition = 'right',
-  showWhiteBackground = true,
+  showWhiteBackground = false,
   modalConfig = {},
 }) {
   const options = {
