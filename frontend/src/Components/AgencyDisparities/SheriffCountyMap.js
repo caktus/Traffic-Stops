@@ -86,7 +86,7 @@ export default function SheriffCountyMap({ year, race }) {
 
   const handleClick = (fips) => {
     const row = byFips[fips];
-    if (row && !isHidden(row)) history.push(agencySearchRateLink(row));
+    if (row && !isHidden(row)) history.push(agencySearchRateLink(row, year));
   };
 
   const handleMove = (evt, geo) => {
@@ -127,6 +127,7 @@ export default function SheriffCountyMap({ year, race }) {
         columns={columns}
         title={`Sheriff's Offices Stop Rate Ratios — ${race}`}
         downloadName={`sheriff-disparities-${race}`}
+        year={year}
       />
       <S.Legend>
         <S.LegendItem>

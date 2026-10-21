@@ -80,7 +80,7 @@ export default function ParityScatter({ year, race }) {
     maintainAspectRatio: false,
     onClick: (evt, elements) => {
       const point = elements.length ? pointFor(elements[0]) : null;
-      if (point && point.group_id !== undefined) history.push(agencySearchRateLink(point));
+      if (point && point.group_id !== undefined) history.push(agencySearchRateLink(point, year));
     },
     onHover: (evt, elements) => {
       const clickable = elements.length > 0 && pointFor(elements[0]).group_id !== undefined;
@@ -120,6 +120,7 @@ export default function ParityScatter({ year, race }) {
         columns={columns}
         title={`Population vs. Traffic Stops — ${race}`}
         downloadName={`parity-${race}`}
+        year={year}
       />
       <S.ChartWrapper height="600px">
         <Scatter data={data} options={options} redraw />

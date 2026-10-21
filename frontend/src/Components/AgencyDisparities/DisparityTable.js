@@ -12,7 +12,7 @@ import * as S from './AgencyDisparities.styled';
 // the same records the visual already fetched via useDisparityData. The modal
 // reuses the shared paginated table + CSV download used across the rest of the
 // site.
-export default function DisparityTable({ rows, columns, title, downloadName }) {
+export default function DisparityTable({ rows, columns, title, downloadName, year }) {
   const theme = useTheme();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -26,11 +26,12 @@ export default function DisparityTable({ rows, columns, title, downloadName }) {
         // eslint-disable-next-line react/no-unstable-nested-components
         Cell: ({ value, row }) => {
           const content = col.format ? col.format(value, row.original) : value;
-          if (col.link) return <S.TableLink to={col.link(row.original)}>{content}</S.TableLink>;
+          if (col.link)
+            return <S.TableLink to={col.link(row.original, year)}>{content}</S.TableLink>;
           return content;
         },
       })),
-    [columns]
+    [columns, year]
   );
 
   // Flatten each row into formatted, label-keyed values for the CSV export.

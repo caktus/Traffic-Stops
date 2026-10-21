@@ -104,7 +104,7 @@ export default function DisparityBarChart({ year, race }) {
     // Trigger on any hover/click along a bar's row, not just directly over the fill.
     interaction: { mode: 'nearest', axis: 'y', intersect: false },
     onClick: (evt, elements) => {
-      if (elements.length) history.push(agencySearchRateLink(rows[elements[0].index]));
+      if (elements.length) history.push(agencySearchRateLink(rows[elements[0].index], year));
     },
     onHover: (evt, elements) => {
       // eslint-disable-next-line no-param-reassign
@@ -137,6 +137,7 @@ export default function DisparityBarChart({ year, race }) {
         columns={columns}
         title={`Top Agencies by Likelihood of Stop — ${race} drivers`}
         downloadName={`top-agencies-${race}`}
+        year={year}
       />
       <S.Legend>
         <S.LegendItem>

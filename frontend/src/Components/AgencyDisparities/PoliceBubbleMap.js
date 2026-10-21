@@ -112,7 +112,7 @@ export default function PoliceBubbleMap({ year, race }) {
     clearHover();
   };
 
-  const handleClick = (row) => history.push(agencySearchRateLink(row));
+  const handleClick = (row) => history.push(agencySearchRateLink(row, year));
 
   const visibleRows = rows
     .filter((row) => showSubThreshold || !row.small_population)
@@ -127,6 +127,7 @@ export default function PoliceBubbleMap({ year, race }) {
         columns={columns}
         title={`Police Departments Stop Rate Ratios — ${race}`}
         downloadName={`police-disparities-${race}`}
+        year={year}
       />
       <S.Legend>
         {Object.entries(DISPARITY_COLORS).map(([label, color]) => {

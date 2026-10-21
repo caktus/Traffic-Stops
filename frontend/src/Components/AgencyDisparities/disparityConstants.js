@@ -58,9 +58,10 @@ export const SHERIFF_MAP_COPY =
 export const POLICE_MAP_COPY =
   'This map shows racial disparities in traffic stops by North Carolina police department. Darker colors indicate that drivers of the selected racial group are more likely to be stopped than white drivers, while lighter colors indicate smaller disparities and more similar stop rates between the two groups. A ratio of 1.0× means the selected racial group and white drivers are stopped at the same rate. Each bubble represents an individual police department, with larger bubbles representing agencies with more total traffic stops. Because multiple police departments may operate within the same county, individual bubbles allow users to compare differences between police departments across the state.';
 
-// Link a table row's agency to its likelihood-of-stop (search rate) page.
-export const agencySearchRateLink = (row) =>
-  `${AGENCY_LIST_SLUG}/${row.group_id}${SEARCH_RATE_SLUG}`;
+// Link a table row's agency to its likelihood-of-stop (search rate) page,
+// carrying over the selected year (undefined means all years).
+export const agencySearchRateLink = (row, year) =>
+  `${AGENCY_LIST_SLUG}/${row.group_id}${SEARCH_RATE_SLUG}${year ? `?year=${year}` : ''}`;
 
 // Map an API race label to a theme ethnicGroup color.
 export function raceColor(theme, race) {
