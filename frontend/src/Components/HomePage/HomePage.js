@@ -65,7 +65,7 @@ function HomePage() {
   return (
     <S.HomePage>
       <S.Heading>
-        <S.Logo white />
+        <S.Logo dark />
         <S.SubTitle>
           a project of{' '}
           <S.SubTitleLink
