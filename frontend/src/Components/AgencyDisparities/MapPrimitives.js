@@ -3,6 +3,8 @@ import { ComposableMap } from 'react-simple-maps';
 
 import * as S from './AgencyDisparities.styled';
 
+export const MAP_WIDTH = 800;
+
 // Shared NC-centered projection used by both the county choropleth and the
 // police bubble map so the two stay visually aligned.
 export function NcMap({ children }) {
@@ -11,7 +13,7 @@ export function NcMap({ children }) {
       <ComposableMap
         projection="geoMercator"
         projectionConfig={{ center: [-79.9, 35.5], scale: 4500 }}
-        width={800}
+        width={MAP_WIDTH}
         height={340}
         style={{ width: '100%', height: 'auto' }}
       >

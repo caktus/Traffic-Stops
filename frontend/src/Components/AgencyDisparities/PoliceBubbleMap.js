@@ -9,7 +9,7 @@ import { DISPARITY_COLORS, fmt, agencySearchRateLink } from './disparityConstant
 import useCountiesGeojson from './useCountiesGeojson';
 import useDisparityData from './useDisparityData';
 import DisparityTable from './DisparityTable';
-import { NcMap, MapTooltip } from './MapPrimitives';
+import { NcMap, MapTooltip, MAP_WIDTH } from './MapPrimitives';
 import * as S from './AgencyDisparities.styled';
 
 const columns = [
@@ -158,14 +158,14 @@ export default function PoliceBubbleMap({ year, race }) {
         </S.LegendToggle>
       </S.Legend>
       {sizeLegend.length > 0 && (
-        <S.Legend>
+        <S.BubbleLegend>
           Bubble size = total stops:
           {sizeLegend.map(({ value, radius }) => (
             <S.LegendItem key={value}>
-              <S.BubbleSwatch size={radius * 2} /> {value.toLocaleString()}
+              <S.BubbleSwatch size={radius * 2} mapWidth={MAP_WIDTH} /> {value.toLocaleString()}
             </S.LegendItem>
           ))}
-        </S.Legend>
+        </S.BubbleLegend>
       )}
       <NcMap>
         <Geographies geography={geojson}>

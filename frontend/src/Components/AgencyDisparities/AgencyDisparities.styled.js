@@ -229,11 +229,17 @@ export const Swatch = styled.span`
   }};
 `;
 
-// Legend entry for bubble sizes; `size` is the diameter in px.
+// Matches the map's width (see wideWidth) so swatches can scale with its SVG viewBox.
+export const BubbleLegend = styled(Legend)`
+  ${wideWidth}
+  container-type: inline-size;
+`;
+
+// Legend entry for bubble sizes; `size` is the diameter in map viewBox units out of `mapWidth`.
 export const BubbleSwatch = styled.span`
   display: inline-block;
-  width: ${(p) => p.size}px;
-  height: ${(p) => p.size}px;
+  width: calc(${(p) => p.size / p.mapWidth} * 100cqw);
+  aspect-ratio: 1;
   border-radius: 50%;
   background: #999999;
   opacity: 0.6;
