@@ -168,6 +168,25 @@ class TestSheriffDisparity:
         assert statuses["Tiny County Sheriff"] == "small_population"
         assert statuses["Durham County Sheriff"] == "active"
 
+    def test_zero_race_population_excluded(self, client, disparity_data):
+        """A race with 0 population has no stop rate (NaN); it must not break JSON rendering."""
+        _create_agency_data(
+            name="Zero County Sheriff",
+            acs_id="0500000US37002",
+            black_stops=120,
+            white_stops=40,
+            black_pop=0,
+            white_pop=5000,
+            total_pop=8000,
+        )
+        StopSummary.refresh()
+        LikelihoodOfStopSummary.refresh()
+        response = client.get(reverse("nc:disparity-sheriffs"), {"race": "Black", "year": YEAR})
+        assert response.status_code == 200
+        names = {s["group_name"] for s in response.json()["sheriffs"]}
+        assert "Zero County Sheriff" not in names
+        assert "Durham County Sheriff" in names
+
 
 @pytest.mark.django_db(databases=["default", "traffic_stops_nc"])
 class TestPoliceDisparity:

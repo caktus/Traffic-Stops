@@ -487,7 +487,8 @@ class SheriffDisparityView(APIView):
         )
         records = []
         if not df.empty:
-            df = df[df["driver_race"] == filterset.cleaned_race].copy()
+            df = df[(df["driver_race"] == filterset.cleaned_race) & df["times_likely"].notna()]
+            df = df.copy()
             df["fips3"] = df["census_profile_id"].str[-3:]
             cols = [
                 "group_id",
