@@ -69,7 +69,12 @@ export default function PoliceBubbleMap({ year, race }) {
     return {
       // Guard against log(0) for agencies with no total_stops value.
       sizeScale: (value) => scale(Math.max(value, low)),
-      sizeLegend: [...new Set(legendValues)].map((value) => ({ value, radius: scale(value) })),
+      // The largest entry is the clamp point, so it stands for that many stops or more.
+      sizeLegend: [...new Set(legendValues)].map((value, i, values) => ({
+        value,
+        radius: scale(value),
+        capped: i === values.length - 1,
+      })),
     };
   }, [rows]);
 
@@ -161,9 +166,10 @@ export default function PoliceBubbleMap({ year, race }) {
       {sizeLegend.length > 0 && (
         <S.BubbleLegend>
           Bubble size = total stops:
-          {sizeLegend.map(({ value, radius }) => (
+          {sizeLegend.map(({ value, radius, capped }) => (
             <S.LegendItem key={value}>
               <S.BubbleSwatch size={radius * 2} mapWidth={MAP_WIDTH} /> {value.toLocaleString()}
+              {capped && '+'}
             </S.LegendItem>
           ))}
         </S.BubbleLegend>
