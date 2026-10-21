@@ -13,8 +13,8 @@ export default Object.freeze({
     black: '#212121',
     darkGrey: '#666666',
     grey: '#ACACAC',
-    greySemi: '#E6E6E6',
-    greyLight: '#F5F5F5',
+    greySemi: '#E8E2D6',
+    greyLight: '#FBF9F4',
     white: '#fff',
     mist: '#E8E2D6',
 

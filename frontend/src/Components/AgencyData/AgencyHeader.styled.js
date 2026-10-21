@@ -8,12 +8,12 @@ import {
 } from '../../styles/breakpoints';
 
 export const AgencyHeader = styled.div`
-  box-shadow: ${(props) => props.theme.shadows.depth1};
+  border-bottom: ${(props) => props.theme.borders.standard} ${(props) => props.theme.colors.mist};
   padding: 0.5em 3em;
   position: sticky;
   top: 0;
   z-index: 9;
-  background: ${(props) => props.theme.colors.white};
+  background: #f8f4ec;
 
   @media (${smallerThanDesktop}) {
     padding: 0.5em 1em;

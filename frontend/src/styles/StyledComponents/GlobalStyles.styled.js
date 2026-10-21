@@ -10,6 +10,7 @@ export default createGlobalStyle`
     }
 
     body {
+        background: #f8f4ec;
         font-family: ${(props) => props.theme.fonts.ui};
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;

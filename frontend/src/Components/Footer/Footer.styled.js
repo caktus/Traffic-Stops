@@ -4,7 +4,7 @@ import { phoneOnly } from '../../styles/breakpoints';
 export const Footer = styled.footer`
   position: relative;
   width: 100%;
-  background: ${(p) => p.theme.colors.white};
+  background: #f8f4ec;
   border-top: ${(p) => p.theme.borders.standard} ${(p) => p.theme.colors.mist};
   padding: 1em 0;
   color: ${(p) => p.theme.colors.text};

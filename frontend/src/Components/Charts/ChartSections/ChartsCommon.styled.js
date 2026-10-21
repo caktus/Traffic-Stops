@@ -105,7 +105,7 @@ export const ChartsWrapper = styled.div`
 `;
 
 export const PieContainer = styled.div`
-  background: ${(props) => props.theme.colors.greyLight};
+  border: ${(props) => props.theme.borders.standard} ${(props) => props.theme.colors.mist};
   border-radius: 16px;
   width: 600px;
   margin-bottom: 4em;
