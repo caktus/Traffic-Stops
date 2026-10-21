@@ -18,14 +18,14 @@ export default Object.freeze({
     white: '#fff',
 
     // aliased colors
-    primary: '#272973',
-    primaryDark: '#1565B3',
-    secondary: '#29A3A1',
+    primary: '#0D2240',
+    primaryDark: '#0F766E',
+    secondary: '#0F766E',
     background: '#ffffff',
     disabled: '#ACACAC',
-    caution: '#F25F5C',
+    caution: '#CF4C3A',
 
-    text: '#212121',
+    text: '#2D2D2D',
     textLight: '#666666',
     border: '#666666',
 
