@@ -4,12 +4,18 @@ import { useTheme } from 'styled-components';
 import { useHistory } from 'react-router-dom';
 
 import { getDisparityAgenciesURL } from '../../Services/endpoints';
-import { raceColor, fmt, agencySearchRateLink } from './disparityConstants';
+import {
+  raceColor,
+  fmt,
+  agencySearchRateLink,
+  PARITY_LINE_COLOR,
+  STATEWIDE_LINE_COLOR,
+} from './disparityConstants';
 import useDisparityData from './useDisparityData';
 import DisparityTable from './DisparityTable';
 import * as S from './AgencyDisparities.styled';
 
-// Draws a dashed vertical baseline at times_likely == 1.0 (parity with white drivers).
+// Draws a dotted vertical baseline at times_likely == 1.0 (parity with white drivers).
 const baselinePlugin = {
   id: 'disparityBaseline',
   afterDraw(chart) {
@@ -19,8 +25,8 @@ const baselinePlugin = {
     if (x < chartArea.left || x > chartArea.right) return;
     ctx.save();
     ctx.beginPath();
-    ctx.setLineDash([6, 6]);
-    ctx.strokeStyle = '#FF8C00';
+    ctx.setLineDash([2, 4]);
+    ctx.strokeStyle = PARITY_LINE_COLOR;
     ctx.lineWidth = 2;
     ctx.moveTo(x, chartArea.top);
     ctx.lineTo(x, chartArea.bottom);
@@ -43,7 +49,7 @@ const createStatewidePlugin = (statewideTimes) => ({
     ctx.save();
     ctx.beginPath();
     ctx.setLineDash([2, 4]);
-    ctx.strokeStyle = '#FF1493';
+    ctx.strokeStyle = STATEWIDE_LINE_COLOR;
     ctx.lineWidth = 2;
     ctx.moveTo(x, chartArea.top);
     ctx.lineTo(x, chartArea.bottom);
@@ -98,7 +104,7 @@ export default function DisparityBarChart({ year, race }) {
     // Trigger on any hover/click along a bar's row, not just directly over the fill.
     interaction: { mode: 'nearest', axis: 'y', intersect: false },
     onClick: (evt, elements) => {
-      if (elements.length) history.push(agencySearchRateLink(rows[elements[0].index]));
+      if (elements.length) history.push(agencySearchRateLink(rows[elements[0].index], year));
     },
     onHover: (evt, elements) => {
       // eslint-disable-next-line no-param-reassign
@@ -131,14 +137,17 @@ export default function DisparityBarChart({ year, race }) {
         columns={columns}
         title={`Top Agencies by Likelihood of Stop — ${race} drivers`}
         downloadName={`top-agencies-${race}`}
+        year={year}
       />
       <S.Legend>
         <S.LegendItem>
-          <S.LineSwatch /> Equity (1.0× — same rate as white drivers)
+          <S.LineSwatch color={PARITY_LINE_COLOR} dash="dotted" /> Equity (1.0× — same rate as white
+          drivers)
         </S.LegendItem>
         {statewideTimes != null && (
           <S.LegendItem>
-            <S.LineSwatch color="#ff1493" dash="dotted" /> Statewide Average ({race} drivers)
+            <S.LineSwatch color={STATEWIDE_LINE_COLOR} dash="dotted" /> Statewide Average ({race}{' '}
+            drivers)
           </S.LegendItem>
         )}
       </S.Legend>

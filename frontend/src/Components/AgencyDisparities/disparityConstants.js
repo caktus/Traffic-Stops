@@ -23,6 +23,8 @@ export const DISPARITY_COLORS = {
 // Distinct colors for county choropleth layers that are not colored by ratio.
 export const BELOW_THRESHOLD_COLOR = '#8e6fb0';
 export const NO_DATA_COLOR = '#cccccc';
+// Neutral county fill, matching the police map's base layer, for counties hidden via a legend toggle.
+export const HIDDEN_COLOR = '#e4e9ee';
 
 // Human-readable labels for the AgencyLikelihoodStatus values returned by the API.
 export const STATUS_LABELS = {
@@ -42,9 +44,24 @@ export const fmt = {
   int: (v) => (isBlank(v) ? EM_DASH : Math.round(Number(v)).toLocaleString()),
 };
 
-// Link a table row's agency to its likelihood-of-stop (search rate) page.
-export const agencySearchRateLink = (row) =>
-  `${AGENCY_LIST_SLUG}/${row.group_id}${SEARCH_RATE_SLUG}`;
+// Reference-line colors on the bar chart; the section copy names these colors.
+export const PARITY_LINE_COLOR = '#f1c40f';
+export const STATEWIDE_LINE_COLOR = '#e74c3c';
+
+// Section descriptions shown above each disparity view.
+export const BAR_CHART_COPY =
+  'This chart shows the agencies where drivers of the selected racial group are most likely to be stopped compared with white drivers. Each bar represents an agency, and the length of the bar shows how many times as likely the selected racial group is to be stopped than white drivers. The yellow dotted line at 1.0× represents parity, meaning the selected racial group and white drivers are stopped at the same rate. The red dotted line represents the statewide average Stop Rate Ratio for North Carolina, providing a benchmark for how the agency compares with the state overall. Bars farther to the right show larger disparities in traffic stops.';
+
+export const SHERIFF_MAP_COPY =
+  "This map shows racial disparities in traffic stops by North Carolina sheriff's office. Darker colors show that drivers of the selected racial group are more likely to be stopped than white drivers, while lighter colors indicate smaller disparities and more similar stop rates between the two groups. A ratio of 1.0× means the selected racial group and white drivers are stopped at the same rate. Because North Carolina sheriff's offices generally have countywide jurisdictions, county boundaries provide a useful way to visualize differences between sheriff's offices across the state.";
+
+export const POLICE_MAP_COPY =
+  'This map shows racial disparities in traffic stops by North Carolina police department. Darker colors indicate that drivers of the selected racial group are more likely to be stopped than white drivers, while lighter colors indicate smaller disparities and more similar stop rates between the two groups. A ratio of 1.0× means the selected racial group and white drivers are stopped at the same rate. Each bubble represents an individual police department, with larger bubbles representing agencies with more total traffic stops. Because multiple police departments may operate within the same county, individual bubbles allow users to compare differences between police departments across the state.';
+
+// Link a table row's agency to its likelihood-of-stop (search rate) page,
+// carrying over the selected year (undefined means all years).
+export const agencySearchRateLink = (row, year) =>
+  `${AGENCY_LIST_SLUG}/${row.group_id}${SEARCH_RATE_SLUG}${year ? `?year=${year}` : ''}`;
 
 // Map an API race label to a theme ethnicGroup color.
 export function raceColor(theme, race) {

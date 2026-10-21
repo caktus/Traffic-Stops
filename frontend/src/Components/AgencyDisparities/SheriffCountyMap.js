@@ -7,6 +7,7 @@ import { interpolateRdYlGn } from 'd3-scale-chromatic';
 import { getDisparitySheriffsURL, COUNTIES_GEOJSON_URL } from '../../Services/endpoints';
 import {
   BELOW_THRESHOLD_COLOR,
+  HIDDEN_COLOR,
   NO_DATA_COLOR,
   STATUS_LABELS,
   fmt,
@@ -48,6 +49,7 @@ export default function SheriffCountyMap({ year, race }) {
     'sheriffs'
   );
   const [tooltip, setTooltip] = useState(null);
+  const [showBelowThreshold, setShowBelowThreshold] = useState(true);
 
   const byFips = useMemo(() => {
     const lookup = {};
@@ -70,22 +72,31 @@ export default function SheriffCountyMap({ year, race }) {
     return <S.FetchError>Unable to load county map. Please try again.</S.FetchError>;
   if (loading || !geojson) return <S.Loading height="500px">Loading map…</S.Loading>;
 
+  // Counties toggled off via the legend are drawn neutral and made non-interactive.
+  const isHidden = (row) =>
+    !showBelowThreshold && Boolean(row) && BELOW_STATUSES.includes(row.status);
+
   const fillFor = (fips) => {
     const row = byFips[fips];
     if (!row) return NO_DATA_COLOR;
+    if (isHidden(row)) return HIDDEN_COLOR;
     if (BELOW_STATUSES.includes(row.status)) return BELOW_THRESHOLD_COLOR;
     return colorScale(row.times_likely);
   };
 
   const handleClick = (fips) => {
     const row = byFips[fips];
-    if (row) history.push(agencySearchRateLink(row));
+    if (row && !isHidden(row)) history.push(agencySearchRateLink(row, year));
   };
 
   const handleMove = (evt, geo) => {
     const fips = geo.properties.FIPS;
     const county = geo.properties.County;
     const row = byFips[fips];
+    if (isHidden(row)) {
+      setTooltip(null);
+      return;
+    }
     let body;
     if (!row) {
       body = ['No sheriff stop data reported.'];
@@ -116,6 +127,7 @@ export default function SheriffCountyMap({ year, race }) {
         columns={columns}
         title={`Sheriff's Offices Stop Rate Ratios — ${race}`}
         downloadName={`sheriff-disparities-${race}`}
+        year={year}
       />
       <S.Legend>
         <S.LegendItem>
@@ -124,9 +136,18 @@ export default function SheriffCountyMap({ year, race }) {
         <S.LegendItem>
           <S.Swatch color="#d73027" /> Higher disparity
         </S.LegendItem>
-        <S.LegendItem>
+        <S.LegendToggle
+          type="button"
+          off={!showBelowThreshold}
+          aria-pressed={showBelowThreshold}
+          title={`${showBelowThreshold ? 'Hide' : 'Show'} below-threshold counties`}
+          onClick={() => {
+            setShowBelowThreshold((show) => !show);
+            setTooltip(null);
+          }}
+        >
           <S.Swatch color={BELOW_THRESHOLD_COLOR} /> Below population threshold
-        </S.LegendItem>
+        </S.LegendToggle>
         <S.LegendItem>
           <S.Swatch color={NO_DATA_COLOR} /> No stop data reported
         </S.LegendItem>
@@ -135,7 +156,8 @@ export default function SheriffCountyMap({ year, race }) {
         <Geographies geography={geojson}>
           {({ geographies }) =>
             geographies.map((geo) => {
-              const clickable = Boolean(byFips[geo.properties.FIPS]);
+              const clickable =
+                Boolean(byFips[geo.properties.FIPS]) && !isHidden(byFips[geo.properties.FIPS]);
               return (
                 <Geography
                   key={geo.rsmKey}

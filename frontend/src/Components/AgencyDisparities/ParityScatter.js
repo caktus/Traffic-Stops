@@ -1,4 +1,5 @@
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 import { Scatter } from 'react-chartjs-2';
 import { useTheme } from 'styled-components';
 
@@ -23,6 +24,7 @@ const columns = [
 
 export default function ParityScatter({ year, race }) {
   const theme = useTheme();
+  const history = useHistory();
   const { rows, loading, error } = useDisparityData(getDisparityParityURL({ year, race }));
 
   if (loading) return <S.Loading height="600px">Loading chart…</S.Loading>;
@@ -36,6 +38,7 @@ export default function ParityScatter({ year, race }) {
       .map((r) => ({
         x: r.pop_share,
         y: r.stop_share,
+        group_id: r.group_id,
         agency: r.agency_name,
         excess: r.excess_stops,
         ratio: r.stop_rate_ratio,
@@ -69,9 +72,21 @@ export default function ParityScatter({ year, race }) {
     ],
   };
 
+  // The "Line of Fairness" points have no group_id, so only agency points are clickable.
+  const pointFor = (el) => data.datasets[el.datasetIndex].data[el.index];
+
   const options = {
     responsive: true,
     maintainAspectRatio: false,
+    onClick: (evt, elements) => {
+      const point = elements.length ? pointFor(elements[0]) : null;
+      if (point && point.group_id !== undefined) history.push(agencySearchRateLink(point, year));
+    },
+    onHover: (evt, elements) => {
+      const clickable = elements.length > 0 && pointFor(elements[0]).group_id !== undefined;
+      // eslint-disable-next-line no-param-reassign
+      evt.native.target.style.cursor = clickable ? 'pointer' : 'default';
+    },
     scales: {
       x: { min: 0, max: 1, title: { display: true, text: 'Share of population' } },
       y: { min: 0, max: 1, title: { display: true, text: 'Share of traffic stops' } },
@@ -86,9 +101,12 @@ export default function ParityScatter({ year, race }) {
           label(ctx) {
             const p = ctx.raw;
             if (p.agency === undefined) return null;
-            return `${p.agency}: pop ${(p.x * 100).toFixed(1)}%, stops ${(p.y * 100).toFixed(
-              1
-            )}%, excess ${Math.round(p.excess)}`;
+            return [
+              `${p.agency}: pop ${(p.x * 100).toFixed(1)}%, stops ${(p.y * 100).toFixed(
+                1
+              )}%, excess ${Math.round(p.excess)}`,
+              'Click to view agency',
+            ];
           },
         },
       },
@@ -102,6 +120,7 @@ export default function ParityScatter({ year, race }) {
         columns={columns}
         title={`Population vs. Traffic Stops — ${race}`}
         downloadName={`parity-${race}`}
+        year={year}
       />
       <S.ChartWrapper height="600px">
         <Scatter data={data} options={options} redraw />

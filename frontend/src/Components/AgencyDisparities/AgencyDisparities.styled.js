@@ -191,6 +191,30 @@ export const LegendItem = styled.span`
   gap: 0.4em;
 `;
 
+// Legend entry that toggles visibility of a map layer; `off` marks it as hidden.
+export const LegendToggle = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  padding: 2px 6px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+  opacity: ${(p) => (p.off ? 0.5 : 1)};
+  text-decoration: ${(p) => (p.off ? 'line-through' : 'none')};
+
+  &:hover {
+    border-color: #999999;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #1a73e8;
+    outline-offset: 2px;
+  }
+`;
+
 export const Swatch = styled.span`
   display: inline-block;
   width: 14px;
@@ -203,6 +227,22 @@ export const Swatch = styled.span`
     if (p.hollow) return '2px solid #777777';
     return 'none';
   }};
+`;
+
+// Matches the map's width (see wideWidth) so swatches can scale with its SVG viewBox.
+export const BubbleLegend = styled(Legend)`
+  ${wideWidth}
+  container-type: inline-size;
+`;
+
+// Legend entry for bubble sizes; `size` is the diameter in map viewBox units out of `mapWidth`.
+export const BubbleSwatch = styled.span`
+  display: inline-block;
+  width: calc(${(p) => p.size / p.mapWidth} * 100cqw);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #999999;
+  opacity: 0.6;
 `;
 
 // Dashed-line swatch for legend items describing a reference line (e.g. the
