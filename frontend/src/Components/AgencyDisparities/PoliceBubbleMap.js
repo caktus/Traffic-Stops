@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Geographies, Geography, Marker } from 'react-simple-maps';
 import { scaleLog } from 'd3-scale';
@@ -45,6 +45,13 @@ export default function PoliceBubbleMap({ year, race }) {
   const [hovered, setHovered] = useState(null);
   const [showSubThreshold, setShowSubThreshold] = useState(true);
   const [hiddenCategories, setHiddenCategories] = useState(() => new Set());
+
+  // Markers unmount while new data loads without firing mouseleave, so drop any
+  // hover left over from the previous year/race.
+  useEffect(() => {
+    setTooltip(null);
+    setHovered(null);
+  }, [rows]);
 
   // Bubble radius scales with the log of an agency's total stops (all races, not
   // the selected group's stops). Stop volumes span several orders of magnitude, so
