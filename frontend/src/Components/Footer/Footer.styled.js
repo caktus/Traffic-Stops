@@ -4,9 +4,10 @@ import { phoneOnly } from '../../styles/breakpoints';
 export const Footer = styled.footer`
   position: relative;
   width: 100%;
-  background: ${(p) => p.theme.colors.darkGrey};
+  background: ${(p) => p.theme.colors.white};
+  border-top: ${(p) => p.theme.borders.standard} ${(p) => p.theme.colors.mist};
   padding: 1em 0;
-  color: ${(p) => p.theme.colors.white};
+  color: ${(p) => p.theme.colors.text};
 `;
 
 export const Attributions = styled.div`
@@ -26,7 +27,7 @@ export const FJAttribution = styled.div`
 
 export const FJLogo = styled.img`
   margin-left: 0.75em;
-  width: 200px;
+  width: 280px;
 
   @media (${phoneOnly}) {
     margin-left: 0;

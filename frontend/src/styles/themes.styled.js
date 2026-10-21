@@ -16,6 +16,7 @@ export default Object.freeze({
     greySemi: '#E6E6E6',
     greyLight: '#F5F5F5',
     white: '#fff',
+    mist: '#E8E2D6',
 
     // aliased colors
     primary: '#0D2240',
