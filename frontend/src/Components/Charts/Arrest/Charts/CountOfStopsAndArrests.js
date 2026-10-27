@@ -10,7 +10,7 @@ import useOfficerId from '../../../../Hooks/useOfficerId';
 import NewModal from '../../../NewCharts/NewModal';
 import { ChartContainer } from '../../ChartSections/ChartsCommon.styled';
 import createTableData from '../../../../util/createTableData';
-import { RACE_TABLE_COLUMNS } from '../../chartUtils';
+import { RACE_TABLE_COLUMNS, DEMOGRAPHICS_COLORS } from '../../chartUtils';
 
 const graphTitle = 'Traffic Stops Leading to Arrest by Count';
 
@@ -45,7 +45,7 @@ function CountOfStopsAndArrests(props) {
       .then((res) => {
         const tableData = createTableData(res.data);
         const labels = ['Stops With Arrests', 'Stops Without Arrests'];
-        const colors = ['#1282A2', '#9CDBED'];
+        const colors = [DEMOGRAPHICS_COLORS.white, '#9CDBED'];
 
         const datasets = res.data.arrest_counts.map((dataset, i) => ({
           axis: 'y',

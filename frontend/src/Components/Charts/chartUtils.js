@@ -60,7 +60,7 @@ export const STOP_TYPE_COLORS = [
 ];
 
 export const DEMOGRAPHICS_COLORS = {
-  white: '#1282A2',
+  white: '#BB5424',
   black: '#551DC3',
   hispanic: '#D24B76',
   asian: '#F9DC4E',

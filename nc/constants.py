@@ -18,7 +18,7 @@ DEFAULT_RENAME_COLUMNS = {
 STATEWIDE = -1
 
 DEMOGRAPHICS_COLORS_BORDER = {
-    "white": "#1282A2",  # blue
+    "white": "#BB5424",  # rust
     "black": "#551DC3",  # purple
     "hispanic": "#D24B76",  # pink
     "asian": "#F9DC4E",  # yellow
@@ -27,7 +27,7 @@ DEMOGRAPHICS_COLORS_BORDER = {
 }
 
 DEMOGRAPHICS_COLORS_BG = {
-    "white": "#6CD2EF",  # blue
+    "white": "#EFA787",  # light rust
     "black": "#804EE4",  # purple
     "hispanic": "#E28DA8",  # pink
     "asian": "#FAE475",  # yellow
