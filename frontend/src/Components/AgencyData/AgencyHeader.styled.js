@@ -8,7 +8,8 @@ import {
 } from '../../styles/breakpoints';
 
 export const AgencyHeader = styled.div`
-  border-bottom: ${(props) => props.theme.borders.standard} ${(props) => props.theme.colors.greySemi};
+  border-bottom: ${(props) => props.theme.borders.standard}
+    ${(props) => props.theme.colors.greySemi};
   padding: 0.5em 3em;
   position: sticky;
   top: 0;
