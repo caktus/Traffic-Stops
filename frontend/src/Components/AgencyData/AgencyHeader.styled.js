@@ -13,7 +13,7 @@ export const AgencyHeader = styled.div`
   position: sticky;
   top: 0;
   z-index: 9;
-  background: #f8f4ec;
+  background: ${(props) => props.theme.colors.background};
 
   @media (${smallerThanDesktop}) {
     padding: 0.5em 1em;

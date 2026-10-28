@@ -22,7 +22,7 @@ export default Object.freeze({
     primary: '#0D2240',
     primaryDark: '#0F766E',
     secondary: '#0F766E',
-    background: '#ffffff',
+    background: '#f8f4ec',
     disabled: '#ACACAC',
     caution: '#CF4C3A',
 

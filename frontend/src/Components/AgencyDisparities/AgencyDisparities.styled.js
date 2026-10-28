@@ -83,7 +83,7 @@ export const FiltersBar = styled.div`
   position: sticky;
   top: 0;
   z-index: 9;
-  background: #f8f4ec;
+  background: ${(p) => p.theme.colors.background};
   border-bottom: ${(p) => p.theme.borders.standard} ${(p) => p.theme.colors.mist};
 `;
 
