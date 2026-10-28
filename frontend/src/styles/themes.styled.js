@@ -3,12 +3,9 @@ import { DEMOGRAPHICS_COLORS, CONTRANBAND_TYPE_COLORS } from '../Components/Char
 export default Object.freeze({
   /* Colors */
   colors: {
-    blue: '#272973',
     teal: '#02BCBB',
     purple: '#9E7B9B',
     yellow: '#FFE066',
-    red: '#F25F5C',
-
     // Greyscale
     black: '#212121',
     darkGrey: '#666666',
@@ -16,7 +13,6 @@ export default Object.freeze({
     greySemi: '#E8E2D6',
     greyLight: '#FBF9F4',
     white: '#fff',
-    mist: '#E8E2D6',
 
     // aliased colors
     primary: '#0D2240',
@@ -25,6 +21,8 @@ export default Object.freeze({
     background: '#f8f4ec',
     disabled: '#ACACAC',
     caution: '#CF4C3A',
+    // Darker coral for text on light backgrounds (caution fails AA at 4.03:1 on cream)
+    cautionDark: '#B0402F',
 
     text: '#2D2D2D',
     textLight: '#666666',

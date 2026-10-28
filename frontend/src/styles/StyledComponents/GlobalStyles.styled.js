@@ -32,22 +32,22 @@ export default createGlobalStyle`
     .react-datepicker {
         font-family: ${(props) => props.theme.fonts.ui};
         background-color: ${(props) => props.theme.colors.greyLight};
-        border-color: ${(props) => props.theme.colors.mist};
+        border-color: ${(props) => props.theme.colors.greySemi};
     }
 
     .react-datepicker__header {
-        background-color: ${(props) => props.theme.colors.mist};
-        border-bottom-color: ${(props) => props.theme.colors.mist};
+        background-color: ${(props) => props.theme.colors.greySemi};
+        border-bottom-color: ${(props) => props.theme.colors.greySemi};
     }
 
     .react-datepicker-popper[data-placement^=bottom] .react-datepicker__triangle::before,
     .react-datepicker-popper[data-placement^=bottom] .react-datepicker__triangle::after {
-        border-bottom-color: ${(props) => props.theme.colors.mist};
+        border-bottom-color: ${(props) => props.theme.colors.greySemi};
     }
 
     .react-datepicker__month-text:hover,
     .react-datepicker__month-text--keyboard-selected {
-        background-color: ${(props) => props.theme.colors.mist};
+        background-color: ${(props) => props.theme.colors.greySemi};
         color: ${(props) => props.theme.colors.text};
     }
 

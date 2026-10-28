@@ -8,7 +8,7 @@ const LOADER_DELAY = 300;
 
 export function useLoaderColors() {
   const theme = useTheme();
-  return { backgroundColor: theme.colors.mist, foregroundColor: theme.colors.greyLight };
+  return { backgroundColor: theme.colors.greySemi, foregroundColor: theme.colors.greyLight };
 }
 
 function LoaderBase({ children }) {

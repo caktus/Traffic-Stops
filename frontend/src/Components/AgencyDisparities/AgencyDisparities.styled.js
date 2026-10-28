@@ -84,7 +84,7 @@ export const FiltersBar = styled.div`
   top: 0;
   z-index: 9;
   background: ${(p) => p.theme.colors.background};
-  border-bottom: ${(p) => p.theme.borders.standard} ${(p) => p.theme.colors.mist};
+  border-bottom: ${(p) => p.theme.borders.standard} ${(p) => p.theme.colors.greySemi};
 `;
 
 export const Filters = styled.div`
@@ -279,7 +279,7 @@ export const Loading = styled.div`
 `;
 
 export const FetchError = styled.p`
-  color: ${(p) => p.theme.colors.caution};
+  color: ${(p) => p.theme.colors.cautionDark};
 `;
 
 export const BottomLink = styled.div`

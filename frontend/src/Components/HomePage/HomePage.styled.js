@@ -133,7 +133,7 @@ export const AboutSubSection = styled.div`
 `;
 
 export const FetchError = styled.p`
-  color: ${(p) => p.theme.colors.caution};
+  color: ${(p) => p.theme.colors.cautionDark};
 `;
 
 export const SubContent = styled.div`

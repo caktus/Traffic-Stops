@@ -5,7 +5,7 @@ export const Footer = styled.footer`
   position: relative;
   width: 100%;
   background: ${(p) => p.theme.colors.background};
-  border-top: ${(p) => p.theme.borders.standard} ${(p) => p.theme.colors.mist};
+  border-top: ${(p) => p.theme.borders.standard} ${(p) => p.theme.colors.greySemi};
   padding: 1em 0;
   color: ${(p) => p.theme.colors.text};
 `;

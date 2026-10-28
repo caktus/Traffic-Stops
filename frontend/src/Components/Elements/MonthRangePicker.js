@@ -123,7 +123,7 @@ export default function MonthRangePicker({
           </div>
           <Button
             variant="positive"
-            backgroundColor={theme.colors.mist}
+            backgroundColor={theme.colors.greySemi}
             border="none"
             borderRadius="6px"
             marginLeft="8px"
