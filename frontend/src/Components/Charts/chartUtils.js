@@ -76,6 +76,11 @@ export const CONTRANBAND_TYPE_COLORS = {
   weapons: '#551DC3',
 };
 
+export const ARREST_COLORS = {
+  withArrest: DEMOGRAPHICS_COLORS.white,
+  withoutArrest: '#9CDBED',
+};
+
 export const STOP_PURPOSE_COLORS = {
   safteyViolation: '#A4284F',
   regulatoryEquipment: '#FF8133',
