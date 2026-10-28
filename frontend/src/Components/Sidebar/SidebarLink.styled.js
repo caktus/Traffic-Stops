@@ -53,7 +53,7 @@ export const Chevron = styled(Icon)`
 `;
 
 export const SidebarLink = styled(NavLink)`
-  font-family: ${(props) => props.theme.fonts.body};
+  font-family: ${(props) => props.theme.fonts.ui};
   font-size: 18px;
   line-height: 32px;
   color: ${(props) => props.theme.colors.text};

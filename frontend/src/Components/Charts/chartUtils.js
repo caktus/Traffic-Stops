@@ -60,7 +60,7 @@ export const STOP_TYPE_COLORS = [
 ];
 
 export const DEMOGRAPHICS_COLORS = {
-  white: '#1282A2',
+  white: '#BB5424',
   black: '#551DC3',
   hispanic: '#D24B76',
   asian: '#F9DC4E',
@@ -74,6 +74,11 @@ export const CONTRANBAND_TYPE_COLORS = {
   money: '#D24B76',
   other: '#999999',
   weapons: '#551DC3',
+};
+
+export const ARREST_COLORS = {
+  withArrest: DEMOGRAPHICS_COLORS.white,
+  withoutArrest: '#9CDBED',
 };
 
 export const STOP_PURPOSE_COLORS = {

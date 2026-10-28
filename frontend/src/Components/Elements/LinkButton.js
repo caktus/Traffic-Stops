@@ -14,7 +14,7 @@ export default LinkButton;
 
 const LinkStyled = styled.a`
   padding: 15px;
-  background-color: #29a3a1;
+  background-color: ${(p) => p.theme.colors.secondary};
   border-radius: 10px;
   color: white;
   font-weight: 700;

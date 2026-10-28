@@ -123,16 +123,22 @@ export default function MonthRangePicker({
           </div>
           <Button
             variant="positive"
-            backgroundColor="white"
-            width={25}
-            height={25}
+            backgroundColor={theme.colors.greySemi}
+            border="none"
+            borderRadius="6px"
+            marginLeft="8px"
+            width={40}
+            height={40}
+            px="8px"
+            py="8px"
             onClick={closeRangePicker}
           >
             <ChartHeaderStyles.Icon
               icon={ICONS.close}
-              width={25}
-              height={25}
-              fill={theme.colors.positive}
+              width={24}
+              height={24}
+              style={{ margin: 0, display: 'block' }}
+              fill={theme.colors.primary}
             />
           </Button>
         </div>

@@ -2,7 +2,7 @@ import React from 'react';
 import * as S from './Footer.styled';
 
 // Assets
-import FJLogo from '../../img/FJ-logo.svg';
+import FJLogo from '../../img/Dark-Mono-Tagline-NoBG-01.png';
 import SplashImage from '../../img/nc-copwatch-transparent-small--tayetheartist.png';
 
 function Footer() {

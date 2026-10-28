@@ -55,7 +55,7 @@ export const TR = styled.tr`
   }
 
   font-size: 14px;
-  font-family: ${(props) => props.theme.fonts.body};
+  font-family: ${(props) => props.theme.fonts.ui};
   font-weight: 400;
   color: ${(props) => props.theme.colors.black};
 `;
@@ -76,7 +76,7 @@ export const OfficerId = styled.p`
   align-items: center;
   min-width: 35px;
   padding: 1rem;
-  font-family: ${(props) => props.theme.fonts.body};
+  font-family: ${(props) => props.theme.fonts.ui};
   font-size: 18px;
   color: ${(props) => props.theme.colors.primaryDark};
   cursor: pointer;

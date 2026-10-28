@@ -38,22 +38,22 @@ export const H2 = styled.h2`
 `;
 
 export const H3 = styled.h2`
-  font-family: ${(props) => props.theme.fonts.heading};
-  font-weight: 550;
+  font-family: ${(props) => props.theme.fonts.accent};
+  font-weight: 700;
   font-size: 22px;
   color: ${(props) => props.theme.colors.text};
   text-transform: uppercase;
 `;
 
 export const H4 = styled.h4`
-  font-family: ${(props) => props.theme.fonts.body};
+  font-family: ${(props) => props.theme.fonts.accent};
   font-weight: 700;
   font-size: 18px;
   color: ${(props) => props.theme.colors.text};
 `;
 
 export const Legend = styled.legend`
-  font-family: ${(props) => props.theme.fonts.body};
+  font-family: ${(props) => props.theme.fonts.ui};
   font-weight: 700;
   font-size: 21px;
   color: ${(props) => props.theme.colors.text};
@@ -64,7 +64,7 @@ export const COLORS = ['light', 'dark'];
 export const WEIGHTS = ['normal', 'bold'];
 
 export const P = styled.p`
-  font-family: ${(props) => props.theme.fonts.body};
+  font-family: ${(props) => props.theme.fonts.ui};
   font-weight: ${(props) => props.weight};
   font-size: ${(props) => props.size}px;
   line-height: ${(props) => (props.size === SIZES[0] ? '28px' : '32px')};
