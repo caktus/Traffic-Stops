@@ -16,6 +16,8 @@ updates:
         update-types: ["version-update:semver-major"]
       - dependency-name: "urllib3"
         update-types: ["version-update:semver-major"]
+      # Must be bumped manually to match the live cluster's kubernetes version
+      - dependency-name: "kubernetes-validate"
 
   - package-ecosystem: "github-actions"
     directory: "/"
