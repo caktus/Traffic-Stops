@@ -11,6 +11,11 @@ updates:
       python-minor-patch:
         patterns: ["*"]
         update-types: ["minor", "patch"]
+    ignore:
+      - dependency-name: "django"
+        update-types: ["major"]
+      - dependency-name: "urllib3"
+        update-types: ["major"]
 
   - package-ecosystem: "github-actions"
     directory: "/"
