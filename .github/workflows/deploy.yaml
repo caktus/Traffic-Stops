@@ -22,17 +22,17 @@ jobs:
       DOCKER_REPO: 606178775542.dkr.ecr.us-east-2.amazonaws.com/traff-appli-gvyudgfsjhrz
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
       - name: Set env vars (production)
         if: endsWith(github.ref, '/main')
         run: |
           echo "ENV=production" >> $GITHUB_ENV
           echo "ENV_URL=https://nccopwatch.org/" >> $GITHUB_ENV
-      - uses: astral-sh/setup-uv@v6
+      - uses: astral-sh/setup-uv@v7
         with:
           enable-cache: true
       - name: Install dependencies
@@ -49,7 +49,7 @@ jobs:
         run: |
           echo DOCKER_TAG="$ENV-$(git rev-parse --short HEAD)" >> "$GITHUB_ENV"
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           aws-region: us-east-2
           role-to-assume: arn:aws:iam::606178775542:role/GitHubActionsDeploy
@@ -60,7 +60,7 @@ jobs:
           echo "env is $ENV"
           uv run inv $ENV aws.docker-login
       - name: Build image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           pull: true
