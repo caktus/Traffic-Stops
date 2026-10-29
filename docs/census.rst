@@ -10,7 +10,8 @@ Setup
 
     CENSUS_API_KEY=***
 
-2. Download the data::
+2. Download the data (without ``CENSUS_API_KEY`` set, the command exits with
+   an error pointing to the key sign-up page)::
 
     python manage.py import_census --use-api --output > acs-2022.json
 
