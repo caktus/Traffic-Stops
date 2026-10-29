@@ -2,7 +2,7 @@
 name = "traffic_stops"
 version = "1.23.0"
 description = "Website to monitor and identify racial profiling practices by North Carolina law enforcement agencies"
-readme = "README.rst"
+readme = "README.md"
 requires-python = "~=3.13.0"
 dependencies = [
     "boto==2.49.0",
@@ -96,8 +96,6 @@ dev = [
     "pytest-django>=4.9.0",
     "pyyaml>=6.0.2",
     "ruff==0.15.22",
-    "sphinx>=5.3.0",
-    "sphinx-autobuild>=2024.10.3",
     "sqlalchemy>=2.0.46",
     "troposphere>=4.9.0",
     # Python 3.13 is not supported by urllib3 2.4.0
