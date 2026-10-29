@@ -25,8 +25,13 @@ Prerequisites: Python 3.13, Node.js >= 22, [uv](https://docs.astral.sh/uv/gettin
 
    export DJANGO_SETTINGS_MODULE=traffic_stops.settings.local
    export KUBECONFIG=$PWD/deploy/.kube/config
-   export PGHOST=127.0.0.1   # local Postgres from docker compose
+   # Postgres connection for Django and psql/restore CLIs
+   export PGHOST=127.0.0.1
    export PGPORT=9051
+   export PGUSER=postgres
+   export PGDATABASE=traffic_stops
+   export DATABASE_URL=postgres://postgres@127.0.0.1:9051/traffic_stops
+   export DATABASE_URL_NC=postgres://postgres@127.0.0.1:9051/traffic_stops_nc
    ```
 
    Then install:
@@ -83,7 +88,7 @@ the import code hasn't changed since it was last used.
 
 To refresh the census (ACS) data, e.g. for a new ACS release:
 
-1. Add APY key to `.envrc`:
+1. Add the Census API key to `.envrc`:
 
    ```
    CENSUS_API_KEY=***
