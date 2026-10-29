@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 5
 requires-python = "==3.13.*"
 resolution-markers = [
     "sys_platform == 'win32'",
@@ -301,14 +301,14 @@ wheels = [
 
 [[package]]
 name = "census"
-version = "0.8.25"
+version = "0.8.27"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/98/8f/cdb1b8a7c210b4e2991d09e460cf8b2a36532c7e911d65bc8a6ba5dba8a0/census-0.8.25.tar.gz", hash = "sha256:433d3c280728d9c10ebfbf97df06c5911b6443a4ab5aa9a4e572af11e6d1a17c", size = 13074, upload-time = "2026-01-07T16:35:55.386Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/92/77/7fcd0c20882f19fc67522b2d9686e8ec7b6ab329b634b3838c63fbd70385/census-0.8.27.tar.gz", hash = "sha256:207aae0f83650004f6b7dab6a730b6a60df96a119f55167260c3153313f15a32", size = 13181, upload-time = "2026-05-15T19:43:58.563Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/9d/be/29054ec18c2dc99363f1e5a07bd3cee1b31cf04e2ca736a3b4926e96f00f/census-0.8.25-py3-none-any.whl", hash = "sha256:8396e71c92faa003b999c4a4f5996736047a148d34225b5347c47e255e81f344", size = 11421, upload-time = "2026-01-07T16:35:54.215Z" },
+    { url = "https://files.pythonhosted.org/packages/0b/e6/586c3dd1f21fb240772469f5197555f8f6386b9056a43ef7f363e0dece41/census-0.8.27-py3-none-any.whl", hash = "sha256:6ef36f5d2e7759824e28051bc2c7fa0706d41e153ccb353a6c2d4d9eb354cd7e", size = 11570, upload-time = "2026-05-15T19:43:57.345Z" },
 ]
 
 [[package]]
@@ -1732,7 +1732,7 @@ name = "pexpect"
 version = "4.9.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "ptyprocess", marker = "sys_platform != 'emscripten' and sys_platform != 'win32'" },
+    { name = "ptyprocess" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/42/92/cc564bf6381ff43ce1f4d06852fc19a2f11d180f23dc32d9588bee2f149d/pexpect-4.9.0.tar.gz", hash = "sha256:ee7d41123f3c9911050ea2c2dac107568dc43b2d3b0c7557a33212c398ead30f", size = 166450, upload-time = "2023-11-25T09:07:26.339Z" }
 wheels = [
