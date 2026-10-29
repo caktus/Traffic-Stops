@@ -13,9 +13,9 @@ updates:
         update-types: ["minor", "patch"]
     ignore:
       - dependency-name: "django"
-        update-types: ["major"]
+        update-types: ["version-update:semver-major"]
       - dependency-name: "urllib3"
-        update-types: ["major"]
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: "github-actions"
     directory: "/"
