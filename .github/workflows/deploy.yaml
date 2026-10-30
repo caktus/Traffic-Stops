@@ -2,7 +2,7 @@ name: deploy
 
 on:
   push:
-    branches: [main, develop, feature/428-forward-justice-brand]
+    branches: [main, develop, 437-trim-unused-python-deps]
 
 jobs:
   deploy:
