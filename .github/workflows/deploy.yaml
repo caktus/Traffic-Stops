@@ -67,6 +67,8 @@ jobs:
           push: true
           tags: "${{ env.DOCKER_REPO }}:${{ env.DOCKER_TAG }}"
           target: "deploy"
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
       - name: Deploy image
         run: |
           echo "env is $ENV"
