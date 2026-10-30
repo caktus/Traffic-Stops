@@ -81,8 +81,8 @@ class InlineResourceFile(admin.StackedInline):
 
 
 class ResourceForm(forms.ModelForm):
-    title = forms.CharField(widget=forms.Textarea())
-    description = forms.CharField(widget=forms.Textarea())
+    title = forms.CharField(max_length=500, widget=forms.Textarea())
+    description = forms.CharField(required=False, widget=forms.Textarea())
     view_more_link = forms.URLField(assume_scheme="http", required=False, widget=forms.URLInput())
 
     class Meta:

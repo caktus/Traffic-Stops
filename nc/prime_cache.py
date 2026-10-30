@@ -119,7 +119,7 @@ def client() -> Generator[httpx.Client]:
     # Attempt to match Browser behavior
     headers = {
         "Accept": "application/json, text/plain, */*",
-        "Accept-Encoding": "gzip, deflate, br, zstd",
+        "Accept-Encoding": "gzip, deflate, zstd",
         "Accept-Language": "en-US,en;q=0.9",
     }
     # Configure basic auth (for staging environment)
