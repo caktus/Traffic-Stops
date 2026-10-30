@@ -5,20 +5,14 @@ description = "Website to monitor and identify racial profiling practices by Nor
 readme = "README.md"
 requires-python = "~=3.13.0"
 dependencies = [
-    "boto==2.49.0",
     "boto3~=1.43",
-    "botocore~=1.43.11",
-    "brotli>=1.1.0",
     "celery>=5.5.0",
     "census>=0.8.24",
     "click>=8.2.0",
     "dj-database-url>=3.0.0",
     "django>=5.2.18,<6.0",
-    "django-ckeditor-5>=0.2.15",
     "django-click>=2.4.1",
-    "django-crispy-forms>=2.4.0",
     "django-filter>=25.1",
-    "django-memoize>=2.3.1",
     "django-pgviews-redux>=0.11.0",
     "django-redis>=5.4.0",
     "django-storages>=1.14.4",
