@@ -78,7 +78,6 @@ dev = [
     "django-debug-toolbar>=5.0.1",
     "factory-boy>=3.3.3",
     "invoke-kubesae>=0.1.0",
-    "ipython>=8.32.0",
     "jupyterlab>=4.5.10",
     "kubernetes==35.*",
     "kubernetes-validate==1.35.*",
