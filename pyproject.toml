@@ -76,7 +76,6 @@ dev = [
     "awscli>=1.41.2",
     "coverage>=7.10.4",
     "django-debug-toolbar>=5.0.1",
-    "django-extensions>=3.2.3",
     "factory-boy>=3.3.3",
     "invoke-kubesae>=0.1.0",
     "ipython>=8.32.0",

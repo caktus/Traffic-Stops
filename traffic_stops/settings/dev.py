@@ -8,10 +8,6 @@ DEBUG = True
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "m-u!e0jum^(+nt1+6@31+jl_zwc6yltugtv7%!2k(6l!c@=0n@"
 
-INSTALLED_APPS += [
-    "django_extensions",
-]
-
 if os.getenv("DEBUG_TOOLBAR", "True") == "True":
     INSTALLED_APPS += [
         "debug_toolbar",
