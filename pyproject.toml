@@ -67,7 +67,6 @@ quote-style = "double"
 [dependency-groups]
 deploy = [
     "newrelic>=10.14.0",
-    "python3-memcached>=1.51",
     "sentry-sdk>=2.32.0",
     "uwsgi>=2.0.30",
 ]

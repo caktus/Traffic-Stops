@@ -1911,12 +1911,6 @@ wheels = [
 ]
 
 [[package]]
-name = "python3-memcached"
-version = "1.51"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/14/fa/cd0d93c30722db0cfa777ec9cd0203fa7da2771a5c70c9908f471944b6e2/python3-memcached-1.51.tar.gz", hash = "sha256:7cbe5951d68eef69d948b7a7ed7decfbd101e15e7f5be007dcd1219ccc584859", size = 14082, upload-time = "2013-05-11T21:35:30.839Z" }
-
-[[package]]
 name = "pywinpty"
 version = "3.1.0"
 source = { registry = "https://pypi.org/simple" }
@@ -2317,7 +2311,6 @@ dependencies = [
 [package.dev-dependencies]
 deploy = [
     { name = "newrelic" },
-    { name = "python3-memcached" },
     { name = "sentry-sdk" },
     { name = "uwsgi" },
 ]
@@ -2371,7 +2364,6 @@ requires-dist = [
 [package.metadata.requires-dev]
 deploy = [
     { name = "newrelic", specifier = ">=10.14.0" },
-    { name = "python3-memcached", specifier = ">=1.51" },
     { name = "sentry-sdk", specifier = ">=2.32.0" },
     { name = "uwsgi", specifier = ">=2.0.30" },
 ]
