@@ -119,7 +119,7 @@ def client() -> Generator[httpx.Client]:
     # Attempt to match Browser behavior
     headers = {
         "Accept": "application/json, text/plain, */*",
-        "Accept-Encoding": "gzip, deflate, br, zstd",
+        "Accept-Encoding": "gzip, deflate, zstd",
         "Accept-Language": "en-US,en;q=0.9",
     }
     # Configure basic auth (for staging environment)
@@ -158,12 +158,7 @@ def prime_group_cache(agency_id: int, num_stops: int, officer_id: int = None):
         urls = get_group_urls(agency_id=agency_id, officer_id=officer_id)
         with Timer() as group_timer:
             for url in urls:
-                # Request with brotli encoding
-                prime_endpoint_cache(
-                    client=c,
-                    url=url,
-                    # headers={"Accept-Encoding": "gzip, deflate, br, zstd"},
-                )
+                prime_endpoint_cache(client=c, url=url)
                 # Add a URL with a trailing ? to ensure the cache is primed
                 # since React sometimes appends it to the URL
                 prime_endpoint_cache(client=c, url=url + "?")

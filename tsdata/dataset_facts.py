@@ -5,17 +5,8 @@ from zoneinfo import ZoneInfo
 from django.conf import settings
 from django.core.exceptions import FieldDoesNotExist
 from django.db.models import Count
-from memoize import delete_memoized, memoize
 
 from .models import StateFacts, TopAgencyFacts
-
-
-@memoize(timeout=300)
-def get_dataset_facts_context():
-    context = {}
-    for state_facts in StateFacts.objects.all():
-        context[state_facts.state_key] = state_facts
-    return context
 
 
 def compute_dataset_facts(Agency, Stop, state_key, Search=None, override_start_date=None):
@@ -98,10 +89,5 @@ def compute_dataset_facts(Agency, Stop, state_key, Search=None, override_start_d
             name=agency.name,
         )
         rank += 1
-
-    # Dev consideration when using LocMemCache backend:
-    # This only changes lookups used in the same process.
-    delete_memoized(get_dataset_facts_context)
-    get_dataset_facts_context()
 
     return facts

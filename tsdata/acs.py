@@ -98,15 +98,15 @@ class ACS:
         df["geography"] = self.geography
         df["year"] = self.year
         # rename common columns
-        df.rename(columns={"NAME": "location", "GEO_ID": "id"}, inplace=True)
+        df = df.rename(columns={"NAME": "location", "GEO_ID": "id"})
         # replace census variable names with easier to read race labels
-        df.rename(columns=self.race_variables, inplace=True)
+        df = df.rename(columns=self.race_variables)
         # convert race columns to numerics
         num_cols = list(self.race_variables.values())
         df[num_cols] = df[num_cols].apply(pd.to_numeric)
         # remove unused columns
         if self.drop_columns:
-            df.drop(self.drop_columns, axis=1, inplace=True)
+            df = df.drop(self.drop_columns, axis=1)
         return df
 
 
@@ -199,7 +199,7 @@ def get_gazetteer_coordinates(year: int, geography: str) -> pd.DataFrame:
     df.columns = df.columns.str.strip()
     df["id"] = id_prefix + df[geoid_col].astype(str)
     df["year"] = year
-    df.rename(columns={"INTPTLAT": "latitude", "INTPTLONG": "longitude"}, inplace=True)
+    df = df.rename(columns={"INTPTLAT": "latitude", "INTPTLONG": "longitude"})
     return df[["id", "year", "latitude", "longitude"]]
 
 

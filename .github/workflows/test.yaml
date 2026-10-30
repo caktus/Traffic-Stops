@@ -47,6 +47,13 @@ jobs:
           DJANGO_SETTINGS_MODULE: traffic_stops.settings.dev
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/traffic_stops
           DATABASE_URL_NC: postgres://postgres:postgres@localhost:5432/traffic_stops_nc
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
       - name: Test deploy image build
-        run: |
-          uv run inv image.build
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: false
+          target: "deploy"
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
