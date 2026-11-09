@@ -27,7 +27,7 @@ class Dataset(models.Model):
         blank=True,
         max_length=1024,
         help_text="Absolute path to destination directory (helpful for testing)",
-    )  # noqa
+    )
     report_email_1 = models.EmailField(blank=True)
     report_email_2 = models.EmailField(blank=True)
 

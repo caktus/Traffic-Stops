@@ -1,6 +1,6 @@
 import sys
 
-from traffic_stops.settings.base import *  # noqa
+from traffic_stops.settings.base import *
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

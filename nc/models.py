@@ -266,7 +266,7 @@ STOP_SUMMARY_VIEW_SQL = f"""
     GROUP BY
         2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
     ORDER BY "agency_id", "date" ASC;
-"""  # noqa
+"""
 
 
 class StopSummary(pg.ReadOnlyMaterializedView):
@@ -380,7 +380,7 @@ CONTRABAND_SUMMARY_VIEW_SQL = f"""
         ON ("nc_stop"."stop_id" = "nc_search"."stop_id")
     LEFT OUTER JOIN "contraband_types"
         ON ("nc_stop"."stop_id" = "contraband_types"."stop_id")
-"""  # noqa
+"""
 
 
 class ContrabandSummary(pg.ReadOnlyMaterializedView):

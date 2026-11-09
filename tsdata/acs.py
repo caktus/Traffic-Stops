@@ -5,8 +5,8 @@
 #  - Places: https://www.census.gov/content/dam/Census/data/developers/understandingplace.pdf
 #
 # Fact Finder:
-#  - NC: https://data.census.gov/table?q=B03002&g=0400000US37&y=2021&d=ACS+5-Year+Estimates+Detailed+Tables&tid=ACSDT5Y2021.B03002  # noqa
-#  - Durham city, NC: https://data.census.gov/table?q=B03002&g=1600000US3719000&y=2021&d=ACS+5-Year+Estimates+Detailed+Tables  # noqa
+#  - NC: https://data.census.gov/table?q=B03002&g=0400000US37&y=2021&d=ACS+5-Year+Estimates+Detailed+Tables&tid=ACSDT5Y2021.B03002
+#  - Durham city, NC: https://data.census.gov/table?q=B03002&g=1600000US3719000&y=2021&d=ACS+5-Year+Estimates+Detailed+Tables
 
 import logging
 import pathlib
@@ -31,12 +31,12 @@ GAZETTEER_SKIP_YEARS = [2011, 2010, 2009]  # No Gazetteer files available for th
 NC_RACE_VARS = {
     "B03002_001E": "total",  # Estimate!!Total
     "B03002_003E": "white",  # Estimate!!Total!!Not Hispanic or Latino!!White alone
-    "B03002_004E": "black",  # Estimate!!Total!!Not Hispanic or Latino!!Black or African American alone  # noqa
-    "B03002_005E": "native_american",  # Estimate!!Total!!Not Hispanic or Latino!!American Indian and Alaska Native alone  # noqa
+    "B03002_004E": "black",  # Estimate!!Total!!Not Hispanic or Latino!!Black or African American alone
+    "B03002_005E": "native_american",  # Estimate!!Total!!Not Hispanic or Latino!!American Indian and Alaska Native alone
     "B03002_006E": "asian",  # Estimate!!Total!!Not Hispanic or Latino!!Asian alone
-    "B03002_007E": "native_hawaiian",  # Estimate!!Total!!Not Hispanic or Latino!!Native Hawaiian and Other Pacific Islander alone  # noqa
-    "B03002_008E": "other",  # Estimate!!Total!!Not Hispanic or Latino!!Some other race alone  # noqa
-    "B03002_009E": "two_or_more_races",  # Estimate!!Total!!Not Hispanic or Latino!!Two or more races  # noqa
+    "B03002_007E": "native_hawaiian",  # Estimate!!Total!!Not Hispanic or Latino!!Native Hawaiian and Other Pacific Islander alone
+    "B03002_008E": "other",  # Estimate!!Total!!Not Hispanic or Latino!!Some other race alone
+    "B03002_009E": "two_or_more_races",  # Estimate!!Total!!Not Hispanic or Latino!!Two or more races
     "B03002_012E": "hispanic",  # Estimate!!Total!!Hispanic or Latino
     "B03002_002E": "non_hispanic",  # Estimate!!Total!!Not Hispanic or Latino
 }
