@@ -45,7 +45,7 @@ if os.getenv("DATABASE_URL"):
     db_from_env = dj_database_url.config(
         env="DATABASE_URL",
         conn_max_age=500,
-        ssl_require=os.getenv("DATABASE_SSL", False),
+        ssl_require=os.getenv("DATABASE_SSL"),
     )
     DATABASES["default"].update(db_from_env)
 
@@ -53,7 +53,7 @@ if os.getenv("DATABASE_URL"):
         db_from_env = dj_database_url.config(
             env="DATABASE_URL_NC",
             conn_max_age=500,
-            ssl_require=os.getenv("DATABASE_SSL", False),
+            ssl_require=os.getenv("DATABASE_SSL"),
         )
         DATABASES["traffic_stops_nc"].update(db_from_env)
 

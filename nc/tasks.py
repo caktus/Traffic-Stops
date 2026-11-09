@@ -48,7 +48,7 @@ def download_and_import_nc_dataset():
 
 
 @app.task(autoretry_for=(Exception,), retry_backoff=True, retry_kwargs={"max_retries": 5})
-def prime_group_cache(agency_id: int, num_stops: int, officer_id: int = None):
+def prime_group_cache(agency_id: int, num_stops: int, officer_id: int | None = None):
     """Prime the cache for a single agency (and optionally officer)"""
     prime_cache.prime_group_cache(agency_id=agency_id, num_stops=num_stops, officer_id=officer_id)
     # Run the task again to ensure the cache is primed
@@ -57,7 +57,7 @@ def prime_group_cache(agency_id: int, num_stops: int, officer_id: int = None):
 
 
 def prime_groups_cache(
-    by_officer: bool = False, cutoff_count: int = 0, limit_to_agencies: list[int] = None
+    by_officer: bool = False, cutoff_count: int = 0, limit_to_agencies: list[int] | None = None
 ):
     kind = "officer" if by_officer else "agency"
     logger.info(f"Querying {kind} endpoint groups ({by_officer=}, {cutoff_count=})")
@@ -79,7 +79,7 @@ def prime_all_endpoints(
     skip_agencies: bool = False,
     skip_officers: bool = True,
     agency_cutoff_count: int = 0,
-    limit_to_agencies: list[int] = None,
+    limit_to_agencies: list[int] | None = None,
 ):
     """Prime all API endpoint caches"""
     if clear_cache:

@@ -45,7 +45,8 @@ class TestSearchesByPercentage:
         # All data values in all datasets must be finite numbers
         for dataset in response.json()["datasets"]:
             for value in dataset["data"]:
-                assert value == value, f"NaN found in dataset '{dataset['label']}'"
+                # NaN is the only value that is not equal to itself
+                assert value == value, f"NaN found in dataset '{dataset['label']}'"  # noqa: PLR0124
 
 
 @pytest.mark.django_db(databases=["traffic_stops_nc"])

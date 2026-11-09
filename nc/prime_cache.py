@@ -14,6 +14,12 @@ from django.urls import reverse
 from nc.models import StopSummary
 
 logger = logging.getLogger(__name__)
+
+
+class PrimeCacheError(Exception):
+    """Raised when cache priming or invalidation fails"""
+
+
 API_ENDPOINT_NAMES = (
     "nc:year-range",
     "nc:agency-api-stops",
@@ -49,7 +55,7 @@ CLOUDFRONT_RESPONSE_TIMEOUT = 60
 class Timer:
     """Context manager to time a block of code"""
 
-    def __init__(self, threshold_seconds: int = None):
+    def __init__(self, threshold_seconds: int | None = None):
         self.threshold_seconds = threshold_seconds
 
     def __enter__(self):
@@ -63,7 +69,9 @@ class Timer:
         )
 
 
-def get_agencies_and_officers(by_officer: bool = False, limit_to_agencies: list = None) -> list:
+def get_agencies_and_officers(
+    by_officer: bool = False, limit_to_agencies: list | None = None
+) -> list:
     """Return a list of agencies (and optionally officers) sorted by number of stops"""
     limit_to_agencies = limit_to_agencies or []
     values = ["agency_id"]
@@ -98,7 +106,7 @@ def get_agencies_and_officers(by_officer: bool = False, limit_to_agencies: list 
     return rows
 
 
-def get_group_urls(agency_id: int, officer_id: int = None) -> list[str]:
+def get_group_urls(agency_id: int, officer_id: int | None = None) -> list[str]:
     """Return a list of endpoint URLs for an agency (and optionally an officer)"""
     if settings.ALLOWED_HOSTS and settings.ALLOWED_HOSTS[0] != "*":
         host = f"https://{settings.ALLOWED_HOSTS[0]}"
@@ -134,7 +142,7 @@ def client() -> Generator[httpx.Client]:
         yield client
 
 
-def prime_endpoint_cache(client: httpx.Client, url: str, headers: dict = None):
+def prime_endpoint_cache(client: httpx.Client, url: str, headers: dict | None = None):
     """Prime the cache for a single endpoint"""
     logger.debug(f"Priming endpoint cache ({url=})...")
     with Timer(threshold_seconds=CLOUDFRONT_RESPONSE_TIMEOUT - 1) as timer:
@@ -143,12 +151,14 @@ def prime_endpoint_cache(client: httpx.Client, url: str, headers: dict = None):
         f"Queried {url=} ({response.headers=}, {response.request.headers=}, {timer.elapsed=})"
     )
     if timer.exceeded_threshold:
-        raise Exception(f"Slow prime cache response possibly not cached {url} ({timer.elapsed})")
+        raise PrimeCacheError(
+            f"Slow prime cache response possibly not cached {url} ({timer.elapsed})"
+        )
     if response.status_code != 200:
-        raise Exception(f"Request to {url} failed: {response.status_code}")
+        raise PrimeCacheError(f"Request to {url} failed: {response.status_code}")
 
 
-def prime_group_cache(agency_id: int, num_stops: int, officer_id: int = None):
+def prime_group_cache(agency_id: int, num_stops: int, officer_id: int | None = None):
     """Prime the cache for an agency (and optionally officer)"""
     logger.debug(f"Priming group cache ({agency_id=}, {officer_id=}, {num_stops=})...")
     with client() as c:
@@ -212,4 +222,4 @@ def invalidate_cloudfront_cache(sleep_seconds: int = 30) -> dict:
                 )
                 time.sleep(sleep_seconds)
             else:
-                raise Exception(f"Invalidation failed: {status})")
+                raise PrimeCacheError(f"Invalidation failed: {status})")
