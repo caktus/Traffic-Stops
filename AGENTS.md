@@ -6,7 +6,7 @@ This file provides guidance when working with code in this repository.
 
 NC CopWatch is a data-driven application that implements a nightly ETL pipeline to download, import, and analyze the North Carolina Department of Justice's raw law enforcement traffic stop data, generating visualizations and comparative analytics for 30+ million records to promote data transparency and accountability in statewide policing.
 
-- NC CopWatch is a Django 5.2 project built on Python 3.13.
+- NC CopWatch is a Django 5.2 project built on Python 3.14.
 - The front end is a React SPA built with Node.js 22 and communicates with the Django backend via a REST API using Django REST Framework.
 - The main database is PostgreSQL 16.
 - Celery is used for background jobs and scheduled tasks.

@@ -428,7 +428,7 @@ class DisparityCategory(models.TextChoices):
     SEVERE = "≥ 3.0 (Severe)"
 
     @classmethod
-    def categorize(cls, times_likely: float) -> "DisparityCategory":
+    def categorize(cls, times_likely: float) -> DisparityCategory:
         """Bucket a ``times_likely`` value into a disparity category."""
         if times_likely <= 1.0:
             return cls.EQUITY

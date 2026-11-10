@@ -7,7 +7,7 @@ RUN npm install --silent
 COPY frontend/ /code/
 RUN npm run build
 
-FROM ghcr.io/astral-sh/uv:python3.13-bookworm AS base
+FROM ghcr.io/astral-sh/uv:python3.14-trixie AS base
 
 # Enable bytecode compilation
 ENV UV_COMPILE_BYTECODE=1
@@ -30,15 +30,13 @@ ENV POSTGRESQL_CLIENT_VERSION="16"
 # they were clobbered by a parent image.
 RUN set -ex \
     && RUN_DEPS=" \
-    libpcre3 \
-    mime-support \
     postgresql-client-${POSTGRESQL_CLIENT_VERSION} \
     vim \
     " \
     && seq 1 8 | xargs -I{} mkdir -p /usr/share/man/man{} \
     && apt-get update && apt-get -y upgrade && apt-get -y install wget gnupg2 lsb-release \
     && sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list' \
-    && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
+    && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg \
     && apt-get update && apt-get install -y --no-install-recommends $RUN_DEPS \
     && rm -rf /var/lib/apt/lists/*
 
@@ -51,7 +49,6 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     set -ex \
     && BUILD_DEPS=" \
     build-essential \
-    libpcre3-dev \
     libpq-dev \
     git-core \
     " \

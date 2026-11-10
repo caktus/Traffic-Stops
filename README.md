@@ -6,7 +6,7 @@ enforcement agencies in North Carolina.
 
 ## Development Setup
 
-Prerequisites: Python 3.13, Node.js >= 22, [uv](https://docs.astral.sh/uv/getting-started/installation/), [direnv](https://direnv.net/), PostgreSQL >= 16.
+Prerequisites: Python 3.14, Node.js >= 22, [uv](https://docs.astral.sh/uv/getting-started/installation/), [direnv](https://direnv.net/), PostgreSQL >= 16.
 
 1. **Start local services** (PostgreSQL on port 9051, Redis):
 
