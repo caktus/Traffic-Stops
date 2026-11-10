@@ -7,7 +7,7 @@ RUN npm install --silent
 COPY frontend/ /code/
 RUN npm run build
 
-FROM ghcr.io/astral-sh/uv:python3.13-bookworm AS base
+FROM ghcr.io/astral-sh/uv:python3.14-trixie AS base
 
 # Enable bytecode compilation
 ENV UV_COMPILE_BYTECODE=1

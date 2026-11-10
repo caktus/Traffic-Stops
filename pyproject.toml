@@ -3,7 +3,7 @@ name = "traffic_stops"
 version = "1.23.0"
 description = "Website to monitor and identify racial profiling practices by North Carolina law enforcement agencies"
 readme = "README.md"
-requires-python = "~=3.13.0"
+requires-python = "~=3.14.0"
 dependencies = [
     "boto3~=1.43",
     "celery>=5.5.0",
@@ -33,7 +33,7 @@ exclude-newer = "7 days"
 
 [tool.ruff]
 line-length = 100
-target-version = "py313"
+target-version = "py314"
 extend-exclude = [
     ".eggs",
     ".git",
@@ -96,7 +96,7 @@ dev = [
     "ruff==0.17.3",
     "sqlalchemy>=2.0.46",
     "troposphere>=4.9.0",
-    # Python 3.13 is not supported by urllib3 2.4.0
+    # Python 3.14 is not supported by urllib3 2.4.0
     # https://github.com/crate/crate-python/issues/708
     # https://github.com/aws/containers-roadmap/issues/2638
     "urllib3<2.4.0",
