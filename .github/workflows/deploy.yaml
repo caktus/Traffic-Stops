@@ -2,7 +2,7 @@ name: deploy
 
 on:
   push:
-    branches: [main, develop, 437-trim-unused-python-deps]
+    branches: [main, develop, 422-python314]
 
 jobs:
   deploy:
