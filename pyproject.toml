@@ -59,8 +59,6 @@ extend-exclude = [
 [tool.ruff.lint]
 ignore = [
     "E501", # line too long, handled by formatter
-    "PLR1711", # missing explicit return of None at end of function — style
-    "PERF102", # unnecessary dict/index lookup in loop — false-positive-prone
     # Django/DRF class attributes (Meta.indexes, admin actions, filter_backends,
     # …) are read-only framework configuration, not per-instance state.
     "RUF012",
