@@ -8,7 +8,7 @@ from .views import index
 admin.autodiscover()
 
 
-urlpatterns = [  # noqa
+urlpatterns = [
     path("", include(("nc.urls", "nc"), namespace="nc"), name="home"),
     path("admin/", admin.site.urls),
 ]

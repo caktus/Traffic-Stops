@@ -50,11 +50,18 @@ extend-exclude = [
     "public",
     "venv",
     "migrations",
+    # ruff's notebook writer re-serializes cell outputs and rounds raw JSON
+    # floats to different doubles (observed with ruff 0.17.3). Notebooks are
+    # not linted by pre-commit; marimo handles them.
+    "*.ipynb",
 ]
 
 [tool.ruff.lint]
 ignore = [
     "E501", # line too long, handled by formatter
+    # Django/DRF class attributes (Meta.indexes, admin actions, filter_backends,
+    # …) are read-only framework configuration, not per-instance state.
+    "RUF012",
 ]
 
 [tool.ruff.lint.isort]
@@ -86,7 +93,7 @@ dev = [
     "pytest-cov>=6.0.0",
     "pytest-django>=4.9.0",
     "pyyaml>=6.0.2",
-    "ruff==0.15.22",
+    "ruff==0.17.3",
     "sqlalchemy>=2.0.46",
     "troposphere>=4.9.0",
     # Python 3.13 is not supported by urllib3 2.4.0

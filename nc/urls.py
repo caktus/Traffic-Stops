@@ -11,7 +11,7 @@ router.register(r"state-facts", views.StateFactsViewSet, basename="state-facts")
 router.register(r"resources", views.ResourcesViewSet, basename="resources")
 
 
-urlpatterns = [  # noqa
+urlpatterns = [
     path("api/", include(router.urls)),
     path("api/about/contact/", csrf_exempt(views.ContactView.as_view()), name="contact-form"),
     path(

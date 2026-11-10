@@ -43,20 +43,20 @@ with app.setup(hide_code=True):
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "traffic_stops.settings.dev")
     os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 
-    import django  # noqa
+    import django
 
     django.setup()
 
-    from django.db.models import Q  # noqa
+    from django.db.models import Q
 
-    from nc.models import AgencyLikelihoodStatus, DisparityCategory, DriverRace, NCCensusProfile  # noqa
+    from nc.models import AgencyLikelihoodStatus, DisparityCategory, DriverRace, NCCensusProfile
     from nc.views.likelihood import (
         active_small_population_agencies,
         excluded_police_agencies,
         likelihood_comparison,
         no_census_agencies,
         parity_data,
-    )  # noqa
+    )
 
     color_map = {
         "Asian": "#F9DC4E",
@@ -93,7 +93,6 @@ def notebook_header(mo):
 
     *Last updated: {last_updated}*
     """)
-    return
 
 
 @app.cell(hide_code=True)
@@ -141,7 +140,6 @@ def sidebar(
             ]
         )
     )
-    return
 
 
 @app.cell(hide_code=True)
@@ -164,7 +162,6 @@ def agency_section_header(mo):
     be stopped compared to white drivers. A dashed line marks baseline equity
     (1.0), and a dotted line marks the statewide average for the selected race.
     """)
-    return
 
 
 @app.cell
@@ -205,7 +202,7 @@ def top_20_agency_chart(mo, selected_races, selected_year, year_label):
             x=[None],
             y=[None],
             mode="lines",
-            line=dict(dash="dash", color="#FF8C00", width=2),
+            line={"dash": "dash", "color": "#FF8C00", "width": 2},
             name="Baseline Equity (1.0)",
             showlegend=True,
         )
@@ -225,13 +222,13 @@ def top_20_agency_chart(mo, selected_races, selected_year, year_label):
                     x=[None],
                     y=[None],
                     mode="lines",
-                    line=dict(dash="dot", color="#FF1493", width=2),
+                    line={"dash": "dot", "color": "#FF1493", "width": 2},
                     name=f"Statewide Average ({race})",
                     showlegend=True,
                 )
             )
     plot = mo.ui.plotly(
-        fig.update_yaxes(tickformat=",.1f").update_traces(textangle=0, selector=dict(type="bar"))
+        fig.update_yaxes(tickformat=",.1f").update_traces(textangle=0, selector={"type": "bar"})
     )
 
     agency_table_cols = [
@@ -263,7 +260,6 @@ def map_section_header(mo):
     Polygons](https://www.nconemap.gov/datasets/NCEM-GIS::north-carolina-state-and-county-boundary-polygons/about)
     for county geometries.
     """)
-    return
 
 
 @app.cell
@@ -412,7 +408,7 @@ def sheriff_choropleth_map(mo, race_dropdown, selected_year, year_label):
                 "Stops: %{customdata[1]}<br>"
                 "Population: %{customdata[2]}<extra></extra>"
             ),
-            colorbar=dict(title="Times as<br>likely"),
+            colorbar={"title": "Times as<br>likely"},
             name="Sheriff Agencies",
             showlegend=False,
             marker_line_color="white",
@@ -424,7 +420,7 @@ def sheriff_choropleth_map(mo, race_dropdown, selected_year, year_label):
         title_text=f"Sheriff agencies: Times as likely to be stopped as white drivers ({_map_race_sheriff}, {year_label})",
         height=600,
         margin={"r": 0, "t": 40, "l": 0, "b": 0},
-        legend=dict(x=0.01, y=0.05),
+        legend={"x": 0.01, "y": 0.05},
     )
     fig_map.update_geos(fitbounds="locations", visible=False, scope="usa")
 
@@ -444,7 +440,6 @@ def sheriff_choropleth_map(mo, race_dropdown, selected_year, year_label):
     sheriff_table_df = sheriff_df[sheriff_table_cols].copy().round(2)
 
     mo.vstack([sheriff_plot, sheriff_table_df])
-    return
 
 
 @app.cell(hide_code=True)
@@ -470,7 +465,6 @@ def police_agency_disparity_map_section_header(mo):
     by default as hollow markers to distinguish them from active agencies. Turn
     off "Include smaller departments (< 10,000 population)" to hide them.
     """)
-    return
 
 
 @app.cell(hide_code=True)
@@ -559,28 +553,28 @@ def police_agency_disparity_map(
 
     _size_col = "total_stops" if scale_toggle.value == "Total Traffic Stops" else "stops"
 
-    _scatter_kwargs = dict(
-        data_frame=_police_df,
-        lat="latitude",
-        lon="longitude",
-        color="disparity_category",
-        color_discrete_map=_DISPARITY_COLORS,
-        category_orders={"disparity_category": _CATEGORY_ORDER},
-        hover_name="group_name",
-        hover_data={
+    _scatter_kwargs = {
+        "data_frame": _police_df,
+        "lat": "latitude",
+        "lon": "longitude",
+        "color": "disparity_category",
+        "color_discrete_map": _DISPARITY_COLORS,
+        "category_orders": {"disparity_category": _CATEGORY_ORDER},
+        "hover_name": "group_name",
+        "hover_data": {
             "times_likely": ":.2f",
             "stops": True,
             "total_stops": True,
             "latitude": False,
             "longitude": False,
         },
-        title=f"Police Agencies: Stop Rate Disparity ({_map_race} vs. White, {year_label})",
-        labels={
+        "title": f"Police Agencies: Stop Rate Disparity ({_map_race} vs. White, {year_label})",
+        "labels": {
             "disparity_category": "Disparity",
             "stops": f"Stops ({_map_race})",
             "total_stops": "Total stops",
         },
-    )
+    }
     _scatter_kwargs["size"] = _size_col
     _scatter_kwargs["size_max"] = 30
 
@@ -617,11 +611,11 @@ def police_agency_disparity_map(
                     "Total stops: %{customdata[2]}<br>"
                     "<i>&lt; 10,000 population</i><extra></extra>"
                 ),
-                marker=dict(
-                    size=10,
-                    color="rgba(255, 255, 255, 0)",
-                    line=dict(width=2, color="#777777"),
-                ),
+                marker={
+                    "size": 10,
+                    "color": "rgba(255, 255, 255, 0)",
+                    "line": {"width": 2, "color": "#777777"},
+                },
             )
         )
 
@@ -679,7 +673,6 @@ def police_agency_disparity_map(
         _disparity_table_df = pd.concat([_disparity_table_df, _no_census_rows], ignore_index=True)
 
     mo.vstack([mo.ui.plotly(_fig_disparity), _disparity_table_df])
-    return
 
 
 @app.cell(hide_code=True)
@@ -698,7 +691,6 @@ def sub_threshold_audit_section_header(mo):
     population and total stops. Use it to gauge the scope and data quality of
     voluntary reporting before investing in front-end visibility.
     """)
-    return
 
 
 @app.cell
@@ -736,7 +728,6 @@ def sub_threshold_audit(mo, selected_year):
             mo.ui.table(_display_df, selection=None),
         ]
     )
-    return
 
 
 @app.cell(hide_code=True)
@@ -751,7 +742,6 @@ def parity_section_header(mo):
     over-policing of a demographic group, while those below the line indicate
     under-policing.
     """)
-    return
 
 
 @app.cell
@@ -782,7 +772,9 @@ def parity_scatter_plot(
         height=700,
     )
     # Add the "Line of Fairness" (diagonal x=y)
-    fig_parity.add_shape(type="line", line=dict(dash="dash", color="gray"), x0=0, x1=1, y0=0, y1=1)
+    fig_parity.add_shape(
+        type="line", line={"dash": "dash", "color": "gray"}, x0=0, x1=1, y0=0, y1=1
+    )
     fig_parity.update_layout(xaxis_range=[0, 1], yaxis_range=[0, 1])
 
     parity_table_cols = [
@@ -799,7 +791,6 @@ def parity_scatter_plot(
     ]
     parity_table_df = df_parity_filtered[parity_table_cols].copy().round(4)
     mo.vstack([mo.ui.plotly(fig_parity), parity_table_df])
-    return
 
 
 if __name__ == "__main__":

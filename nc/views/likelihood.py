@@ -319,7 +319,7 @@ def parity_data(df: pd.DataFrame) -> pd.DataFrame:
     return out
 
 
-def excluded_police_agencies(year: int = None, race: str = None) -> pd.DataFrame:
+def excluded_police_agencies(year: int | None = None, race: str | None = None) -> pd.DataFrame:
     """
     Return non-sheriff police agencies excluded from the disparity map due to
     population thresholds (status != active in LikelihoodOfStopSummary).
@@ -346,7 +346,7 @@ def excluded_police_agencies(year: int = None, race: str = None) -> pd.DataFrame
     return df.reset_index(drop=True)
 
 
-def active_small_population_agencies(year: int = None) -> pd.DataFrame:
+def active_small_population_agencies(year: int | None = None) -> pd.DataFrame:
     """
     Audit helper: non-sheriff agencies below the 10,000-population threshold
     (status = small_population) that are actively submitting stop data.

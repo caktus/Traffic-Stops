@@ -1434,7 +1434,7 @@ class AgencySearchRateView(APIView):
             return float(0)
 
         for col in columns:
-            for k, _v in purpose_choices.items():
+            for k in purpose_choices:
                 base_searches, base_stops = (
                     get_val(search_df, "White", k),
                     get_val(stops_df, "White", k),

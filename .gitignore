@@ -62,3 +62,4 @@ nc/notebooks/2023-07-raleigh-contraband/input/Contraband.txt.zip
 acs*.json
 __marimo__
 censusdata/
+.pi/

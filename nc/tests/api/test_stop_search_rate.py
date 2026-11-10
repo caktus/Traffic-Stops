@@ -2,8 +2,7 @@ import datetime as dt
 
 import pytest
 
-from nc.constants import STATEWIDE
-from nc.models import DriverEthnicity, DriverRace, LikelihoodOfStopSummary, StopSummary
+from nc.models import DriverRace, LikelihoodOfStopSummary, StopSummary
 from nc.tests.factories import NCCensusProfileFactory, PersonFactory
 from nc.tests.urls import reverse_querystring
 from nc.views.likelihood import likelihood_stop_query
