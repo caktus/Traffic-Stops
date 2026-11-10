@@ -14,7 +14,7 @@ updates:
     ignore:
       - dependency-name: "django"
         update-types: ["version-update:semver-major"]
-      # Hard-pinned to <2.4.0 in pyproject.toml (incompatible with Python 3.13);
+      # Hard-pinned to <2.4.0 in pyproject.toml (incompatible with Python 3.14);
       # bump only when the pin is deliberately lifted
       - dependency-name: "urllib3"
       # Must be bumped manually to match the live cluster's kubernetes version
