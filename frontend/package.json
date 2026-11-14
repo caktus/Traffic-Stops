@@ -8,7 +8,7 @@
     "@popperjs/core": "^2.11.7",
     "@sentry/react": "^7.6.0",
     "autosuggest-highlight": "^3.3.0",
-    "axios": "^0.27.2",
+    "axios": "^0.34.0",
     "babel-eslint": "^10.1.0",
     "chart.js": "^4.2.1",
     "d3-array": "^3.2.4",
@@ -42,7 +42,7 @@
   },
   "devDependencies": {
     "@testing-library/react": "^13.3.0",
-    "cypress": "^10.3.0",
+    "cypress": "^16.2.1",
     "eslint": "^8.19.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-prettier": "^8.5.0",
