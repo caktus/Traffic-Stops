@@ -28,7 +28,7 @@ const columns = [
 
 const BUBBLE_MIN_RADIUS = 4;
 const BUBBLE_MAX_RADIUS = 24;
-const MAJOR_AGENCY_STOPS = 20000;
+const MAJOR_AGENCY_STOPS = 15000;
 
 export const AGENCY_VOLUME_FILTERS = {
   ALL: 'all',
@@ -213,14 +213,14 @@ export default function PoliceBubbleMap({ year, race }) {
           aria-pressed={volumeFilter === AGENCY_VOLUME_FILTERS.MAJOR}
           onClick={() => handleVolumeChange(AGENCY_VOLUME_FILTERS.MAJOR)}
         >
-          20,000+ stops
+          15,000+ stops
         </S.VolumeFilterButton>
         <S.VolumeFilterButton
           type="button"
           aria-pressed={volumeFilter === AGENCY_VOLUME_FILTERS.SMALLER}
           onClick={() => handleVolumeChange(AGENCY_VOLUME_FILTERS.SMALLER)}
         >
-          Under 20,000 stops
+          Under 15,000 stops
         </S.VolumeFilterButton>
       </S.VolumeFilter>
       {sizeLegend.length > 0 && (
