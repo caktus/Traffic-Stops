@@ -14,6 +14,7 @@ import {
   FIND_A_STOP_SLUG,
   HOME_SLUG,
   RESOURCES_SLUG,
+  AGENCY_DISPARITIES_SLUG,
 } from '../Routes/slugs';
 
 // Layout
@@ -33,6 +34,7 @@ import About from './AboutPage/AboutPage';
 import AgencyList from './AgencyList/AgencyList';
 import AgencyData from './AgencyData/AgencyData';
 import HomePage from './HomePage/HomePage';
+import AgencyDisparities from './AgencyDisparities/AgencyDisparities';
 import FindAStopPage from './FindAStopPage/FindAStopPage';
 import Header from './Header/Header';
 import Resources from './ResourcePage/ResourcePage';
@@ -136,6 +138,9 @@ function App() {
                 </Route>
                 <Route exact path={RESOURCES_SLUG}>
                   <Resources />
+                </Route>
+                <Route path={AGENCY_DISPARITIES_SLUG}>
+                  <AgencyDisparities />
                 </Route>
                 <Route path={HOME_SLUG}>
                   <HomePage />

@@ -82,7 +82,7 @@ def arrest_query(request, agency_id, group_by, debug=False):
     Related notebooks:
     - https://nccopwatch-share.s3.amazonaws.com/2023-10-contraband-type/durham-contraband-hit-rate-type.html
     - https://nccopwatch-share.s3.amazonaws.com/2024-01-arrest-data/arrest-data-preview-v7.html
-    """  # noqa
+    """
     # Build query to filter down queryest
     filter_set = ArrestSummaryFilterSet(request.GET, agency_id=agency_id)
     # Perform query with SQL aggregations

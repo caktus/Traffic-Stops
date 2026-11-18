@@ -41,7 +41,7 @@ def get_sql_statements(cursor, select_sql):
 
 
 # SQL commands to drop all nc_* table constraints and indexes
-# Adapted from: http://blog.hagander.net/archives/131-Automatically-dropping-and-creating-constraints.html  # noqa
+# Adapted from: http://blog.hagander.net/archives/131-Automatically-dropping-and-creating-constraints.html
 
 
 SELECT_DROP_CONSTRAINTS_SQL = """
@@ -51,7 +51,7 @@ INNER JOIN pg_class ON conrelid=pg_class.oid
 INNER JOIN pg_namespace ON pg_namespace.oid=pg_class.relnamespace
 WHERE relname NOT LIKE 'pg_%'
 ORDER BY CASE WHEN contype='f' THEN 0 ELSE 1 END,contype,nspname,relname,conname;
-"""  # noqa
+"""
 
 SELECT_DROP_INDEXES_SQL = """
 SELECT 'DROP INDEX IF EXISTS "'||nspname||'"."'||relname||'" RESTRICT;'
@@ -62,7 +62,7 @@ WHERE indisprimary=FALSE
       AND indisvalid=TRUE
       AND nspname NOT LIKE 'pg_%'
 ORDER BY nspname, relname;
-"""  # noqa
+"""
 
 SELECT_ADD_CONSTRAINTS_SQL = """
 SELECT 'ALTER TABLE "'||nspname||'"."'||relname||'" ADD CONSTRAINT "'||conname||'" '||pg_get_constraintdef(pg_constraint.oid)||';'
@@ -71,7 +71,7 @@ INNER JOIN pg_class ON conrelid=pg_class.oid
 INNER JOIN pg_namespace ON pg_namespace.oid=pg_class.relnamespace
 WHERE relname NOT LIKE 'pg_%'
 ORDER BY CASE WHEN contype='f' THEN 0 ELSE 1 END DESC,contype DESC,nspname DESC,relname DESC,conname DESC;
-"""  # noqa
+"""
 
 SELECT_ADD_INDEXES_SQL = """
 SELECT pg_get_indexdef(pg_index.indexrelid)||';'
@@ -82,4 +82,4 @@ WHERE indisprimary=FALSE
       AND indisvalid=TRUE
       AND nspname NOT LIKE 'pg_%'
 ORDER BY nspname, relname;
-"""  # noqa
+"""

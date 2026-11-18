@@ -1,7 +1,7 @@
 # Settings for live deployed environments: staging, production, etc
 from pathlib import Path
 
-from .base import *  # noqa
+from .base import *
 
 # This is NOT a complete production settings file. For more, see:
 # See https://docs.djangoproject.com/en/dev/howto/deployment/checklist/

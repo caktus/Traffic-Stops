@@ -7,7 +7,7 @@ RUN npm install --silent
 COPY frontend/ /code/
 RUN npm run build
 
-FROM ghcr.io/astral-sh/uv:python3.13-bookworm AS base
+FROM ghcr.io/astral-sh/uv:python3.14-trixie AS base
 
 # Enable bytecode compilation
 ENV UV_COMPILE_BYTECODE=1
@@ -30,15 +30,13 @@ ENV POSTGRESQL_CLIENT_VERSION="16"
 # they were clobbered by a parent image.
 RUN set -ex \
     && RUN_DEPS=" \
-    libpcre3 \
-    mime-support \
     postgresql-client-${POSTGRESQL_CLIENT_VERSION} \
     vim \
     " \
     && seq 1 8 | xargs -I{} mkdir -p /usr/share/man/man{} \
     && apt-get update && apt-get -y upgrade && apt-get -y install wget gnupg2 lsb-release \
     && sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list' \
-    && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
+    && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg \
     && apt-get update && apt-get install -y --no-install-recommends $RUN_DEPS \
     && rm -rf /var/lib/apt/lists/*
 
@@ -51,7 +49,6 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     set -ex \
     && BUILD_DEPS=" \
     build-essential \
-    libpcre3-dev \
     libpq-dev \
     git-core \
     " \
@@ -108,89 +105,3 @@ ENTRYPOINT ["/code/docker-entrypoint.sh"]
 
 # Start uWSGI
 CMD ["newrelic-admin", "run-program", "uwsgi", "--single-interpreter", "--enable-threads", "--show-config"]
-
-FROM ghcr.io/astral-sh/uv:python3.13-bookworm AS dev
-
-ARG USERNAME=appuser
-ARG USER_UID=1000
-ARG USER_GID=$USER_UID
-
-# Create non-root user
-RUN groupadd --gid $USER_GID $USERNAME \
-    && useradd --uid $USER_UID --gid $USER_GID --create-home --shell /bin/bash $USERNAME
-
-# Install packages for Dev Container development
-#   build-essential -- for gcc to compile non-wheel packages with C dependencies
-#   docker-ce-cli -- docker CLI
-#   docker-compose-plugin -- docker compose CLI
-#   git-core -- to pull, commit, and push from dev container
-#   gnupg2 -- GNU privacy guard - a free PGP replacement
-#   libpq-dev -- header files for PostgreSQL
-#   openssh-client -- for git over SSH
-#   sudo -- to run commands as superuser
-#   vim -- enhanced vi editor for commits
-ENV KUBE_CLIENT_VERSION="v1.33.0"
-ENV HELM_VERSION="3.18.3"
-ENV POSTGRESQL_CLIENT_VERSION="16"
-RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/apt \
-    --mount=type=cache,mode=0755,target=/root/.cache/pip \
-    set -ex \
-    && RUN_DEPS=" \
-    build-essential \
-    docker-ce-cli \
-    docker-compose-plugin \
-    git-core \
-    gnupg2 \
-    jq \
-    libpcre3 \
-    libpq-dev \
-    nodejs \
-    openssh-client \
-    postgresql-client-${POSTGRESQL_CLIENT_VERSION} \
-    sudo \
-    vim \
-    " \
-    && apt-get update && apt-get -y install curl wget gnupg2 lsb-release \
-    # starship.rs prompt
-    && curl -sS https://starship.rs/install.sh | sh -s -- -y \
-    # kubectl
-    && curl --silent -L https://dl.k8s.io/release/$KUBE_CLIENT_VERSION/bin/linux/$(dpkg --print-architecture)/kubectl -o /usr/local/bin/kubectl \
-    && chmod +x /usr/local/bin/kubectl \
-    # helm
-    && curl --silent -L https://get.helm.sh/helm-v$HELM_VERSION-linux-$(dpkg --print-architecture).tar.gz --output - | tar -xzC /tmp \
-    && mv /tmp/linux-$(dpkg --print-architecture)/helm /usr/local/bin/helm \
-    && chmod +x /usr/local/bin/helm \
-    # docker
-    && curl https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor | tee /etc/apt/trusted.gpg.d/docker.gpg >/dev/null \
-    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/trusted.gpg.d/docker.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null \
-    # nodejs (https://github.com/nodesource/distributions/wiki/Repository-Manual-Installation#debian-systems)
-    && mkdir -p /etc/apt/keyrings \
-    && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
-    && sh -c 'echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_22.x nodistro main" > /etc/apt/sources.list.d/nodesource.list' \
-    && wget --quiet -O- https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add - \
-    # PostgreSQL
-    && sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list' \
-    && curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/apt.postgresql.org.gpg >/dev/null \
-    # dev packages
-    && apt-get update \
-    && apt-get install -y --no-install-recommends $RUN_DEPS \
-    # sudo
-    && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
-    && chmod 0440 /etc/sudoers.d/$USERNAME
-
-# Install Docker Buildx component for Docker v23.0.0+
-COPY --from=docker/buildx-bin:latest /buildx /usr/libexec/docker/cli-plugins/docker-buildx
-
-COPY --chown=$USER_UID:$USER_GID . /code/
-
-USER $USERNAME
-RUN set -ex \
-    && touch /code/.env \
-    && echo 'eval "$(starship init bash)"' >> ~/.bashrc
-
-ENV DJANGO_SETTINGS_MODULE=traffic_stops.settings.dev
-ENV PATH=/code/venv/bin:$PATH
-
-WORKDIR /code
-
-CMD ["python", "/code/manage.py", "runserver", "0.0.0.0:8000"]

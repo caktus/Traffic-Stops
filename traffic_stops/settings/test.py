@@ -23,3 +23,6 @@ CACHES["default"] = {
     "BACKEND": "django.core.cache.backends.dummy.DummyCache",
 }
 EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
+
+# traffic_stops_nc has no dependency on the default database during test setup
+DATABASES["traffic_stops_nc"]["TEST"] = {"DEPENDENCIES": []}

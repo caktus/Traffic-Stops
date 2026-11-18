@@ -12,7 +12,7 @@ class AgencyFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = models.Agency
 
-    name = factory.Sequence(lambda n: "Agency %03d" % n)
+    name = factory.Sequence(lambda n: f"Agency {n:03d}")
 
 
 class PersonFactory(factory.django.DjangoModelFactory):

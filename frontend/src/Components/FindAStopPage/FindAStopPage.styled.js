@@ -24,13 +24,13 @@ export const Label = styled.p`
 `;
 
 export const Legend = styled.legend`
-  font-family: ${(props) => props.theme.fonts.body};
+  font-family: ${(props) => props.theme.fonts.ui};
   font-weight: bold;
   font-size: 21px;
 `;
 
 export const LegendSpan = styled.span`
-  font-family: ${(props) => props.theme.fonts.body};
+  font-family: ${(props) => props.theme.fonts.ui};
   font-weight: normal;
   font-size: 21px;
   color: ${(props) => props.theme.colors.darkGrey};

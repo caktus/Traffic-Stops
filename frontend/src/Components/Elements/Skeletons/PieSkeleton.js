@@ -2,9 +2,10 @@ import React from 'react';
 
 // Deps
 import ContentLoader from 'react-content-loader';
-import LoaderBase from './LoaderBase';
+import LoaderBase, { useLoaderColors } from './LoaderBase';
 
 function PieSkeleton({ scale = 1 }) {
+  const colors = useLoaderColors();
   const toScale = (val) => parseInt(val, 10) * scale;
   return (
     <LoaderBase>
@@ -14,6 +15,7 @@ function PieSkeleton({ scale = 1 }) {
         width={toScale(400)}
         speed={2}
         data-testid="PieSkeleton"
+        {...colors}
       >
         <rect
           x={toScale(100)}

@@ -66,7 +66,7 @@ class ComplianceReportTests(TransactionTestCase):
             msg.body, "Attached are the agencies out of compliance in the most recent data import."
         )
         self.assertEqual(len(msg.attachments), 1)
-        filename, contents, mimetype = msg.attachments[0]
+        _filename, contents, _mimetype = msg.attachments[0]
         csvfile = io.StringIO(contents)
         reader = csv.DictReader(csvfile)
         rows = list(reader)

@@ -2,12 +2,13 @@ import React from 'react';
 
 // Deps
 import ContentLoader from 'react-content-loader';
-import LoaderBase from './LoaderBase';
+import LoaderBase, { useLoaderColors } from './LoaderBase';
 
 function CardSkeleton() {
+  const colors = useLoaderColors();
   return (
     <LoaderBase>
-      <ContentLoader viewBox="0 0 400 130" height={130} width={320}>
+      <ContentLoader viewBox="0 0 400 130" height={130} width={320} {...colors}>
         <rect x="0" y="0" rx="3" ry="3" width="250" height="10" />
         <rect x="20" y="20" rx="3" ry="3" width="220" height="10" />
         <rect x="20" y="40" rx="3" ry="3" width="170" height="10" />

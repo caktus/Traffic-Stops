@@ -170,7 +170,7 @@ def to_standard_csv(input_path, output_path):
                 # Some records in Stops.csv have extra columns; drop any
                 # columns beyond those in the first record.
                 num_columns = len(columns)
-                headings = ["column%d" % (i + 1) for i in range(len(columns))]
+                headings = [f"column{i + 1}" for i in range(len(columns))]
                 writer.writerow(headings)
                 headings_written = True
             writer.writerow(columns)
@@ -259,14 +259,14 @@ def update_nc_agencies(nc_csv_path, destination):
         A new agency table is attached.  You can add census codes for the
         the new agencies before checking in.
     """.format(", ".join(extra_agencies))
+    with open(new_nc_csv_path) as new_nc_csv:
+        csv_content = new_nc_csv.read()
     email = EmailMessage(
         "New NC agencies were discovered during import",
         email_body,
         settings.DEFAULT_FROM_EMAIL,
         settings.NC_AUTO_IMPORT_MONITORS,
-        attachments=(
-            (os.path.basename(new_nc_csv_path), open(new_nc_csv_path).read(), "application/csv"),
-        ),
+        attachments=((os.path.basename(new_nc_csv_path), csv_content, "application/csv"),),
     )
     email.send()
     return new_nc_csv_path

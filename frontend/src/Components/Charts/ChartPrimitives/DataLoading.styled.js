@@ -6,6 +6,6 @@ export default styled.div`
     text-align: center;
     font-size: 28px;
     font-weight: 200;
-    color: ${(props) => props.theme.colors.grey};
+    color: ${(props) => props.theme.colors.textLight};
   }
 `;

@@ -1,0 +1,95 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: "{{ k8s_notebook_name }}-secrets"
+  labels:
+    app: "{{ k8s_notebook_name }}"
+  namespace: "{{ k8s_namespace }}"
+type: Opaque
+stringData: {{ k8s_environment_variables | to_json }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ k8s_notebook_name }}"
+  namespace: "{{ k8s_namespace }}"
+spec:
+  selector:
+    matchLabels:
+      app: "{{ k8s_notebook_name }}"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: "{{ k8s_notebook_name }}"
+    spec:
+{% if k8s_dockerconfigjson %}
+      imagePullSecrets:
+      - name: registry-secret
+{% else %}
+      imagePullSecrets: []
+{% endif %}
+      containers:
+      - name: "{{ k8s_notebook_name }}"
+        image: "{{ k8s_container_image }}:{{ k8s_container_image_tag }}"
+        imagePullPolicy: "{{ k8s_container_image_pull_policy }}"
+        args:
+          - marimo
+          - run
+          - --host=0.0.0.0
+          - --port=2718
+          - --no-token
+          - nc/notebooks
+        env:
+        - name: HOME
+          value: /tmp
+        envFrom:
+        - secretRef:
+            name: "{{ k8s_notebook_name }}-secrets"
+        ports:
+        - containerPort: 2718
+        resources: {{ k8s_notebook_resources | to_json }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: "{{ k8s_notebook_name }}"
+  labels:
+    app: "{{ k8s_notebook_name }}"
+  namespace: "{{ k8s_namespace }}"
+spec:
+  ports:
+  - protocol: TCP
+    port: 2718
+    targetPort: 2718
+  selector:
+    app: "{{ k8s_notebook_name }}"
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: "traefik-ingress-{{ k8s_notebook_name }}"
+  namespace: "{{ k8s_namespace }}"
+  annotations:
+    kubernetes.io/ingress.class: "{{ k8s_traefik_ingress_class }}"
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+{% if k8s_notebook_htpasswd %}
+    traefik.ingress.kubernetes.io/router.middlewares: "{{ k8s_namespace }}-app-basic-auth@kubernetescrd"
+{% endif %}
+spec:
+  tls:
+  - hosts:
+    - "{{ k8s_notebook_domain }}"
+    secretName: "{{ k8s_namespace }}-tls"
+  rules:
+  - host: "{{ k8s_notebook_domain }}"
+    http:
+      paths:
+      - path: "/"
+        pathType: Prefix
+        backend:
+          service:
+            name: "{{ k8s_notebook_name }}"
+            port:
+              number: 2718

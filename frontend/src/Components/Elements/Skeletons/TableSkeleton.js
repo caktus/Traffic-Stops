@@ -1,21 +1,15 @@
 import React from 'react';
-import LoaderBase from './LoaderBase';
+import LoaderBase, { useLoaderColors } from './LoaderBase';
 import ContentLoader from 'react-content-loader';
 import { H1C } from '../../../styles/StyledComponents/Typography';
 
 function TableSkeleton(props) {
+  const colors = useLoaderColors();
   return (
     <>
       <H1C>Loading</H1C>
       <LoaderBase>
-        <ContentLoader
-          width={1000}
-          height={550}
-          viewBox="0 0 1000 550"
-          backgroundColor="#eaeced"
-          foregroundColor="#ffffff"
-          {...props}
-        >
+        <ContentLoader width={1000} height={550} viewBox="0 0 1000 550" {...colors} {...props}>
           <rect x="51" y="45" rx="3" ry="3" width="906" height="17" />
           <circle cx="879" cy="123" r="11" />
           <circle cx="914" cy="123" r="11" />

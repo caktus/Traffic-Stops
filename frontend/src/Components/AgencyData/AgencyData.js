@@ -5,7 +5,7 @@ import * as S from './AgencyData.styled';
 import { AnimatePresence, motion } from 'framer-motion';
 
 // Routing
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 
 // State
 import useDataset, { AGENCY_DETAILS } from '../../Hooks/useDataset';
@@ -33,8 +33,12 @@ function AgencyData(props) {
   const [chartsOpen, setChartsOpen] = useState(false);
   const [chartState] = useDataset(agencyId, AGENCY_DETAILS);
 
+  const { search } = useLocation();
   const [yearRange, setYearRange] = useState([YEARS_DEFAULT]);
-  const [year, setYear] = useState(YEARS_DEFAULT);
+  // Seeded from ?year= so links from the disparities page keep the selected year.
+  const [year, setYear] = useState(
+    () => Number(new URLSearchParams(search).get('year')) || YEARS_DEFAULT
+  );
   const [yearIdx, setYearIdx] = useState(null);
 
   const _getEntityReference = () =>
@@ -54,7 +58,10 @@ function AgencyData(props) {
 
   useEffect(() => {
     axios.get(`/api/agency/${agencyId}/year-range/`).then((res) => {
-      setYearRange([YEARS_DEFAULT].concat(res.data.year_range));
+      const range = [YEARS_DEFAULT].concat(res.data.year_range);
+      setYearRange(range);
+      // yearIdx is the year's position in the picker options (used by the pie charts).
+      if (year !== YEARS_DEFAULT) setYearIdx(range.indexOf(year));
     });
   }, [agencyId]);
 

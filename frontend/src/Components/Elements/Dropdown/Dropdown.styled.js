@@ -68,7 +68,7 @@ export const DropdownList = styled.ul`
   margin: 0;
   color: ${(props) => props.theme.colors.text};
   font-size: ${(props) => props.theme.fontSizes[2]};
-  font-family: ${(props) => props.theme.fonts.body};
+  font-family: ${(props) => props.theme.fonts.ui};
 `;
 
 export const ListItem = styled.li`

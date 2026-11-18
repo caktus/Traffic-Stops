@@ -9,7 +9,7 @@ from tsdata import models
 
 class DatasetFactory(factory.django.DjangoModelFactory):
     state = factory.Iterator(models.STATE_CHOICES, getter=lambda c: c[0])
-    name = factory.Sequence(lambda n: "Dataset %d" % n)
+    name = factory.Sequence(lambda n: f"Dataset {n}")
     url = factory.LazyAttribute(lambda obj: f"https://example.com/{obj.state}")
     date_received = factory.fuzzy.FuzzyDateTime(
         datetime.datetime(2008, 1, 1, 0, 0, tzinfo=datetime.UTC)
@@ -23,8 +23,8 @@ class CensusProfileFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = models.CensusProfile
 
-    acs_id = factory.Sequence(lambda n: "16000US%07d" % n)
-    location = factory.Sequence(lambda n: "Location %d" % n)
+    acs_id = factory.Sequence(lambda n: f"16000US{n:07d}")
+    location = factory.Sequence(lambda n: f"Location {n}")
     geography = "place"
     state = "AA"
     source = "ACS 5-Year Data (2012-2016)"

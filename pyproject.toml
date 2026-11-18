@@ -2,38 +2,38 @@
 name = "traffic_stops"
 version = "1.23.0"
 description = "Website to monitor and identify racial profiling practices by North Carolina law enforcement agencies"
-readme = "README.rst"
-requires-python = "~=3.13.0"
+readme = "README.md"
+requires-python = "~=3.14.0"
 dependencies = [
-    "boto==2.49.0",
-    "boto3>=1.40.13",
-    "botocore>=1.40.13",
-    "brotli>=1.1.0",
+    "boto3~=1.43",
     "celery>=5.5.0",
     "census>=0.8.24",
     "click>=8.2.0",
     "dj-database-url>=3.0.0",
-    "django>=5.2.8,<6.0",
-    "django-ckeditor-5>=0.2.15",
+    "django>=5.2.18,<6.0",
     "django-click>=2.4.1",
-    "django-crispy-forms>=2.4.0",
     "django-filter>=25.1",
-    "django-memoize>=2.3.1",
     "django-pgviews-redux>=0.11.0",
     "django-redis>=5.4.0",
     "django-storages>=1.14.4",
     "djangorestframework>=3.16",
+    "dotenv>=0.9.9",
     "httpx[http2]>=0.28.1",
+    "marimo>=0.23.9",
     "pandas>=2.3",
+    "plotly>=6.5.2",
     "psycopg>=3.2.9",
-    "requests>=2.32.3",
+    "requests>=2.33.0",
     "us>=3.2.0",
     "whitenoise>=6.9.0",
 ]
 
+[tool.uv]
+exclude-newer = "7 days"
+
 [tool.ruff]
 line-length = 100
-target-version = "py313"
+target-version = "py314"
 extend-exclude = [
     ".eggs",
     ".git",
@@ -50,11 +50,18 @@ extend-exclude = [
     "public",
     "venv",
     "migrations",
+    # ruff's notebook writer re-serializes cell outputs and rounds raw JSON
+    # floats to different doubles (observed with ruff 0.17.3). Notebooks are
+    # not linted by pre-commit; marimo handles them.
+    "*.ipynb",
 ]
 
 [tool.ruff.lint]
 ignore = [
-    "E501",  # line too long, handled by formatter
+    "E501", # line too long, handled by formatter
+    # Django/DRF class attributes (Meta.indexes, admin actions, filter_backends,
+    # …) are read-only framework configuration, not per-instance state.
+    "RUF012",
 ]
 
 [tool.ruff.lint.isort]
@@ -67,7 +74,6 @@ quote-style = "double"
 [dependency-groups]
 deploy = [
     "newrelic>=10.14.0",
-    "python3-memcached>=1.51",
     "sentry-sdk>=2.32.0",
     "uwsgi>=2.0.30",
 ]
@@ -76,26 +82,21 @@ dev = [
     "awscli>=1.41.2",
     "coverage>=7.10.4",
     "django-debug-toolbar>=5.0.1",
-    "django-extensions>=3.2.3",
     "factory-boy>=3.3.3",
     "invoke-kubesae>=0.1.0",
-    "ipython>=8.32.0",
-    "jupyterlab>=4.5.3",
+    "jupyterlab>=4.5.10",
     "kubernetes==35.*",
     "kubernetes-validate==1.35.*",
     "openshift>=0.13.2",
-    "plotly>=6.5.2",
     "pre-commit>=4.1.0",
-    "pytest>=8.3.3",
+    "pytest>=9.1.1",
     "pytest-cov>=6.0.0",
     "pytest-django>=4.9.0",
     "pyyaml>=6.0.2",
-    "ruff>=0.14.14",
-    "sphinx>=5.3.0",
-    "sphinx-autobuild>=2024.10.3",
+    "ruff==0.17.3",
     "sqlalchemy>=2.0.46",
     "troposphere>=4.9.0",
-    # Python 3.13 is not supported by urllib3 2.4.0
+    # Python 3.14 is not supported by urllib3 2.4.0
     # https://github.com/crate/crate-python/issues/708
     # https://github.com/aws/containers-roadmap/issues/2638
     "urllib3<2.4.0",

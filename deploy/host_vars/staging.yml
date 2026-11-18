@@ -108,6 +108,13 @@ k8s_auth_api_key: !vault |
   3634
 
 # django-k8s app traefik ingress resources
+k8s_notebook_enabled: true
+k8s_notebook_domain: notebook.nccopwatch.org
+k8s_notebook_htpasswd: "{{ k8s_container_htpasswd }}"
+
+k8s_ingress_tls_domains_extra:
+  - notebook.nccopwatch.org
+
 k8s_traefik_ingress_resources:
   - name: "basic-auth"
     type: "basicAuth"

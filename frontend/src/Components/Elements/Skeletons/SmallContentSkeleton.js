@@ -1,8 +1,10 @@
 import React from 'react';
 import ContentLoader from 'react-content-loader';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useLoaderColors } from './LoaderBase';
 
 function SmallContentSkeleton() {
+  const colors = useLoaderColors();
   return (
     <AnimatePresence>
       <motion.div
@@ -17,6 +19,7 @@ function SmallContentSkeleton() {
           width={400}
           speed={2}
           data-testid="SmallContentSkeleton"
+          {...colors}
         >
           <rect x="0" y="0" rx="3" ry="3" width="67" height="11" />
           <rect x="76" y="0" rx="3" ry="3" width="140" height="11" />

@@ -46,7 +46,12 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if options["api"]:
-            # make sure you've set settings.CENSUS_API_KEY
+            if not settings.CENSUS_API_KEY:
+                raise CommandError(
+                    "CENSUS_API_KEY is not set. Get a key at "
+                    "https://api.census.gov/data/key_signup.html and export it "
+                    "(it is a dev-only variable, set in .envrc)."
+                )
             data = acs.get_state_census_data(key=settings.CENSUS_API_KEY)
             # normalize to json so it can be dump'd or loaded below
             data = json.loads(data.to_json(orient="records"))

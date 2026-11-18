@@ -13,6 +13,6 @@ export const SeeAllDepartments = styled.div`
 
 export const SeeAllText = styled.p`
   font-size: ${(props) => props.theme.fontSizes[2]};
-  font-family: ${(props) => props.theme.fonts.body};
+  font-family: ${(props) => props.theme.fonts.ui};
   color: ${(props) => props.theme.colors.primaryDark};
 `;

@@ -4,7 +4,7 @@ export const TextArea = styled.textarea`
   width: 100%;
   outline: none;
   border: 1px solid;
-  border-color: #272973;
+  border-color: ${(p) => p.theme.colors.primary};
   border-radius: 6px;
   padding-top: 8px;
   padding-bottom: 8px;
@@ -16,6 +16,7 @@ export const TextArea = styled.textarea`
 `;
 
 export const Wrapper = styled.div`
+  font-family: ${(props) => props.theme.fonts.ui};
   height: 100%;
   display: flex;
   flex-direction: column;

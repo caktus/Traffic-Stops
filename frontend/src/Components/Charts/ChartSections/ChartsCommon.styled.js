@@ -105,7 +105,7 @@ export const ChartsWrapper = styled.div`
 `;
 
 export const PieContainer = styled.div`
-  background: ${(props) => props.theme.colors.greyLight};
+  border: ${(props) => props.theme.borders.standard} ${(props) => props.theme.colors.greySemi};
   border-radius: 16px;
   width: 600px;
   margin-bottom: 4em;
@@ -120,7 +120,7 @@ export const Note = styled.p`
 export const Link = styled.a`
   display: block;
   font-size: 16px;
-  font-family: ${(props) => props.theme.fonts.body};
+  font-family: ${(props) => props.theme.fonts.ui};
   color: ${(props) => props.theme.colors.primaryDark};
   cursor: pointer;
   text-align: center;

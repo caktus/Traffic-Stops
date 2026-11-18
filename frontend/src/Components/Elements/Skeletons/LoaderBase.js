@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
+import styled, { useTheme } from 'styled-components';
 
 // Deps
 import { AnimatePresence, motion } from 'framer-motion';
 
 const LOADER_DELAY = 300;
+
+export function useLoaderColors() {
+  const theme = useTheme();
+  return { backgroundColor: theme.colors.greySemi, foregroundColor: theme.colors.greyLight };
+}
 
 function LoaderBase({ children }) {
   const [showLoader, setShowLoader] = useState(false);

@@ -41,6 +41,31 @@ export const getSearchesByTypeURL = (agencyId) =>
 export const getContrabandHitrateURL = (agencyId) =>
   `${API_BASE}/agency/${agencyId}/contraband_hit_rate/`;
 
+const DISPARITIES_BASE = `${API_BASE}/disparities`;
+
+const withParams = (base, { year, race, limit } = {}) => {
+  const params = new URLSearchParams();
+  if (year) params.set('year', year);
+  if (race) params.set('race', race);
+  if (limit) params.set('limit', limit);
+  const qs = params.toString();
+  return qs ? `${base}?${qs}` : base;
+};
+
+export const DISPARITY_YEARS_URL = `${DISPARITIES_BASE}/years/`;
+
+export const getDisparityAgenciesURL = (opts) => withParams(`${DISPARITIES_BASE}/agencies/`, opts);
+
+export const getDisparitySheriffsURL = (opts) => withParams(`${DISPARITIES_BASE}/sheriffs/`, opts);
+
+export const getDisparityPoliceURL = (opts) => withParams(`${DISPARITIES_BASE}/police/`, opts);
+
+export const getDisparityParityURL = (opts) => withParams(`${DISPARITIES_BASE}/parity/`, opts);
+
+// Served by Django staticfiles (collectstatic), not from the SPA build —
+// the production web server falls through root-level paths to index.html.
+export const COUNTIES_GEOJSON_URL = '/static/counties.geojson';
+
 export default function mapDatasetKeyToEndpoint(datasetKey) {
   switch (datasetKey) {
     case AGENCY_DETAILS: {
