@@ -191,6 +191,78 @@ export const LegendItem = styled.span`
   gap: 0.4em;
 `;
 
+export const VolumeFilter = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 0 auto 0.75em;
+
+  @media (${phoneOnly}) {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+`;
+
+export const VolumeFilterButton = styled.button`
+  padding: 0.45em 0.8em;
+  border: 1px solid ${(p) => p.theme.colors.primary};
+  border-right-width: 0;
+  background: ${(p) => p.theme.colors.white};
+  color: ${(p) => p.theme.colors.primary};
+  font: inherit;
+  cursor: pointer;
+
+  &:first-child {
+    border-radius: 4px 0 0 4px;
+  }
+
+  &:last-child {
+    border-right-width: 1px;
+    border-radius: 0 4px 4px 0;
+  }
+
+  &[aria-pressed='true'] {
+    background: ${(p) => p.theme.colors.primary};
+    color: ${(p) => p.theme.colors.white};
+  }
+
+  &:hover:not([aria-pressed='true']) {
+    background: ${(p) => p.theme.colors.greySemi};
+  }
+
+  &:focus-visible {
+    position: relative;
+    z-index: 1;
+    outline: 2px solid ${(p) => p.theme.colors.primaryDark};
+    outline-offset: 2px;
+  }
+
+  @media (${phoneOnly}) {
+    padding: 0.45em 0.6em;
+
+    &:first-child {
+      border-radius: 4px 0 0;
+    }
+
+    &:nth-child(2) {
+      border-right-width: 1px;
+      border-radius: 0 4px 0 0;
+    }
+
+    &:last-child {
+      grid-column: 1 / -1;
+      border-top-width: 0;
+      border-radius: 0 0 4px 4px;
+    }
+  }
+`;
+
+export const FilterStatus = styled.p`
+  margin: 0.75em auto;
+  text-align: center;
+  color: ${(p) => p.theme.colors.textLight};
+`;
+
 // Legend entry that toggles visibility of a map layer; `off` marks it as hidden.
 export const LegendToggle = styled.button`
   display: inline-flex;

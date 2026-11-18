@@ -1,0 +1,172 @@
+{
+  "version": 2,
+  "skills": {
+    "act-workflow-debugging": {
+      "source": "git@github.com:caktus/skills.git",
+      "sourceUrl": "git@github.com:caktus/skills.git",
+      "commit": "f71e0dd0fb0ab230b648d6e0a14db2b2c9c5cf95",
+      "sourceType": "git",
+      "skillPath": "act-workflow-debugging/SKILL.md",
+      "computedHash": "9dfab747dd6e8b19b9d7f6e89db49cbefa2754a451a27f1280dd09c3f6661606"
+    },
+    "ansible-vault-secrets": {
+      "source": "git@github.com:caktus/skills.git",
+      "sourceUrl": "git@github.com:caktus/skills.git",
+      "commit": "f71e0dd0fb0ab230b648d6e0a14db2b2c9c5cf95",
+      "sourceType": "git",
+      "skillPath": "ansible-vault-secrets/SKILL.md",
+      "computedHash": "eed194dbc6f9a7af2461db58b8500be9ea643e7fe9644ed221f9114d53c0bc7a"
+    },
+    "apply-pre-commit-ruff-formatting": {
+      "source": "git@github.com:caktus/skills.git",
+      "sourceUrl": "git@github.com:caktus/skills.git",
+      "commit": "f71e0dd0fb0ab230b648d6e0a14db2b2c9c5cf95",
+      "sourceType": "git",
+      "skillPath": "apply-pre-commit-ruff-formatting/SKILL.md",
+      "computedHash": "e3773bec1d0457045403448b35438bf5a13a8fd7a48b2530157ba1c0a811a486"
+    },
+    "burden-first": {
+      "source": "git@github.com:caktus/skills.git",
+      "sourceUrl": "git@github.com:caktus/skills.git",
+      "commit": "f71e0dd0fb0ab230b648d6e0a14db2b2c9c5cf95",
+      "sourceType": "git",
+      "skillPath": "burden-first/SKILL.md",
+      "computedHash": "575933b84a11b83573ff901149163165fb08f685d2b2817a0388a338aa07857d"
+    },
+    "deploying-to-eks": {
+      "source": "git@github.com:caktus/skills.git",
+      "sourceUrl": "git@github.com:caktus/skills.git",
+      "commit": "f71e0dd0fb0ab230b648d6e0a14db2b2c9c5cf95",
+      "sourceType": "git",
+      "skillPath": "deploying-to-eks/SKILL.md",
+      "computedHash": "c3f2a070a2f4e41342192f633d18ed30917980d91a1627df96bf99edf95d8e6f"
+    },
+    "deploying-to-kubernetes": {
+      "source": "git@github.com:caktus/skills.git",
+      "sourceUrl": "git@github.com:caktus/skills.git",
+      "commit": "f71e0dd0fb0ab230b648d6e0a14db2b2c9c5cf95",
+      "sourceType": "git",
+      "skillPath": "deploying-to-kubernetes/SKILL.md",
+      "computedHash": "7ded7a3c562cffcee52728404e70ecc27136f108caebc3c574f662e02095958f"
+    },
+    "django-characterization-tests": {
+      "source": "git@github.com:caktus/skills.git",
+      "sourceUrl": "git@github.com:caktus/skills.git",
+      "commit": "f71e0dd0fb0ab230b648d6e0a14db2b2c9c5cf95",
+      "sourceType": "git",
+      "skillPath": "django-characterization-tests/SKILL.md",
+      "computedHash": "845aa1908c253a182703b95dca65b3657ab91bd0fcd4c8a3030ba778682ef235"
+    },
+    "django-fbv-views": {
+      "source": "git@github.com:caktus/skills.git",
+      "sourceUrl": "git@github.com:caktus/skills.git",
+      "commit": "f71e0dd0fb0ab230b648d6e0a14db2b2c9c5cf95",
+      "sourceType": "git",
+      "skillPath": "django-fbv-views/SKILL.md",
+      "computedHash": "28e98801a241e58e7d9e96b91399029d52f27d0b28dbaef062c3ea4b49e1bbe0"
+    },
+    "django-model-patterns": {
+      "source": "git@github.com:caktus/skills.git",
+      "sourceUrl": "git@github.com:caktus/skills.git",
+      "commit": "f71e0dd0fb0ab230b648d6e0a14db2b2c9c5cf95",
+      "sourceType": "git",
+      "skillPath": "django-model-patterns/SKILL.md",
+      "computedHash": "0c6abb65d8d75be2240d0402d49f146262d55384ca078fc3fa2a80e4d7dd7fbf"
+    },
+    "django-view-composition": {
+      "source": "git@github.com:caktus/skills.git",
+      "sourceUrl": "git@github.com:caktus/skills.git",
+      "commit": "f71e0dd0fb0ab230b648d6e0a14db2b2c9c5cf95",
+      "sourceType": "git",
+      "skillPath": "django-view-composition/SKILL.md",
+      "computedHash": "20b4e250bc857a5bc1efbb10b270216868c060fbc09e5b21369c4d9f4d8d9073"
+    },
+    "django-view-preconditions": {
+      "source": "git@github.com:caktus/skills.git",
+      "sourceUrl": "git@github.com:caktus/skills.git",
+      "commit": "f71e0dd0fb0ab230b648d6e0a14db2b2c9c5cf95",
+      "sourceType": "git",
+      "skillPath": "django-view-preconditions/SKILL.md",
+      "computedHash": "898a30a07644f95832d50b4040e918a8017d14cdbced67d3ac9cec3d8782b8a5"
+    },
+    "draft-pr": {
+      "source": "git@github.com:caktus/skills.git",
+      "sourceUrl": "git@github.com:caktus/skills.git",
+      "commit": "f71e0dd0fb0ab230b648d6e0a14db2b2c9c5cf95",
+      "sourceType": "git",
+      "skillPath": "draft-pr/SKILL.md",
+      "computedHash": "3ceab552bad6f9006391596b8f47f2c47a92ed09cfa89f5c144ffceaca609c83"
+    },
+    "draft-tickets": {
+      "source": "git@github.com:caktus/skills.git",
+      "sourceUrl": "git@github.com:caktus/skills.git",
+      "commit": "f71e0dd0fb0ab230b648d6e0a14db2b2c9c5cf95",
+      "sourceType": "git",
+      "skillPath": "draft-tickets/SKILL.md",
+      "computedHash": "f15c0d9be3b5c85476cd7499c75fa2f73ec335ce41a4b050d9fd38b6b32c5947"
+    },
+    "github-oidc-ci": {
+      "source": "git@github.com:caktus/skills.git",
+      "sourceUrl": "git@github.com:caktus/skills.git",
+      "commit": "f71e0dd0fb0ab230b648d6e0a14db2b2c9c5cf95",
+      "sourceType": "git",
+      "skillPath": "github-oidc-ci/SKILL.md",
+      "computedHash": "ba906ca73129667ff12d35612d4500a77c2135a88cd76cc66439dcee92dccfe3"
+    },
+    "helm-app-chart": {
+      "source": "git@github.com:caktus/skills.git",
+      "sourceUrl": "git@github.com:caktus/skills.git",
+      "commit": "f71e0dd0fb0ab230b648d6e0a14db2b2c9c5cf95",
+      "sourceType": "git",
+      "skillPath": "helm-app-chart/SKILL.md",
+      "computedHash": "78485734889d31c18813159f70b44b3cb23c2f18dec611a803061ee7159c057d"
+    },
+    "pr-preflight": {
+      "source": "git@github.com:caktus/skills.git",
+      "sourceUrl": "git@github.com:caktus/skills.git",
+      "commit": "f71e0dd0fb0ab230b648d6e0a14db2b2c9c5cf95",
+      "sourceType": "git",
+      "skillPath": "pr-preflight/SKILL.md",
+      "computedHash": "a8c9dfb1eec29b10a4cb3cc9fd4704c262631dcd2e13024d3baa683e61e72b0f"
+    },
+    "pytest-django-patterns": {
+      "source": "git@github.com:caktus/skills.git",
+      "sourceUrl": "git@github.com:caktus/skills.git",
+      "commit": "f71e0dd0fb0ab230b648d6e0a14db2b2c9c5cf95",
+      "sourceType": "git",
+      "skillPath": "pytest-django-patterns/SKILL.md",
+      "computedHash": "55be45f5ec5fdda7cfa38643eefbab2177f90c82da3d30b75d3d447b41a69eb2"
+    },
+    "python-comment-patterns": {
+      "source": "git@github.com:caktus/skills.git",
+      "sourceUrl": "git@github.com:caktus/skills.git",
+      "commit": "f71e0dd0fb0ab230b648d6e0a14db2b2c9c5cf95",
+      "sourceType": "git",
+      "skillPath": "python-comment-patterns/SKILL.md",
+      "computedHash": "b55aaf8347da7729f31299962872dd90fa5322241896d3151a6bcfb9350a82dd"
+    },
+    "simple-english": {
+      "source": "AminBlg/SimpleEnglish",
+      "commit": "300432a9e4c473229a7049ab61b8ca2522d9214c",
+      "sourceType": "github",
+      "skillPath": "skills/simple-english/SKILL.md",
+      "computedHash": "6e790385d3462e7d02270ca86db479a22d69f8a87fa16afeb85343ff42ff18af"
+    },
+    "tickets-as-code": {
+      "source": "git@github.com:caktus/skills.git",
+      "sourceUrl": "git@github.com:caktus/skills.git",
+      "commit": "f71e0dd0fb0ab230b648d6e0a14db2b2c9c5cf95",
+      "sourceType": "git",
+      "skillPath": "tickets-as-code/SKILL.md",
+      "computedHash": "196c7a6a50e5db85c9ac9b7107c0c6c335786dfd250758baf991b158b64449cd"
+    },
+    "upgrade-django": {
+      "source": "git@github.com:caktus/skills.git",
+      "sourceUrl": "git@github.com:caktus/skills.git",
+      "commit": "f71e0dd0fb0ab230b648d6e0a14db2b2c9c5cf95",
+      "sourceType": "git",
+      "skillPath": "upgrade-django/SKILL.md",
+      "computedHash": "de108458726cb334e910c3442c6505e4e853210c1eb160c296711069edecc224"
+    }
+  }
+}
