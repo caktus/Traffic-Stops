@@ -63,3 +63,4 @@ acs*.json
 __marimo__
 censusdata/
 .pi/
+.agents/skills
