@@ -1,4 +1,4 @@
-FROM node:22.18.0-bullseye-slim AS static_files
+FROM node:22.23.5-trixie-slim AS static_files
 
 WORKDIR /code
 ENV PATH=/code/node_modules/.bin:$PATH
