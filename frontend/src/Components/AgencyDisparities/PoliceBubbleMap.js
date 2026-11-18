@@ -28,6 +28,29 @@ const columns = [
 
 const BUBBLE_MIN_RADIUS = 4;
 const BUBBLE_MAX_RADIUS = 24;
+const MAJOR_AGENCY_STOPS = 20000;
+
+export const AGENCY_VOLUME_FILTERS = {
+  ALL: 'all',
+  MAJOR: 'major',
+  SMALLER: 'smaller',
+};
+
+const totalStops = (row) => {
+  const value = Number(row.total_stops);
+  return Number.isFinite(value) ? value : 0;
+};
+
+export function filterAgenciesByVolume(rows, volumeFilter) {
+  if (volumeFilter === AGENCY_VOLUME_FILTERS.MAJOR) {
+    return rows.filter((row) => totalStops(row) >= MAJOR_AGENCY_STOPS);
+  }
+  if (volumeFilter === AGENCY_VOLUME_FILTERS.SMALLER) {
+    return rows.filter((row) => totalStops(row) < MAJOR_AGENCY_STOPS);
+  }
+  return rows;
+}
+
 // Marker only applies the style for its current state, so each state needs the cursor.
 const BUBBLE_CURSOR = { cursor: 'pointer' };
 
@@ -45,6 +68,7 @@ export default function PoliceBubbleMap({ year, race }) {
   const [hovered, setHovered] = useState(null);
   const [showSubThreshold, setShowSubThreshold] = useState(true);
   const [hiddenCategories, setHiddenCategories] = useState(() => new Set());
+  const [volumeFilter, setVolumeFilter] = useState(AGENCY_VOLUME_FILTERS.ALL);
 
   // Markers unmount while new data loads without firing mouseleave, so drop any
   // hover left over from the previous year/race.
@@ -124,11 +148,17 @@ export default function PoliceBubbleMap({ year, race }) {
     clearHover();
   };
 
+  const handleVolumeChange = (nextFilter) => {
+    setVolumeFilter(nextFilter);
+    clearHover();
+  };
+
   const handleClick = (row) => history.push(agencySearchRateLink(row, year));
 
-  const visibleRows = rows
+  const categoryRows = rows
     .filter((row) => showSubThreshold || !row.small_population)
-    .filter((row) => !hiddenCategories.has(row.disparity_category))
+    .filter((row) => !hiddenCategories.has(row.disparity_category));
+  const visibleRows = filterAgenciesByVolume(categoryRows, volumeFilter)
     // Draw large bubbles first so small ones stay visible and clickable on top.
     .sort((a, b) => (b.total_stops || 0) - (a.total_stops || 0));
 
@@ -170,6 +200,29 @@ export default function PoliceBubbleMap({ year, race }) {
           <S.Swatch round dashed faded /> Sub-threshold, actively reporting (&lt; 10,000 population)
         </S.LegendToggle>
       </S.Legend>
+      <S.VolumeFilter role="group" aria-label="Agency stop volume">
+        <S.VolumeFilterButton
+          type="button"
+          aria-pressed={volumeFilter === AGENCY_VOLUME_FILTERS.ALL}
+          onClick={() => handleVolumeChange(AGENCY_VOLUME_FILTERS.ALL)}
+        >
+          All agencies
+        </S.VolumeFilterButton>
+        <S.VolumeFilterButton
+          type="button"
+          aria-pressed={volumeFilter === AGENCY_VOLUME_FILTERS.MAJOR}
+          onClick={() => handleVolumeChange(AGENCY_VOLUME_FILTERS.MAJOR)}
+        >
+          20,000+ stops
+        </S.VolumeFilterButton>
+        <S.VolumeFilterButton
+          type="button"
+          aria-pressed={volumeFilter === AGENCY_VOLUME_FILTERS.SMALLER}
+          onClick={() => handleVolumeChange(AGENCY_VOLUME_FILTERS.SMALLER)}
+        >
+          Under 20,000 stops
+        </S.VolumeFilterButton>
+      </S.VolumeFilter>
       {sizeLegend.length > 0 && (
         <S.BubbleLegend>
           Bubble size = total stops:
@@ -180,6 +233,11 @@ export default function PoliceBubbleMap({ year, race }) {
             </S.LegendItem>
           ))}
         </S.BubbleLegend>
+      )}
+      {visibleRows.length === 0 && (
+        <S.FilterStatus role="status">
+          No agencies match the selected volume and disparity filters.
+        </S.FilterStatus>
       )}
       <NcMap>
         <Geographies geography={geojson}>
