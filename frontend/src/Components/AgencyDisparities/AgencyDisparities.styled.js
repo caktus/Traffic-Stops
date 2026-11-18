@@ -196,6 +196,11 @@ export const VolumeFilter = styled.div`
   flex-wrap: wrap;
   justify-content: center;
   margin: 0 auto 0.75em;
+
+  @media (${phoneOnly}) {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 `;
 
 export const VolumeFilterButton = styled.button`
@@ -234,6 +239,21 @@ export const VolumeFilterButton = styled.button`
 
   @media (${phoneOnly}) {
     padding: 0.45em 0.6em;
+
+    &:first-child {
+      border-radius: 4px 0 0;
+    }
+
+    &:nth-child(2) {
+      border-right-width: 1px;
+      border-radius: 0 4px 0 0;
+    }
+
+    &:last-child {
+      grid-column: 1 / -1;
+      border-top-width: 0;
+      border-radius: 0 0 4px 4px;
+    }
   }
 `;
 
